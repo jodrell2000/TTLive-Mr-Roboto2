@@ -15,6 +15,7 @@ cache.on('error', err => console.log('Redis Client Error', err))
 await cache.connect()
 let bard
 try {
+  console.log('BARD_COOKIE:' + process.env.BARD_COOKIE)
   bard = new Bard(process.env.BARD_COOKIE)
 } catch (error) {
   console.log(error)

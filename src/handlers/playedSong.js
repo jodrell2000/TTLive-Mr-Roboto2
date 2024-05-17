@@ -3,15 +3,18 @@ import { postMessage } from '../libs/cometchat.js'
 // let merchCount = 0
 // let songDetailCount = 0
 
-export default async (payload, room) => {
-  console.log('payload:' + JSON.stringify(payload))
+export default async ( payload, room ) => {
+  // console.log('payload:' + JSON.stringify(payload))
 
   const theMessage = 'Now playing ' + payload.nowPlaying.song.trackName + ' by ' + payload.nowPlaying.song.artistName
 
-  return await postMessage({
+  const previousTrackName = payload.nowPlaying.song.trackName
+  const previousArtistName = payload.nowPlaying.song.artistName
+
+  return await postMessage( {
     room,
     message: theMessage
-  })
+  } )
 
   // if (songDetailCount++ > process.env.ANNOUNCE_SONG_DETAILS_COUNT) {
   //   songDetailCount = 0

@@ -1,13 +1,13 @@
 import fetch from 'node-fetch'
 
-export const buildUrl = (host, paths = [], searchParams, protocol = 'https') => {
-  const url = new URL(paths.join('/'), `${protocol}://${host}`)
-  const params = new URLSearchParams(searchParams)
+export const buildUrl = ( host, paths = [], searchParams, protocol = 'https' ) => {
+  const url = new URL( paths.join( '/' ), `${ protocol }://${ host }` )
+  const params = new URLSearchParams( searchParams )
   url.search = params
   return url
 }
 
-export const makeRequest = async (url, options, extraHeaders) => {
+export const makeRequest = async ( url, options, extraHeaders ) => {
   const requestOptions = {
     headers: {
       accept: 'application/json',
@@ -19,7 +19,7 @@ export const makeRequest = async (url, options, extraHeaders) => {
     ...options
   }
   try {
-    const response = await fetch(url.href, requestOptions)
+    const response = await fetch( url.href, requestOptions )
     return await response.json()
-  } catch (error) {}
+  } catch ( error ) {}
 }

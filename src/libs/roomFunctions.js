@@ -29,7 +29,7 @@ let maxDJs = roomDefaults.maxDJs;
 
 const themesDataFileName = process.env.THEMESDATA;
 
-const roomFunctions = ( ) => {
+const roomFunctions = () => {
 
   return {
     djCount: () => djCount, setDJCount: function ( theCount ) { djCount = theCount; },
@@ -400,7 +400,7 @@ const roomFunctions = ( ) => {
 
     },
 
-    clearSongLimitTimer ( userFunctions, roomFunctions ) {
+    clearSongLimitTimer( userFunctions, roomFunctions ) {
       //this is for the song length limit
       if ( roomFunctions.songLimitTimer() !== null ) {
         clearTimeout( roomFunctions.songLimitTimer() );

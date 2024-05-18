@@ -25,7 +25,7 @@ let takedownTimer = null; //used to hold the timer that fires after curSongWatch
 let votesLeft = roomDefaults.HowManyVotesToSkip;
 const fixTrackPayments = 0.1;
 
-const songFunctions = ( ) => {
+const songFunctions = () => {
   return {
     song: () => song,
     album: () => album,
@@ -46,7 +46,6 @@ const songFunctions = ( ) => {
     decrementVotesLeft: function () { --votesLeft; },
 
     fixTrackPayments: () => fixTrackPayments,
-
 
     // ========================================================
     // Playlist Functions
@@ -123,14 +122,11 @@ const songFunctions = ( ) => {
       chatFunctions.botSpeak( theMessage, data, true )
     },
 
-
     // ========================================================
-
 
     // ========================================================
     // Snagging Functions
     // ========================================================
-
 
     snagCount: () => snagCount,
 
@@ -283,7 +279,6 @@ const songFunctions = ( ) => {
     },
 
     // ========================================================
-
 
     // ========================================================
     // Song Info Functions

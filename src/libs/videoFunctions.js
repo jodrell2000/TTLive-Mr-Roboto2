@@ -3,24 +3,25 @@ import { setIntersection, setDifference } from './setlib.js';
 import countryLookup from 'country-code-lookup';
 
 import musicDefaults from '../defaults/musicDefaults.js'
+
 let regionsWeCareAbout = new Set( musicDefaults.alertRegions );
 
 const videoFunctions = () => {
-  function alertIfRegionsNotAllowed ( restrictions, userFunctions, notifier ) {
+  function alertIfRegionsNotAllowed( restrictions, userFunctions, notifier ) {
     const missingRegions = setDifference( regionsWeCareAbout, restrictions.allowed || [] );
     if ( missingRegions.length ) {
       notifier( `Sorry @${ userFunctions.getUsername( userFunctions.getCurrentDJID() ) }, this video can't be played in ${ turnCodesIntoCountries( missingRegions ) }. Please consider skipping.` );
     }
   }
 
-  function alertIfRegionsBlocked ( restrictions, userFunctions, notifier ) {
+  function alertIfRegionsBlocked( restrictions, userFunctions, notifier ) {
     const blockedRegions = setIntersection( regionsWeCareAbout, restrictions.blocked || [] );
     if ( blockedRegions.length ) {
       notifier( `Sorry @${ userFunctions.getUsername( userFunctions.getCurrentDJID() ) }, this video can't be played in ${ turnCodesIntoCountries( blockedRegions ) }. Please consider skipping.` );
     }
   }
 
-  function fetchVideoDetails ( videoID, callback ) {
+  function fetchVideoDetails( videoID, callback ) {
     const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${ videoID }&key=${ process.env.YOUTUBE_API_KEY }`;
     request( apiUrl, { json: true }, ( error, response, body ) => {
       if ( error ) {
@@ -32,7 +33,7 @@ const videoFunctions = () => {
     } );
   }
 
-  function processVideoDetails ( data, body, userFunctions, chatFunctions ) {
+  function processVideoDetails( data, body, userFunctions, chatFunctions ) {
     const restrictions = body.items[ 0 ]?.contentDetails?.regionRestriction;
 
     if ( !restrictions ) {
@@ -54,8 +55,7 @@ const videoFunctions = () => {
     }
   }
 
-
-  function turnCodesIntoCountries ( regionCodes ) {
+  function turnCodesIntoCountries( regionCodes ) {
     let countriesString = '';
 
     for ( let regionLoop = 0; regionLoop < regionCodes.length; regionLoop++ ) {

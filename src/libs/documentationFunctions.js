@@ -106,7 +106,6 @@ const documentationFunctions = () => {
 
       writeData.writeFileSync( themesDocOutputFile, "</ul></body></html>", { flag: 'a+' } );
 
-
     }
   }
 

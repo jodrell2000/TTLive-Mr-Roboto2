@@ -5,7 +5,6 @@ import { dirname } from 'path';
 
 import { postMessage } from './cometchat.js'
 
-
 const chatDataFileName = process.env.CHATDATA;
 const room = process.env.ROOM_UUID;
 
@@ -13,11 +12,11 @@ const chatFunctions = ( roomDefaults ) => {
 
   return {
     botSpeak: function ( message, data, publicChat, recipient ) {
-      console.group("botSpeak:" );
-      console.log("message;" + message)
-      console.log("data;" + JSON.stringify(data))
-      console.log("publicChat;" + publicChat)
-      console.log("recipient;" + recipient)
+      console.group( "botSpeak:" );
+      console.log( "message;" + message )
+      console.log( "data;" + JSON.stringify( data ) )
+      console.log( "publicChat;" + publicChat )
+      console.log( "recipient;" + recipient )
       let pmCommand;
 
       if ( recipient === undefined && data !== null ) {
@@ -30,16 +29,16 @@ const chatFunctions = ( roomDefaults ) => {
       if ( pmCommand === true && publicChat === undefined ) {
         this.botPM( message, recipient );
       } else {
-        this.botChat( message ).then(  );
+        this.botChat( message ).then();
       }
       console.groupEnd();
     },
 
     botChat: async function ( message ) {
-      console.group("botChat:" );
-      console.log("message;" + message)
+      console.group( "botChat:" );
+      console.log( "message;" + message )
       console.groupEnd();
-      
+
       return await postMessage( {
         room,
         message: message

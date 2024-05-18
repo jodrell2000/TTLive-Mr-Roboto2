@@ -37,7 +37,6 @@ export default {  // selection of lines to pick for functions
 
   HowManyVotesToSkip: 2, //how many votes for a song to get skipped(default value, only works if voteSkip = true)
 
-
   // declarations, DO NOT SET
   ttRoomName: null, //the url extension of the room name, example "straight_chillin16" would be the format
 

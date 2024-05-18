@@ -404,7 +404,6 @@ const userFunctions = ( bot ) => {
       return regionsArray.filter( ( v, i, a ) => a.indexOf( v ) === i );
     },
 
-
     // ========================================================
 
     // ========================================================
@@ -649,7 +648,6 @@ const userFunctions = ( bot ) => {
       databaseFunctions.incrementCommandCountForCurrentTrack( theCommand );
     },
 
-
     // ========================================================
 
     // ========================================================
@@ -706,7 +704,6 @@ const userFunctions = ( bot ) => {
         return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'spamCount' ];
       }
     },
-
 
     // ========================================================
 
@@ -1160,7 +1157,6 @@ const userFunctions = ( bot ) => {
       chatFunctions.botSpeak( '@' + this.getUsername( userID ) + ' is currently AFK, sorry', data )
     },
 
-
     // ========================================================
 
     // ========================================================
@@ -1232,7 +1228,6 @@ const userFunctions = ( bot ) => {
 
       return nextDJID;
     },
-
 
     // ========================================================
 
@@ -1350,7 +1345,6 @@ const userFunctions = ( bot ) => {
     // DJ Play Limit Functions
     // ========================================================
 
-
     removeDJsOverPlaylimit: async function ( data, chatFunctions, userID ) {
       if ( this.DJPlaysLimited() === true && !superDJs.includes( userID ) ) {
 
@@ -1463,7 +1457,6 @@ const userFunctions = ( bot ) => {
       this.storeUserData( userID, "currentPlayCount", theCount, databaseFunctions )
     },
 
-
     resetDJTotalPlayCount: function ( userID, databaseFunctions ) {
       if ( this.userExists( userID ) ) {
         this.setDJTotalPlayCount( userID, 0, databaseFunctions );
@@ -1479,7 +1472,6 @@ const userFunctions = ( bot ) => {
         this.storeUserData( userID, "totalPlayCount", theCount, databaseFunctions )
       }
     },
-
 
     deleteAllDJPlayCounts: function ( userID, databaseFunctions ) {
       this.deleteUserData( databaseFunctions, userID, 'currentPlayCount' );
@@ -1501,7 +1493,6 @@ const userFunctions = ( bot ) => {
     djPlaysCommand: function ( data, chatFunctions ) {
       chatFunctions.botSpeak( this.buildDJPlaysMessage(), data );
     },
-
 
     buildDJPlaysMessage: function () {
       if ( this.djList().length === 0 ) {
@@ -1748,7 +1739,6 @@ const userFunctions = ( bot ) => {
               queueNamePosition = userFunctions.queueName().indexOf( oldname );
               queueListPosition = userFunctions.queueList().indexOf( oldname );
               afkPeoplePosition = afkPeople.indexOf( oldname );
-
 
               if ( queueNamePosition !== -1 ) //if they were in the queue when they changed their name, then replace their name
               {
@@ -2285,7 +2275,7 @@ const userFunctions = ( bot ) => {
     updateRoboCoins: async function ( userID, coins, databaseFunctions ) {
       try {
         await this.storeUserData( userID, "RoboCoins", coins, databaseFunctions );
-        return; // Resolve the promise without value (implicit)
+         // Resolve the promise without value (implicit)
       } catch ( error ) {
         throw new Error( 'User does not exist' ); // Reject the promise
       }
@@ -2338,7 +2328,6 @@ const userFunctions = ( bot ) => {
     // ========================================================
     // RoboCoin Commands
     // ========================================================
-
 
     readMyRoboCoin: async function ( data, chatFunctions ) {
       try {

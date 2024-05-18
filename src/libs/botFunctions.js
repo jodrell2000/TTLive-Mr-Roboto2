@@ -24,8 +24,7 @@ let checkVideoRegions = musicDefaults.alertIfRegionBlocked;
 let refreshingEnabled = roomDefaults.refreshingEnabled;
 let favouriteArtist = null; // what's Robos current favouurite Artist (requires verified info in the DB)
 
-
-const botFunctions = ( ) => {
+const botFunctions = () => {
 
   return {
     checkActivity: () => checkActivity,
@@ -131,14 +130,22 @@ const botFunctions = ( ) => {
     reportRoomStatus: function ( data, chatFunctions, userFunctions, videoFunctions ) {
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
       const doInOrder = async () => {
-        this.reportUptime( data, userFunctions, chatFunctions ); await sleep( 100 );
-        this.reportAutoDJStatus( data, chatFunctions ); await sleep( 100 );
-        this.reportSongStats( data, chatFunctions ); await sleep( 100 );
-        userFunctions.readQueue( data, chatFunctions ); await sleep( 100 );
-        userFunctions.whatsPlayLimit( data, chatFunctions ); await sleep( 100 );
-        userFunctions.reportDJIdleStatus( data, chatFunctions ); await sleep( 100 );
-        this.reportRefreshStatus( data, chatFunctions ); await sleep( 100 );
-        this.reportRegionCheckStatus( data, videoFunctions, chatFunctions ); await sleep( 100 );
+        this.reportUptime( data, userFunctions, chatFunctions );
+        await sleep( 100 );
+        this.reportAutoDJStatus( data, chatFunctions );
+        await sleep( 100 );
+        this.reportSongStats( data, chatFunctions );
+        await sleep( 100 );
+        userFunctions.readQueue( data, chatFunctions );
+        await sleep( 100 );
+        userFunctions.whatsPlayLimit( data, chatFunctions );
+        await sleep( 100 );
+        userFunctions.reportDJIdleStatus( data, chatFunctions );
+        await sleep( 100 );
+        this.reportRefreshStatus( data, chatFunctions );
+        await sleep( 100 );
+        this.reportRegionCheckStatus( data, videoFunctions, chatFunctions );
+        await sleep( 100 );
       }
       doInOrder();
     },
@@ -248,7 +255,7 @@ const botFunctions = ( ) => {
 
     // ========================================================
 
-    async readFavouriteArtist ( data, chatFunctions, databaseFunctions ) {
+    async readFavouriteArtist( data, chatFunctions, databaseFunctions ) {
       const favouriteArtist = await this.favouriteArtist( databaseFunctions );
       chatFunctions.botSpeak( "This week, I have been mostly listening to " + favouriteArtist, data );
     },
@@ -271,14 +278,14 @@ const botFunctions = ( ) => {
       } )
     },
 
-    async chooseNewFavourite ( databaseFunctions ) {
+    async chooseNewFavourite( databaseFunctions ) {
       await databaseFunctions.getRandomVerifiedArtist()
         .then( ( displayName ) => {
           favouriteArtist = displayName;
         } )
     },
 
-    async isFavouriteArtist ( databaseFunctions, theArtist ) {
+    async isFavouriteArtist( databaseFunctions, theArtist ) {
       const currentFavourite = await this.favouriteArtist( databaseFunctions );
 
       return new Promise( ( resolve, reject ) => {
@@ -322,7 +329,6 @@ const botFunctions = ( ) => {
         chatFunctions.botSpeak( 'Video Region checking is disabled', data );
       }
     },
-
 
     refreshingEnabled: () => refreshingEnabled,
     enableRefreshing: function ( data, chatFunctions ) {
@@ -608,12 +614,12 @@ const botFunctions = ( ) => {
     // ML Chat Functions
     // ========================================================
 
-    async askBardCommand ( data, theQuestion, chatFunctions, mlFunctions ) {
+    async askBardCommand( data, theQuestion, chatFunctions, mlFunctions ) {
       const answer = await mlFunctions.askBard( theQuestion );
       chatFunctions.botSpeak( answer, data );
     },
 
-    async askChatGPTCommand ( data, theQuestion, chatFunctions, mlFunctions ) {
+    async askChatGPTCommand( data, theQuestion, chatFunctions, mlFunctions ) {
       const answer = await mlFunctions.askChatGPT( theQuestion );
       chatFunctions.botSpeak( answer, data );
     },

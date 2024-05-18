@@ -27,9 +27,9 @@ export const joinChat = async ( roomId ) => {
 }
 
 export const postMessage = async ( options ) => {
-  console.group("postMessage")
-  console.log("options:" + JSON.stringify(options, null, 2))
-  
+  console.group( "postMessage" )
+  console.log( "options:" + JSON.stringify( options, null, 2 ) )
+
   headers.appid = process.env.CHAT_API_KEY
   const paths = [
     'v3.0',

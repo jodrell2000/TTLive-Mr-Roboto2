@@ -19,9 +19,9 @@ const aliasDataFileName = process.env.ALIASDATA;
 const chatDataFileName = process.env.CHATDATA;
 
 // const ignoreCommands = [ '/me ', '/love' ];
-const ignoreCommands = [  ];
+const ignoreCommands = [];
 
-const commandFunctions = ( ) => {
+const commandFunctions = () => {
   // #############################################
   // These commands are confirmed as fully working
   // #############################################
@@ -503,7 +503,6 @@ const commandFunctions = ( ) => {
   moderatorWelcomeCommands.rulesinterval.help = "Set the interval, in minutes, for how often the room rules will be read out with the room greeting";
   moderatorWelcomeCommands.rulesinterval.sampleArguments = [ 15 ];
 
-
   // #############################################
   // Moderator Only Queue commands
   // #############################################
@@ -569,7 +568,6 @@ const commandFunctions = ( ) => {
     userFunctions.clearSuperDJs( data, chatFunctions )
   }
   moderatorQueueCommands.clearsuperdjs.help = "Remove all SuperDJs";
-
 
   // #############################################
   // Moderator Only Dynamic Chat commands
@@ -733,11 +731,11 @@ const commandFunctions = ( ) => {
   return {
 
     wasThisACommand: async function ( text ) {
-      console.group("wasThisACommand");
-      console.log('commandIdentifier:' + commandIdentifier)
-      console.log('text:' + text)
-      console.log('text type:' + typeof text )
-      
+      console.group( "wasThisACommand" );
+      console.log( 'commandIdentifier:' + commandIdentifier )
+      console.log( 'text:' + text )
+      console.log( 'text type:' + typeof text )
+
       if ( typeof text !== 'string' ) {
         return false;
       }
@@ -756,9 +754,9 @@ const commandFunctions = ( ) => {
     },
 
     getCommandAndArguments: function ( text, allCommands ) {
-      console.group("getCommandAndArguments");
+      console.group( "getCommandAndArguments" );
 
-      console.log("text:" + text )
+      console.log( "text:" + text )
       const [ sentCommand, ...args ] = text.split( " " );
       let dynamic = false;
 
@@ -801,8 +799,8 @@ const commandFunctions = ( ) => {
 
     // parseCommands: function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions ) {
     parseCommands: function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions ) {
-      console.group("parseCommands");
-      console.log("data:" + JSON.stringify(data))
+      console.group( "parseCommands" );
+      console.log( "data:" + JSON.stringify( data ) )
       let senderID;
 
       // if ( data.command === "pmmed" ) {
@@ -837,18 +835,17 @@ const commandFunctions = ( ) => {
       console.groupEnd();
     },
 
-
     isCoreCommand: function ( command ) {
       return !!allCommands[ command ];
     },
 
     isChatCommand: function ( command ) {
-      const dataFilePath = `${dirname(import.meta.url.replace('file://', ''))}/../../data/${chatDataFileName}`;
-      const store = new Storage(dataFilePath);
+      const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ chatDataFileName }`;
+      const store = new Storage( dataFilePath );
 
-      const theCommands = store.get('chatMessages');
+      const theCommands = store.get( 'chatMessages' );
 
-      const findCommand = theCommands[command];
+      const findCommand = theCommands[ command ];
 
       return findCommand !== undefined;
     },
@@ -882,14 +879,14 @@ const commandFunctions = ( ) => {
     },
 
     checkForAlias: function ( passedArgument ) {
-      console.group("checkForAlias:" )
-      console.log("passedArgument:" + passedArgument);
-      const dataFilePath = `${dirname(import.meta.url.replace('file://', ''))}/../../data/${aliasDataFileName}`;
-      console.log("dataFilePath:" + dataFilePath);
+      console.group( "checkForAlias:" )
+      console.log( "passedArgument:" + passedArgument );
+      const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ aliasDataFileName }`;
+      console.log( "dataFilePath:" + dataFilePath );
       const store = new Storage( dataFilePath );
       const theAliases = store.get( 'aliases' );
 
-      console.log("theAliases:" + JSON.stringify(theAliases));
+      console.log( "theAliases:" + JSON.stringify( theAliases ) );
 
       let findAlias = theAliases[ passedArgument ];
       console.groupEnd();
@@ -901,7 +898,7 @@ const commandFunctions = ( ) => {
 export default commandFunctions();
 
 const listAlias = ( data, chatFunctions ) => {
-  const dataFilePath = `${dirname(import.meta.url.replace('file://', ''))}/../../data/${aliasDataFileName}`;
+  const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ aliasDataFileName }`;
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
@@ -937,7 +934,7 @@ const getAliasReturnText = ( aliases, alias, command ) => {
 }
 
 const addAlias = ( data, chatFunctions ) => {
-  const dataFilePath = `${dirname(import.meta.url.replace('file://', ''))}/../../data/${aliasDataFileName}`;
+  const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ aliasDataFileName }`;
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
@@ -981,7 +978,7 @@ const addAlias = ( data, chatFunctions ) => {
 }
 
 const removeAlias = ( data, chatFunctions ) => {
-  const dataFilePath = `${dirname(import.meta.url.replace('file://', ''))}/../../data/${aliasDataFileName}`;
+  const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ aliasDataFileName }`;
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
@@ -1012,7 +1009,7 @@ const removeAlias = ( data, chatFunctions ) => {
 // #########################################################
 
 const addChatCommandWithMessage = ( data, chatFunctions, documentationFunctions ) => {
-  const dataFilePath = `${dirname(import.meta.url.replace('file://', ''))}/../../data/${chatDataFileName}`;
+  const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ chatDataFileName }`;
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
@@ -1037,7 +1034,7 @@ const addChatCommandWithMessage = ( data, chatFunctions, documentationFunctions 
 }
 
 const addMessageToChatCommand = ( data, chatFunctions, documentationFunctions ) => {
-  const dataFilePath = `${dirname(import.meta.url.replace('file://', ''))}/../../data/${chatDataFileName}`;
+  const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ chatDataFileName }`;
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
@@ -1065,7 +1062,7 @@ const addMessageToChatCommand = ( data, chatFunctions, documentationFunctions ) 
 }
 
 const addPictureToChatCommand = ( data, chatFunctions, documentationFunctions ) => {
-  const dataFilePath = `${dirname(import.meta.url.replace('file://', ''))}/../../data/${chatDataFileName}`;
+  const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ chatDataFileName }`;
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
@@ -1096,7 +1093,7 @@ const addPictureToChatCommand = ( data, chatFunctions, documentationFunctions ) 
 }
 
 const removeChatCommand = ( data, chatFunctions, documentationFunctions ) => {
-  const dataFilePath = `${dirname(import.meta.url.replace('file://', ''))}/../../data/${chatDataFileName}`;
+  const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ chatDataFileName }`;
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
@@ -1115,7 +1112,7 @@ const removeChatCommand = ( data, chatFunctions, documentationFunctions ) => {
 }
 
 const removeChatCommandMessage = ( data, chatFunctions, documentationFunctions ) => {
-  const dataFilePath = `${dirname(import.meta.url.replace('file://', ''))}/../../data/${chatDataFileName}`;
+  const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ chatDataFileName }`;
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
@@ -1148,7 +1145,7 @@ const removeChatCommandMessage = ( data, chatFunctions, documentationFunctions )
 }
 
 const removeChatCommandPicture = ( data, chatFunctions, documentationFunctions ) => {
-  const dataFilePath = `${dirname(import.meta.url.replace('file://', ''))}/../../data/${chatDataFileName}`;
+  const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ chatDataFileName }`;
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 

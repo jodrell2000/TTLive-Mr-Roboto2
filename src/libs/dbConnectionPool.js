@@ -1,6 +1,6 @@
 import mysql from 'mysql'
 
-var pool = mysql.createPool( {
+const pool = mysql.createPool( {
   host: 'localhost',
   user: process.env.DBUSERNAME,
   password: process.env.DBPASSWORD,

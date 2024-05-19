@@ -5,6 +5,7 @@ import { commandIdentifier } from '../defaults/chatDefaults.js'
 import authModule from '../libs/auth.js';
 import auth from '../libs/auth.js';
 import countryLookup from 'country-code-lookup';
+import { logger } from "../utils/logging.js";
 
 let theUsersList = []; // object array of everyone in the room
 let afkPeople = []; //holds the userid of everyone who has used the /afk command
@@ -65,7 +66,7 @@ let functionStore = []; // store give RoboCoin callback functions
 const addRCOperation = ( before, coins ) => ( before || 0 ) + coins;
 const subtractRCOperation = ( before, coins ) => ( before || 0 ) - coins;
 
-const userFunctions = ( bot ) => {
+const userFunctions = ( ) => {
 
   function formatSeconds( seconds ) {
     return ( Math.floor( seconds / 60 ) ).toString() + ' minutes';
@@ -674,29 +675,29 @@ const userFunctions = ( bot ) => {
       }
     },
 
-    incrementSpamCounter: function ( userID, databaseFunctions ) {
+    incrementSpamCounter: async function ( userID, databaseFunctions ) {
       if ( this.userExists( userID ) ) {
         const key = "spamCount";
         const value = this.getUserSpamCount( userID );
-        this.storeUserData( userID, key, value, databaseFunctions )
+        await this.storeUserData( userID, key, value, databaseFunctions )
 
         if ( theUsersList[ this.getPositionOnUsersList( userID ) ][ 'spamTimer' ] !== null ) {
           clearTimeout( theUsersList[ this.getPositionOnUsersList( userID ) ][ 'spamTimer' ] );
-          this.resetUserSpamTimer( userID, databaseFunctions );
+          await this.resetUserSpamTimer( userID, databaseFunctions );
         }
 
-        theUsersList[ this.getPositionOnUsersList( userID ) ][ 'spamTimer' ] = setTimeout( function ( userID ) {
-          this.resetUsersSpamCount( userID, databaseFunctions );
+        theUsersList[ this.getPositionOnUsersList( userID ) ][ 'spamTimer' ] = setTimeout( async function ( userID ) {
+          await this.resetUsersSpamCount( userID, databaseFunctions );
         }.bind( this ), 10 * 1000 );
       }
     },
 
-    resetUserSpamTimer: function ( userID, databaseFunctions ) {
-      this.storeUserData( userID, "spamTimer", null, databaseFunctions )
+    resetUserSpamTimer: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, "spamTimer", null, databaseFunctions )
     },
 
-    resetUsersSpamCount: function ( userID, databaseFunctions ) {
-      this.storeUserData( userID, "spamCount", 0, databaseFunctions );
+    resetUsersSpamCount: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, "spamCount", 0, databaseFunctions );
     },
 
     getUserSpamCount: function ( userID ) {
@@ -1138,13 +1139,13 @@ const userFunctions = ( bot ) => {
       chatFunctions.botSpeak( '@' + this.getUsername( theUserID ) + ' you are marked as afk', data )
     },
 
-    removeUserFromAFKList: function ( data, chatFunctions ) {
+    removeUserFromAFKList: async function ( data, chatFunctions ) {
       const theUserID = this.whoSentTheCommand( data );
-      this.removeUserIDFromAFKArray( theUserID );
+      await this.removeUserIDFromAFKArray( theUserID );
       chatFunctions.botSpeak( '@' + this.getUsername( theUserID ) + ' you are no longer afk', data )
     },
 
-    removeUserIDFromAFKArray: function ( theUserID ) {
+    removeUserIDFromAFKArray: async function ( theUserID ) {
       const listPosition = afkPeople.indexOf( theUserID );
       afkPeople.splice( listPosition, 1 );
     },
@@ -1718,7 +1719,35 @@ const userFunctions = ( bot ) => {
       theUsersList.splice( 0, theUsersList.length );
     },
 
-    updateUser: function ( data, databaseFunctions ) {
+    updatedUserData: async function (jsonData, databaseFunctions ) {
+      // Parse the JSON data if it's a string
+      const data = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
+
+      // Check if the data has the statePatch array
+      if (data.statePatch && Array.isArray(data.statePatch)) {
+        // Iterate through the statePatch array
+        for (const patch of data.statePatch) {
+          // Check if the patch operation is "add" and it has a value
+          if (patch.op === 'add' && patch.value && patch.value.userProfile) {
+            const userProfile = patch.value.userProfile;
+            const user = {
+              name: userProfile.nickname,
+              userid: userProfile.uuid
+            };
+
+            try {
+              await this.updateUser(user, databaseFunctions);
+            } catch (error) {
+              console.error(`Failed to update user ${userProfile.nickname} (${userProfile.uuid}):`, error);
+            }
+          }
+        }
+      } else {
+        console.error('Invalid data format');
+      }
+    },
+    
+    updateUser: async function ( data, databaseFunctions ) {
       if ( typeof data.name === 'string' ) {
         let oldname = ''; // holds users old name if exists
         let queueNamePosition;
@@ -1733,7 +1762,7 @@ const userFunctions = ( bot ) => {
           if ( nameIndex !== -1 ) // if their userid was found in theUsersList
           {
             oldname = theUsersList[ nameIndex + 1 ];
-            this.storeUserData( data.userid, "username", data.name, databaseFunctions );
+            await this.storeUserData( data.userid, "username", data.name, databaseFunctions );
 
             if ( typeof oldname !== 'undefined' ) {
               queueNamePosition = userFunctions.queueName().indexOf( oldname );
@@ -1755,12 +1784,14 @@ const userFunctions = ( bot ) => {
                 afkPeople[ afkPeoplePosition ] = data.name;
               }
             }
+          } else {
+            await this.userJoinsRoom(data.userid, data.name, databaseFunctions)
           }
         }
       }
     },
 
-    deregisterUser: function ( userID, databaseFunctions ) {
+    deregisterUser: async function ( userID, databaseFunctions ) {
       //double check to make sure that if someone is on stage and they disconnect, that they are being removed
       //from the current Dj's array
       let checkIfStillInDjArray = djList.indexOf( userID );
@@ -1769,7 +1800,7 @@ const userFunctions = ( bot ) => {
       }
 
       if ( this.isUserAFK( userID ) ) {
-        this.removeUserIDFromAFKArray( userID );
+        await this.removeUserIDFromAFKArray( userID );
       }
 
       //removes people leaving the room in modpm still
@@ -1853,9 +1884,9 @@ const userFunctions = ( bot ) => {
       }
     },
 
-    addUserJoinedTime: function ( userID, databaseFunctions ) {
+    addUserJoinedTime: async function ( userID, databaseFunctions ) {
       if ( this.userExists( userID ) && !this.getUserJoinedRoom( userID ) ) {
-        this.storeUserData( userID, "joinTime", Date.now(), databaseFunctions )
+        await this.storeUserData( userID, "joinTime", Date.now(), databaseFunctions )
       }
     },
 
@@ -1863,31 +1894,31 @@ const userFunctions = ( bot ) => {
       return theUsersList.findIndex( ( { id } ) => id === userID )
     },
 
-    userJoinsRoom: function ( userID, username, databaseFunctions ) {
+    userJoinsRoom: async function ( userID, username, databaseFunctions ) {
       //adds users who join the room to the user list if their not already on the list
-      this.addUserToTheUsersList( userID, username, databaseFunctions );
+      await this.addUserToTheUsersList( userID, username, databaseFunctions );
 
       // if they've previously been in the room as a guest we won't have their name
       // best update it from the raw data that was passed into this function to be sure
-      this.updateUsername( userID, username, databaseFunctions );
+      await this.updateUsername( userID, username, databaseFunctions );
 
       //starts time for everyone that joins the room
-      this.addUserJoinedTime( userID, databaseFunctions );
+      await this.addUserJoinedTime( userID, databaseFunctions );
 
       //sets new persons spam count to zero
-      this.resetUsersSpamCount( userID, databaseFunctions );
+      await this.resetUsersSpamCount( userID, databaseFunctions );
 
       // remove the user from afk, just in case it was hanging around from a previous visit
       if ( this.isUserAFK( userID ) ) {
-        this.removeUserIDFromAFKArray( userID );
+        await this.removeUserIDFromAFKArray( userID );
       }
 
-      this.addUserIsHere( userID, databaseFunctions );
+      await this.addUserIsHere( userID, databaseFunctions );
     },
 
-    updateUsername: function ( userID, username, databaseFunctions ) {
+    updateUsername: async function ( userID, username, databaseFunctions ) {
       if ( this.userExists( userID ) ) {
-        this.storeUserData( userID, "username", username, databaseFunctions );
+        await this.storeUserData( userID, "username", username, databaseFunctions );
       }
     },
 
@@ -1897,9 +1928,9 @@ const userFunctions = ( bot ) => {
       }
     },
 
-    addUserIsHere: function ( userID, databaseFunctions ) {
+    addUserIsHere: async function ( userID, databaseFunctions ) {
       if ( this.userExists( userID ) ) {
-        this.storeUserData( userID, "here", true, databaseFunctions );
+        await this.storeUserData( userID, "here", true, databaseFunctions );
       }
     },
 
@@ -1920,7 +1951,7 @@ const userFunctions = ( bot ) => {
       return theUsersList.find( ( { id } ) => id === userID ) !== undefined;
     },
 
-    addUserToTheUsersList: function ( userID, username, databaseFunctions ) {
+    addUserToTheUsersList: async function ( userID, username, databaseFunctions ) {
       if ( !this.isUserInUsersList( userID ) ) {
         theUsersList.push( { id: userID, username: username } );
       }

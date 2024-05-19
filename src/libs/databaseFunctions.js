@@ -1,4 +1,4 @@
-import mysql from '../libs/dbConnectionPool.js'
+import pool from '../libs/dbConnectionPool.js'
 
 import dirname from "path"
 import fs from "fs"
@@ -13,7 +13,7 @@ const databaseFunctions = () => {
 
     runQuery: async function ( query, values ) {
       return new Promise( ( resolve, reject ) => {
-        mysql.pool.getConnection( ( ex, connection ) => {
+        pool.getConnection( ( ex, connection ) => {
           if ( ex ) {
             console.error( `Error acquiring connection from pool: ${ ex }` );
             reject( new Error( 'Error acquiring connection from pool' ) );
@@ -82,7 +82,7 @@ const databaseFunctions = () => {
       if ( userObject[ "email" ] !== undefined ) { email = userObject[ "email" ] }
       if ( userObject[ "password_hash" ] !== undefined ) { password_hash = userObject[ "password_hash" ] }
 
-      const query = `REPLACE
+      return `REPLACE
                          INTO users (id, userInfo, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke,
                                      currentPlayCount, totalPlayCount, joinedStage, firstIdleWarning,
                                      secondIdleWarning, spamCount, lastSnagged, region, BBBootTimestamp,
@@ -108,8 +108,6 @@ const databaseFunctions = () => {
                              "${ here }",
                              "${ password_hash }",
                              "${ email }");`;
-
-      return query;
 
     },
 
@@ -158,7 +156,8 @@ const databaseFunctions = () => {
     storeUserData: async function ( userObject ) {
       try {
         const userToSave = this.removeUnsavableDataFromUser( userObject );
-        await this.writeUserDataToDisk( userToSave );
+
+        //await this.writeUserDataToDisk( userToSave );
         await this.writeUserDataToDatabase( userToSave );
         return Promise.resolve(); // Resolve the promise
       } catch ( error ) {
@@ -233,8 +232,7 @@ const databaseFunctions = () => {
       const values = [ userID, before, after, numCoins, changeReason, changeID ];
 
       try {
-        const result = await this.runQuery( theQuery, values );
-        return result;
+        return await this.runQuery( theQuery, values );
       } catch ( error ) {
         console.error( 'Error in saveRoboCoinAudit:', error.message );
         // Handle the error as needed
@@ -404,8 +402,7 @@ const databaseFunctions = () => {
         .then( ( thisTrackPlayedTime ) => {
           return this.getTrackPlayedTime( trackID + 1 )
             .then( ( nextTrackPlayedTime ) => {
-              const theLength = nextTrackPlayedTime - thisTrackPlayedTime;
-              return theLength;
+              return nextTrackPlayedTime - thisTrackPlayedTime;
             } )
         } )
         .catch( ( ex ) => { console.error( "Something went wrong calculating the track length: " + ex ); } );
@@ -722,10 +719,10 @@ const databaseFunctions = () => {
                                     JOIN videoData v ON tp.videoData_id = v.id
                                     LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
                                     LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
-                           WHERE CONVERT_TZ(tp.whenPlayed, "UTC", "US/Central") BETWEEN ? AND ? AND
+                           WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                  tp.length > 60 AND
-                                 u.username != "Mr. Roboto" AND
-                                 DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, "UTC", "US/Central")) IN
+                                 u.username != 'Mr. Roboto' AND
+                                 DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                  (${ includeDays.join( ', ' ) })
                            GROUP BY COALESCE(v.artistDisplayName, v.artistName),
                                     COALESCE(v.trackDisplayName, v.trackName)
@@ -735,8 +732,7 @@ const databaseFunctions = () => {
       const values = [ startDate, endDate ];
 
       try {
-        const result = await this.runQuery( selectQuery, values );
-        return result;
+        return await this.runQuery( selectQuery, values );
       } catch ( error ) {
         console.error( error );
         throw error;
@@ -754,21 +750,20 @@ const databaseFunctions = () => {
                                     JOIN videoData v ON tp.videoData_id = v.id
                                     LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
                                     LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
-                           WHERE CONVERT_TZ(tp.whenPlayed, "UTC", "US/Central") BETWEEN ? AND ? AND
+                           WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                  tp.length > 60 AND
-                                 u.username != "Mr. Roboto" AND
-                                 DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, "UTC", "US/Central")) IN
+                                 u.username != 'Mr. Roboto' AND
+                                 DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                  (${ includeDays.join( ', ' ) })
                            GROUP BY COALESCE(v.artistDisplayName, v.artistName),
                                     COALESCE(v.trackDisplayName, v.trackName)
-                           ORDER BY 3 DESC, 4 ASC, 5 DESC
+                           ORDER BY 3 DESC, 4, 5 DESC
                            limit 15;`;
 
       const values = [ startDate, endDate ];
 
       try {
-        const result = await this.runQuery( selectQuery, values );
-        return result;
+        return await this.runQuery( selectQuery, values );
       } catch ( error ) {
         console.error( error );
         throw error;
@@ -785,10 +780,10 @@ const databaseFunctions = () => {
                                     JOIN videoData v ON tp.videoData_id = v.id
                                     LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
                                     LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
-                           WHERE CONVERT_TZ(tp.whenPlayed, "UTC", "US/Central") BETWEEN ? AND ? AND
+                           WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                  tp.length > 60 AND
-                                 u.username != "Mr. Roboto" AND
-                                 DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, "UTC", "US/Central")) IN
+                                 u.username != 'Mr. Roboto' AND
+                                 DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                  (${ includeDays.join( ', ' ) })
                            GROUP BY COALESCE(v.artistDisplayName, v.artistName),
                                     COALESCE(v.trackDisplayName, v.trackName)
@@ -798,8 +793,7 @@ const databaseFunctions = () => {
       const values = [ startDate, endDate ];
 
       try {
-        const result = await this.runQuery( selectQuery, values );
-        return result;
+        return await this.runQuery( selectQuery, values );
       } catch ( error ) {
         console.error( error );
         throw error;
@@ -820,10 +814,10 @@ const databaseFunctions = () => {
                                           JOIN videoData v ON tp.videoData_id = v.id
                                           LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
                                           LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
-                                 WHERE CONVERT_TZ(tp.whenPlayed, "UTC", "US/Central") BETWEEN ? AND ? AND
+                                 WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                        tp.length > 60 AND
-                                       u.username != "Mr. Roboto" AND
-                                       DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, "UTC", "US/Central")) IN
+                                       u.username != 'Mr. Roboto' AND
+                                       DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                        (${ includeDays.join( ', ' ) })
                                  GROUP BY tp.id, COALESCE(v.artistDisplayName, v.artistName)) trackPoints
                            GROUP BY Artist
@@ -833,8 +827,7 @@ const databaseFunctions = () => {
       const values = [ startDate, endDate ];
 
       try {
-        const result = await this.runQuery( selectQuery, values );
-        return result;
+        return await this.runQuery( selectQuery, values );
       } catch ( error ) {
         console.error( error );
         throw error;
@@ -844,17 +837,16 @@ const databaseFunctions = () => {
     async roomSummaryResults( startDate, endDate ) {
       const selectQuery = `SELECT COUNT(tp.id)           AS "plays",
                                   COUNT(DISTINCT (u.id)) AS "djs",
-                                  SUM(tp.upvotes)           "upvotes",
+                                  SUM(tp.upvotes)        AS "upvotes",
                                   SUM(tp.downvotes)      as "downvotes"
                            FROM tracksPlayed tp
                                     JOIN users u ON tp.djID = u.id
-                           WHERE CONVERT_TZ(tp.whenPlayed, "UTC", "US/Central") BETWEEN ? AND ? AND
-                                 u.username != "Mr. Roboto";`;
+                           WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
+                                 u.username != 'Mr. Roboto';`;
       const values = [ startDate, endDate ];
 
       try {
-        const result = await this.runQuery( selectQuery, values );
-        return result;
+        return await this.runQuery( selectQuery, values );
       } catch ( error ) {
         console.error( error );
         throw error;
@@ -874,7 +866,7 @@ const databaseFunctions = () => {
                                           JOIN videoData v ON tp.videoData_id = v.id
                                           LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
                                           LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
-                                 WHERE CONVERT_TZ(tp.whenPlayed, "UTC", "US/Central") BETWEEN ? AND ? AND
+                                 WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                        tp.length > 60
                                  GROUP BY tp.id, u.username) trackPoints
                            GROUP BY dj
@@ -883,8 +875,7 @@ const databaseFunctions = () => {
       const values = [ startDate, endDate ];
 
       try {
-        const result = await this.runQuery( selectQuery, values );
-        return result;
+        return await this.runQuery( selectQuery, values );
       } catch ( error ) {
         console.error( error );
         throw error;
@@ -935,13 +926,13 @@ const databaseFunctions = () => {
       }
     },
 
-    getChatPicture: async function ( command ) {
-      if ( await this.isChatCommand( command ) ) {
-        const selectQuery = 'SELECT ci.imageURL FROM chatImages ci WHERE command=?;';
-        const values = [ value ];
-
-      }
-    },
+    // getChatPicture: async function ( command ) {
+    //   if ( await this.isChatCommand( command ) ) {
+    //     const selectQuery = 'SELECT ci.imageURL FROM chatImages ci WHERE command=?;';
+    //     const values = [ value ];
+    //
+    //   }
+    // },
 
     // ========================================================
 

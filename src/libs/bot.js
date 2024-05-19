@@ -1,4 +1,4 @@
-import { SocketClient } from 'ttfm-socket'
+import { ServerMessageName, SocketClient, StatefulServerMessageName, StatelessServerMessageName } from 'ttfm-socket'
 import fastJson from 'fast-json-patch'
 
 import { joinChat, getMessages } from './cometchat.js'
@@ -10,7 +10,11 @@ export class Bot {
     this.lastMessageIDs = {}
   }
 
-  async connect() {
+  // ========================================================
+  // Connection functions
+  // ========================================================
+
+  async connect( userFunctions ) {
     logger.debug( 'Connecting to room' )
     await joinChat( process.env.ROOM_UUID )
 
@@ -20,7 +24,15 @@ export class Bot {
       roomUuid: process.env.ROOM_UUID
     } )
     this.state = connection.state
+    
+    userFunctions.resetUsersList()
   }
+  
+  async checkIfConnected() {
+    
+  }
+
+  // ========================================================
 
   async processNewMessages() {
     const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp )
@@ -43,16 +55,53 @@ export class Bot {
     }
   }
 
-  configureListeners() {
+  configureListeners( userFunctions, databaseFunctions ) {
     const self = this
     logger.debug( 'Setting up listeners' )
+
+    this.socket.on(StatelessServerMessageName.playedOneTimeAnimation, ( message ) => {
+      if ( message.params.animation === "jump") {
+        logger.debug( `User ${message.params.userUuid} jumped` )
+        handlers.jump(message.params.userUuid, process.env.ROOM_UUID)
+      }
+    });
+
     this.socket.on( 'statefulMessage', payload => {
       self.state = fastJson.applyPatch(
         self.state,
         payload.statePatch
       ).newDocument
-      logger.debug( `State updated for ${ payload.name }` )
-      if ( handlers[ payload.name ] ) handlers[ payload.name ]( self.state, process.env.ROOM_UUID )
+      logger.debug( `statefulMessage ${ payload.name }` )
+      logger.debug( `statefulMessage ${ JSON.stringify(payload) }` )
+      
+      if (payload.name === "updatedUserData" ) {
+        try {
+          userFunctions.updatedUserData( payload, databaseFunctions )
+            .then()
+        } catch ( error ) {
+          logger.error(`Error updating user: ${ error.message }`)
+        }
+
+      }
+      // if ( handlers[ payload.name ] ) handlers[ payload.name ]( self.state, process.env.ROOM_UUID )
     } )
+
+    this.socket.on( "statelessMessage", (message) => {
+      logger.debug( `statelessMessage--------------------------------------------` )
+      logger.debug( `statelessMessage: ${ JSON.stringify(message) }` )
+    });
+
+    this.socket.on( "serverMessage", (payload) => {
+      logger.debug( `serverMessage--------------------------------------------` )
+      logger.debug( `serverMessage ${ JSON.stringify(payload) }` )
+      if (payload.message.name === "userJoined") {
+        logger.debug( `userJoined ${ JSON.stringify(payload) }` )
+      }
+    });
+
+    this.socket.on( "error", (message) => {
+      logger.debug( `error--------------------------------------------` )
+      logger.debug( `error ${ JSON.stringify(message) }` )
+    });
   }
 }

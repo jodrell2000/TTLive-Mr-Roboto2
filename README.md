@@ -1,5 +1,11 @@
-# Turntable Live Artist Bot
-This is a bot that will join a hangout of your choosing as a fan of a specified artist and will answer questions asked directly to it and give some details about songs played by that artist.
+# Mr. Roboto V2
+This bot is forked from my bot https://github.com/jodrell2000/DaManagement and was originally written for the 
+website turntable.fm
+
+That bot was forked from Mr. Roboto https://github.com/jakewillsmith/roboto, which was in turn forked from chillybot: 
+https://github.com/samuri51/chillybot
+
+The bot is being ported over to tt.live
 
 ## Running locally
 Clone the source and run `npm install`. In developement you can run use `npm run dev` where the nodemon will automatically reestart your project on any changes.
@@ -8,7 +14,8 @@ Clone the source and run `npm install`. In developement you can run use `npm run
 You'll need a loacal instance of redis running. Please use [this guide](https://redis.io/docs/getting-started/).
 
 ### Configuring variables
-There are a number of varaibles needed to run this project and connect to the TTL Hangout. For help getting any of these values, please connect to the Turntable LIVE discord [here](https://discord.com/channels/812448637425680394/1006608336092938381/1007358948267008052)
+There are a number of variables needed to run this project and connect to the TTL Hangout. For help getting any of 
+these values, please connect to the Turntable LIVE discord [here](https://discord.com/channels/812448637425680394/1006608336092938381/1007358948267008052)
 ```
 NODE_ENV=development
 LOG_LEVEL=debug

@@ -4,6 +4,7 @@ import Storage from 'node-storage';
 import { dirname } from 'path';
 
 import { postMessage } from './cometchat.js'
+import { logger } from "../utils/logging.js";
 
 const chatDataFileName = process.env.CHATDATA;
 const room = process.env.ROOM_UUID;
@@ -11,12 +12,7 @@ const room = process.env.ROOM_UUID;
 const chatFunctions = ( roomDefaults ) => {
 
   return {
-    botSpeak: function ( message, data, publicChat, recipient ) {
-      console.group( "botSpeak:" );
-      console.log( "message;" + message )
-      console.log( "data;" + JSON.stringify( data ) )
-      console.log( "publicChat;" + publicChat )
-      console.log( "recipient;" + recipient )
+    botSpeak: async function ( message, data, publicChat, recipient ) {
       let pmCommand;
 
       if ( recipient === undefined && data !== null ) {
@@ -27,35 +23,38 @@ const chatFunctions = ( roomDefaults ) => {
       }
 
       if ( pmCommand === true && publicChat === undefined ) {
-        this.botPM( message, recipient );
+        await this.botPM( message, recipient );
       } else {
-        this.botChat( message ).then();
+        await this.botChat( message ).then();
       }
-      console.groupEnd();
     },
 
+    botSpeakPicture: async function ( theMessage, theImage ) {
+      return await postMessage( {
+        room,
+        message: theMessage,
+        images: theImage
+      } )
+    },
+    
     botChat: async function ( message ) {
-      console.group( "botChat:" );
-      console.log( "message;" + message )
-      console.groupEnd();
-
       return await postMessage( {
         room,
         message: message
       } )
     },
 
-    botPM: function ( message, user ) {
+    botPM: async function ( message, user ) {
       bot.pm( message, user );
     },
 
-    buildUserToUserRandomMessage: function ( userFunctions, senderID, theMessage, receiverID ) {
-      const senderUsername = userFunctions.getUsername( senderID );
+    buildUserToUserRandomMessage: async function ( userFunctions, senderID, theMessage, receiverID ) {
+      const senderUsername = await userFunctions.getUsername( senderID );
       if ( senderUsername ) {
         theMessage = theMessage.replace( "@senderUsername", "@" + senderUsername );
       }
 
-      const receiverUsername = userFunctions.getUsername( receiverID );
+      const receiverUsername = await userFunctions.getUsername( receiverID );
       if ( receiverUsername ) {
         theMessage = theMessage.replace( "@receiverUsername", "@" + receiverUsername );
       }
@@ -69,49 +68,49 @@ const chatFunctions = ( roomDefaults ) => {
     // Misc chat functions
     // ========================================================
 
-    isThereADJ: function ( userFunctions, data ) {
-      const receiverID = userFunctions.getCurrentDJID();
-      const senderID = userFunctions.whoSentTheCommand( data );
+    isThereADJ: async function ( userFunctions, data ) {
+      const receiverID = await userFunctions.getCurrentDJID( data );
+      const senderID = await userFunctions.whoSentTheCommand( data );
 
       if ( receiverID === null ) {
-        this.botSpeak( "@" + userFunctions.getUsername( senderID ) + " you can't send the DJ a message if there's no DJ?!?", data, true );
+        await this.botSpeak( "@" + await userFunctions.getUsername( senderID ) + " you can't send the DJ a message if" +
+          " there's no DJ?!?", data, true );
         return false;
       } else {
         return true;
       }
     },
 
-    textMessageTheDJ: function ( senderID, receiverID, messageArray, data, userFunctions ) {
+    textMessageTheDJ: async function ( senderID, receiverID, messageArray, data, userFunctions ) {
       if ( this.isThereADJ( userFunctions, data ) ) {
         const randomMessage = messageArray[ Math.floor( Math.random() * messageArray.length ) ];
-        const thisMessage = this.buildUserToUserRandomMessage( userFunctions, senderID, randomMessage, receiverID );
+        const thisMessage = await this.buildUserToUserRandomMessage( userFunctions, senderID, randomMessage, receiverID );
 
-        this.botSpeak( thisMessage, data, true );
+        await this.botSpeak( thisMessage, data, true );
       }
     },
 
-    pictureMessageTheDJ: function ( senderID, receiverID, messageArray, pictureArray, data, userFunctions ) {
-      if ( this.isThereADJ( userFunctions, data ) ) {
+    pictureMessageTheDJ: async function ( senderID, receiverID, messageArray, pictureArray, data, userFunctions ) {
+      if ( await this.isThereADJ( userFunctions, data ) ) {
         const randomMessage = messageArray[ Math.floor( Math.random() * messageArray.length ) ];
-        const randomPic = pictureArray[ Math.floor( Math.random() * pictureArray.length ) ];
-        const thisMessage = this.buildUserToUserRandomMessage( userFunctions, senderID, randomMessage, receiverID );
+        const randomPic = [pictureArray[ Math.floor( Math.random() * pictureArray.length ) ] ];
+        const thisMessage = await this.buildUserToUserRandomMessage( userFunctions, senderID, randomMessage, receiverID );
 
-        this.botSpeak( thisMessage, data, true );
-        this.botSpeak( randomPic, data, true );
+        await this.botSpeakPicture( thisMessage, randomPic );
       }
     },
 
-    dynamicChatCommand: function ( data, userFunctions, theCommand, databaseFunctions ) {
-      if ( this.isThereADJ( userFunctions, data ) ) {
-        const receiverID = userFunctions.getCurrentDJID();
-        const senderID = userFunctions.whoSentTheCommand( data );
+    dynamicChatCommand: async function ( data, userFunctions, theCommand, databaseFunctions ) {
+      if ( await this.isThereADJ( userFunctions, data ) ) {
+        const receiverID = await userFunctions.getCurrentDJID( data );
+        const senderID = await userFunctions.whoSentTheCommand( data );
 
-        let thePictures = this.getDynamicChatPictures( theCommand );
-        let theMessages = this.getDynamicChatMessages( theCommand );
+        let thePictures = await this.getDynamicChatPictures( theCommand );
+        let theMessages = await this.getDynamicChatMessages( theCommand );
         if ( thePictures === undefined || thePictures.length === 0 ) {
-          this.textMessageTheDJ( senderID, receiverID, theMessages, data, userFunctions )
+          await this.textMessageTheDJ( senderID, receiverID, theMessages, data, userFunctions )
         } else {
-          this.pictureMessageTheDJ( senderID, receiverID, theMessages, thePictures, data, userFunctions )
+          await this.pictureMessageTheDJ( senderID, receiverID, theMessages, thePictures, data, userFunctions )
         }
 
         this.countThisCommand( databaseFunctions, theCommand )
@@ -130,27 +129,27 @@ const chatFunctions = ( roomDefaults ) => {
         } )
     },
 
-    getDynamicChatMessages: function ( theCommand ) {
-      const store = this.getChatCommandData();
+    getDynamicChatMessages: async function ( theCommand ) {
+      const store = await this.getChatCommandData();
       return store.get( `chatMessages.${ theCommand }.messages` );
     },
 
-    getDynamicChatPictures: function ( theCommand ) {
-      const store = this.getChatCommandData();
+    getDynamicChatPictures: async function ( theCommand ) {
+      const store = await this.getChatCommandData();
       return store.get( `chatMessages.${ theCommand }.pictures` );
     },
 
-    getDynamicChatCommands: function () {
-      const store = this.getChatCommandData();
+    getDynamicChatCommands: async function () {
+      const store = await this.getChatCommandData();
       return store.get( 'chatMessages' );
     },
 
-    getChatCommandData: function () {
+    getChatCommandData: async function () {
       return this.returnStore( chatDataFileName );
     },
 
-    returnStore: function ( filename ) {
-      const dataFilePath = `${ dirname( require.main.filename ) }/data/${ filename }`;
+    returnStore: async function ( filename ) {
+      const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ filename }`;
       return new Storage( dataFilePath );
     },
 
@@ -166,37 +165,37 @@ const chatFunctions = ( roomDefaults ) => {
 
       const readInOrder = async () => {
         for ( let messageLoop = 0; messageLoop < messageVariable[ randomMessageNumber ].length; messageLoop++ ) {
-          this.botSpeak( messageVariable[ randomMessageNumber ][ messageLoop ][ 0 ], data );
+          await this.botSpeak( messageVariable[ randomMessageNumber ][ messageLoop ][ 0 ], data );
           await sleep( messageVariable[ randomMessageNumber ][ messageLoop ][ 1 ] )
         }
 
         const randomPic = pictureVariable[ Math.floor( Math.random() * pictureVariable.length ) ];
-        this.botSpeak( randomPic, data );
+        await this.botSpeakPicture( "",randomPic );
       }
-      readInOrder();
+      readInOrder().then( );
     },
 
-    coinflip: function ( data, userFunctions ) {
+    coinflip: async function ( data, userFunctions ) {
       const theUsername = userFunctions.getUsername( data.userid )
       let randomNumber = Math.random();
       if ( randomNumber === 0.5 ) {
-        this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...an edge?!?', data, true );
+        await this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...an edge?!?', data, true );
       } else {
         let y = Math.ceil( randomNumber * 2 );
         switch ( y ) {
           case 1:
-            this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...heads', data, true );
+            await this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...heads', data, true );
             break;
           case 2:
-            this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...tails', data, true );
+            await this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...tails', data, true );
             break;
         }
       }
     },
 
-    dice: function ( data, args, userFunctions ) {
+    dice: async function ( data, args, userFunctions ) {
       if ( args.length < 2 ) {
-        this.botSpeak( `You didn't tell me how many dice to roll and how many sides they have. Check "/help dice" for more info`, data );
+        await this.botSpeak( `You didn't tell me how many dice to roll and how many sides they have. Check "/help dice" for more info`, data );
         return;
       }
 
@@ -205,32 +204,32 @@ const chatFunctions = ( roomDefaults ) => {
       const diceType = args[ 1 ].split( "d" )[ 1 ];
 
       if ( !diceType ) {
-        this.botSpeak( `The 2nd number must have a "d" before it. Check "/help dice" for more info`, data );
+        await this.botSpeak( `The 2nd number must have a "d" before it. Check "/help dice" for more info`, data );
         return;
       }
 
       if ( !+diceCount || !+diceType ) {
-        this.botSpeak( `Unable to read non-numeric values`, data );
+        await this.botSpeak( `Unable to read non-numeric values`, data );
         return;
       }
 
       if ( diceCount < 1 ) {
-        this.botSpeak( `You must roll at least 1 die`, data );
+        await this.botSpeak( `You must roll at least 1 die`, data );
         return;
       }
 
       if ( diceCount > 100 ) {
-        this.botSpeak( `There's a max of 100 dice`, data );
+        await this.botSpeak( `There's a max of 100 dice`, data );
         return;
       }
 
       if ( diceType < 3 ) {
-        this.botSpeak( `These dice need at least 3 sides, otherwise, use coinflip`, data );
+        await this.botSpeak( `These dice need at least 3 sides, otherwise, use coinflip`, data );
         return;
       }
 
       if ( diceType > 100 ) {
-        this.botSpeak( `These dice have a max of 100 sides`, data );
+        await this.botSpeak( `These dice have a max of 100 sides`, data );
         return;
       }
 
@@ -246,17 +245,17 @@ const chatFunctions = ( roomDefaults ) => {
 
       theMessage = theMessage.substring( 0, theMessage.length - 2 );
       theMessage = theMessage + " for a total of " + theCount;
-      this.botSpeak( theMessage, data );
+      await this.botSpeak( theMessage, data );
     },
 
-    ventriloquistCommand: function ( data, args ) {
+    ventriloquistCommand: async function ( data, args ) {
       let theMessage = '';
       for ( let wordLoop = 0; wordLoop < args.length; wordLoop++ ) {
         theMessage += args[ wordLoop ] + ' ';
       }
       theMessage = theMessage.substring( 0, theMessage.length - 1 );
 
-      this.botSpeak( theMessage, data, true );
+      await this.botSpeak( theMessage, data, true );
     },
 
     // ========================================================
@@ -291,8 +290,8 @@ const chatFunctions = ( roomDefaults ) => {
           theMessage = theMessage.replace( "@roomName", roomFunctions.roomName() );
 
           // Delay the execution of the greeting
-          setTimeout( () => {
-            this.botSpeak( theMessage, data, roomFunctions.greetInPublic(), userID );
+          setTimeout( async () => {
+            await this.botSpeak( theMessage, data, roomFunctions.greetInPublic(), userID );
           }, 2 * 1000 ); // seconds * 1000 to convert to milliseconds
         }
       }
@@ -313,7 +312,7 @@ const chatFunctions = ( roomDefaults ) => {
         }
 
         if ( botFunctions.readSongStats() ) {
-          this.botSpeak( 'Artist: ' + artistName + '\nTitle: ' + trackName +
+          await this.botSpeak( 'Artist: ' + artistName + '\nTitle: ' + trackName +
             '\nStats: :thumbsup: ' + songFunctions.previousUpVotes() +
             ' :thumbsdown: ' + songFunctions.previousDownVotes() +
             ' :heart:' + songFunctions.previousSnags(), data );
@@ -323,14 +322,14 @@ const chatFunctions = ( roomDefaults ) => {
       }
     },
 
-    readPlaylistStats: function ( data ) {
+    readPlaylistStats: async function ( data ) {
       if ( botDefaults.botPlaylist !== null ) {
-        this.botSpeak( 'There are currently ' + botDefaults.botPlaylist.length + ' songs in my playlist.', data );
+        await this.botSpeak( 'There are currently ' + botDefaults.botPlaylist.length + ' songs in my playlist.', data );
       }
     },
 
-    overPlayLimit: function ( data, username, playLimit ) {
-      this.botSpeak( '@' + username + ' the  playlimit is currently ' + playLimit + '. Time for another DJ.', data );
+    overPlayLimit: async function ( data, username, playLimit ) {
+      await this.botSpeak( '@' + username + ' the  playlimit is currently ' + playLimit + '. Time for another DJ.', data );
     },
 
     eventMessageIterator: function ( botFunctions, userFunctions ) {

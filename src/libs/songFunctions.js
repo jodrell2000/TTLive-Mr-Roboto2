@@ -8,6 +8,7 @@ let album = null; // info for the currently playing song, so default to null
 let genre = null; // info for the currently playing song, so default to null
 let artist = null; // info for the currently playing song, so default to null
 let previousArtist = null; // info for the currently playing song, so default to null
+let previousDJID = null;
 let getSong = null; // info for the currently playing song, so default to null
 let dj = null; // info for the currently playing song, so default to null
 let ytid = null; // youTube ID of the video, used to check the regions
@@ -173,6 +174,10 @@ const songFunctions = () => {
     previousSnags: () => previousSongStats[ 'snags' ],
     previousArtist: () => previousArtist,
     previousTrack: () => previousSong,
+    previousDJID: () => previousDJID,
+    setPreviousArtist: (artist) => { previousArtist = artist; },
+    setPreviousTrack: (track) => { previousSong = track; },
+    setPreviousDJID: (uuid) => { previousDJID = uuid; },
 
     grabSongStats: function () {
       previousSongStats[ 'upvotes' ] = upVotes;
@@ -186,13 +191,12 @@ const songFunctions = () => {
       previousArtist = artist;
       previousSong = song;
 
-      song = current_song.metadata.song;
-      album = current_song.metadata.album;
-      genre = current_song.metadata.genre;
-      artist = current_song.metadata.artist;
-      getSong = current_song._id;
-      dj = current_song.djname;
-      ytid = current_song.metadata.ytid;
+      song = current_song.nowPlaying.song.trackName;
+      album = current_song.nowPlaying.song.albumId;
+      genre = current_song.nowPlaying.song.genre;
+      artist = current_song.nowPlaying.song.artistName;
+      dj = current_song.djs[0].uuid;
+      ytid = current_song.nowPlaying.song.musicProviders;
     },
 
     recordUpVotes: function ( data ) {
@@ -255,8 +259,8 @@ const songFunctions = () => {
     },
 
     startSongWatchdog( data, userFunctions ) {
-      const length = data.room.metadata.current_song.metadata.length;
-      const watchedDJ = userFunctions.getCurrentDJID();
+      const length = data.nowPlaying.song.duration;
+      const watchedDJ = userFunctions.getCurrentDJID( data );
 
       // Set a new watchdog timer for the current song.
       curSongWatchdog = setTimeout( function () {

@@ -14,7 +14,8 @@ import botFunctions from '../libs/botFunctions.js'
 
 
 export default async ( payload, room ) => {
-  logger.info( { sender: payload.senderName, message: payload.message, room: room } )
+  //logger.debug(`message.js payload: ${JSON.stringify(payload)}`)
+  logger.info( `message.js: sender: ${payload.senderName}, message: ${payload.message}, room: ${room}` )
   
   if ( await commandFunctions.wasThisACommand(payload.message) ) {
     await commandFunctions.parseCommands( payload, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions );

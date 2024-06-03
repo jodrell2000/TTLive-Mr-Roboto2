@@ -2,6 +2,7 @@ import pool from '../libs/dbConnectionPool.js'
 
 import dirname from "path"
 import fs from "fs"
+import { logger } from "../utils/logging.js";
 
 const databaseFunctions = () => {
 
@@ -83,31 +84,31 @@ const databaseFunctions = () => {
       if ( userObject[ "password_hash" ] !== undefined ) { password_hash = userObject[ "password_hash" ] }
 
       return `REPLACE
-                         INTO users (id, userInfo, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke,
-                                     currentPlayCount, totalPlayCount, joinedStage, firstIdleWarning,
-                                     secondIdleWarning, spamCount, lastSnagged, region, BBBootTimestamp,
-                                     noiceCount, propsCount, RoboCoins, here, password_hash, email)
-                     VALUES ("${ id }", '${ userInfo }', "${ username }",
-                             ${ moderator },
-                             ${ joinTime },
-                             "${ currentDJ }",
-                             ${ lastVoted },
-                             ${ lastSpoke },
-                             ${ currentPlayCount },
-                             ${ totalPlayCount },
-                             ${ joinedStage },
-                             "${ firstIdleWarning }",
-                             "${ secondIdleWarning }",
-                             ${ spamCount },
-                             ${ lastSnagged },
-                             "${ region }",
-                             ${ BBBootTimestamp },
-                             ${ noiceCount },
-                             ${ propsCount },
-                             ${ RoboCoins },
-                             "${ here }",
-                             "${ password_hash }",
-                             "${ email }");`;
+                  INTO users (id, userInfo, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke,
+                              currentPlayCount, totalPlayCount, joinedStage, firstIdleWarning,
+                              secondIdleWarning, spamCount, lastSnagged, region, BBBootTimestamp,
+                              noiceCount, propsCount, RoboCoins, here, password_hash, email)
+              VALUES ("${ id }", '${ userInfo }', "${ username }",
+                      ${ moderator },
+                      ${ joinTime },
+                      "${ currentDJ }",
+                      ${ lastVoted },
+                      ${ lastSpoke },
+                      ${ currentPlayCount },
+                      ${ totalPlayCount },
+                      ${ joinedStage },
+                      "${ firstIdleWarning }",
+                      "${ secondIdleWarning }",
+                      ${ spamCount },
+                      ${ lastSnagged },
+                      "${ region }",
+                      ${ BBBootTimestamp },
+                      ${ noiceCount },
+                      ${ propsCount },
+                      ${ RoboCoins },
+                      "${ here }",
+                      "${ password_hash }",
+                      "${ email }");`;
 
     },
 
@@ -262,15 +263,18 @@ const databaseFunctions = () => {
     // Song Data Functions
     // ========================================================
 
-    saveTrackData: function ( djID, songData ) {
+    saveTrackData: async function ( djID, songData ) {
       this.saveTrackDataOld( djID, songData );
-      this.saveYouTubeTrackData( djID, songData );
+      await this.saveYouTubeTrackData( djID, songData );
     },
 
     saveYouTubeTrackData: async function ( djID, songData ) {
-      const videoData_id = songData.metadata.ytid || songData.metadata.scid;
-      const artist = songData.metadata.artist;
-      const song = songData.metadata.song;
+      const videoData_id = songData.musicProviders.youtube || songData.musicProviders.apple;
+      const artist = songData.artistName;
+      const song = songData.trackName;
+      logger.debug(`videoData_id: ${videoData_id}`)
+      logger.debug(`artist: ${artist}`)
+      logger.debug(`song: ${song}`)
 
       const exists = await this.checkVideoDataExists( videoData_id );
 
@@ -296,10 +300,10 @@ const databaseFunctions = () => {
     },
 
     saveTrackDataOld: function ( djID, songData ) {
-      const videoData_id = songData.metadata.ytid || songData.metadata.scid;
-      return this.getArtistID( songData.metadata.artist )
+      const videoData_id = songData.musicProviders.youtube || songData.musicProviders.apple;
+      return this.getArtistID( songData.artistName )
         .then( ( artistID ) => {
-          this.getTrackID( songData.metadata.song )
+          this.getTrackID( songData.trackName )
             .then( ( trackID ) => {
               let theQuery = "INSERT INTO tracksPlayed (artistID, trackID, djID, videoData_id) VALUES (?, ?, ?, ?);"
               let values = [ artistID, trackID, djID, videoData_id ];

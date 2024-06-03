@@ -731,11 +731,6 @@ const commandFunctions = () => {
   return {
 
     wasThisACommand: async function ( text ) {
-      console.group( "wasThisACommand" );
-      console.log( 'commandIdentifier:' + commandIdentifier )
-      console.log( 'text:' + text )
-      console.log( 'text type:' + typeof text )
-
       if ( typeof text !== 'string' ) {
         return false;
       }
@@ -749,14 +744,10 @@ const commandFunctions = () => {
 
       // check if this was formatted as a command
       const commandString = "^" + commandIdentifier;
-      console.groupEnd();
       return !!text.match( commandString );
     },
 
     getCommandAndArguments: function ( text, allCommands ) {
-      console.group( "getCommandAndArguments" );
-
-      console.log( "text:" + text )
       const [ sentCommand, ...args ] = text.split( " " );
       let dynamic = false;
 
@@ -785,7 +776,6 @@ const commandFunctions = () => {
           dynamic = true;
         }
       }
-      console.groupEnd();
 
       if ( commandObj ) {
         const moderatorOnly = !!allModeratorCommands[ theCommand ];
@@ -798,9 +788,7 @@ const commandFunctions = () => {
     },
 
     // parseCommands: function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions ) {
-    parseCommands: function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions ) {
-      console.group( "parseCommands" );
-      console.log( "data:" + JSON.stringify( data ) )
+    parseCommands: async function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions ) {
       let senderID;
 
       // if ( data.command === "pmmed" ) {
@@ -811,9 +799,9 @@ const commandFunctions = () => {
 
       const [ command, args, moderatorOnly ] = this.getCommandAndArguments( data.message, allCommands );
       if ( moderatorOnly && !userFunctions.isUserModerator( senderID ) ) {
-        chatFunctions.botSpeak( "Sorry, that function is only available to moderators", data );
+        await chatFunctions.botSpeak( "Sorry, that function is only available to moderators", data );
       } else if ( args === 'dynamicChat' ) {
-        chatFunctions.dynamicChatCommand( data, userFunctions, command, databaseFunctions );
+        await chatFunctions.dynamicChatCommand( data, userFunctions, command, databaseFunctions );
       } else if ( command ) {
         command.call( null, {
           data,
@@ -830,9 +818,9 @@ const commandFunctions = () => {
           // mlFunctions,
         } );
       } else {
-        chatFunctions.botSpeak( "Sorry, that's not a command I recognise. Try " + commandIdentifier + "list to find out more.", data );
+        await chatFunctions.botSpeak( "Sorry, that's not a command I recognise. Try " + commandIdentifier + "list to" +
+          " find out more.", data );
       }
-      console.groupEnd();
     },
 
     isCoreCommand: function ( command ) {
@@ -879,17 +867,11 @@ const commandFunctions = () => {
     },
 
     checkForAlias: function ( passedArgument ) {
-      console.group( "checkForAlias:" )
-      console.log( "passedArgument:" + passedArgument );
       const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ aliasDataFileName }`;
-      console.log( "dataFilePath:" + dataFilePath );
       const store = new Storage( dataFilePath );
       const theAliases = store.get( 'aliases' );
 
-      console.log( "theAliases:" + JSON.stringify( theAliases ) );
-
       let findAlias = theAliases[ passedArgument ];
-      console.groupEnd();
       return findAlias ? findAlias.command : undefined;
     }
   }

@@ -1,11 +1,13 @@
 import message from './message.js'
 import playedSong from './playedSong.js'
 import userJoined from './userJoined.js'
-import jump from "./jump.js";
+import playedOneTimeAnimation from "./playedOneTimeAnimation.js";
 
-export const handlers = {
+const handlers = {
   message,
   playedSong,
   userJoined,
-  jump
+  playedOneTimeAnimation
 }
+
+export default handlers;

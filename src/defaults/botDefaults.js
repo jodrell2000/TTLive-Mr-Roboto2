@@ -11,4 +11,9 @@ export default {
   feart: true,
 
   botPlaylist: null, //the playlist for the bot
+  
+  headers: {
+    'accept': 'application/json',
+    'Authorization': `Bearer ${process.env.TT_LIVE_AUTHTOKEN}`
+  }
 }

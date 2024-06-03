@@ -2,6 +2,8 @@ import roomDefaults from '../defaults/roomDefaults.js'
 import botDefaults from '../defaults/botDefaults.js'
 import musicDefaults from '../defaults/musicDefaults.js'
 import { commandIdentifier } from '../defaults/chatDefaults.js'
+import axios from 'axios'
+
 
 import authModule from '../libs/auth.js'
 
@@ -183,9 +185,9 @@ const botFunctions = () => {
       doInOrder();
     },
 
-    stageDiveCommand: function ( data, chatFunctions, userFunctions, messageVariable ) {
+    stageDiveCommand: async function ( data, chatFunctions, userFunctions, messageVariable ) {
       const userID = userFunctions.whoSentTheCommand( data );
-      const receiverID = userFunctions.getCurrentDJID();
+      const receiverID = await userFunctions.getCurrentDJID( data );
 
       if ( userFunctions.isUserIDOnStage( userID ) ) {
         const randomMessage = messageVariable[ Math.floor( Math.random() * messageVariable.length ) ];
@@ -220,8 +222,8 @@ const botFunctions = () => {
       console.groupEnd();
     },
 
-    removeDJCommand: function ( data, theMessage, userFunctions, chatFunctions ) {
-      const djID = userFunctions.getCurrentDJID();
+    removeDJCommand: async function ( data, theMessage, userFunctions, chatFunctions ) {
+      const djID = await userFunctions.getCurrentDJID( data );
 
       if ( theMessage !== '' ) {
         const djName = userFunctions.getUsername( djID );
@@ -233,8 +235,8 @@ const botFunctions = () => {
       userFunctions.removeDJ( djID, 'The removeDJ command had been issued: ' + theMessage );
     },
 
-    informDJCommand: function ( data, theMessage, userFunctions, chatFunctions ) {
-      const djID = userFunctions.getCurrentDJID();
+    informDJCommand: async function ( data, theMessage, userFunctions, chatFunctions ) {
+      const djID = await userFunctions.getCurrentDJID( data );
 
       if ( theMessage !== '' ) {
         theMessage = '@' + userFunctions.getUsername( djID ) + ', ' + theMessage
@@ -253,6 +255,22 @@ const botFunctions = () => {
       bot.vote( 'down' );
     },
 
+    // ========================================================
+
+    upVote: async function ( roomBot ) {
+      // const url = `https://api.prod.tt.fm/users/profiles?users=${userID}`;
+      //
+      // const response = await axios.get(url, { headers });
+      //
+      // roomBot.action<AddDjAction>(ActionName.voteOnSong, { roomUuid: process.env.ROOM_UUID, userUuid:
+      // process.env.USERID, songVotes: upvote })
+      
+    },
+    
+    downvote: async function () {
+      
+    },
+    
     // ========================================================
 
     async readFavouriteArtist( data, chatFunctions, databaseFunctions ) {
@@ -580,8 +598,8 @@ const botFunctions = () => {
     },
 
     checkOnNewSong: function ( data, roomFunctions, songFunctions, userFunctions ) {
-      const length = data.room.metadata.current_song.metadata.length;
-      const theDJID = data.room.metadata.current_dj;
+      const length = data.nowPlaying.song.duration
+      const theDJID = data.djs[0].uuid
       const masterIndex = userFunctions.masterIds().indexOf( theDJID ); //used to tell whether current dj is on the master id's list or not
       const djName = userFunctions.getUsername( theDJID );
 

@@ -5,6 +5,8 @@ import roomDefaults from '../defaults/roomDefaults.js'
 import musicDefaults from '../defaults/musicDefaults.js'
 import botDefaults from '../defaults/botDefaults.js'
 import chatCommandItems from '../defaults/chatCommandItems.js'
+import axios from "axios";
+import { logger } from "../utils/logging.js";
 
 let djCount = null; //the number of dj's on stage, gets reset every song
 let bannedArtistsMatcher = ''; //holds the regular expression for banned artist / song matching
@@ -54,6 +56,28 @@ const roomFunctions = () => {
       const timer = ms => new Promise( res => setTimeout( res, ms ) );
       return timer;
     },
+
+    // ========================================================
+    // Room Functions
+    // ========================================================
+
+    getRoomData: async function (roomUUID) {
+      const url = `https://rooms.prod.tt.fm/rooms/uuid/${roomUUID}`;
+      const headers = {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${process.env.TT_LIVE_AUTHTOKEN}`
+      };
+
+      try {
+        const { data } = await axios.get(url, { headers });
+        return data;
+      } catch (error) {
+        console.error('Error fetching room data:', error);
+        throw error;
+      }
+    },
+
+    // ========================================================
 
     // ========================================================
     // Greeting Functions

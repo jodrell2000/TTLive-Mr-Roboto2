@@ -1,20 +1,56 @@
 import { postMessage } from '../libs/cometchat.js'
+import { logger } from "../utils/logging.js";
+import roomDefaults from "../defaults/roomDefaults.js";
 // import { getTrackFact } from '../libs/ai.js'
 // let merchCount = 0
 // let songDetailCount = 0
 
-export default async ( payload, room ) => {
-  // console.log('payload:' + JSON.stringify(payload))
+export default async ( data, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions ) => {
+  logger.debug( `================== playedSong start ====================` )
+  logger.debug( `payload: ${ JSON.stringify( data ) }` )
+  logger.debug( `================== playedSong end ====================` )
 
-  const theMessage = 'Now playing ' + payload.nowPlaying.song.trackName + ' by ' + payload.nowPlaying.song.artistName
+  songFunctions.resetVoteCountSkip();
+  songFunctions.resetVotesLeft( roomDefaults.HowManyVotesToSkip );
+  songFunctions.resetUpVotes();
+  songFunctions.resetDownVotes();
+  songFunctions.resetSnagCount();
+  songFunctions.resetVoteSnagging();
+  botFunctions.clearAllTimers( userFunctions, roomFunctions, songFunctions );
+  if ( data.nowPlaying ) {
+    songFunctions.getSongTags( data )
+  }
+  roomFunctions.setDJCount( data.djs.length ); //the number of djs on stage
+  
+  let djID;
 
-  const previousTrackName = payload.nowPlaying.song.trackName
-  const previousArtistName = payload.nowPlaying.song.artistName
+  if ( data.djs.length > 0 ) {
+    djID = data.djs[0].uuid;
+    await userFunctions.setPreviousDJID( userFunctions.getCurrentDJID() )
+    await userFunctions.setCurrentDJID( djID );
+  
+    if ( userFunctions.getPreviousDJID() ) {
+      const previousDJName = await userFunctions.getUsername( userFunctions.getPreviousDJID() )
+      const previousArtist = songFunctions.previousArtist()
+      const previousTrack = songFunctions.previousTrack()
+      if ( previousDJName && previousArtist && previousTrack ) {
+        const previousMessage = `${ previousDJName } played...\n${ previousTrack } by ${ previousArtist }`
+        await chatFunctions.botSpeak( previousMessage, data )
+      }
+    }
+  }
 
-  return await postMessage( {
-    room,
-    message: theMessage
-  } )
+
+  if ( data.nowPlaying && data.nowPlaying.song ) {
+    songFunctions.setPreviousTrack( data.nowPlaying.song.trackName )
+    songFunctions.setPreviousArtist( data.nowPlaying.song.artistName )
+    if ( data.djs.length > 0 ) {
+      userFunctions.setPreviousDJID( djID )
+    }
+    const theMessage = 'Now playing ' + data.nowPlaying.song.trackName + ' by ' + data.nowPlaying.song.artistName
+    await chatFunctions.botSpeak( theMessage, data )
+  }
+}
 
   // if (songDetailCount++ > process.env.ANNOUNCE_SONG_DETAILS_COUNT) {
   //   songDetailCount = 0
@@ -45,4 +81,4 @@ export default async ( payload, room ) => {
   //     // }
   //   }
   // }
-}
+

@@ -1,11 +1,14 @@
 import musicDefaults from '../defaults/musicDefaults.js'
 import roomDefaults from '../defaults/roomDefaults.js'
+import moment from 'moment';
 import { commandIdentifier } from '../defaults/chatDefaults.js'
 
 import authModule from '../libs/auth.js';
 import auth from '../libs/auth.js';
 import countryLookup from 'country-code-lookup';
 import { logger } from "../utils/logging.js";
+import { postMessage } from "./cometchat.js";
+import axios from "axios";
 
 let theUsersList = []; // object array of everyone in the room
 let afkPeople = []; //holds the userid of everyone who has used the /afk command
@@ -61,12 +64,15 @@ let djIdleLimit = roomDefaults.djIdleLimitThresholds[ 0 ]; // how long can DJs b
 let idleFirstWarningTime = roomDefaults.djIdleLimitThresholds[ 1 ];
 let idleSecondWarningTime = roomDefaults.djIdleLimitThresholds[ 2 ];
 
+let previousDJID = null;
+let currentDJID = null;
+
 let functionStore = []; // store give RoboCoin callback functions
 
 const addRCOperation = ( before, coins ) => ( before || 0 ) + coins;
 const subtractRCOperation = ( before, coins ) => ( before || 0 ) - coins;
 
-const userFunctions = ( ) => {
+const userFunctions = () => {
 
   function formatSeconds( seconds ) {
     return ( Math.floor( seconds / 60 ) ).toString() + ' minutes';
@@ -108,6 +114,11 @@ const userFunctions = ( ) => {
   }
 
   return {
+    getPreviousDJID: () => previousDJID,
+    setPreviousDJID: (uuid) => { previousDJID = uuid; },
+    getCurrentDJID: () => previousDJID,
+    setCurrentDJID: (uuid) => { previousDJID = uuid; },
+
     debugPrintTheUsersList: function () {
       console.info( "Full theUsersList: " + JSON.stringify( theUsersList ) );
     },
@@ -191,10 +202,24 @@ const userFunctions = ( ) => {
       return theUsersList[ this.getPositionOnUsersList( userID ) ] !== undefined;
     },
 
-    getUsername: function ( userID ) {
-      if ( this.userExists( userID ) ) {
-        let theUser = theUsersList.find( ( { id } ) => id === userID );
-        return theUser.username;
+    getUsername: async function ( userID ) {
+      const url = `https://api.prod.tt.fm/users/profiles?users=${ userID }`;
+      const headers = {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${ process.env.TT_LIVE_AUTHTOKEN }`
+      };
+
+      let userProfile;
+      try {
+        const response = await axios.get( url, { headers } );
+        userProfile = response.data[ 0 ]?.userProfile;
+      } catch ( error ) {
+        console.error( 'Error fetching user profile:', error );
+        throw error;
+      }
+
+      if ( userProfile && userProfile.nickname ) {
+        return userProfile.nickname;
       }
     },
 
@@ -270,14 +295,9 @@ const userFunctions = ( ) => {
       }
     },
 
-    whoSentTheCommand: function ( data ) {
-      // if the command was PMd userID will contain the ID of the Bot user #facepalm
-      // check if it was PMd and user senderid instead
-      if ( data.command === 'pmmed' ) {
-        return data.senderid;
-      } else {
-        return data.userid;
-      }
+    whoSentTheCommand: async function ( data ) {
+      logger.debug( `whoSentCommand data: ${ JSON.stringify( data ) }` )
+      return data.sender;
     },
 
     // ========================================================
@@ -1191,22 +1211,25 @@ const userFunctions = ( ) => {
       }
     },
 
-    setCurrentDJ: function ( userID, databaseFunctions ) {
-      this.clearCurrentDJFlags( databaseFunctions )
-      if ( this.userExists( userID ) ) {
-        this.storeUserData( userID, "currentDJ", true, databaseFunctions );
-      }
-    },
-
-    getCurrentDJID: function () {
-      for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
-        if ( theUsersList[ userLoop ][ 'currentDJ' ] === true ) {
-          return theUsersList[ userLoop ][ 'id' ];
-        }
-      }
-
-      return null;
-    },
+    // setCurrentDJ: async function ( userID, databaseFunctions ) {
+    //   logger.debug(`* setCurrentDJ * userID: ${userID}` )
+    //   this.clearCurrentDJFlags( databaseFunctions )
+    //   if ( this.userExists( userID ) ) {
+    //     await this.storeUserData( userID, "currentDJ", true, databaseFunctions );
+    //   }
+    // },
+    //
+    // getCurrentDJID: async function ( data ) {
+    //   // logger.debug(`getCurrentDJID data: ${JSON.stringify(data)}`)
+    //   return data.sender
+    //   // for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
+    //   //   if ( theUsersList[ userLoop ][ 'currentDJ' ] === true ) {
+    //   //     return theUsersList[ userLoop ][ 'id' ];
+    //   //   }
+    //   // }
+    //   //
+    //   // return null;
+    // },
 
     getLastDJID: function () {
       return djList[ this.howManyDJs() - 1 ];
@@ -1330,11 +1353,10 @@ const userFunctions = ( ) => {
       console.group( '! removeDJ ===============================' );
       console.log( '========================================' );
 
-      let currentDateTime = require( 'moment' );
-      console.log( 'DJ removed at ' + currentDateTime().format( 'DD/MM/yyyy HH:mm:ss' ) );
+      console.log( 'DJ removed at ' + moment().format( 'DD/MM/yyyy HH:mm:ss' ) );
       console.log( 'The DJ ' + this.getUsername( djID ) + ' with ID ' + djID + ' is being removed from the decks' );
       console.log( 'Reason: ' + message );
-      bot.remDj( djID );
+      // bot.remDj( djID );
 
       console.log( '========================================' );
       console.groupEnd();
@@ -1719,16 +1741,16 @@ const userFunctions = ( ) => {
       theUsersList.splice( 0, theUsersList.length );
     },
 
-    updatedUserData: async function (jsonData, databaseFunctions ) {
+    updatedUserData: async function ( jsonData, databaseFunctions ) {
       // Parse the JSON data if it's a string
-      const data = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
+      const data = typeof jsonData === 'string' ? JSON.parse( jsonData ) : jsonData;
 
       // Check if the data has the statePatch array
-      if (data.statePatch && Array.isArray(data.statePatch)) {
+      if ( data.statePatch && Array.isArray( data.statePatch ) ) {
         // Iterate through the statePatch array
-        for (const patch of data.statePatch) {
+        for ( const patch of data.statePatch ) {
           // Check if the patch operation is "add" and it has a value
-          if (patch.op === 'add' && patch.value && patch.value.userProfile) {
+          if ( patch.op === 'add' && patch.value && patch.value.userProfile ) {
             const userProfile = patch.value.userProfile;
             const user = {
               name: userProfile.nickname,
@@ -1736,17 +1758,17 @@ const userFunctions = ( ) => {
             };
 
             try {
-              await this.updateUser(user, databaseFunctions);
-            } catch (error) {
-              console.error(`Failed to update user ${userProfile.nickname} (${userProfile.uuid}):`, error);
+              await this.updateUser( user, databaseFunctions );
+            } catch ( error ) {
+              console.error( `Failed to update user ${ userProfile.nickname } (${ userProfile.uuid }):`, error );
             }
           }
         }
       } else {
-        console.error('Invalid data format');
+        console.error( 'Invalid data format' );
       }
     },
-    
+
     updateUser: async function ( data, databaseFunctions ) {
       if ( typeof data.name === 'string' ) {
         let oldname = ''; // holds users old name if exists
@@ -1785,7 +1807,7 @@ const userFunctions = ( ) => {
               }
             }
           } else {
-            await this.userJoinsRoom(data.userid, data.name, databaseFunctions)
+            await this.userJoinsRoom( data.userid, data.name, databaseFunctions )
           }
         }
       }
@@ -2306,7 +2328,7 @@ const userFunctions = ( ) => {
     updateRoboCoins: async function ( userID, coins, databaseFunctions ) {
       try {
         await this.storeUserData( userID, "RoboCoins", coins, databaseFunctions );
-         // Resolve the promise without value (implicit)
+        // Resolve the promise without value (implicit)
       } catch ( error ) {
         throw new Error( 'User does not exist' ); // Reject the promise
       }

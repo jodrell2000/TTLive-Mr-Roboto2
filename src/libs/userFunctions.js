@@ -201,9 +201,9 @@ const userFunctions = () => {
     userExists: function ( userID ) {
       return theUsersList[ this.getPositionOnUsersList( userID ) ] !== undefined;
     },
-
-    getUsername: async function ( userID ) {
-      const url = `https://api.prod.tt.fm/users/profiles?users=${ userID }`;
+    
+    getUserProfileFromAPI: async function( uuid ) {
+      const url = `https://api.prod.tt.fm/users/profiles?users=${ uuid }`;
       const headers = {
         'accept': 'application/json',
         'Authorization': `Bearer ${ process.env.TT_LIVE_AUTHTOKEN }`
@@ -212,11 +212,15 @@ const userFunctions = () => {
       let userProfile;
       try {
         const response = await axios.get( url, { headers } );
-        userProfile = response.data[ 0 ]?.userProfile;
+        return response.data[ 0 ]?.userProfile;
       } catch ( error ) {
         console.error( 'Error fetching user profile:', error );
         throw error;
       }
+    },
+
+    getUsername: async function ( userID ) {
+      const userProfile = await this.getUserProfileFromAPI( userID )
 
       if ( userProfile && userProfile.nickname ) {
         return userProfile.nickname;
@@ -491,14 +495,14 @@ const userFunctions = () => {
 
     // ========================================================
 
-    readSingleUserStatus: function ( data, chatFunctions ) {
+    readSingleUserStatus: function ( data, chatFunctions, roomFunctions ) {
       let username = [];
       username.push( this.getUsername( this.whoSentTheCommand( data ) ) );
 
-      this.readUserStatus( data, username, chatFunctions );
+      this.readUserStatus( data, username, chatFunctions, roomFunctions );
     },
 
-    readUserStatus: async function ( data, args, chatFunctions ) {
+    readUserStatus: async function ( data, args, chatFunctions, roomFunctions ) {
       let theUsername = '';
       for ( let userLoop = 0; userLoop < args.length; userLoop++ ) {
         theUsername += args[ userLoop ] + ' ';
@@ -508,7 +512,7 @@ const userFunctions = () => {
       const theUserID = await this.getUserIDFromUsername( theUsername );
       const roomJoined = formatRelativeTime( ( Date.now() - this.getUserJoinedRoom( theUserID ) ) / 1000 );
       let modText = '';
-      if ( this.isUserModerator( theUserID ) !== true ) {
+      if ( await this.isUserModerator( theUserID, roomFunctions ) !== true ) {
         modText = 'not '
       }
       const lastSpoke = formatRelativeTime( ( Date.now() - this.getUserLastSpoke( theUserID ) ) / 1000 );
@@ -641,11 +645,12 @@ const userFunctions = () => {
       this.storeUserData( userID, 'moderator', false, databaseFunctions );
     },
 
-    isUserModerator: function ( theUserID ) {
-      if ( this.userExists( theUserID ) ) {
-        let userPosition = this.getPositionOnUsersList( theUserID );
-        return theUsersList[ userPosition ][ 'moderator' ] === true;
-      }
+    isUserModerator: async function ( theUserID, roomFunctions ) {
+      const roomData = await roomFunctions.getRoomData( process.env.ROOM_UUID )
+      return roomData.roomRoles.some(role =>
+        role.userUuid === theUserID &&
+        (role.role === 'owner' || role.role === 'coOwner' || role.role === 'moderator')
+      );
     },
 
     // ========================================================

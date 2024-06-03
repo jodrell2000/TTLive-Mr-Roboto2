@@ -410,20 +410,12 @@ const roomFunctions = () => {
       }
     },
 
-    roomName: () => roomName,
-    setRoomName: function ( value ) { roomName = value; },
-
-    setRoomDefaults: function ( data ) {
-      roomDefaults.detail = data.room.description; //used to get room description
-      this.setRoomName( data.room.name ); //gets your rooms name
-      roomDefaults.ttRoomName = data.room.shortcut; //gets room shortcut
-
-      bot.playlistAll( function ( callback ) {
-        botDefaults.botPlaylist = callback.list;
-      } );
-
+    roomName: async function () {
+      const room = process.env.ROOM_UUID
+      const roomData = await this.getRoomData( room )
+      return roomData.name
     },
-
+    
     clearSongLimitTimer( userFunctions, roomFunctions ) {
       //this is for the song length limit
       if ( roomFunctions.songLimitTimer() !== null ) {

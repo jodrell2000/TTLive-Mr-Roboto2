@@ -1,4 +1,5 @@
 import botDefaults from '../defaults/botDefaults.js'
+import roomDefaults from '../defaults/roomDefaults.js'
 import userMessages from '../defaults/customGreetings.js'
 import Storage from 'node-storage';
 import { dirname } from 'path';
@@ -6,11 +7,10 @@ import { dirname } from 'path';
 import { postMessage } from './cometchat.js'
 import { logger } from "../utils/logging.js";
 
-const chatDataFileName = process.env.CHATDATA;
+const chatDataFileName = process.env.CHATDATA; 
 const room = process.env.ROOM_UUID;
 
-const chatFunctions = ( roomDefaults ) => {
-
+const chatFunctions = ( ) => {
   return {
     botSpeak: async function ( message, data, publicChat, recipient ) {
       let pmCommand;
@@ -260,7 +260,7 @@ const chatFunctions = ( roomDefaults ) => {
 
     // ========================================================
 
-    userGreeting: function ( data, userID, theUsername, roomFunctions, userFunctions, databaseFunctions ) {
+    userGreeting: async function ( data, userID, theUsername, roomFunctions, userFunctions, databaseFunctions ) {
       if ( theUsername !== "Guest" && !userFunctions.isThisTheBot( userID ) ) {
         const customGreeting = userMessages.userGreetings.find( ( { id } ) => id === userID );
         let theMessage;
@@ -272,7 +272,7 @@ const chatFunctions = ( roomDefaults ) => {
         }
 
         if ( roomFunctions.theme() !== false ) {
-          theMessage += '; The theme is currently set to ' + roomFunctions.theme();
+          theMessage += ';\n\nThe theme is currently set to ' + roomFunctions.theme();
         }
 
         if ( !userFunctions.isUsersWelcomeTimerActive( userID ) ) {
@@ -282,16 +282,23 @@ const chatFunctions = ( roomDefaults ) => {
             theMessage += "\nThe queue is currently active. To add yourself to the queue type /addme. To remove yourself from the queue type /removeme.";
           }
           if ( !roomFunctions.isRulesTimerRunning() && roomFunctions.rulesMessageOn() ) {
-            theMessage += "\n" + roomFunctions.additionalJoinMessage();
+            theMessage += "\n\n" + roomFunctions.additionalJoinMessage();
             roomFunctions.startRulesTimer();
           }
 
           theMessage = theMessage.replace( "@username", "@" + theUsername );
-          theMessage = theMessage.replace( "@roomName", roomFunctions.roomName() );
+          theMessage = theMessage.replace( "@roomName", await roomFunctions.roomName() );
+
+          theMessage += "\n\nPlease note: Mr. Roboto is in the middle of a MAJOR rewrite for the new site, and as" +
+            " such" +
+            " many functions are not yet working or stable.";
 
           // Delay the execution of the greeting
           setTimeout( async () => {
-            await this.botSpeak( theMessage, data, roomFunctions.greetInPublic(), userID );
+            return await postMessage( {
+              room,
+              message: theMessage
+            } )
           }, 2 * 1000 ); // seconds * 1000 to convert to milliseconds
         }
       }

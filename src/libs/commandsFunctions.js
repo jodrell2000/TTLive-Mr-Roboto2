@@ -4,6 +4,7 @@ import chatCommandItems from '../defaults/chatCommandItems.js'
 import Storage from 'node-storage';
 import { dirname } from 'path';
 import databaseFunctions from '../libs/databaseFunctions.js'
+import { logger } from "../utils/logging.js";
 
 const generalCommands = {};
 const userCommands = {};
@@ -84,8 +85,8 @@ const commandFunctions = () => {
   }
   generalCommands.dive.help = "Leave the DJ booth with style...stagedive tho' init!";
 
-  generalCommands.mystats = ( { data, userFunctions, chatFunctions } ) => {
-    userFunctions.readSingleUserStatus( data, chatFunctions );
+  generalCommands.mystats = ( { data, userFunctions, chatFunctions, roomFunctions } ) => {
+    userFunctions.readSingleUserStatus( data, chatFunctions, roomFunctions );
   }
   generalCommands.mystats.help = "What info does the Bot currently hold about you...handy for knowing how much time you've been wasting on here today!";
 
@@ -272,8 +273,8 @@ const commandFunctions = () => {
   moderatorCommands.lengthlimit.help = "Switch the song length limit on or off. Sent with a number it changes the limit";
   moderatorCommands.lengthlimit.sampleArguments = [ "20" ];
 
-  moderatorCommands.userstatus = ( { data, args, userFunctions, chatFunctions } ) => {
-    userFunctions.readUserStatus( data, args, chatFunctions )
+  moderatorCommands.userstatus = ( { data, args, userFunctions, chatFunctions, roomFunctions } ) => {
+    userFunctions.readUserStatus( data, args, chatFunctions, roomFunctions )
   }
   moderatorCommands.userstatus.argumentCount = 1;
   moderatorCommands.userstatus.help = "Read out the activity summary of a specified user";
@@ -790,15 +791,12 @@ const commandFunctions = () => {
     // parseCommands: function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions ) {
     parseCommands: async function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions ) {
       let senderID;
-
-      // if ( data.command === "pmmed" ) {
-      //   senderID = data.senderid;
-      // } else {
-      //   senderID = data.userid;
-      // }
+      
+      logger.debug(`data: ${ JSON.stringify( data )}`)
+      senderID = data.sender;
 
       const [ command, args, moderatorOnly ] = this.getCommandAndArguments( data.message, allCommands );
-      if ( moderatorOnly && !userFunctions.isUserModerator( senderID ) ) {
+      if ( moderatorOnly && !await userFunctions.isUserModerator( senderID, roomFunctions ) ) {
         await chatFunctions.botSpeak( "Sorry, that function is only available to moderators", data );
       } else if ( args === 'dynamicChat' ) {
         await chatFunctions.dynamicChatCommand( data, userFunctions, command, databaseFunctions );

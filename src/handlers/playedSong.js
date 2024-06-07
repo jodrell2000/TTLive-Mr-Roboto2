@@ -6,7 +6,7 @@ import { ActionName } from "ttfm-socket";
 // let merchCount = 0
 // let songDetailCount = 0
 
-export default async ( data, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, socket ) => {
+export default async ( data, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, socket ) => {
   logger.debug( `================== playedSong start ====================` )
   // console.log( `playedSong data: ${ JSON.stringify( data, null, 2) }` )
   await userFunctions.setPreviousDJID( await userFunctions.getCurrentDJID() )
@@ -57,7 +57,7 @@ export default async ( data, userFunctions, roomFunctions, songFunctions, chatFu
   }
   roomFunctions.setDJCount( data.djs.length ); //the number of djs on stage
 
-  // socket.action( ActionName.voteOnSong, { roomUuid: process.env.ROOM_UUID, userUuid: process.env.USERID, songVotes: { likes: true } }  )
+  await socket.action( ActionName.voteOnSong, { roomUuid: process.env.ROOM_UUID, userUuid: process.env.USERID, songVotes: { likes: true } }  )
   
   logger.debug( `================== playedSong end ====================` )
 }

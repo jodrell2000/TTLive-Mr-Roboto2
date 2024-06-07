@@ -1,0 +1,181 @@
+[
+  {
+    "op": "replace",
+    "path": "/floorUsers/5/tokenRole",
+    "value": "bot"
+  },
+  {
+    "op": "replace",
+    "path": "/floorUsers/5/uuid",
+    "value": "f31d42b2-0df9-47d8-9cc0-a17870d4d2c7"
+  },
+  {
+    "op": "add",
+    "path": "/floorUsers/5/highestRole",
+    "value": "moderator"
+  },
+  {
+    "op": "replace",
+    "path": "/floorUsers/4/tokenRole",
+    "value": "user"
+  },
+  {
+    "op": "replace",
+    "path": "/floorUsers/4/uuid",
+    "value": "e1dabd4c-a413-496f-bc4d-cc1140f1e39c"
+  },
+  {
+    "op": "replace",
+    "path": "/floorUsers/3/highestRole",
+    "value": "coOwner"
+  },
+  {
+    "op": "replace",
+    "path": "/floorUsers/3/uuid",
+    "value": "f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc"
+  },
+  {
+    "op": "add",
+    "path": "/floorUsers/6",
+    "value": {
+      "uuid": "892a99cc-d439-4f72-83a9-f3e3ce8c34fd",
+      "tokenRole": "user",
+      "canDj": true
+    }
+  },
+  {
+    "op": "replace",
+    "path": "/audienceUsers/5/tokenRole",
+    "value": "bot"
+  },
+  {
+    "op": "replace",
+    "path": "/audienceUsers/5/uuid",
+    "value": "f31d42b2-0df9-47d8-9cc0-a17870d4d2c7"
+  },
+  {
+    "op": "add",
+    "path": "/audienceUsers/5/highestRole",
+    "value": "moderator"
+  },
+  {
+    "op": "replace",
+    "path": "/audienceUsers/4/tokenRole",
+    "value": "user"
+  },
+  {
+    "op": "replace",
+    "path": "/audienceUsers/4/uuid",
+    "value": "e1dabd4c-a413-496f-bc4d-cc1140f1e39c"
+  },
+  {
+    "op": "replace",
+    "path": "/audienceUsers/3/highestRole",
+    "value": "coOwner"
+  },
+  {
+    "op": "replace",
+    "path": "/audienceUsers/3/uuid",
+    "value": "f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc"
+  },
+  {
+    "op": "add",
+    "path": "/audienceUsers/6",
+    "value": {
+      "uuid": "892a99cc-d439-4f72-83a9-f3e3ce8c34fd",
+      "tokenRole": "user",
+      "canDj": true
+    }
+  },
+  {
+    "op": "replace",
+    "path": "/allUsers/5/tokenRole",
+    "value": "bot"
+  },
+  {
+    "op": "replace",
+    "path": "/allUsers/5/uuid",
+    "value": "f31d42b2-0df9-47d8-9cc0-a17870d4d2c7"
+  },
+  {
+    "op": "add",
+    "path": "/allUsers/5/highestRole",
+    "value": "moderator"
+  },
+  {
+    "op": "replace",
+    "path": "/allUsers/4/tokenRole",
+    "value": "user"
+  },
+  {
+    "op": "replace",
+    "path": "/allUsers/4/uuid",
+    "value": "e1dabd4c-a413-496f-bc4d-cc1140f1e39c"
+  },
+  {
+    "op": "replace",
+    "path": "/allUsers/3/highestRole",
+    "value": "coOwner"
+  },
+  {
+    "op": "replace",
+    "path": "/allUsers/3/uuid",
+    "value": "f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc"
+  },
+  {
+    "op": "add",
+    "path": "/allUsers/6",
+    "value": {
+      "uuid": "892a99cc-d439-4f72-83a9-f3e3ce8c34fd",
+      "tokenRole": "user",
+      "canDj": true
+    }
+  },
+  {
+    "op": "add",
+    "path": "/allUserData/f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc",
+    "value": {
+      "userProfile": {
+        "id": 200,
+        "color": "#F96A2D",
+        "avatarId": "custom-face-av-1",
+        "badges": [
+          "JQBX"
+        ],
+        "createdAt": "2021-03-30T22:37:39.558Z",
+        "discord": "",
+        "nickname": "Jodrell",
+        "discordNickname": "",
+        "firstName": "Adam",
+        "lastName": "Reynolds",
+        "pronoun": "He / Him",
+        "displayPronouns": true,
+        "songOfTheWeek": "",
+        "song": {
+          "id": "",
+          "isrc": "",
+          "genre": "",
+          "duration": 0,
+          "trackUrl": "",
+          "trackName": "",
+          "artistName": "",
+          "musicProvider": ""
+        },
+        "coverPicture": "",
+        "facebook": "",
+        "instagram": "",
+        "twitter": "",
+        "snapchat": "",
+        "tiktok": "",
+        "priceForGig": 0,
+        "zodiac": "libra",
+        "uuid": "f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc"
+      },
+      "position": {
+        "x": 50.3,
+        "y": 36.4
+      },
+      "songVotes": { }
+    }
+  }
+]

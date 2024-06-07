@@ -15,7 +15,7 @@ export class Bot {
   // Connection functions
   // ========================================================
 
-  async connect( roomFunctions, userFunctions, chatFunctions, songFunctions ) {
+  async connect( roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions ) {
     logger.debug( 'Connecting to room' )
     await joinChat( process.env.ROOM_UUID )
 
@@ -26,12 +26,12 @@ export class Bot {
     } )
     this.state = connection.state
 
-    await startup( process.env.ROOM_UUID, this.state, roomFunctions, userFunctions, chatFunctions, songFunctions )
+    await startup( process.env.ROOM_UUID, this.state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions )
   }
 
   // ========================================================
 
-  async processNewMessages() {
+  async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions ) {
     const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp )
     if ( response?.data ) {
       const messages = response.data
@@ -46,65 +46,53 @@ export class Bot {
             message: customMessage,
             sender,
             senderName: messages[ message ]?.data?.customData?.userName
-          }, process.env.ROOM_UUID )
+          }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions )
         }
       }
     }
   }
 
-  ensurePathExists(obj, path) {
-    let keys = path.split('/');
-    if (keys[0] === '') {
-      keys.shift();
-    }
-
+  ensurePathExists( obj, path ) {
+    let keys = path.split( '/' );
+    keys.shift(); // Remove the leading empty string from splitting at '/'
     let current = obj;
 
-    for (let i = 0; i < keys.length; i++) {
-      if (!current[keys[i]]) {
-        current[keys[i]] = {};
+    for ( let i = 0; i < keys.length; i++ ) {
+      if ( !current[ keys[ i ] ] ) {
+        current[ keys[ i ] ] = {};
       }
-      current = current[keys[i]];
+      current = current[ keys[ i ] ];
     }
   }
-  
+
   configureListeners( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions ) {
     const self = this
     logger.debug( 'Setting up listeners' )
-    
-    this.socket.on( 'statefulMessage', payload => {
+
+    this.socket.on( 'statefulMessage', async payload => {
       logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
-      // logger.debug( `statefulMessage payload.statePatch: ${ JSON.stringify(payload.statePatch) }` )
-      // logger.debug( `-------------------------------------------` )
 
-      // {"level":"debug","message":"statefulMessage - userJoined -------------------------------------------"}
-      // {"level":"debug","message":"statefulMessage payload.statePatch: [{\"op\":\"add\",\"path\":\"/allUserData/f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc\",\"value\":{\"userProfile\":{\"id\":200,\"color\":\"#F96A2D\",\"avatarId\":\"custom-face-av-1\",\"badges\":[\"JQBX\"],\"createdAt\":\"2021-03-30T22:37:39.558Z\",\"discord\":\"\",\"nickname\":\"Jodrell\",\"discordNickname\":\"\",\"firstName\":\"Adam\",\"lastName\":\"Reynolds\",\"pronoun\":\"He / Him\",\"displayPronouns\":true,\"songOfTheWeek\":\"\",\"song\":{\"id\":\"\",\"isrc\":\"\",\"genre\":\"\",\"duration\":0,\"trackUrl\":\"\",\"trackName\":\"\",\"artistName\":\"\",\"musicProvider\":\"\"},\"coverPicture\":\"\",\"facebook\":\"\",\"instagram\":\"\",\"twitter\":\"\",\"snapchat\":\"\",\"tiktok\":\"\",\"priceForGig\":0,\"zodiac\":\"libra\",\"uuid\":\"f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc\"},\"position\":{\"x\":84.5,\"y\":15.4},\"songVotes\":{}}},{\"op\":\"add\",\"path\":\"/allUsers/3\",\"value\":{\"uuid\":\"f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc\",\"tokenRole\":\"user\",\"canDj\":true,\"highestRole\":\"coOwner\"}},{\"op\":\"add\",\"path\":\"/audienceUsers/3\",\"value\":{\"uuid\":\"f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc\",\"tokenRole\":\"user\",\"canDj\":true,\"highestRole\":\"coOwner\"}},{\"op\":\"add\",\"path\":\"/floorUsers/3\",\"value\":{\"uuid\":\"f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc\",\"tokenRole\":\"user\",\"canDj\":true,\"highestRole\":\"coOwner\"}},{\"op\":\"replace\",\"path\":\"/vibeMeter\",\"value\":0.14285714285714285}]"}
-
-      payload.statePatch.forEach(patch => {
-        if (patch.op === 'replace' || patch.op === 'add') {
-          // console.log(`Ensuring path exists for: ${patch.path}`); // Debug log
-          this.ensurePathExists(self.state, patch.path);
+      if ( payload.name.includes ["votedOnSong"] ) {
+        console.log("Do nothing, handled by serverMessage")
+      } else if  ( payload.name.includes ["userJoined"] ) {
+        handlers[ payload.name ]( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, this.socket )
+      } else {
+        try {
+          payload.statePatch.forEach( patch => {
+            if ( patch.op === 'replace' || patch.op === 'add' ) {
+              // logger.debug( `patch: ${ JSON.stringify( patch ) }` )
+              this.ensurePathExists( self.state, patch.path );
+            }
+          } );
+          self.state = fastJson.applyPatch( self.state, payload.statePatch ).newDocument;
+        } catch ( error ) {
+          console.error( 'Error applying patch:', error );
+          // console.error( 'Payload state patch:', JSON.stringify( payload.statePatch, null, 2 ) );
+          // console.error( 'Current state:', JSON.stringify( self.state, null, 2 ) );
         }
-      });
-      // console.log('State after ensuring paths:', JSON.stringify(self.state, null, 2));
-      
-      self.state = fastJson.applyPatch( self.state, payload.statePatch ).newDocument;
-      // console.log('Final state:', JSON.stringify(self.state, null, 2));
-      
-      if ( handlers[ payload.name ] ) handlers[ payload.name ]( self.state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
 
-      // if (payload.name === "updatedUserData" ) {
-      //   try {
-      //     const userProfile = payload.statePatch[0]?.value?.Profile;
-      //     const nickname = userProfile?.nickname;
-      //     const userID = userProfile?.uuid;
-      //
-      //     userFunctions.userJoinsRoom( userID, nickname, databaseFunctions )
-      //       .then()
-      //   } catch ( error ) {
-      //     logger.error(`Error updating user: ${ error.message }`)
-      //   }
-      // }
+        if ( handlers[ payload.name ] ) handlers[ payload.name ]( self.state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
+      }
     } )
 
     this.socket.on( "statelessMessage", ( payload ) => {
@@ -123,20 +111,28 @@ export class Bot {
     } );
 
     this.socket.on( "serverMessage", ( payload ) => {
-      if ( payload.message.statePatch ) {
-        payload.message.statePatch.forEach( patch => {
-          if ( patch.op === 'replace' || patch.op === 'add' ) {
-            // console.log(`Ensuring path exists for: ${patch.path}`); // Debug log
-            this.ensurePathExists( self.state, patch.path );
+      if ( payload.message.name.includes [ "votedOnSong"] ) {
+        handlers[ payload.message.name ]( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
+      } else {
+        if ( payload.message.statePatch ) {
+          try {
+            payload.message.statePatch.forEach( patch => {
+              if ( patch.op === 'replace' || patch.op === 'add' ) {
+                // logger.debug( `patch: ${ JSON.stringify( patch ) }` )
+                this.ensurePathExists( self.state, patch.path );
+              }
+            } );
+            self.state = fastJson.applyPatch( self.state, payload.message.statePatch ).newDocument;
+          } catch ( error ) {
+            console.error( 'Error applying patch:', error );
+            // console.error( 'Payload state patch:', JSON.stringify( payload.statePatch, null, 2 ) );
+            // console.error( 'Current state:', JSON.stringify( self.state, null, 2 ) );
           }
-        } );
-        // console.log('State after ensuring paths:', JSON.stringify(self.state, null, 2));
 
-        self.state = fastJson.applyPatch( self.state, payload.message.statePatch ).newDocument;
-
-        logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
-        // logger.debug( `serverMessage self.state: ${ JSON.stringify( self.state ) }` )
-        // logger.debug( `-------------------------------------------` )
+          logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
+          // logger.debug( `serverMessage self.state: ${ JSON.stringify( self.state ) }` )
+          // logger.debug( `-------------------------------------------` )
+        }
       }
     } );
 

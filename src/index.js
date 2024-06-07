@@ -13,9 +13,9 @@ import dateFunctions from './libs/dateFunctions.js'
 import botFunctions from './libs/botFunctions.js'
 
 const roomBot = new Bot( process.env.JOIN_ROOM )
-await roomBot.connect( roomFunctions, userFunctions, chatFunctions, songFunctions )
+await roomBot.connect( roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions )
 roomBot.configureListeners( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions )
 const repeatedTasks = new Chain()
 repeatedTasks
-  .add( () => roomBot.processNewMessages() )
+  .add( () => roomBot.processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions ) )
   .every( 100 )

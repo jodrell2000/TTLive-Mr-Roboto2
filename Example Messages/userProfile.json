@@ -1,0 +1,36 @@
+{
+  "id": 200,
+  "color": "#F96A2D",
+  "avatarId": "custom-face-av-1",
+  "badges": [
+    "JQBX"
+  ],
+  "createdAt": "2021-03-30T22:37:39.558Z",
+  "discord": "",
+  "nickname": "Jodrell",
+  "discordNickname": "",
+  "firstName": "Adam",
+  "lastName": "Reynolds",
+  "pronoun": "He / Him",
+  "displayPronouns": true,
+  "songOfTheWeek": "",
+  "song": {
+    "id": "",
+    "isrc": "",
+    "genre": "",
+    "duration": 0,
+    "trackUrl": "",
+    "trackName": "",
+    "artistName": "",
+    "musicProvider": ""
+  },
+  "coverPicture": "",
+  "facebook": "",
+  "instagram": "",
+  "twitter": "",
+  "snapchat": "",
+  "tiktok": "",
+  "priceForGig": 0,
+  "uuid": "f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc",
+  "zodiac": "libra"
+}

@@ -212,8 +212,8 @@ const commandFunctions = () => {
   // Bot control commands
   // #############################################
 
-  botCommands.uptime = ( { data, botFunctions, userFunctions, chatFunctions } ) => {
-    botFunctions.reportUptime( data, userFunctions, chatFunctions );
+  botCommands.uptime = async ( { data, botFunctions, userFunctions, chatFunctions } ) => {
+    await botFunctions.reportUptime( data, userFunctions, chatFunctions );
   }
   botCommands.uptime.help = "Tells you how long the bot has been running for";
 

@@ -1,0 +1,120 @@
+[
+  {
+    "op": "remove",
+    "path": "/floorUsers/6"
+  },
+  {
+    "op": "remove",
+    "path": "/floorUsers/5/highestRole"
+  },
+  {
+    "op": "replace",
+    "path": "/floorUsers/5/tokenRole",
+    "value": "user"
+  },
+  {
+    "op": "replace",
+    "path": "/floorUsers/5/uuid",
+    "value": "892a99cc-d439-4f72-83a9-f3e3ce8c34fd"
+  },
+  {
+    "op": "replace",
+    "path": "/floorUsers/4/tokenRole",
+    "value": "bot"
+  },
+  {
+    "op": "replace",
+    "path": "/floorUsers/4/uuid",
+    "value": "f31d42b2-0df9-47d8-9cc0-a17870d4d2c7"
+  },
+  {
+    "op": "replace",
+    "path": "/floorUsers/3/highestRole",
+    "value": "moderator"
+  },
+  {
+    "op": "replace",
+    "path": "/floorUsers/3/uuid",
+    "value": "e1dabd4c-a413-496f-bc4d-cc1140f1e39c"
+  },
+  {
+    "op": "remove",
+    "path": "/audienceUsers/6"
+  },
+  {
+    "op": "remove",
+    "path": "/audienceUsers/5/highestRole"
+  },
+  {
+    "op": "replace",
+    "path": "/audienceUsers/5/tokenRole",
+    "value": "user"
+  },
+  {
+    "op": "replace",
+    "path": "/audienceUsers/5/uuid",
+    "value": "892a99cc-d439-4f72-83a9-f3e3ce8c34fd"
+  },
+  {
+    "op": "replace",
+    "path": "/audienceUsers/4/tokenRole",
+    "value": "bot"
+  },
+  {
+    "op": "replace",
+    "path": "/audienceUsers/4/uuid",
+    "value": "f31d42b2-0df9-47d8-9cc0-a17870d4d2c7"
+  },
+  {
+    "op": "replace",
+    "path": "/audienceUsers/3/highestRole",
+    "value": "moderator"
+  },
+  {
+    "op": "replace",
+    "path": "/audienceUsers/3/uuid",
+    "value": "e1dabd4c-a413-496f-bc4d-cc1140f1e39c"
+  },
+  {
+    "op": "remove",
+    "path": "/allUsers/6"
+  },
+  {
+    "op": "remove",
+    "path": "/allUsers/5/highestRole"
+  },
+  {
+    "op": "replace",
+    "path": "/allUsers/5/tokenRole",
+    "value": "user"
+  },
+  {
+    "op": "replace",
+    "path": "/allUsers/5/uuid",
+    "value": "892a99cc-d439-4f72-83a9-f3e3ce8c34fd"
+  },
+  {
+    "op": "replace",
+    "path": "/allUsers/4/tokenRole",
+    "value": "bot"
+  },
+  {
+    "op": "replace",
+    "path": "/allUsers/4/uuid",
+    "value": "f31d42b2-0df9-47d8-9cc0-a17870d4d2c7"
+  },
+  {
+    "op": "replace",
+    "path": "/allUsers/3/highestRole",
+    "value": "moderator"
+  },
+  {
+    "op": "replace",
+    "path": "/allUsers/3/uuid",
+    "value": "e1dabd4c-a413-496f-bc4d-cc1140f1e39c"
+  },
+  {
+    "op": "remove",
+    "path": "/allUserData/f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc"
+  }
+],

@@ -1,0 +1,260 @@
+[
+  {
+    "op": "replace",
+    "path": "/visibleDjs/0/nextSong",
+    "value": null
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/endTime",
+    "value": 1717496203640
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/startTime",
+    "value": 1717495875640
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/musicProviders/apple",
+    "value": "697480528"
+  },
+  {
+    "op": "remove",
+    "path": "/nowPlaying/song/musicProviders/soundCloudPublic"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/musicProviders/spotify",
+    "value": "spotify:track:0k7TkKX6G3jInu55ik3yAC"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/musicProviders/youtube",
+    "value": "F2T99YbxwWA"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/musicProviders/napster",
+    "value": "tra.2698746"
+  },
+  {
+    "op": "remove",
+    "path": "/nowPlaying/song/musicProviders/pandora"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/musicProviders/deezer",
+    "value": "3130319"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/musicProviders/tidal",
+    "value": "1398639"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/musicProviders/amazonMusic",
+    "value": "B001D7G4KY"
+  },
+  {
+    "op": "remove",
+    "path": "/nowPlaying/song/musicProviders/yandex"
+  },
+  {
+    "op": "add",
+    "path": "/nowPlaying/song/musicProviders/sevenDigital",
+    "value": "2640040"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/songShortId",
+    "value": "BLOVM4kwrZ"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/albumId",
+    "value": 243577
+  },
+  {
+    "op": "remove",
+    "path": "/nowPlaying/song/thumbnails/yandex"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/thumbnails/amazonMusic",
+    "value": "https://m.media-amazon.com/images/I/51aktVEKzNL.jpg"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/thumbnails/tidal",
+    "value": "https://resources.tidal.com/images/aa01bb51/7ff2/4d2e/8938/3faa671d1d5b/640x640.jpg"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/thumbnails/deezer",
+    "value": "https://cdns-images.dzcdn.net/images/cover/b88d3c3ad23435fb5b8d52038551c1f6/500x500-000000-80-0-0.jpg"
+  },
+  {
+    "op": "remove",
+    "path": "/nowPlaying/song/thumbnails/pandora"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/thumbnails/napster",
+    "value": "https://direct.rhapsody.com/imageserver/images/alb.129333/385x385.jpeg"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/thumbnails/youtube",
+    "value": "https://i.ytimg.com/vi/F2T99YbxwWA/hqdefault.jpg"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/thumbnails/spotify",
+    "value": "https://i.scdn.co/image/ab67616d0000b273dac71b3d17d483cf000db8a2"
+  },
+  {
+    "op": "remove",
+    "path": "/nowPlaying/song/thumbnails/soundCloudPublic"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/thumbnails/apple",
+    "value": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/12/f3/f3/12f3f32b-5164-6bc6-ee55-1c6ff918cc6d/dj.yblscykq.jpg/512x512bb.jpg"
+  },
+  {
+    "op": "add",
+    "path": "/nowPlaying/song/thumbnails/sevenDigital",
+    "value": "http://artwork-cdn.7static.com/static/img/sleeveart/00/002/420/0000242077_800.jpg"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/itunes/nativeAppUriDesktop",
+    "value": "itmss://itunes.apple.com/us/album/_/697478107?i=697480528&mt=1&app=itunes&ls=1&at=1000lHKX&ct=api_uri_d&itscg=30200&itsct=odsl_m"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/itunes/nativeAppUriMobile",
+    "value": "itmss://itunes.apple.com/us/album/_/697478107?i=697480528&mt=1&app=itunes&ls=1&at=1000lHKX&ct=api_uri_m&itscg=30200&itsct=odsl_m"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/itunes/url",
+    "value": "https://geo.music.apple.com/us/album/_/697478107?i=697480528&mt=1&app=itunes&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/appleMusic/nativeAppUriDesktop",
+    "value": "itmss://itunes.apple.com/us/album/_/697478107?i=697480528&mt=1&app=music&ls=1&at=1000lHKX&ct=api_uri_d&itscg=30200&itsct=odsl_m"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/appleMusic/nativeAppUriMobile",
+    "value": "music://itunes.apple.com/us/album/_/697478107?i=697480528&mt=1&app=music&ls=1&at=1000lHKX&ct=api_uri_m&itscg=30200&itsct=odsl_m"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/appleMusic/url",
+    "value": "https://geo.music.apple.com/us/album/_/697478107?i=697480528&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/youtubeMusic/url",
+    "value": "https://music.youtube.com/watch?v=F2T99YbxwWA"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/youtube/url",
+    "value": "https://www.youtube.com/watch?v=F2T99YbxwWA"
+  },
+  {
+    "op": "remove",
+    "path": "/nowPlaying/song/links/yandex"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/tidal/url",
+    "value": "https://listen.tidal.com/track/1398639"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/spotify/nativeAppUriDesktop",
+    "value": "spotify:track:0k7TkKX6G3jInu55ik3yAC"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/spotify/url",
+    "value": "https://open.spotify.com/track/0k7TkKX6G3jInu55ik3yAC"
+  },
+  {
+    "op": "remove",
+    "path": "/nowPlaying/song/links/soundcloud"
+  },
+  {
+    "op": "remove",
+    "path": "/nowPlaying/song/links/pandora"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/napster/url",
+    "value": "https://play.napster.com/track/tra.2698746"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/deezer/url",
+    "value": "https://www.deezer.com/track/3130319"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/boomplay/url",
+    "value": "https://www.boomplay.com/songs/8573850"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/anghami/url",
+    "value": "https://play.anghami.com/song/1814313?refer=linktree"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/amazonStore/url",
+    "value": "https://amazon.com/dp/B001D7G4KY"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/links/amazonMusic/url",
+    "value": "https://music.amazon.com/albums/B001D7HR50?trackAsin=B001D7G4KY"
+  },
+  {
+    "op": "add",
+    "path": "/nowPlaying/song/links/audiomack",
+    "value": {
+      "url": "https://audiomack.com/song/dragondj/true"
+    }
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/duration",
+    "value": 328
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/isrc",
+    "value": "GBAYK8300004"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/trackName",
+    "value": "True (Single Edit)"
+  },
+  {
+    "op": "replace",
+    "path": "/nowPlaying/song/artistName",
+    "value": "Spandau Ballet"
+  },
+  {
+    "op": "replace",
+    "path": "/djs/0/nextSong",
+    "value": null
+  }
+]

@@ -7,17 +7,17 @@ import musicDefaults from '../defaults/musicDefaults.js'
 let regionsWeCareAbout = new Set( musicDefaults.alertRegions );
 
 const videoFunctions = () => {
-  function alertIfRegionsNotAllowed( restrictions, userFunctions, notifier ) {
+  async function alertIfRegionsNotAllowed( restrictions, userFunctions, notifier ) {
     const missingRegions = setDifference( regionsWeCareAbout, restrictions.allowed || [] );
     if ( missingRegions.length ) {
-      notifier( `Sorry @${ userFunctions.getUsername( userFunctions.getCurrentDJID() ) }, this video can't be played in ${ turnCodesIntoCountries( missingRegions ) }. Please consider skipping.` );
+      notifier( `Sorry @${ await userFunctions.getUsername( await userFunctions.getCurrentDJID() ) }, this video can't be played in ${ turnCodesIntoCountries( missingRegions ) }. Please consider skipping.` );
     }
   }
 
-  function alertIfRegionsBlocked( restrictions, userFunctions, notifier ) {
+  async function alertIfRegionsBlocked( restrictions, userFunctions, notifier ) {
     const blockedRegions = setIntersection( regionsWeCareAbout, restrictions.blocked || [] );
     if ( blockedRegions.length ) {
-      notifier( `Sorry @${ userFunctions.getUsername( userFunctions.getCurrentDJID() ) }, this video can't be played in ${ turnCodesIntoCountries( blockedRegions ) }. Please consider skipping.` );
+      notifier( `Sorry @${ await userFunctions.getUsername( await userFunctions.getCurrentDJID() ) }, this video can't be played in ${ turnCodesIntoCountries( blockedRegions ) }. Please consider skipping.` );
     }
   }
 

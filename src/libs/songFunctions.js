@@ -15,9 +15,9 @@ let ytid = null; // youTube ID of the video, used to check the regions
 
 let snagSong = false; //if true causes the bot to add every song that plays to its queue
 
-let upVotes = 0;
-let downVotes = 0;
-let snagCount = 0;
+let upVotes = [];
+let downVotes = [];
+let snags = [];
 let voteCountSkip = 0;
 let previousSongStats = []; // grab the ending song votes before they're reset
 let ALLREADYCALLED = false; //resets votesnagging so that it can be called again
@@ -36,9 +36,8 @@ const songFunctions = () => {
     dj: () => dj,
     ytid: () => ytid,
 
-    snagSong: () => snagSong,
-    upVotes: () => upVotes,
-    downVotes: () => downVotes,
+    upVotes: () => upVotes.length,
+    downVotes: () => downVotes.length,
     voteCountSkip: () => voteCountSkip,
     ALLREADYCALLED: () => ALLREADYCALLED,
 
@@ -129,16 +128,18 @@ const songFunctions = () => {
     // Snagging Functions
     // ========================================================
 
-    snagCount: () => snagCount,
-
-    incrementSnagCount: function () {
-      snagCount += 1;
+    snagCount: () => snags.length,
+    
+    recordSnag: async function(uuid) {
+      if (!snags.includes(uuid)) {
+        snags.push(uuid);
+      }
     },
-
-    resetSnagCount: function () {
-      snagCount = 0;
+    
+    resetSnagCount: async function () {
+      snags = [];
     },
-
+    
     // ========================================================
 
     // ========================================================
@@ -177,11 +178,10 @@ const songFunctions = () => {
     previousDJID: () => previousDJID,
     setPreviousArtist: (artist) => { previousArtist = artist; },
     setPreviousTrack: (track) => { previousSong = track; },
-    setPreviousDJID: (uuid) => { previousDJID = uuid; },
 
     grabSongStats: function () {
-      previousSongStats[ 'upvotes' ] = upVotes;
-      previousSongStats[ 'downvotes' ] = downVotes;
+      previousSongStats[ 'upvotes' ] = this.upVotes.length;
+      previousSongStats[ 'downvotes' ] = this.downVotes.length;
       previousSongStats[ 'snags' ] = this.snagCount();
     },
 
@@ -199,20 +199,24 @@ const songFunctions = () => {
       ytid = current_song.nowPlaying.song.musicProviders;
     },
 
-    recordUpVotes: function ( data ) {
-      upVotes = data.room.metadata.upvotes;
+    recordUpVotes: async function(uuid) {
+      if (!upVotes.includes(uuid)) {
+        upVotes.push(uuid);
+      }
     },
 
-    resetUpVotes: function () {
-      upVotes = 0;
+    recordDownVotes: async function(uuid) {
+      if (!downVotes.includes(uuid)) {
+        downVotes.push(uuid);
+      }
     },
 
-    recordDownVotes: function ( data ) {
-      downVotes = data.room.metadata.downvotes;
+    resetUpVotes: async function () {
+      upVotes = [];
     },
 
-    resetDownVotes: function () {
-      downVotes = 0;
+    resetDownVotes: async function () {
+      downVotes = [];
     },
 
     resetVoteCountSkip: function () {

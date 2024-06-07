@@ -88,7 +88,7 @@ const botFunctions = () => {
       return this.uptimeTime() - this.botStartTime();
     },
 
-    reportUptime: function ( data, userFunctions, chatFunctions ) {
+    reportUptime: async function ( data, userFunctions, chatFunctions ) {
       let msecPerMinute = 1000 * 60;
       let msecPerHour = msecPerMinute * 60;
       let msecPerDay = msecPerHour * 24;
@@ -102,7 +102,7 @@ const botFunctions = () => {
 
       let minutes = Math.floor( currentTime / msecPerMinute );
 
-      chatFunctions.botSpeak( userFunctions.getUsername( authModule.USERID ) + ' has been up for: ' + days + ' days, ' + hours + ' hours, ' + minutes + ' minutes', data );
+      chatFunctions.botSpeak( await userFunctions.getUsername( authModule.USERID ) + ' has been up for: ' + days + ' days, ' + hours + ' hours, ' + minutes + ' minutes', data );
     },
 
     songStatsCommand: function ( data, chatFunctions ) {
@@ -132,7 +132,7 @@ const botFunctions = () => {
     reportRoomStatus: function ( data, chatFunctions, userFunctions, videoFunctions ) {
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
       const doInOrder = async () => {
-        this.reportUptime( data, userFunctions, chatFunctions );
+        await this.reportUptime( data, userFunctions, chatFunctions );
         await sleep( 100 );
         this.reportAutoDJStatus( data, chatFunctions );
         await sleep( 100 );
@@ -491,12 +491,12 @@ const botFunctions = () => {
         userFunctions.refreshDJCount() === 0; // is there someone currently using the refresh command
     },
 
-    shouldStopBotDJing: function ( userFunctions ) {
+    shouldStopBotDJing: async function ( userFunctions ) {
       return userFunctions.howManyDJs() >= this.whenToGetOffStage() && // are there enough DJs onstage
-        userFunctions.getCurrentDJID() !== authModule.USERID; // check the Bot isn't currently DJing
+        await userFunctions.getCurrentDJID() !== authModule.USERID; // check the Bot isn't currently DJing
     },
 
-    checkAutoDJing: function ( userFunctions ) {
+    checkAutoDJing: async function ( userFunctions ) {
       if ( autoDjingTimer != null ) {
         clearTimeout( autoDjingTimer );
         autoDjingTimer = null;
@@ -504,13 +504,13 @@ const botFunctions = () => {
 
       if ( this.autoDJEnabled() === true ) {
 
-        autoDjingTimer = setTimeout( function () {
+        autoDjingTimer = setTimeout( async function () {
           if ( !this.isBotOnStage( userFunctions ) ) { //if the bot is not already on stage
             if ( this.shouldTheBotDJ( userFunctions ) ) {
               this.startBotDJing();
             }
           } else { //else it is on stage
-            if ( this.shouldStopBotDJing( userFunctions ) ) {
+            if ( await this.shouldStopBotDJing( userFunctions ) ) {
               this.removeBotFromStage(); // remove the Bot from stage
             }
           }

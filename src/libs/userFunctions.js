@@ -114,10 +114,10 @@ const userFunctions = () => {
   }
 
   return {
-    getPreviousDJID: () => previousDJID,
-    setPreviousDJID: (uuid) => { previousDJID = uuid; },
-    getCurrentDJID: () => previousDJID,
-    setCurrentDJID: (uuid) => { previousDJID = uuid; },
+    getPreviousDJID: async () => previousDJID,
+    setPreviousDJID: async (uuid) => { previousDJID = uuid; },
+    getCurrentDJID: async () => currentDJID,
+    setCurrentDJID: async (uuid) => { currentDJID = uuid; },
 
     debugPrintTheUsersList: function () {
       console.info( "Full theUsersList: " + JSON.stringify( theUsersList ) );
@@ -169,7 +169,7 @@ const userFunctions = () => {
     },
 
     storeUserData: async function ( userID, key, value, databaseFunctions ) {
-      if ( this.userExists( userID ) && this.getUsername( userID ) !== "Guest" ) {
+      if ( await this.userExists( userID ) && await this.getUsername( userID ) !== "Guest" ) {
         try {
           const userPosition = this.getPositionOnUsersList( userID );
           theUsersList[ userPosition ][ key ] = value;
@@ -198,24 +198,25 @@ const userFunctions = () => {
       return userID === auth.USERID;
     },
 
-    userExists: function ( userID ) {
+    userExists: async function ( userID ) {
       return theUsersList[ this.getPositionOnUsersList( userID ) ] !== undefined;
     },
     
     getUserProfileFromAPI: async function( uuid ) {
-      const url = `https://api.prod.tt.fm/users/profiles?users=${ uuid }`;
-      const headers = {
-        'accept': 'application/json',
-        'Authorization': `Bearer ${ process.env.TT_LIVE_AUTHTOKEN }`
-      };
+      if ( typeof uuid !== undefined ) {
+        const url = `https://api.prod.tt.fm/users/profiles?users=${ uuid }`;
+        const headers = {
+          'accept': 'application/json',
+          'Authorization': `Bearer ${ process.env.TT_LIVE_AUTHTOKEN }`
+        };
 
-      let userProfile;
-      try {
-        const response = await axios.get( url, { headers } );
-        return response.data[ 0 ]?.userProfile;
-      } catch ( error ) {
-        console.error( 'Error fetching user profile:', error );
-        throw error;
+        try {
+          const response = await axios.get( url, { headers } );
+          return response.data[ 0 ]?.userProfile;
+        } catch ( error ) {
+          console.error( 'Error fetching user profile:', error );
+          throw error;
+        }
       }
     },
 
@@ -1240,8 +1241,8 @@ const userFunctions = () => {
       return djList[ this.howManyDJs() - 1 ];
     },
 
-    lastDJPlaying: function () {
-      return this.getCurrentDJID() === this.getLastDJID();
+    lastDJPlaying: async function () {
+      return await this.getCurrentDJID() === this.getLastDJID();
     },
 
     getNextDJ: function () {
@@ -1967,42 +1968,43 @@ const userFunctions = () => {
       }
     },
 
-    checkForEmptyUsersList: function ( data ) {
+    checkForEmptyUsersList: async function ( data ) {
       if ( theUsersList.length === 0 ) {
-        this.rebuildUserList( data );
+        await this.rebuildUserList( data );
       }
     },
 
-    isUserInUsersList: function ( userID ) {
-      // if the userID is in the userList return true, else false
+    isUserInUsersList: async function ( userID ) {
       return theUsersList.find( ( { id } ) => id === userID ) !== undefined;
     },
 
-    addUserToTheUsersList: async function ( userID, username, databaseFunctions ) {
-      if ( !this.isUserInUsersList( userID ) ) {
-        theUsersList.push( { id: userID, username: username } );
+    addUserToTheUsersList: async function ( userID, userProfile ) {
+      if ( !await this.isUserInUsersList( userID ) ) {
+        theUsersList.push( { id: userID, username: userProfile.username } );
       }
-      this.addUserIsHere( userID, databaseFunctions );
+      // await this.addUserIsHere( userID, databaseFunctions );
     },
 
-    rebuildUserList: function ( data ) {
-      let userID;
+    rebuildUserList: async function ( data ) {
+      let userID
+      let userProfile
 
-      for ( let i = 0; i < data.users.length; i++ ) {
-        if ( typeof data.users[ i ] !== 'undefined' ) {
-          userID = data.users[ i ].userid;
-          if ( !this.userExists( userID ) ) {
-            this.addUserToTheUsersList( userID, data.users[ i ].name );
+      for ( let i = 0; i < data.allUsers.length; i++ ) {
+        if ( typeof data.allUsers[ i ] !== 'undefined' ) {
+          userID = data.allUsers[ i ].uuid
+          userProfile = await this.getUserProfileFromAPI( userID )
+          if ( !await this.userExists( userID ) ) {
+            await this.addUserToTheUsersList( userID, userProfile )
           }
         }
       }
     },
 
-    startAllUserTimers: function ( databaseFunctions ) {
+    startAllUserTimers: async function ( databaseFunctions ) {
       //starts time in room for everyone currently in the room
       for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
         if ( typeof theUsersList[ userLoop ].id !== 'undefined' ) {
-          this.addUserJoinedTime( theUsersList[ userLoop ].id, databaseFunctions );
+          await this.addUserJoinedTime( theUsersList[ userLoop ].id, databaseFunctions );
         }
       }
     },

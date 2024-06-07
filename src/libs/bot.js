@@ -21,10 +21,10 @@ export class Bot {
 
     this.socket = new SocketClient( 'https://socket.prod.tt.fm' )
 
-    this.connection = await this.socket.joinRoom( process.env.TTL_USER_TOKEN, {
+    const connection = await this.socket.joinRoom( process.env.TTL_USER_TOKEN, {
       roomUuid: process.env.ROOM_UUID
     } )
-    this.state = this.connection.state
+    this.state = connection.state
 
     await startup( process.env.ROOM_UUID, this.state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions )
   }
@@ -75,7 +75,7 @@ export class Bot {
       if ( payload.name.includes ["votedOnSong"] ) {
         console.log("Do nothing, handled by serverMessage")
       } else if  ( payload.name.includes ["userJoined"] ) {
-        handlers[ payload.name ]( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, this.connection )
+        handlers[ payload.name ]( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
       } else {
         try {
           payload.statePatch.forEach( patch => {
@@ -91,7 +91,7 @@ export class Bot {
           // console.error( 'Current state:', JSON.stringify( self.state, null, 2 ) );
         }
 
-        if ( handlers[ payload.name ] ) handlers[ payload.name ]( self.state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
+        if ( handlers[ payload.name ] ) handlers[ payload.name ]( self.state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, this.socket )
       }
     } )
 

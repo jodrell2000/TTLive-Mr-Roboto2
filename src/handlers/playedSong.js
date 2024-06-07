@@ -6,7 +6,7 @@ import { ActionName } from "ttfm-socket";
 // let merchCount = 0
 // let songDetailCount = 0
 
-export default async ( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, connection ) => {
+export default async ( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, socket ) => {
   logger.debug( `================== playedSong start ====================` )
   // console.log( `playedSong payload: ${ JSON.stringify( payload, null, 2) }` )
   await userFunctions.setPreviousDJID( await userFunctions.getCurrentDJID() )
@@ -56,10 +56,17 @@ export default async ( payload, userFunctions, roomFunctions, songFunctions, cha
     songFunctions.getSongTags( payload )
   }
   roomFunctions.setDJCount( payload.djs.length ); //the number of djs on stage
-  
-  console.log( `connection: ${ JSON.stringify( connection, null, 2 ) }` )
-  
-  await connection.voteOnSong( { roomUuid: process.env.ROOM_UUID, userUuid: process.env.USERID, songVotes: { likes: true } } )
+
+  await new Promise(resolve => {
+    setTimeout(async () => {
+      await socket.action(ActionName.voteOnSong, {
+        roomUuid: process.env.ROOM_UUID,
+        userUuid: process.env.USERID,
+        songVotes: { like: true }
+      });
+      resolve();
+    }, 10 * 1000);
+  });
 
   // await socket.action( ActionName.voteOnSong, { roomUuid: process.env.ROOM_UUID, userUuid: process.env.USERID,
   // songVotes: { likes: true } }  )

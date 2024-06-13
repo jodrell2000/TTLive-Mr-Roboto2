@@ -5,7 +5,7 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
   // console.log( `startup state: ${ JSON.stringify( state, null, 2) }` )
   botFunctions.setBotStartTime()
   try {
-    const roomData = await roomFunctions.getRoomData( roomUUID )
+    await roomFunctions.storeRoomData( roomUUID )
     
     await botFunctions.reloadMemory( databaseFunctions, roomFunctions );
     
@@ -23,7 +23,8 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
     
     await userFunctions.resetUsersList();
     await userFunctions.rebuildUserList( state, databaseFunctions );
-    await userFunctions.updateModeratorsFromRoomData( roomData.roomRoles, databaseFunctions );
+    // console.log( `startup roomData:${ JSON.stringify( roomData, null, 2 ) }` )
+    await userFunctions.updateModeratorsFromRoomData( roomFunctions, databaseFunctions );
 
     //
     // // load in and user data on disk first

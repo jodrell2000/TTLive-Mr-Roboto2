@@ -646,12 +646,19 @@ const userFunctions = () => {
       }
     },
     
-    updateModeratorsFromRoomData: async function ( roomRoles, databaseFunctions ) {
+    updateModeratorsFromRoomData: async function ( roomFunctions, databaseFunctions ) {
+      const roomData = await roomFunctions.getRoomData()
+      const roomRoles = roomData.roles
+
       for ( const role of roomRoles ) {
         if (role.role === "moderator" || role.role === "owner" || role.role === "coOwner" ) {
           await this.addModerator(role.userUuid, databaseFunctions );
         }
       }
+    },
+    
+    updateModeratorStatus: async function( uuid, roomFunctions ) {
+      const roomData = await roomFunctions.getRoomData()
     },
 
     addModerator: async function ( userID, databaseFunctions ) {
@@ -1829,7 +1836,7 @@ const userFunctions = () => {
               }
             }
           } else {
-            await this.userJoinsRoom( data.userid, data.name, databaseFunctions )
+            await this.userJoinsRoom( roomFunctions, databaseFunctions )
           }
         }
       }
@@ -1929,7 +1936,7 @@ const userFunctions = () => {
     },
 
     addUserJoinedTime: async function ( userID, databaseFunctions ) {
-      if ( this.userExists( userID ) && !this.getUserJoinedRoom( userID ) ) {
+      if ( await this.userExists( userID ) && !this.getUserJoinedRoom( userID ) ) {
         await this.storeUserData( userID, "joinTime", Date.now(), databaseFunctions )
       }
     },
@@ -1938,7 +1945,10 @@ const userFunctions = () => {
       return theUsersList.findIndex( ( { id } ) => id === userID )
     },
 
-    userJoinsRoom: async function ( userID, username, databaseFunctions ) {
+    userJoinsRoom: async function ( userProfile, roomFunctions, databaseFunctions ) {
+      const userID = userProfile.uuid
+      const username = userProfile.nickname
+      
       console.log(`userJoinsRoom: ${ username } joined`)
       //adds users who join the room to the user list if their not already on the list
       await this.addUserToTheUsersList( userID, username, databaseFunctions );
@@ -1958,11 +1968,13 @@ const userFunctions = () => {
         await this.removeUserIDFromAFKArray( userID );
       }
 
+      await this.updateModeratorStatus( userID, roomFunctions)
+      
       await this.addUserIsHere( userID, databaseFunctions );
     },
 
     updateUsername: async function ( userID, username, databaseFunctions ) {
-      if ( this.userExists( userID ) ) {
+      if ( await this.userExists( userID ) ) {
         await this.storeUserData( userID, "username", username, databaseFunctions );
       }
     },
@@ -1999,7 +2011,6 @@ const userFunctions = () => {
       if ( !await this.isUserInUsersList( userID ) ) {
         theUsersList.push( { id: userID, username: userProfile.username } );
       }
-      // await this.addUserIsHere( userID, databaseFunctions );
     },
 
     rebuildUserList: async function ( data, databaseFunctions ) {

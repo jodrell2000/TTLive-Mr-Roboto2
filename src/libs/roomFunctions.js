@@ -28,6 +28,7 @@ let rulesMessageOn = true;
 let rulesInterval = 15; // how ofter, in minutes, the room rules will be displayed with the welcome messages
 let themeRandomizerEnabled = false;
 let maxDJs = roomDefaults.maxDJs;
+let roomData;
 
 const themesDataFileName = process.env.THEMESDATA;
 
@@ -61,7 +62,7 @@ const roomFunctions = () => {
     // Room Functions
     // ========================================================
 
-    getRoomData: async function (roomUUID) {
+    storeRoomData: async function (roomUUID) {
       const url = `https://rooms.prod.tt.fm/rooms/uuid/${roomUUID}`;
       const headers = {
         'accept': 'application/json',
@@ -70,12 +71,14 @@ const roomFunctions = () => {
 
       try {
         const { data } = await axios.get(url, { headers });
-        return data;
+        roomData = data;
       } catch (error) {
         console.error('Error fetching room data:', error);
         throw error;
       }
     },
+    
+    getRoomData: async () => roomData,
 
     // ========================================================
 

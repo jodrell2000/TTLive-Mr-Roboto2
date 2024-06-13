@@ -5,8 +5,8 @@ async function extractUserFromStatePatch( data ) {
 
   for ( const patch of statePatch ) {
     if ( patch.op === "add" && patch.path.includes( '/allUserData/' ) ) {
-      if ( patch.value && patch.value.userProfile && patch.value.userProfile.nickname ) {
-        return [ patch.value.userProfile.uuid, patch.value.userProfile.nickname ];
+      if ( patch.value && patch.value.userProfile ) {
+        return patch.value.userProfile
       }
     }
   }
@@ -15,13 +15,19 @@ async function extractUserFromStatePatch( data ) {
 
 export default async ( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
   logger.debug( `=========================== userJoined.js ===========================` )
-  logger.debug( `statePatch: ${ JSON.stringify( payload.statePatch, null, 2) }` )
+  const uuid = Object.keys(payload.allUserData)[0]
+  let userProfile
   if ( payload.statePatch && payload.statePatch.length > 0 ) {
-    const [ uuid, nickname ] = await extractUserFromStatePatch( payload ) ?? [ null, null ]
-
-    if ( uuid != null && nickname != null) {
-      await userFunctions.userJoinsRoom( uuid, nickname, databaseFunctions );
-      await chatFunctions.userGreeting( payload, uuid, nickname, roomFunctions, userFunctions, databaseFunctions )
-    }
+    userProfile = await extractUserFromStatePatch( payload )
+  } else {
+    userProfile = payload.allUserData[uuid].userProfile
   }
+
+  const nickname = userProfile.nickname
+
+  if ( uuid != null && nickname != null) {
+    await userFunctions.userJoinsRoom( userProfile, roomFunctions, databaseFunctions );
+    await chatFunctions.userGreeting( payload, uuid, nickname, roomFunctions, userFunctions, databaseFunctions )
+  }
+
 }

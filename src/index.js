@@ -12,6 +12,11 @@ import databaseFunctions from './libs/databaseFunctions.js'
 import dateFunctions from './libs/dateFunctions.js'
 import botFunctions from './libs/botFunctions.js'
 
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Recommended: send the information to a logging service or write to a log file
+});
+
 const roomBot = new Bot( process.env.JOIN_ROOM )
 await roomBot.connect( roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions )
 roomBot.configureListeners( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions )

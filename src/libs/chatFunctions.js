@@ -320,19 +320,21 @@ const chatFunctions = ( ) => {
         }
         console.log(`trackName: ${ trackName }`)
         
-        console.log( `botFunctions.readSongStats() ${botFunctions.readSongStats()}` )
-        if ( botFunctions.readSongStats() ) {
-          let previousDJName
-          if ( await userFunctions.getPreviousDJID() ) {
-            previousDJName = await userFunctions.getUsername( await userFunctions.getPreviousDJID() )
-          } else {
-            previousDJName = "Just"
-          }
+        if ( trackName !== null && artistName !== null) {
+          console.log( `botFunctions.readSongStats() ${ botFunctions.readSongStats() }` )
+          if ( botFunctions.readSongStats() ) {
+            let previousDJName
+            if ( await userFunctions.getPreviousDJID() ) {
+              previousDJName = await userFunctions.getUsername( await userFunctions.getPreviousDJID() )
+            } else {
+              previousDJName = "Just"
+            }
 
-          const message = `${ previousDJName } played...
+            const message = `${ previousDJName } played...
           ${ trackName } by ${ artistName }
           Stats: 👍 ${ songFunctions.upVotes() } 👎 ${ songFunctions.downVotes() } ❤️ ${ songFunctions.snagCount() }`
-          await this.botSpeak( message )
+            await this.botSpeak( message )
+          }
         }
       } catch ( error ) {
         console.error( "Error reading song stats:", error );

@@ -172,7 +172,9 @@ const userFunctions = () => {
       if ( await this.userExists( userID ) && await this.getUsername( userID ) !== "Guest" ) {
         try {
           const userPosition = this.getPositionOnUsersList( userID );
+
           theUsersList[ userPosition ][ key ] = value;
+
           await databaseFunctions.storeUserData( theUsersList[ userPosition ] );
         } catch ( error ) {
           console.error( "Error storing user data:", error.message );
@@ -218,6 +220,12 @@ const userFunctions = () => {
           throw error;
         }
       }
+    },
+    
+    updateUserFromProfile: async function( userProfile, databaseFunctions ) {
+      const username = userProfile.nickname
+      const uuid = userProfile.uuid
+      await this.storeUserData( uuid, "username", username, databaseFunctions );
     },
 
     getUsername: async function ( userID ) {
@@ -637,13 +645,21 @@ const userFunctions = () => {
         }
       }
     },
-
-    addModerator: function ( userID, databaseFunctions ) {
-      this.storeUserData( userID, 'moderator', true, databaseFunctions );
+    
+    updateModeratorsFromRoomData: async function ( roomRoles, databaseFunctions ) {
+      for ( const role of roomRoles ) {
+        if (role.role === "moderator" || role.role === "owner" || role.role === "coOwner" ) {
+          await this.addModerator(role.userUuid, databaseFunctions );
+        }
+      }
     },
 
-    removeModerator: function ( userID, databaseFunctions ) {
-      this.storeUserData( userID, 'moderator', false, databaseFunctions );
+    addModerator: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, 'moderator', true, databaseFunctions );
+    },
+
+    removeModerator: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, 'moderator', false, databaseFunctions );
     },
 
     isUserModerator: async function ( theUserID, roomFunctions ) {
@@ -1969,9 +1985,9 @@ const userFunctions = () => {
       }
     },
 
-    checkForEmptyUsersList: async function ( data ) {
+    checkForEmptyUsersList: async function ( data, databaseFunctions ) {
       if ( theUsersList.length === 0 ) {
-        await this.rebuildUserList( data );
+        await this.rebuildUserList( data, databaseFunctions );
       }
     },
 
@@ -1986,7 +2002,7 @@ const userFunctions = () => {
       // await this.addUserIsHere( userID, databaseFunctions );
     },
 
-    rebuildUserList: async function ( data ) {
+    rebuildUserList: async function ( data, databaseFunctions ) {
       let userID
       let userProfile
 
@@ -1994,10 +2010,10 @@ const userFunctions = () => {
         if ( typeof data.allUsers[ i ] !== 'undefined' ) {
           userID = data.allUsers[ i ].uuid
           userProfile = await this.getUserProfileFromAPI( userID )
-          console.log( `rebuildUserList userProfile: ${ JSON.stringify( userProfile, null, 2) }`)
           if ( !await this.userExists( userID ) ) {
             await this.addUserToTheUsersList( userID, userProfile )
           }
+          await this.updateUserFromProfile( userProfile, databaseFunctions )
         }
       }
     },
@@ -2115,32 +2131,32 @@ const userFunctions = () => {
     // Escort Me Functions
     // ========================================================
 
-    resetAllEscortMe: function ( data, databaseFunctions ) {
+    resetAllEscortMe: async function ( data, databaseFunctions ) {
       let theUserID;
       if ( data.room !== undefined ) {
         for ( let userLoop = 0; userLoop < data.users.length; userLoop++ ) {
           theUserID = data.users[ userLoop ];
           if ( typeof theUserID !== 'undefined' ) {
-            this.removeEscortMeFromUser( theUserID, databaseFunctions );
+            await this.removeEscortMeFromUser( theUserID, databaseFunctions );
           }
         }
       }
     },
 
-    addEscortMeToUser: function ( userID, databaseFunctions ) {
-      if ( this.isUserInUsersList( userID ) ) {
-        this.storeUserData( userID, "EscortMe", true, databaseFunctions );
+    addEscortMeToUser: async function ( userID, databaseFunctions ) {
+      if ( await this.isUserInUsersList( userID ) ) {
+        await this.storeUserData( userID, "EscortMe", true, databaseFunctions );
       }
     },
 
-    removeEscortMeFromUser: function ( userID, databaseFunctions ) {
-      if ( this.isUserInUsersList( userID ) ) {
-        this.deleteUserData( databaseFunctions, userID, "EscortMe" );
+    removeEscortMeFromUser: async function ( userID, databaseFunctions ) {
+      if ( await this.isUserInUsersList( userID ) ) {
+        await this.deleteUserData( databaseFunctions, userID, "EscortMe" );
       }
     },
 
-    escortMeIsEnabled: function ( userID ) {
-      if ( this.isUserInUsersList( userID ) ) {
+    escortMeIsEnabled: async function ( userID ) {
+      if ( await this.isUserInUsersList( userID ) ) {
         return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'EscortMe' ] === true;
       }
     },

@@ -307,21 +307,17 @@ const chatFunctions = ( ) => {
 
     readSongStats: async function ( videoID, songFunctions, botFunctions, databaseFunctions, userFunctions ) {
       try {
-        console.log(`------------------------- readSongStats -------------------------------`)
         let artistName = await songFunctions.getArtistName( videoID, databaseFunctions );
         if ( !artistName ) {
           artistName = songFunctions.previousArtist();
         }
-        console.log(`artistName: ${ artistName }`)
 
         let trackName = await songFunctions.getTrackName( videoID, databaseFunctions );
         if ( !trackName ) {
           trackName = songFunctions.previousTrack();
         }
-        console.log(`trackName: ${ trackName }`)
         
         if ( trackName !== null && artistName !== null) {
-          console.log( `botFunctions.readSongStats() ${ botFunctions.readSongStats() }` )
           if ( botFunctions.readSongStats() ) {
             let previousDJName
             if ( await userFunctions.getPreviousDJID() ) {

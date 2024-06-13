@@ -22,7 +22,8 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
     }
     
     await userFunctions.resetUsersList();
-    await userFunctions.rebuildUserList( state );
+    await userFunctions.rebuildUserList( state, databaseFunctions );
+    await userFunctions.updateModeratorsFromRoomData( roomData.roomRoles, databaseFunctions );
 
     //
     // // load in and user data on disk first

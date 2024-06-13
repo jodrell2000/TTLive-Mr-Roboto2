@@ -15,26 +15,28 @@ async function extractUserFromStatePatch( data ) {
 
 export default async ( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
   logger.debug( `=========================== userJoined.js ===========================` )
-  if ( Object.keys( payload.allUserData ).length > 0 ) {
-    const uuid = Object.keys( payload.allUserData )[ 0 ]
+  if ( Object.keys(payload.allUserData).length > 0 ) { 
+    const uuid = Object.keys(payload.allUserData)[0]
     let userProfile
     if ( payload.statePatch && payload.statePatch.length > 0 ) {
       userProfile = await extractUserFromStatePatch( payload )
     } else {
-      userProfile = payload.allUserData[ uuid ].userProfile
+      userProfile = payload.allUserData[uuid].userProfile
     }
-
-    let nickname
-    try {
-      nickname = userProfile.nickname
-    } catch ( error ) {
-      console.error( `Can't read the nickname:`, error.message );
-      throw error;
-    }
-
-    if ( uuid != null && nickname != null ) {
-      await userFunctions.userJoinsRoom( userProfile, roomFunctions, databaseFunctions );
-      await chatFunctions.userGreeting( payload, uuid, nickname, roomFunctions, userFunctions, databaseFunctions )
-    }
-  }
+    
+   if ( userProfile !== undefined ) {
+     let nickname
+     try {
+       nickname = userProfile.nickname
+     } catch ( error ) {
+       console.error( `Can't read the nickname:`, error.message );
+       throw error;
+     }
+  
+     if ( uuid != null && nickname != null ) {
+       await userFunctions.userJoinsRoom( userProfile, roomFunctions, databaseFunctions );
+       await chatFunctions.userGreeting( payload, uuid, nickname, roomFunctions, userFunctions, databaseFunctions )
+     }
+   }
+ }
 }

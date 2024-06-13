@@ -461,16 +461,16 @@ const commandFunctions = () => {
   }
   moderatorCommands.choosenewfavourite.help = "Pick a new favourite artist";
 
-  moderatorCommands.double = ( { roomFunctions, databaseFunctions } ) => {
-    roomFunctions.double( databaseFunctions );
+  moderatorCommands.double = ( { roomFunctions, chatFunctions } ) => {
+    roomFunctions.double( chatFunctions );
   }
   moderatorCommands.double.help = "Sets DJs to play 2 tracks each";
 
-  moderatorCommands.single = ( { roomFunctions, databaseFunctions } ) => {
-    roomFunctions.single( databaseFunctions );
+  moderatorCommands.single = ( { roomFunctions, chatFunctions } ) => {
+    roomFunctions.single( chatFunctions );
   }
-  moderatorCommands.single.help = "Sets DJs to play 1 track each";
-
+  moderatorCommands.single.help = "Sets DJs to play 1 tracks each";
+  
   // moderatorCommands.askbard = ( { botFunctions, data, args, chatFunctions, mlFunctions } ) => {
   //     botFunctions.askBardCommand( data, reassembleArgs( args ), chatFunctions, mlFunctions );
   // }

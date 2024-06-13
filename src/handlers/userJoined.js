@@ -23,7 +23,12 @@ export default async ( payload, userFunctions, roomFunctions, songFunctions, cha
     userProfile = payload.allUserData[uuid].userProfile
   }
 
-  const nickname = userProfile.nickname
+  try {
+    const nickname = userProfile.nickname
+  } catch ( error  ) {
+    console.error( `Can't read the nickname:`, error.message );
+    throw error;
+  }
 
   if ( uuid != null && nickname != null) {
     await userFunctions.userJoinsRoom( userProfile, roomFunctions, databaseFunctions );

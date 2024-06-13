@@ -309,7 +309,6 @@ const userFunctions = () => {
     },
 
     whoSentTheCommand: async function ( data ) {
-      logger.debug( `whoSentCommand data: ${ JSON.stringify( data ) }` )
       return data.sender;
     },
 
@@ -648,7 +647,7 @@ const userFunctions = () => {
     
     updateModeratorsFromRoomData: async function ( roomFunctions, databaseFunctions ) {
       const roomData = await roomFunctions.getRoomData()
-      const roomRoles = roomData.roles
+      const roomRoles = roomData.roomRoles
 
       for ( const role of roomRoles ) {
         if (role.role === "moderator" || role.role === "owner" || role.role === "coOwner" ) {

@@ -6,6 +6,9 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
   botFunctions.setBotStartTime()
   try {
     const roomData = await roomFunctions.getRoomData( roomUUID )
+    
+    await botFunctions.reloadMemory( databaseFunctions, roomFunctions );
+    
     await chatFunctions.botChat("System online...")
     if ( state.djs.length > 0 ) {
       const djID = state.djs[ 0 ].uuid
@@ -14,17 +17,12 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
     }
     
     if ( state.nowPlaying.song ) {
-      console.log(`startup.js state.nowPlaying.song.trackName before: ${ state.nowPlaying.song.trackName }`)
-      console.log(`startup.js state.nowPlaying.song.artistName before: ${ state.nowPlaying.song.artistName }`)
       songFunctions.setPreviousTrack( state.nowPlaying.song.trackName )
       songFunctions.setPreviousArtist( state.nowPlaying.song.artistName )
     }
     
     await userFunctions.resetUsersList();
     await userFunctions.rebuildUserList( state );
-
-    console.log(`startup.js userFunctions.previousTrack() after: ${ songFunctions.previousTrack() }`)
-    console.log(`startup.js userFunctions.previousArtist() after: ${ songFunctions.previousArtist() }`)
 
     //
     // // load in and user data on disk first
@@ -54,7 +52,6 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
     //
     // chatFunctions.botSpeak( "System online...", data );
   } catch ( err ) {
-    console.error( 'Error in roomChanged event:', err );
-    console.log( 'error', 'Unable to join the room due to an error: ' + err.toString() );
+    console.error( 'Error', 'Unable to join the room due to an error: ' + err.toString() );
   }
 }

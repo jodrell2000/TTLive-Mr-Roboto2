@@ -88,7 +88,7 @@ const songFunctions = () => {
         this.swapSongLengthLimit( data, chatFunctions );
       } else if ( isNaN( theSongLength ) ) {
         theMessage = "The max song length must be a number"
-        chatFunctions.botSpeak( theMessage, data )
+        chatFunctions.botSpeak( theMessage )
       } else {
         musicDefaults.songLengthLimitOn = true;
         musicDefaults.songLengthLimit = theSongLength;
@@ -119,7 +119,7 @@ const songFunctions = () => {
       } else {
         theMessage += " inactive";
       }
-      chatFunctions.botSpeak( theMessage, data, true )
+      chatFunctions.botSpeak( theMessage, true )
     },
 
     // ========================================================
@@ -146,8 +146,8 @@ const songFunctions = () => {
     // Verified DB info
     // ========================================================
 
-    getArtistName: async function ( youtube_id, databaseFunctions ) {
-      const array = await databaseFunctions.getVerifiedArtistFromID( youtube_id );
+    getArtistName: async function ( videoID, databaseFunctions ) {
+      const array = await databaseFunctions.getVerifiedArtistFromID( videoID );
       if ( array.length > 0 ) {
         return array[ 0 ].artistDisplayName;
       } else {
@@ -179,9 +179,9 @@ const songFunctions = () => {
     setPreviousArtist: (artist) => { previousArtist = artist; },
     setPreviousTrack: (track) => { previousSong = track; },
 
-    grabSongStats: function () {
-      previousSongStats[ 'upvotes' ] = this.upVotes.length;
-      previousSongStats[ 'downvotes' ] = this.downVotes.length;
+    grabSongStats: async function () {
+      previousSongStats[ 'upvotes' ] = upVotes.length;
+      previousSongStats[ 'downvotes' ] = downVotes.length;
       previousSongStats[ 'snags' ] = this.snagCount();
     },
 
@@ -219,7 +219,7 @@ const songFunctions = () => {
       downVotes = [];
     },
 
-    resetVoteCountSkip: function () {
+    resetVoteCountSkip: async function () {
       voteCountSkip = 0;
     },
 
@@ -227,11 +227,11 @@ const songFunctions = () => {
       voteCountSkip += 1;
     },
 
-    resetVotesLeft: function ( votesToSkip ) {
+    resetVotesLeft: async function ( votesToSkip ) {
       votesLeft = votesToSkip;
     },
 
-    resetVoteSnagging: function () {
+    resetVoteSnagging: async function () {
       ALLREADYCALLED = false; //resets votesnagging so that it can be called again
     },
 
@@ -248,16 +248,16 @@ const songFunctions = () => {
       }
     },
 
-    clearTakedownTimer( userFunctions, roomFunctions ) {
+    async clearTakedownTimer( userFunctions, roomFunctions, chatFunctions ) {
       // If takedown Timer has been set, clear since we've made it to the next song
       if ( takedownTimer !== null && roomFunctions.lastdj() !== undefined ) {
         clearTimeout( takedownTimer );
         takedownTimer = null;
 
         if ( typeof userFunctions.theUsersList()[ userFunctions.theUsersList().indexOf( roomFunctions.lastdj() ) + 1 ] !== 'undefined' ) {
-          bot.speak( "@" + userFunctions.theUsersList()[ userFunctions.theUsersList().indexOf( roomFunctions.lastdj() ) + 1 ] + ", Thanks buddy ;-)" );
+          await chatFunctions.botSpeak( "@" + userFunctions.theUsersList()[ userFunctions.theUsersList().indexOf( roomFunctions.lastdj() ) + 1 ] + ", Thanks buddy ;-)" );
         } else {
-          bot.speak( 'Thanks buddy ;-)' );
+          await chatFunctions.botSpeak( 'Thanks buddy ;-)' );
         }
       }
     },
@@ -296,10 +296,10 @@ const songFunctions = () => {
       if ( await databaseFunctions.checkVideoDataExists( this.ytid() ) ) {
         await databaseFunctions.getSongInfoData( this.ytid() )
           .then( ( songInfo ) => {
-            chatFunctions.botSpeak( "The song " + songInfo.trackName + " by " + songInfo.artistName + " has been played " + songInfo.playCount + " times by " + songInfo.djCount + " different DJs, and was first played on " + songInfo.firstPlay, data );
+            chatFunctions.botSpeak( "The song " + songInfo.trackName + " by " + songInfo.artistName + " has been played " + songInfo.playCount + " times by " + songInfo.djCount + " different DJs, and was first played on " + songInfo.firstPlay );
           } )
       } else {
-        chatFunctions.botSpeak( "I can't find a confirmed listing for this track", data );
+        chatFunctions.botSpeak( "I can't find a confirmed listing for this track" );
       }
     },
 
@@ -331,10 +331,10 @@ const songFunctions = () => {
                 //console.log( "tracklist:" + returned.tracklist );
               } )
               .catch( () => {
-                chatFunctions.botSpeak( "Sorry, I couldn't find that online: " + verifiedSong + " by " + verifiedArtist, data );
+                chatFunctions.botSpeak( "Sorry, I couldn't find that online: " + verifiedSong + " by " + verifiedArtist );
               } )
           } else {
-            chatFunctions.botSpeak( "Sorry, I couldn't find that in my Database", data );
+            chatFunctions.botSpeak( "Sorry, I couldn't find that in my Database" );
           }
         } )
         .catch( ( error ) => {
@@ -371,10 +371,10 @@ const songFunctions = () => {
                 //console.log( "tracklist:" + returned.tracklist );
               } )
               .catch( () => {
-                chatFunctions.botSpeak( "Sorry, I couldn't find that online: " + verifiedSong + " by " + verifiedArtist, data );
+                chatFunctions.botSpeak( "Sorry, I couldn't find that online: " + verifiedSong + " by " + verifiedArtist );
               } )
           } else {
-            chatFunctions.botSpeak( "Sorry, I couldn't find that in my Database", data );
+            chatFunctions.botSpeak( "Sorry, I couldn't find that in my Database" );
           }
         } )
         .catch( ( error ) => {

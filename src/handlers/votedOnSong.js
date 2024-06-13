@@ -1,25 +1,19 @@
-import { logger } from '../utils/logging.js'
-
 export default async ( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
-  console.log( `message.js payload.allUserData: ${ JSON.stringify( payload.allUserData, null, 2 ) }` )
-
   const userUUID = Object.keys( payload.allUserData )[ 0 ]
-  console.log(`userUUID: ${ userUUID }`)
 
-  if ( payload.allUserData[ userUUID ].songVotes ) {
-    if ( payload.allUserData[ userUUID ].songVotes.star ) {
-      console.log(`record snag`)
-      await songFunctions.recordSnag( userUUID )
-    } else if ( payload.allUserData[ userUUID ].songVotes.like === true) {
-      console.log(`record up vote`)
-      await songFunctions.recordUpVotes( userUUID )
-    } else {
-      console.log(`record down vote`)
-      await songFunctions.recordDownVotes( userUUID )
+  for (const uuid in payload.allUserData) {
+    if (payload.allUserData.hasOwnProperty(uuid)) {
+      const userData = payload.allUserData[uuid];
+      if (userData.songVotes) {
+        if (userData.songVotes.like === true) {
+          await songFunctions.recordUpVotes(uuid);
+        } else if (userData.songVotes.like === false) {
+          await songFunctions.recordDownVotes(uuid);
+        }
+      }
+      if (userData.songVotes && userData.songVotes.star === true) {
+        await songFunctions.recordSnag(uuid);
+      }
     }
   }
-
-  console.log(`upVotes: ${ songFunctions.upVotes() }`)
-  console.log(`downVotes: ${ songFunctions.downVotes() }`)
-  console.log(`snags: ${ songFunctions.snagCount() }`)
 }

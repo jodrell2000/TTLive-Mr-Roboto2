@@ -43,13 +43,13 @@ const videoFunctions = () => {
     if ( 'allowed' in restrictions ) {
       if ( restrictions.allowed ) {
         alertIfRegionsNotAllowed( restrictions, userFunctions, ( msg ) =>
-          chatFunctions.botSpeak( msg, data )
+          chatFunctions.botSpeak( msg )
         );
       }
     } else if ( 'blocked' in restrictions ) {
       if ( restrictions.blocked ) {
         alertIfRegionsBlocked( restrictions, userFunctions, ( msg ) =>
-          chatFunctions.botSpeak( msg, data )
+          chatFunctions.botSpeak( msg )
         );
       }
     }
@@ -90,7 +90,7 @@ const videoFunctions = () => {
       const regionsAsArray = Array.from( regionsWeCareAbout );
       let regionReport = `The list of regions that will trigger a blocked alert is currently ` + turnCodesIntoCountries( regionsAsArray );
 
-      chatFunctions.botSpeak( regionReport, data );
+      chatFunctions.botSpeak( regionReport );
     },
 
     checkVideoStatus: function ( videoIDs ) {
@@ -131,11 +131,11 @@ const videoFunctions = () => {
           message = countryLookup.byIso( theRegion ).country + ' has been added to the region alerts list';
         }
         if ( announce === true ) {
-          chatFunctions.botSpeak( message, data );
+          chatFunctions.botSpeak( message );
         }
       } else {
         if ( announce === true ) {
-          chatFunctions.botSpeak( 'That region is not recognised. Please use one of the 2 character ISO country codes, https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2', data );
+          chatFunctions.botSpeak( 'That region is not recognised. Please use one of the 2 character ISO country codes, https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2' );
         }
       }
     },
@@ -150,7 +150,7 @@ const videoFunctions = () => {
         message = countryLookup.byIso( theRegion ).country + ' is not in the region alerts list';
       }
       if ( announce === true ) {
-        chatFunctions.botSpeak( message, data );
+        chatFunctions.botSpeak( message );
       }
     },
 

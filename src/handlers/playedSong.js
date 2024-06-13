@@ -1,75 +1,60 @@
-import { postMessage } from '../libs/cometchat.js'
 import { logger } from "../utils/logging.js";
-import roomDefaults from "../defaults/roomDefaults.js";
 import { ActionName } from "ttfm-socket";
-// import { getTrackFact } from '../libs/ai.js'
-// let merchCount = 0
-// let songDetailCount = 0
+import roomDefaults from "../defaults/roomDefaults.js";
 
 export default async ( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, socket ) => {
-  logger.debug( `================== playedSong start ====================` )
-  // console.log( `playedSong payload: ${ JSON.stringify( payload, null, 2) }` )
-  await userFunctions.setPreviousDJID( await userFunctions.getCurrentDJID() )
+  logger.debug( `================== playedSong ====================` )
+  //await userFunctions.setPreviousDJID( await userFunctions.getCurrentDJID() )
 
+  // end song
   let djID;
+  if ( payload.nowPlaying && payload.nowPlaying.song ) {
+    djID = payload.djs[ 0 ].uuid;
+    console.log( `djID: ${djID}`)
+    console.log( `djName: ${ await userFunctions.getUsername( djID ) }` )
 
-  if ( payload.djs.length > 0 ) {
-    djID = payload.djs[0].uuid;
-
+    await songFunctions.grabSongStats();
     await userFunctions.setCurrentDJID( djID )
-    let previousDJName
-    
-    if ( await userFunctions.getPreviousDJID() ) {
-      previousDJName = await userFunctions.getUsername( await userFunctions.getPreviousDJID() )
-    } else {
-      previousDJName = "Just"
-    }
-    const previousArtist = songFunctions.previousArtist()
-    const previousTrack = songFunctions.previousTrack()
-    console.log('playedSong previousArtist: ' + previousArtist)
-    console.log('playedSong previousTrack:' + previousTrack)
-    if ( previousArtist && previousTrack ) {
-      let snags = payload.voteCounts.stars ?? 0
+    const videoID = payload.nowPlaying.song.songShortId
+    await chatFunctions.readSongStats( videoID, songFunctions, botFunctions, databaseFunctions, userFunctions );
+    await databaseFunctions.saveLastSongStats( songFunctions );
+    await userFunctions.incrementDJPlayCount( djID, databaseFunctions );
 
-      const previousMessage = `${ previousDJName } played...
-      ${ previousTrack } by ${ previousArtist }
-      Stats: 👍 ${ songFunctions.upVotes() } 👎 ${ songFunctions.downVotes() } ❤️ ${ snags }`
-      await chatFunctions.botSpeak( previousMessage, payload )
-    }
-    
-    if ( payload.nowPlaying && payload.nowPlaying.song ) {
-      songFunctions.setPreviousTrack( payload.nowPlaying.song.trackName )
-      songFunctions.setPreviousArtist( payload.nowPlaying.song.artistName )
-      const theMessage = 'Now playing ' + payload.nowPlaying.song.trackName + ' by ' + payload.nowPlaying.song.artistName
-      await chatFunctions.botSpeak( theMessage, payload )
-    }
-  }
+  // await userFunctions.removeDJsOverPlaylimit( data, chatFunctions, djID );
+  // await roomFunctions.escortDJsDown( data, djID, botFunctions, userFunctions, chatFunctions, databaseFunctions );
 
-  // songFunctions.resetVoteCountSkip();
-  // songFunctions.resetVotesLeft( roomDefaults.HowManyVotesToSkip );
-  await songFunctions.resetUpVotes();
-  await songFunctions.resetDownVotes();
-  await songFunctions.resetSnagCount();
-  // songFunctions.resetVoteSnagging();
-  botFunctions.clearAllTimers( userFunctions, roomFunctions, songFunctions );
-  if ( payload.nowPlaying ) {
-    songFunctions.getSongTags( payload )
+  // new song
+
+    await songFunctions.resetVoteCountSkip();
+    await songFunctions.resetVotesLeft( roomDefaults.HowManyVotesToSkip );
+    await songFunctions.resetUpVotes();
+    await songFunctions.resetDownVotes();
+    await songFunctions.resetSnagCount();
+    await songFunctions.resetVoteSnagging();
+    await botFunctions.clearAllTimers( userFunctions, roomFunctions, songFunctions, chatFunctions );
+
+    if ( payload.nowPlaying.song ) {
+      songFunctions.getSongTags( payload )
+      await databaseFunctions.saveTrackData( djID, payload.nowPlaying.song );
+    }
+
+    await userFunctions.setPreviousDJID( djID );
+    songFunctions.setPreviousTrack( payload.nowPlaying.song.trackName )
+    songFunctions.setPreviousArtist( payload.nowPlaying.song.artistName )
+    const theMessage = 'Now playing ' + payload.nowPlaying.song.trackName + ' by ' + payload.nowPlaying.song.artistName
+    await chatFunctions.botSpeak( theMessage )
   }
   roomFunctions.setDJCount( payload.djs.length ); //the number of djs on stage
-
-  await new Promise(resolve => {
-    setTimeout(async () => {
-      await socket.action(ActionName.voteOnSong, {
+  
+  // bot votes, after 30 seconds in case a skip is needed
+  await new Promise( resolve => {
+    setTimeout( async () => {
+      await socket.action( ActionName.voteOnSong, {
         roomUuid: process.env.ROOM_UUID,
         userUuid: process.env.USERID,
         songVotes: { like: true }
-      });
+      } );
       resolve();
-    }, 10 * 1000);
-  });
-
-  // await socket.action( ActionName.voteOnSong, { roomUuid: process.env.ROOM_UUID, userUuid: process.env.USERID,
-  // songVotes: { likes: true } }  )
-  
-  logger.debug( `================== playedSong end ====================` )
+    }, 30 * 1000 );
+  } );
 }

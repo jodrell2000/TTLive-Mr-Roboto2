@@ -14,7 +14,8 @@ async function extractUserFromStatePatch( data ) {
 }
 
 export default async ( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
-  logger.debug( `userJoined.js payload: ${ JSON.stringify( payload ) }` )
+  logger.debug( `=========================== userJoined.js ===========================` )
+  logger.debug( `statePatch: ${ JSON.stringify( payload.statePatch, null, 2) }` )
   if ( payload.statePatch && payload.statePatch.length > 0 ) {
     const [ uuid, nickname ] = await extractUserFromStatePatch( payload ) ?? [ null, null ]
 

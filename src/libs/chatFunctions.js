@@ -12,21 +12,22 @@ const room = process.env.ROOM_UUID;
 
 const chatFunctions = ( ) => {
   return {
-    botSpeak: async function ( message, data, publicChat, recipient ) {
-      let pmCommand;
+    botSpeak: async function ( message, publicChat, recipient ) {
+      // let pmCommand;
 
-      if ( recipient === undefined && data !== null ) {
-        if ( data.command === "pmmed" ) {
-          pmCommand = true;
-          recipient = data.senderid;
-        }
-      }
+      // if ( recipient === undefined && data !== null ) {
+      //   if ( data.command === "pmmed" ) {
+      //     pmCommand = true;
+      //     recipient = data.senderid;
+      //   }
+      // }
 
-      if ( pmCommand === true && publicChat === undefined ) {
-        await this.botPM( message, recipient );
-      } else {
-        await this.botChat( message ).then();
-      }
+      // if ( pmCommand === true && publicChat === undefined ) {
+      //   await this.botPM( message, recipient );
+      // } else {
+      //   await this.botChat( message ).then();
+      // }
+      await this.botChat( message ).then();
     },
 
     botSpeakPicture: async function ( theMessage, theImage ) {
@@ -74,7 +75,7 @@ const chatFunctions = ( ) => {
 
       if ( receiverID === null ) {
         await this.botSpeak( "@" + await userFunctions.getUsername( senderID ) + " you can't send the DJ a message if" +
-          " there's no DJ?!?", data, true );
+          " there's no DJ?!?", true );
         return false;
       } else {
         return true;
@@ -86,7 +87,7 @@ const chatFunctions = ( ) => {
         const randomMessage = messageArray[ Math.floor( Math.random() * messageArray.length ) ];
         const thisMessage = await this.buildUserToUserRandomMessage( userFunctions, senderID, randomMessage, receiverID );
 
-        await this.botSpeak( thisMessage, data, true );
+        await this.botSpeak( thisMessage, true );
       }
     },
 
@@ -114,9 +115,9 @@ const chatFunctions = ( ) => {
         }
 
         this.countThisCommand( databaseFunctions, theCommand )
-          .then( ( countThisCommand ) => {
+          .then( async ( countThisCommand ) => {
             if ( countThisCommand !== -1 && receiverID !== senderID ) {
-              userFunctions.updateCommandCount( receiverID, theCommand, databaseFunctions );
+              await userFunctions.updateCommandCount( receiverID, theCommand, databaseFunctions );
             }
           } )
       }
@@ -165,11 +166,11 @@ const chatFunctions = ( ) => {
 
       const readInOrder = async () => {
         for ( let messageLoop = 0; messageLoop < messageVariable[ randomMessageNumber ].length; messageLoop++ ) {
-          await this.botSpeak( messageVariable[ randomMessageNumber ][ messageLoop ][ 0 ], data );
+          await this.botSpeak( messageVariable[ randomMessageNumber ][ messageLoop ][ 0 ] );
           await sleep( messageVariable[ randomMessageNumber ][ messageLoop ][ 1 ] )
         }
 
-        const randomPic = pictureVariable[ Math.floor( Math.random() * pictureVariable.length ) ];
+        const randomPic = [ pictureVariable[ Math.floor( Math.random() * pictureVariable.length ) ] ];
         await this.botSpeakPicture( "",randomPic );
       }
       readInOrder().then( );
@@ -179,15 +180,15 @@ const chatFunctions = ( ) => {
       const theUsername = userFunctions.getUsername( data.userid )
       let randomNumber = Math.random();
       if ( randomNumber === 0.5 ) {
-        await this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...an edge?!?', data, true );
+        await this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...an edge?!?', true );
       } else {
         let y = Math.ceil( randomNumber * 2 );
         switch ( y ) {
           case 1:
-            await this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...heads', data, true );
+            await this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...heads', true );
             break;
           case 2:
-            await this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...tails', data, true );
+            await this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...tails', true );
             break;
         }
       }
@@ -195,7 +196,7 @@ const chatFunctions = ( ) => {
 
     dice: async function ( data, args, userFunctions ) {
       if ( args.length < 2 ) {
-        await this.botSpeak( `You didn't tell me how many dice to roll and how many sides they have. Check "/help dice" for more info`, data );
+        await this.botSpeak( `You didn't tell me how many dice to roll and how many sides they have. Check "/help dice" for more info` );
         return;
       }
 
@@ -204,32 +205,32 @@ const chatFunctions = ( ) => {
       const diceType = args[ 1 ].split( "d" )[ 1 ];
 
       if ( !diceType ) {
-        await this.botSpeak( `The 2nd number must have a "d" before it. Check "/help dice" for more info`, data );
+        await this.botSpeak( `The 2nd number must have a "d" before it. Check "/help dice" for more info` );
         return;
       }
 
       if ( !+diceCount || !+diceType ) {
-        await this.botSpeak( `Unable to read non-numeric values`, data );
+        await this.botSpeak( `Unable to read non-numeric values` );
         return;
       }
 
       if ( diceCount < 1 ) {
-        await this.botSpeak( `You must roll at least 1 die`, data );
+        await this.botSpeak( `You must roll at least 1 die` );
         return;
       }
 
       if ( diceCount > 100 ) {
-        await this.botSpeak( `There's a max of 100 dice`, data );
+        await this.botSpeak( `There's a max of 100 dice` );
         return;
       }
 
       if ( diceType < 3 ) {
-        await this.botSpeak( `These dice need at least 3 sides, otherwise, use coinflip`, data );
+        await this.botSpeak( `These dice need at least 3 sides, otherwise, use coinflip` );
         return;
       }
 
       if ( diceType > 100 ) {
-        await this.botSpeak( `These dice have a max of 100 sides`, data );
+        await this.botSpeak( `These dice have a max of 100 sides` );
         return;
       }
 
@@ -245,7 +246,7 @@ const chatFunctions = ( ) => {
 
       theMessage = theMessage.substring( 0, theMessage.length - 2 );
       theMessage = theMessage + " for a total of " + theCount;
-      await this.botSpeak( theMessage, data );
+      await this.botSpeak( theMessage );
     },
 
     ventriloquistCommand: async function ( data, args ) {
@@ -255,7 +256,7 @@ const chatFunctions = ( ) => {
       }
       theMessage = theMessage.substring( 0, theMessage.length - 1 );
 
-      await this.botSpeak( theMessage, data, true );
+      await this.botSpeak( theMessage, true );
     },
 
     // ========================================================
@@ -304,25 +305,34 @@ const chatFunctions = ( ) => {
       }
     },
 
-    readSongStats: async function ( data, songFunctions, botFunctions, databaseFunctions ) {
-      const youtube_id = data.room.metadata.current_song.metadata.ytid;
-
+    readSongStats: async function ( videoID, songFunctions, botFunctions, databaseFunctions, userFunctions ) {
       try {
-        let artistName = await songFunctions.getArtistName( youtube_id, databaseFunctions );
+        console.log(`------------------------- readSongStats -------------------------------`)
+        let artistName = await songFunctions.getArtistName( videoID, databaseFunctions );
         if ( !artistName ) {
           artistName = songFunctions.previousArtist();
         }
+        console.log(`artistName: ${ artistName }`)
 
-        let trackName = await songFunctions.getTrackName( youtube_id, databaseFunctions );
+        let trackName = await songFunctions.getTrackName( videoID, databaseFunctions );
         if ( !trackName ) {
           trackName = songFunctions.previousTrack();
         }
-
+        console.log(`trackName: ${ trackName }`)
+        
+        console.log( `botFunctions.readSongStats() ${botFunctions.readSongStats()}` )
         if ( botFunctions.readSongStats() ) {
-          await this.botSpeak( 'Artist: ' + artistName + '\nTitle: ' + trackName +
-            '\nStats: :thumbsup: ' + songFunctions.previousUpVotes() +
-            ' :thumbsdown: ' + songFunctions.previousDownVotes() +
-            ' :heart:' + songFunctions.previousSnags(), data );
+          let previousDJName
+          if ( await userFunctions.getPreviousDJID() ) {
+            previousDJName = await userFunctions.getUsername( await userFunctions.getPreviousDJID() )
+          } else {
+            previousDJName = "Just"
+          }
+
+          const message = `${ previousDJName } played...
+          ${ trackName } by ${ artistName }
+          Stats: 👍 ${ songFunctions.upVotes() } 👎 ${ songFunctions.downVotes() } ❤️ ${ songFunctions.snagCount() }`
+          await this.botSpeak( message )
         }
       } catch ( error ) {
         console.error( "Error reading song stats:", error );
@@ -331,12 +341,12 @@ const chatFunctions = ( ) => {
 
     readPlaylistStats: async function ( data ) {
       if ( botDefaults.botPlaylist !== null ) {
-        await this.botSpeak( 'There are currently ' + botDefaults.botPlaylist.length + ' songs in my playlist.', data );
+        await this.botSpeak( 'There are currently ' + botDefaults.botPlaylist.length + ' songs in my playlist.' );
       }
     },
 
     overPlayLimit: async function ( data, username, playLimit ) {
-      await this.botSpeak( '@' + username + ' the  playlimit is currently ' + playLimit + '. Time for another DJ.', data );
+      await this.botSpeak( '@' + username + ' the  playlimit is currently ' + playLimit + '. Time for another DJ.' );
     },
 
     eventMessageIterator: function ( botFunctions, userFunctions ) {

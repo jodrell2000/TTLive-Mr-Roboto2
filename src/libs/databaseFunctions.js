@@ -122,6 +122,39 @@ const databaseFunctions = () => {
     },
 
     // ========================================================
+    // "Memory" Functions
+    // ========================================================
+
+    recordMemory: async function ( key, value ) {
+      const theQuery = "REPLACE INTO persistentMemory ( theKey, theValue ) VALUES (?, ?)";
+      const theValues = [ key, value ];
+      try {
+        await this.runQuery( theQuery, theValues );
+      } catch ( error ) {
+        console.error( 'Unable to save memory:', error.message );
+        throw error;
+      }
+    },
+    
+    retrieveMemory: async function ( key ) {
+      const theQuery = "SELECT theValue FROM persistentMemory WHERE theKey = ?";
+      const theValues = [ key ];
+      try {
+        const result = await this.runQuery( theQuery, theValues );
+        if (result.length > 0) {
+          return result[0].theValue;
+        } else {
+          return null;
+        }
+      } catch ( error ) {
+        console.error( 'Unable to retrieve memory:', error.message );
+        throw error;
+      }
+    },
+    
+    // ========================================================
+
+    // ========================================================
     // File Functions
     // ========================================================
 
@@ -262,26 +295,38 @@ const databaseFunctions = () => {
     // ========================================================
     // Song Data Functions
     // ========================================================
-
+    
     saveTrackData: async function ( djID, songData ) {
-      this.saveTrackDataOld( djID, songData );
-      await this.saveYouTubeTrackData( djID, songData );
-    },
+      if ( songData.songShortId ) {
+        const videoDataID = songData.songShortId
+        const length = songData.duration
+        let theQuery = "INSERT INTO tracksPlayed (djID, videoData_id, length) VALUES (?, ?, ?);"
+        let values = [ djID, videoDataID, length ];
+        await this.runQuery( theQuery, values )
+          .then( ( result ) => {
+            return this.setTrackPlayedLength( result.insertId - 1 );
+          } )
 
-    saveYouTubeTrackData: async function ( djID, songData ) {
-      const videoData_id = songData.musicProviders.youtube || songData.musicProviders.apple;
-      const artist = songData.artistName;
-      const song = songData.trackName;
-      logger.debug(`videoData_id: ${videoData_id}`)
-      logger.debug(`artist: ${artist}`)
-      logger.debug(`song: ${song}`)
 
-      const exists = await this.checkVideoDataExists( videoData_id );
+        const videoID = songData.songShortId
+        const youTubeID = songData.musicProviders.youtube || null
+        const appleID = songData.musicProviders.apple || null
+        const spotifyID = songData.musicProviders.spotify || null
 
-      if ( !exists ) {
-        let theQuery = "INSERT INTO videoData (id, artistName, trackName) VALUES (?, ?, ?)";
-        const values = [ videoData_id, artist, song ];
-        return this.runQuery( theQuery, values );
+        const artist = songData.artistName;
+        const song = songData.trackName;
+
+        const exists = await this.checkVideoDataExists( videoID );
+
+        if ( !exists ) {
+          let theQuery = "INSERT INTO videoData (id, artistName, trackName, youTubeID, appleID, spotifyID) VALUES" +
+            " (?, ?, ?, ?, ?, ?)";
+          const values = [ videoID, artist, song, youTubeID, appleID, spotifyID ];
+          await this.runQuery( theQuery, values )
+        }
+      } else {
+        logger.error( `databaseFunctions.saveTrackData songData.songShortId: ${ songData.songShortId }` )
+        console.log( JSON.stringify( songData, null, 2 ))
       }
     },
 
@@ -299,29 +344,11 @@ const databaseFunctions = () => {
       }
     },
 
-    saveTrackDataOld: function ( djID, songData ) {
-      const videoData_id = songData.musicProviders.youtube || songData.musicProviders.apple;
-      return this.getArtistID( songData.artistName )
-        .then( ( artistID ) => {
-          this.getTrackID( songData.trackName )
-            .then( ( trackID ) => {
-              let theQuery = "INSERT INTO tracksPlayed (artistID, trackID, djID, videoData_id) VALUES (?, ?, ?, ?);"
-              let values = [ artistID, trackID, djID, videoData_id ];
-              return this.runQuery( theQuery, values )
-                .then( ( result ) => {
-                  return this.setTrackLength( result.insertId - 1 );
-                } )
-            } )
-            .catch( ( ex ) => { console.error( "Something went wrong: " + ex ); } );
-        } )
-        .catch( ( ex ) => { console.error( "Something went wrong: " + ex ); } );
-    },
-
-    setTrackLength: function ( trackID ) {
-      return this.calcTrackLength( trackID )
-        .then( ( length ) => {
-          let theQuery = "UPDATE tracksPlayed SET length = ? WHERE id = ?;"
-          let values = [ length, trackID ];
+    setTrackPlayedLength: function ( trackID ) {
+      return this.calcTrackPlayedLength( trackID )
+        .then( ( playedLength ) => {
+          let theQuery = "UPDATE tracksPlayed SET playedLength = ? WHERE id = ?;"
+          let values = [ playedLength, trackID ];
           return this.runQuery( theQuery, values );
         } )
     },
@@ -366,7 +393,7 @@ const databaseFunctions = () => {
         } )
     },
 
-    saveLastSongStats: function ( songFunctions ) {
+    saveLastSongStats: async function ( songFunctions ) {
       return this.getLastSongID( songFunctions.previousArtist(), songFunctions.previousTrack() )
         .then( ( theID ) => {
           const query = "UPDATE tracksPlayed tp SET upvotes=?, downvotes=?, snags=? WHERE tp.id=?";
@@ -377,16 +404,12 @@ const databaseFunctions = () => {
     },
 
     getLastSongID: function ( theArtist, theTrack ) {
-      const selectQuery = "SELECT MAX(tp.id) AS theID FROM tracksPlayed tp JOIN tracks t ON tp.trackID=t.id JOIN artists a ON tp.artistID=a.id WHERE t.trackname=? AND a.artistName=?;";
+      const selectQuery = "SELECT MAX(tp.id) AS theID FROM tracksPlayed tp JOIN videoData vd ON" +
+        " tp.videoData_id=vd.id WHERE vd.trackname=? AND vd.artistName=?;";
       const values = [ theTrack, theArtist ];
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {
-          if ( result.length !== 0 ) {
-            return result[ 0 ][ 'theID' ];
-          } else {
-            console.error( "We couldn't find the last track in the DB?!?" );
-            console.error( "Track: " + theTrack + " by: " + theArtist );
-          }
+          return result[ 0 ][ 'theID' ];
         } )
     },
 
@@ -401,7 +424,7 @@ const databaseFunctions = () => {
         } )
     },
 
-    calcTrackLength: function ( trackID ) {
+    calcTrackPlayedLength: function ( trackID ) {
       return this.getTrackPlayedTime( trackID )
         .then( ( thisTrackPlayedTime ) => {
           return this.getTrackPlayedTime( trackID + 1 )
@@ -409,7 +432,7 @@ const databaseFunctions = () => {
               return nextTrackPlayedTime - thisTrackPlayedTime;
             } )
         } )
-        .catch( ( ex ) => { console.error( "Something went wrong calculating the track length: " + ex ); } );
+        .catch( ( ex ) => { console.error( "Something went wrong calculating the track playedLength: " + ex ); } );
     },
 
     getTrackPlayedTime: function ( trackID ) {
@@ -628,7 +651,7 @@ const databaseFunctions = () => {
     // Command Functions
     // ========================================================
 
-    incrementCommandCountForCurrentTrack: function ( theCommand ) {
+    incrementCommandCountForCurrentTrack: async function ( theCommand ) {
       this.getCurrentSongID()
         .then( ( trackID ) => {
           this.getCommandID( theCommand )
@@ -724,7 +747,7 @@ const databaseFunctions = () => {
                                     LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
                                     LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                            WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
-                                 tp.length > 60 AND
+                                 tp.playedLength > 60 AND
                                  u.username != 'Mr. Roboto' AND
                                  DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                  (${ includeDays.join( ', ' ) })
@@ -755,7 +778,7 @@ const databaseFunctions = () => {
                                     LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
                                     LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                            WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
-                                 tp.length > 60 AND
+                                 tp.playedLength > 60 AND
                                  u.username != 'Mr. Roboto' AND
                                  DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                  (${ includeDays.join( ', ' ) })
@@ -785,7 +808,7 @@ const databaseFunctions = () => {
                                     LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
                                     LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                            WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
-                                 tp.length > 60 AND
+                                 tp.playedLength > 60 AND
                                  u.username != 'Mr. Roboto' AND
                                  DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                  (${ includeDays.join( ', ' ) })
@@ -819,7 +842,7 @@ const databaseFunctions = () => {
                                           LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
                                           LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                                  WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
-                                       tp.length > 60 AND
+                                       tp.playedLength > 60 AND
                                        u.username != 'Mr. Roboto' AND
                                        DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                        (${ includeDays.join( ', ' ) })
@@ -871,7 +894,7 @@ const databaseFunctions = () => {
                                           LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
                                           LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                                  WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
-                                       tp.length > 60
+                                       tp.playedLength > 60
                                  GROUP BY tp.id, u.username) trackPoints
                            GROUP BY dj
                            ORDER BY 2 DESC

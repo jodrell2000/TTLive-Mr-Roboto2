@@ -52,6 +52,19 @@ const botFunctions = () => {
     setUptimeTime: function ( value ) { uptimeTime = value; },
 
     // ========================================================
+    // Memory Functions
+    // ========================================================
+
+    reloadMemory: async function ( databaseFunctions, roomFunctions ) {
+      const theTheme = await databaseFunctions.retrieveMemory( "theme" )
+      if ( theTheme !== null ) {
+        await roomFunctions.setTheme( theTheme )
+      }
+    },
+    
+    // ========================================================
+
+    // ========================================================
     // Bot Command Functions
     // ========================================================
 
@@ -59,7 +72,7 @@ const botFunctions = () => {
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve( "done" ), delay ) )
 
       const shutMeDown = async () => {
-        chatFunctions.botSpeak( "I'll be back...", data, true );
+        chatFunctions.botSpeak( "I'll be back...", true );
         await sleep( 100 )
         userFunctions.debugPrintTheUsersList();
         await sleep( 100 )
@@ -72,12 +85,12 @@ const botFunctions = () => {
     changeAvatar: function ( data, args, chatFunctions ) {
       const theID = args[ 0 ];
       if ( isNaN( theID ) ) {
-        chatFunctions.botSpeak( "That's not a valid AvatarID...it needs to be a number", data );
+        chatFunctions.botSpeak( "That's not a valid AvatarID...it needs to be a number" );
       } else {
         if ( theID === "8" || theID === "4" || theID === "227" || theID === "2022" ) {
-          chatFunctions.botSpeak( "NOPE! No Gingers here...", data );
+          chatFunctions.botSpeak( "NOPE! No Gingers here..." );
         } else {
-          chatFunctions.botSpeak( "Changing...", data );
+          chatFunctions.botSpeak( "Changing..." );
           bot.setAvatar( theID );
         }
       }
@@ -102,7 +115,7 @@ const botFunctions = () => {
 
       let minutes = Math.floor( currentTime / msecPerMinute );
 
-      chatFunctions.botSpeak( await userFunctions.getUsername( authModule.USERID ) + ' has been up for: ' + days + ' days, ' + hours + ' hours, ' + minutes + ' minutes', data );
+      chatFunctions.botSpeak( await userFunctions.getUsername( authModule.USERID ) + ' has been up for: ' + days + ' days, ' + hours + ' hours, ' + minutes + ' minutes' );
     },
 
     songStatsCommand: function ( data, chatFunctions ) {
@@ -192,16 +205,16 @@ const botFunctions = () => {
       if ( userFunctions.isUserIDOnStage( userID ) ) {
         const randomMessage = messageVariable[ Math.floor( Math.random() * messageVariable.length ) ];
         const thisMessage = chatFunctions.buildUserToUserRandomMessage( userFunctions, userID, randomMessage, receiverID );
-        chatFunctions.botSpeak( thisMessage, data );
+        chatFunctions.botSpeak( thisMessage );
         userFunctions.removeDJ( userID, 'DJ used the /dive command' );
       } else {
-        chatFunctions.botSpeak( 'You can\'t leave the stage if you\'re not on stage...', data )
+        chatFunctions.botSpeak( 'You can\'t leave the stage if you\'re not on stage...' )
       }
     },
 
     refreshOnCommand: function ( data, chatFunctions ) {
       if ( this.refreshingEnabled() ) {
-        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is already enabled', data );
+        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is already enabled' );
       } else {
         this.enableRefreshing( data, chatFunctions );
       }
@@ -209,7 +222,7 @@ const botFunctions = () => {
 
     refreshOffCommand: function ( data, chatFunctions ) {
       if ( !this.refreshingEnabled() ) {
-        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is already disabled', data );
+        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is already disabled' );
       } else {
         this.disableRefreshing( data, chatFunctions );
       }
@@ -229,7 +242,7 @@ const botFunctions = () => {
         const djName = userFunctions.getUsername( djID );
         theMessage = '@' + djName + ', ' + theMessage;
 
-        chatFunctions.botSpeak( theMessage, data, true );
+        chatFunctions.botSpeak( theMessage, true );
         this.logCommandUsage( userFunctions, 'removeDJ', data, theMessage )
       }
       userFunctions.removeDJ( djID, 'The removeDJ command had been issued: ' + theMessage );
@@ -240,10 +253,10 @@ const botFunctions = () => {
 
       if ( theMessage !== '' ) {
         theMessage = '@' + userFunctions.getUsername( djID ) + ', ' + theMessage
-        chatFunctions.botSpeak( theMessage, data, true );
+        chatFunctions.botSpeak( theMessage, true );
         this.logCommandUsage( userFunctions, 'informDJ', data, theMessage )
       } else {
-        chatFunctions.botSpeak( 'You didn\'t ask me to send the DJ any message?!?', data );
+        chatFunctions.botSpeak( 'You didn\'t ask me to send the DJ any message?!?' );
       }
     },
 
@@ -275,7 +288,7 @@ const botFunctions = () => {
 
     async readFavouriteArtist( data, chatFunctions, databaseFunctions ) {
       const favouriteArtist = await this.favouriteArtist( databaseFunctions );
-      chatFunctions.botSpeak( "This week, I have been mostly listening to " + favouriteArtist, data );
+      chatFunctions.botSpeak( "This week, I have been mostly listening to " + favouriteArtist );
     },
 
     favouriteArtist: function ( databaseFunctions ) {
@@ -344,7 +357,7 @@ const botFunctions = () => {
       if ( this.checkVideoRegions() ) {
         videoFunctions.listAlertRegions( data, chatFunctions );
       } else {
-        chatFunctions.botSpeak( 'Video Region checking is disabled', data );
+        chatFunctions.botSpeak( 'Video Region checking is disabled' );
       }
     },
 
@@ -360,9 +373,9 @@ const botFunctions = () => {
 
     reportRefreshStatus: function ( data, chatFunctions ) {
       if ( this.refreshingEnabled() ) {
-        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is enabled', data );
+        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is enabled' );
       } else {
-        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is disabled', data );
+        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is disabled' );
       }
     },
 
@@ -380,7 +393,7 @@ const botFunctions = () => {
     setWhenToGetOnStage: function ( data, args, chatFunctions ) {
       const numberOfDJs = args[ 0 ];
       if ( isNaN( numberOfDJs ) ) {
-        chatFunctions.botSpeak( 'Don\'t be silly. I can\'t set the auto-DJing start value to ' + numberOfDJs, data );
+        chatFunctions.botSpeak( 'Don\'t be silly. I can\'t set the auto-DJing start value to ' + numberOfDJs );
       } else {
         whenToGetOnStage = numberOfDJs;
         this.reportAutoDJStatus( data, chatFunctions )
@@ -391,7 +404,7 @@ const botFunctions = () => {
     setWhenToGetOffStage: function ( data, args, chatFunctions ) {
       const numberOfDJs = args[ 0 ];
       if ( isNaN( numberOfDJs ) ) {
-        chatFunctions.botSpeak( 'Don\'t be silly. I can\'t set the auto-DJing stop value to ' + numberOfDJs, data );
+        chatFunctions.botSpeak( 'Don\'t be silly. I can\'t set the auto-DJing stop value to ' + numberOfDJs );
       } else {
         whenToGetOffStage = numberOfDJs;
         this.reportAutoDJStatus( data, chatFunctions )
@@ -400,9 +413,9 @@ const botFunctions = () => {
 
     reportAutoDJStatus: function ( data, chatFunctions ) {
       if ( this.autoDJEnabled() ) {
-        chatFunctions.botSpeak( 'Auto-DJing is enabled and will start at ' + this.whenToGetOnStage() + ' and stop at ' + this.whenToGetOffStage(), data );
+        chatFunctions.botSpeak( 'Auto-DJing is enabled and will start at ' + this.whenToGetOnStage() + ' and stop at ' + this.whenToGetOffStage() );
       } else {
-        chatFunctions.botSpeak( 'Auto DJing is disabled', data )
+        chatFunctions.botSpeak( 'Auto DJing is disabled' )
       }
     },
 
@@ -417,9 +430,9 @@ const botFunctions = () => {
     },
     reportSongStats: function ( data, chatFunctions ) {
       if ( this.readSongStats() ) {
-        chatFunctions.botSpeak( 'Song stat reporting is enabled', data );
+        chatFunctions.botSpeak( 'Song stat reporting is enabled' );
       } else {
-        chatFunctions.botSpeak( 'Song stats reporting is disabled', data );
+        chatFunctions.botSpeak( 'Song stats reporting is disabled' );
       }
     },
 
@@ -571,9 +584,9 @@ const botFunctions = () => {
 
     deleteCurrentTrackFromBotPlaylist: function ( data, userFunctions, chatFunctions, songFunctions ) {
       if ( this.isBotCurrentDJ( userFunctions ) !== true ) {
-        chatFunctions.botSpeak( "I can't delete anything if I'm not playing anything?!?", data, true );
+        chatFunctions.botSpeak( "I can't delete anything if I'm not playing anything?!?", true );
       } else {
-        chatFunctions.botSpeak( "OK, I'll delete that", data, true );
+        chatFunctions.botSpeak( "OK, I'll delete that", true );
 
         const senderID = userFunctions.whoSentTheCommand( data );
         const senderUsername = userFunctions.getUsername( senderID );
@@ -590,21 +603,21 @@ const botFunctions = () => {
       }
     },
 
-    clearAllTimers: function ( userFunctions, roomFunctions, songFunctions ) {
-      userFunctions.clearInformTimer( roomFunctions );
-      roomFunctions.clearSongLimitTimer( userFunctions, roomFunctions );
+    clearAllTimers: async function ( userFunctions, roomFunctions, songFunctions, chatFunctions ) {
+      await userFunctions.clearInformTimer( roomFunctions, chatFunctions );
+      await roomFunctions.clearSongLimitTimer( userFunctions, roomFunctions, chatFunctions );
       songFunctions.clearWatchDogTimer();
-      songFunctions.clearTakedownTimer( userFunctions, roomFunctions );
+      await songFunctions.clearTakedownTimer( userFunctions, roomFunctions, chatFunctions );
     },
 
-    checkOnNewSong: function ( data, roomFunctions, songFunctions, userFunctions ) {
+    checkOnNewSong: async function ( data, roomFunctions, songFunctions, userFunctions, chatFunctions ) {
       const length = data.nowPlaying.song.duration
-      const theDJID = data.djs[0].uuid
+      const theDJID = data.djs[ 0 ].uuid
       const masterIndex = userFunctions.masterIds().indexOf( theDJID ); //used to tell whether current dj is on the master id's list or not
       const djName = userFunctions.getUsername( theDJID );
 
       //clears timers if previously set
-      this.clearAllTimers( userFunctions, roomFunctions, songFunctions );
+      await this.clearAllTimers( userFunctions, roomFunctions, songFunctions, chatFunctions );
 
       songFunctions.startSongWatchdog( data, userFunctions );
 
@@ -634,12 +647,12 @@ const botFunctions = () => {
 
     async askBardCommand( data, theQuestion, chatFunctions, mlFunctions ) {
       const answer = await mlFunctions.askBard( theQuestion );
-      chatFunctions.botSpeak( answer, data );
+      chatFunctions.botSpeak( answer );
     },
 
     async askChatGPTCommand( data, theQuestion, chatFunctions, mlFunctions ) {
       const answer = await mlFunctions.askChatGPT( theQuestion );
-      chatFunctions.botSpeak( answer, data );
+      chatFunctions.botSpeak( answer );
     },
 
   }

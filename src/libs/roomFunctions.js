@@ -91,7 +91,7 @@ const roomFunctions = () => {
 
     greetOnCommand: function ( data, chatFunctions ) {
       if ( this.greet() === true ) {
-        chatFunctions.botSpeak( 'The Greet command is already enabled', data );
+        chatFunctions.botSpeak( 'The Greet command is already enabled' );
       } else {
         this.enableGreet();
         this.readGreetingStatus( data, chatFunctions );
@@ -100,7 +100,7 @@ const roomFunctions = () => {
 
     greetOffCommand: function ( data, chatFunctions ) {
       if ( this.greet() === false ) {
-        chatFunctions.botSpeak( 'The Greet command is already disabled', data );
+        chatFunctions.botSpeak( 'The Greet command is already disabled' );
       } else {
         this.disableGreet();
         this.readGreetingStatus( data, chatFunctions );
@@ -114,7 +114,7 @@ const roomFunctions = () => {
       } else {
         theMessage += 'disabled';
       }
-      chatFunctions.botSpeak( theMessage, data );
+      chatFunctions.botSpeak( theMessage );
     },
 
     // ========================================================
@@ -129,12 +129,12 @@ const roomFunctions = () => {
       const numValue = Number( value );
 
       if ( isNaN( numValue ) ) {
-        chatFunctions.botSpeak( 'MaxDJs must be set to a number', data );
+        chatFunctions.botSpeak( 'MaxDJs must be set to a number' );
       } else if ( numValue < 1 || numValue > 5 ) {
-        chatFunctions.botSpeak( "MaxDJs can't be bigger than 5 or less than 1", data );
+        chatFunctions.botSpeak( "MaxDJs can't be bigger than 5 or less than 1" );
       } else {
         maxDJs = numValue;
-        chatFunctions.botSpeak( 'The max No. of DJs is now ' + numValue, data );
+        chatFunctions.botSpeak( 'The max No. of DJs is now ' + numValue );
       }
     },
     // ========================================================
@@ -153,21 +153,23 @@ const roomFunctions = () => {
       theme = false;
     },
 
-    setThemeCommand: function ( data, newTheme, chatFunctions ) {
+    setThemeCommand: async function ( data, newTheme, chatFunctions, databaseFunctions ) {
       this.setTheme( newTheme );
+      await databaseFunctions.recordMemory( "theme", newTheme )
       this.readTheme( data, chatFunctions );
     },
 
-    removeThemeCommand: function ( data, chatFunctions ) {
+    removeThemeCommand: async function ( data, chatFunctions, databaseFunctions ) {
       this.clearTheme();
+      await databaseFunctions.recordMemory( "theme", null )
       this.readTheme( data, chatFunctions );
     },
 
     readTheme: function ( data, chatFunctions ) {
       if ( this.theme() === false ) {
-        chatFunctions.botSpeak( 'There is currently no theme', data );
+        chatFunctions.botSpeak( 'There is currently no theme' );
       } else {
-        chatFunctions.botSpeak( 'The Theme is ' + this.theme(), data );
+        chatFunctions.botSpeak( 'The Theme is ' + this.theme() );
       }
     },
 
@@ -181,12 +183,12 @@ const roomFunctions = () => {
 
     enableThemeRandomizer: function ( data, chatFunctions ) {
       this.setthemeRandomizer( true );
-      chatFunctions.botSpeak( 'The theme randomizer is now active', data );
+      chatFunctions.botSpeak( 'The theme randomizer is now active' );
     },
 
     disableThemeRandomizer: function ( data, chatFunctions ) {
       this.setthemeRandomizer( false );
-      chatFunctions.botSpeak( 'The theme randomizer is now disabled', data );
+      chatFunctions.botSpeak( 'The theme randomizer is now disabled' );
     },
 
     getThemeRandomizerStore: function () {
@@ -202,12 +204,12 @@ const roomFunctions = () => {
       let themeList = this.getRandomThemes( store );
 
       if ( this.doesThemeExistInRandomizer( store, newTheme ) ) {
-        chatFunctions.botSpeak( 'That theme is already in the randomizer.', data );
+        chatFunctions.botSpeak( 'That theme is already in the randomizer.' );
         timer( 1000 ).then( _ => this.readRandomThemes( data, chatFunctions ) );
       } else {
         themeList.push( newTheme );
         this.storeThemes( store, themeList );
-        chatFunctions.botSpeak( 'The theme "' + newTheme + '" has been added to the randomizer.', data );
+        chatFunctions.botSpeak( 'The theme "' + newTheme + '" has been added to the randomizer.' );
         timer( 1000 ).then( _ => this.readRandomThemes( data, chatFunctions ) );
       }
 
@@ -222,10 +224,10 @@ const roomFunctions = () => {
       if ( this.doesThemeExistInRandomizer( store, theme ) ) {
         themeList.splice( themeList.indexOf( theme ), 1 )
         this.storeThemes( store, themeList );
-        chatFunctions.botSpeak( 'The theme "' + theme + '" has been removed from the randomizer.', data );
+        chatFunctions.botSpeak( 'The theme "' + theme + '" has been removed from the randomizer.' );
         timer( 1000 ).then( _ => this.readRandomThemes( data, chatFunctions ) );
       } else {
-        chatFunctions.botSpeak( 'The theme "' + theme + '" is not in the randomizer.', data );
+        chatFunctions.botSpeak( 'The theme "' + theme + '" is not in the randomizer.' );
         timer( 1000 ).then( _ => this.readRandomThemes( data, chatFunctions ) );
       }
 
@@ -242,7 +244,7 @@ const roomFunctions = () => {
 
       // formattedThemes = formattedThemes.substring( 0, formattedThemes.length - 2 );
 
-      chatFunctions.botSpeak( 'Check the room info for the full list', data );
+      chatFunctions.botSpeak( 'Check the room info for the full list' );
     },
 
     getRandomThemes: function ( store ) {
@@ -275,7 +277,7 @@ const roomFunctions = () => {
     },
 
     announceNewRandomThene: function ( data, chatFunctions ) {
-      chatFunctions.botSpeak( 'Drum roll please. Time to find out what the theme for the next round is.... ', data );
+      chatFunctions.botSpeak( 'Drum roll please. Time to find out what the theme for the next round is.... ' );
       const timer = this.theTimer();
       timer( 3000 ).then( _ => this.setThemeCommand( data, this.getRandomTheme(), chatFunctions ) );
     },
@@ -317,9 +319,9 @@ const roomFunctions = () => {
 
     readRulesStatus: function ( data, chatFunctions ) {
       if ( this.rulesMessageOn() ) {
-        chatFunctions.botSpeak( 'The rules will displayed with the welcome message after ' + this.rulesInterval() + ' minutes', data );
+        chatFunctions.botSpeak( 'The rules will displayed with the welcome message after ' + this.rulesInterval() + ' minutes' );
       } else {
-        chatFunctions.botSpeak( 'The rules will not displayed with the welcome message. The rules interval is set to ' + this.rulesInterval() + ' minutes', data );
+        chatFunctions.botSpeak( 'The rules will not displayed with the welcome message. The rules interval is set to ' + this.rulesInterval() + ' minutes' );
       }
     },
 
@@ -328,7 +330,7 @@ const roomFunctions = () => {
     setRulesIntervalCommand: function ( data, args, chatFunctions ) {
       const minutes = args[ 0 ];
       if ( isNaN( minutes ) || minutes === undefined || minutes === '' ) {
-        chatFunctions.botSpeak( minutes + ' is not a valid interval in minutes.', data );
+        chatFunctions.botSpeak( minutes + ' is not a valid interval in minutes.' );
       } else {
         rulesInterval = minutes;
         this.readRulesStatus( data, chatFunctions );
@@ -338,7 +340,7 @@ const roomFunctions = () => {
     // ========================================================
 
     lastdj: () => lastdj,
-    setLastDJ: function ( djID ) {
+    setLastDJ: async function ( djID ) {
       lastdj = djID;
     },
 
@@ -360,7 +362,7 @@ const roomFunctions = () => {
       theMessage = theMessage.replace( "@username", djName );
       theMessage = theMessage.replace( ":time:", theTime );
 
-      chatFunctions.botSpeak( theMessage, null, true );
+      chatFunctions.botSpeak( theMessage, true );
     },
 
     clearDecksForVIPs: function ( userFunctions, authModule ) {
@@ -398,15 +400,15 @@ const roomFunctions = () => {
       }
     },
 
-    escortDJsDown: function ( data, currentDJ, botFunctions, userFunctions, chatFunctions, databaseFunctions ) {
+    escortDJsDown: async function ( data, currentDJ, botFunctions, userFunctions, chatFunctions, databaseFunctions ) {
       //iterates through the escort list and escorts all djs on the list off the stage.
 
       if ( userFunctions.escortMeIsEnabled( currentDJ ) === true ) {
         userFunctions.removeDJ( currentDJ, 'DJ had enabled escortme' );
         userFunctions.removeEscortMeFromUser( currentDJ, databaseFunctions );
 
-        const theMessage = '@' + userFunctions.getUsername( currentDJ ) + ' had enabled escortme';
-        chatFunctions.botSpeak( theMessage, data );
+        const theMessage = '@' + await userFunctions.getUsername( currentDJ ) + ' had enabled escortme';
+        await chatFunctions.botSpeak( theMessage );
       }
     },
 
@@ -416,16 +418,17 @@ const roomFunctions = () => {
       return roomData.name
     },
     
-    clearSongLimitTimer( userFunctions, roomFunctions ) {
+    async clearSongLimitTimer( userFunctions, roomFunctions, chatFunctions ) {
       //this is for the song length limit
       if ( roomFunctions.songLimitTimer() !== null ) {
         clearTimeout( roomFunctions.songLimitTimer() );
         roomFunctions.songLimitTimer = null;
 
         if ( typeof userFunctions.getUsername( roomFunctions.lastdj() ) !== 'undefined' ) {
-          bot.speak( "@" + userFunctions.getUsername( roomFunctions.lastdj() ) + ", Thanks buddy ;-)" );
+          await chatFunctions.botSpeak( "@" + userFunctions.getUsername( roomFunctions.lastdj() ) + ", Thanks buddy" +
+            " ;-)" );
         } else {
-          bot.speak( 'Thanks buddy ;-)' );
+          await chatFunctions.botSpeak( 'Thanks buddy ;-)' );
         }
       }
     }

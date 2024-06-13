@@ -3,7 +3,6 @@ import chatCommandItems from '../defaults/chatCommandItems.js'
 
 import Storage from 'node-storage';
 import { dirname } from 'path';
-import databaseFunctions from '../libs/databaseFunctions.js'
 import { logger } from "../utils/logging.js";
 
 const generalCommands = {};
@@ -19,7 +18,6 @@ const moderatorCommands = {};
 const aliasDataFileName = process.env.ALIASDATA;
 const chatDataFileName = process.env.CHATDATA;
 
-// const ignoreCommands = [ '/me ', '/love' ];
 const ignoreCommands = [];
 
 const commandFunctions = () => {
@@ -412,13 +410,13 @@ const commandFunctions = () => {
   moderatorCommands.removealias.help = "Remove an alias from a command";
   moderatorCommands.removealias.sampleArguments = [ "alias", "command" ];
 
-  moderatorCommands.settheme = ( { data, args, chatFunctions, roomFunctions } ) => {
-    roomFunctions.setThemeCommand( data, reassembleArgs( args ), chatFunctions );
+  moderatorCommands.settheme = ( { data, args, chatFunctions, roomFunctions, databaseFunctions } ) => {
+    roomFunctions.setThemeCommand( data, reassembleArgs( args ), chatFunctions, databaseFunctions );
   }
   moderatorCommands.settheme.help = "Set a theme for the room";
 
-  moderatorCommands.notheme = ( { data, chatFunctions, roomFunctions } ) => {
-    roomFunctions.removeThemeCommand( data, chatFunctions );
+  moderatorCommands.notheme = ( { data, chatFunctions, roomFunctions, databaseFunctions } ) => {
+    roomFunctions.removeThemeCommand( data, chatFunctions, databaseFunctions );
   }
   moderatorCommands.notheme.help = "Set a theme for the room";
 
@@ -462,6 +460,16 @@ const commandFunctions = () => {
     botFunctions.chooseNewFavourite( databaseFunctions );
   }
   moderatorCommands.choosenewfavourite.help = "Pick a new favourite artist";
+
+  moderatorCommands.double = ( { roomFunctions, databaseFunctions } ) => {
+    roomFunctions.double( databaseFunctions );
+  }
+  moderatorCommands.double.help = "Sets DJs to play 2 tracks each";
+
+  moderatorCommands.single = ( { roomFunctions, databaseFunctions } ) => {
+    roomFunctions.single( databaseFunctions );
+  }
+  moderatorCommands.single.help = "Sets DJs to play 1 track each";
 
   // moderatorCommands.askbard = ( { botFunctions, data, args, chatFunctions, mlFunctions } ) => {
   //     botFunctions.askBardCommand( data, reassembleArgs( args ), chatFunctions, mlFunctions );
@@ -683,7 +691,7 @@ const commandFunctions = () => {
     }
 
     theMessage = theMessage.replace( ',', ', ' );
-    chatFunctions.botSpeak( theMessage, data );
+    chatFunctions.botSpeak( theMessage );
   }
 
   function buildListFromObject( commandObject ) {
@@ -702,7 +710,7 @@ const commandFunctions = () => {
     }
 
     if ( allCommands[ command ] === undefined ) {
-      chatFunctions.botSpeak( 'That command doesn\'t exist. Try ' + commandIdentifier + 'list to find the available commands', data );
+      chatFunctions.botSpeak( 'That command doesn\'t exist. Try ' + commandIdentifier + 'list to find the available commands' );
     } else {
       theMessage = theMessage + "'" + commandIdentifier + command;
 
@@ -712,7 +720,7 @@ const commandFunctions = () => {
         }
       }
       theMessage = theMessage + "': " + allCommands[ command ].help;
-      chatFunctions.botSpeak( theMessage, data );
+      chatFunctions.botSpeak( theMessage );
     }
   }
 
@@ -797,7 +805,7 @@ const commandFunctions = () => {
 
       const [ command, args, moderatorOnly ] = this.getCommandAndArguments( data.message, allCommands );
       if ( moderatorOnly && !await userFunctions.isUserModerator( senderID, roomFunctions ) ) {
-        await chatFunctions.botSpeak( "Sorry, that function is only available to moderators", data );
+        await chatFunctions.botSpeak( "Sorry, that function is only available to moderators" );
       } else if ( args === 'dynamicChat' ) {
         await chatFunctions.dynamicChatCommand( data, userFunctions, command, databaseFunctions );
       } else if ( command ) {
@@ -817,7 +825,7 @@ const commandFunctions = () => {
         } );
       } else {
         await chatFunctions.botSpeak( "Sorry, that's not a command I recognise. Try " + commandIdentifier + "list to" +
-          " find out more.", data );
+          " find out more." );
       }
     },
 
@@ -890,7 +898,7 @@ const listAlias = ( data, chatFunctions ) => {
 
   const aliases = store.get( aliasLookup );
 
-  chatFunctions.botSpeak( getAliasReturnText( aliases, alias, passedArgument ), data );
+  chatFunctions.botSpeak( getAliasReturnText( aliases, alias, passedArgument ) );
 }
 
 const getAliasReturnText = ( aliases, alias, command ) => {
@@ -925,19 +933,19 @@ const addAlias = ( data, chatFunctions ) => {
   // does the command we're aliasing actually exist
   const commandToLink = strippedCommand[ 2 ];
   if ( !commandModule.isCoreCommand( commandToLink ) && !commandModule.isChatCommand( commandToLink ) ) {
-    chatFunctions.botSpeak( `The command ${ commandIdentifier }${ commandToLink } doesn't exist to be aliased.`, data );
+    chatFunctions.botSpeak( `The command ${ commandIdentifier }${ commandToLink } doesn't exist to be aliased.` );
     return;
   }
 
   // Check if new alias already exists
   if ( currentAlias ) {
-    chatFunctions.botSpeak( `The alias ${ commandIdentifier }${ newAlias } already exists.`, data );
+    chatFunctions.botSpeak( `The alias ${ commandIdentifier }${ newAlias } already exists.` );
     return;
   }
 
   // Check if new alias is a command
   if ( commandModule.isCoreCommand( newAlias ) || commandModule.isChatCommand( newAlias ) ) {
-    chatFunctions.botSpeak( `Alias not added. ${ commandIdentifier }${ newAlias } is already a command.`, data );
+    chatFunctions.botSpeak( `Alias not added. ${ commandIdentifier }${ newAlias } is already a command.` );
     return;
   }
 
@@ -954,7 +962,7 @@ const addAlias = ( data, chatFunctions ) => {
 
   store.put( `commands.${ commandToLink }`, newCommandWithAlias );
 
-  chatFunctions.botSpeak( "Update successful.", data );
+  chatFunctions.botSpeak( "Update successful." );
 }
 
 const removeAlias = ( data, chatFunctions ) => {
@@ -983,7 +991,7 @@ const removeAlias = ( data, chatFunctions ) => {
     }
   }
 
-  chatFunctions.botSpeak( "Alias removed.", data );
+  chatFunctions.botSpeak( "Alias removed." );
 }
 
 // #########################################################
@@ -1005,9 +1013,9 @@ const addChatCommandWithMessage = ( data, chatFunctions, documentationFunctions 
       + newCommand + " was added, along with the message '"
       + commandMessage + "'";
 
-    chatFunctions.botSpeak( successMessage, data );
+    chatFunctions.botSpeak( successMessage );
   } else {
-    chatFunctions.botSpeak( addCommand, data );
+    chatFunctions.botSpeak( addCommand );
   }
 
   chatDocumentationRebuild( documentationFunctions );
@@ -1023,7 +1031,7 @@ const addMessageToChatCommand = ( data, chatFunctions, documentationFunctions ) 
   const theMessage = splitData[ 2 ];
 
   if ( commandModule.isCoreCommand( theCommand ) ) {
-    chatFunctions.botSpeak( "The command " + theCommand + " is not a chat command that can be managed like this.", data );
+    chatFunctions.botSpeak( "The command " + theCommand + " is not a chat command that can be managed like this." );
     return;
   }
 
@@ -1036,7 +1044,7 @@ const addMessageToChatCommand = ( data, chatFunctions, documentationFunctions ) 
   theMessages.push( theMessage );
 
   store.put( `chatMessages.${ theCommand }.messages`, theMessages );
-  chatFunctions.botSpeak( "Update successful. The command " + theCommand + " was updated", data );
+  chatFunctions.botSpeak( "Update successful. The command " + theCommand + " was updated" );
 
   chatDocumentationRebuild( documentationFunctions );
 }
@@ -1051,12 +1059,12 @@ const addPictureToChatCommand = ( data, chatFunctions, documentationFunctions ) 
   const thePicture = splitData[ 2 ];
 
   if ( commandModule.isCoreCommand( theCommand ) ) {
-    chatFunctions.botSpeak( "The command " + theCommand + " is not a chat command that can be managed like this.", data );
+    chatFunctions.botSpeak( "The command " + theCommand + " is not a chat command that can be managed like this." );
     return;
   }
 
   if ( !commandModule.isChatCommand( theCommand ) ) {
-    chatFunctions.botSpeak( "The chat command " + theCommand + " does not exist.", data );
+    chatFunctions.botSpeak( "The chat command " + theCommand + " does not exist." );
     return;
   }
 
@@ -1067,7 +1075,7 @@ const addPictureToChatCommand = ( data, chatFunctions, documentationFunctions ) 
   thePictures.push( thePicture );
 
   store.put( `chatMessages.${ theCommand }.pictures`, thePictures );
-  chatFunctions.botSpeak( "Update successful. The command " + theCommand + " was updated", data );
+  chatFunctions.botSpeak( "Update successful. The command " + theCommand + " was updated" );
 
   chatDocumentationRebuild( documentationFunctions );
 }
@@ -1081,12 +1089,12 @@ const removeChatCommand = ( data, chatFunctions, documentationFunctions ) => {
   const theCommand = splitData[ 1 ];
 
   if ( !commandModule.isChatCommand( theCommand ) ) {
-    chatFunctions.botSpeak( "The chat command " + theCommand + " does not exist.", data );
+    chatFunctions.botSpeak( "The chat command " + theCommand + " does not exist." );
     return;
   }
 
   store.remove( `chatMessages.${ theCommand }` );
-  chatFunctions.botSpeak( "Update successful. The command " + theCommand + " was removed", data );
+  chatFunctions.botSpeak( "Update successful. The command " + theCommand + " was removed" );
 
   chatDocumentationRebuild( documentationFunctions );
 }
@@ -1101,12 +1109,12 @@ const removeChatCommandMessage = ( data, chatFunctions, documentationFunctions )
   const theMessage = splitData[ 2 ];
 
   if ( commandModule.isCoreCommand( theCommand ) ) {
-    chatFunctions.botSpeak( "The command " + theCommand + " is not a dynamic chat command that can be managed like this.", data );
+    chatFunctions.botSpeak( "The command " + theCommand + " is not a dynamic chat command that can be managed like this." );
     return;
   }
 
   if ( !commandModule.isChatCommand( theCommand ) ) {
-    chatFunctions.botSpeak( "The command " + theCommand + " does not exist.", data );
+    chatFunctions.botSpeak( "The command " + theCommand + " does not exist." );
     return;
   }
 
@@ -1114,12 +1122,12 @@ const removeChatCommandMessage = ( data, chatFunctions, documentationFunctions )
   if ( theMessages.indexOf( theMessage ) !== -1 ) {
     theMessages.splice( theMessages.indexOf( theMessage ), 1 );
   } else {
-    chatFunctions.botSpeak( "That message can't be found for that command " + theCommand + ". Check that you sent the message EXACTLY as displayed, wrapped in double quotes", data );
+    chatFunctions.botSpeak( "That message can't be found for that command " + theCommand + ". Check that you sent the message EXACTLY as displayed, wrapped in double quotes" );
     return;
   }
 
   store.put( `chatMessages.${ theCommand }.messages`, theMessages );
-  chatFunctions.botSpeak( "Update successful. The command " + theCommand + " was updated", data );
+  chatFunctions.botSpeak( "Update successful. The command " + theCommand + " was updated" );
 
   chatDocumentationRebuild( documentationFunctions );
 }
@@ -1134,12 +1142,12 @@ const removeChatCommandPicture = ( data, chatFunctions, documentationFunctions )
   const thePicture = splitData[ 2 ];
 
   if ( commandModule.isCoreCommand( theCommand ) ) {
-    chatFunctions.botSpeak( "The command " + theCommand + " is not a dynamic chat command that can be managed like this.", data );
+    chatFunctions.botSpeak( "The command " + theCommand + " is not a dynamic chat command that can be managed like this." );
     return;
   }
 
   if ( !commandModule.isChatCommand( theCommand ) ) {
-    chatFunctions.botSpeak( "The command " + theCommand + " does not exist.", data );
+    chatFunctions.botSpeak( "The command " + theCommand + " does not exist." );
     return;
   }
 
@@ -1147,12 +1155,12 @@ const removeChatCommandPicture = ( data, chatFunctions, documentationFunctions )
   if ( thePictures.indexOf( thePicture ) !== -1 ) {
     thePictures.splice( thePictures.indexOf( thePicture ), 1 );
   } else {
-    chatFunctions.botSpeak( "That picture can't be found for that command " + theCommand + ". Check that you sent the URL EXACTLY as displayed, wrapped in double quotes", data );
+    chatFunctions.botSpeak( "That picture can't be found for that command " + theCommand + ". Check that you sent the URL EXACTLY as displayed, wrapped in double quotes" );
     return;
   }
 
   store.put( `chatMessages.${ theCommand }.pictures`, thePictures );
-  chatFunctions.botSpeak( "Update successful. The command " + theCommand + " was updated", data );
+  chatFunctions.botSpeak( "Update successful. The command " + theCommand + " was updated" );
 
   chatDocumentationRebuild( documentationFunctions );
 }

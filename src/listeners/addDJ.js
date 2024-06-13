@@ -9,7 +9,7 @@ bot.on( 'add_dj', function ( data ) {
   if ( !OKToDJ ) {
     userFunctions.removeDJ( theUserID, 'User is not allowed to DJ so was removed' );
     userFunctions.incrementSpamCounter( theUserID, databaseFunctions );
-    chatFunctions.botSpeak( theMessage, data );
+    chatFunctions.botSpeak( theMessage );
   }
 
   //sets djs current song count to zero when they enter the stage.

@@ -273,7 +273,7 @@ const chatFunctions = ( ) => {
         }
 
         if ( roomFunctions.theme() !== false ) {
-          theMessage += ';\n\nThe theme is currently set to ' + roomFunctions.theme();
+          theMessage += '\n\nThe theme is currently set to ' + roomFunctions.theme();
         }
 
         if ( !userFunctions.isUsersWelcomeTimerActive( userID ) ) {

@@ -10,9 +10,6 @@ export default async ( payload, userFunctions, roomFunctions, songFunctions, cha
   let djID;
   if ( payload.nowPlaying && payload.nowPlaying.song ) {
     djID = payload.djs[ 0 ].uuid;
-    console.log( `djID: ${djID}`)
-    console.log( `djName: ${ await userFunctions.getUsername( djID ) }` )
-
     await songFunctions.grabSongStats();
     await userFunctions.setCurrentDJID( djID )
     const videoID = payload.nowPlaying.song.songShortId

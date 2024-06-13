@@ -101,7 +101,6 @@ const roomFunctions = () => {
       const roomData = await this.getRoomData()
       const roomSlug = roomData.slug
       const url = `https://rooms.prod.tt.fm/rooms/${ roomSlug }`;
-      console.log( `setPlayableTracks url:${ url }`)
       const config = {
         headers: {
           'accept': 'application/json',
@@ -112,7 +111,6 @@ const roomFunctions = () => {
       const data = {
         songsPerDj: numTracks
       };
-
       
       try {
         await axios.patch( url, data, config )
@@ -127,16 +125,6 @@ const roomFunctions = () => {
         throw error;
       }
     },
-
-//     curl -X 'PATCH' \
-//   'https://rooms.prod.tt.fm/rooms/i-love-the-80s' \
-//   -H 'accept: application/json' \
-//   -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIwNzI1Mywic3ViIjoiZjMxZDQyYjItMGRmOS00N2Q4LTljYzAtYTE3ODcwZDRkMmM3Iiwicm9sZSI6ImJvdCIsInN1YnNjcmlwdGlvbklkIjoiIiwiY2FwYWJpbGl0aWVzIjpbXSwidHlwZSI6InVzZXIiLCJpYXQiOjE3MTU4Nzk3NjEsImV4cCI6MjAzMTIzOTc2MSwiaXNzIjoidHVybnRhYmxlLXVzZXItc2VydmljZSJ9.3Vrzy-htFrYhigf4qofFU5gSAL_djJKY3yq-uK-bJMWAjC8FhFGpQIsGJKHGwj_2_9f6n47mwjIX-QdsUKw-KaMtrLNlb-cWELmcgiF9OFSazeOFcQ-QDcoE51EFFxMoTGCNSI0G-veylmJuMTpFJ-vT4wpRw_RRe5D5P9Yp2bXRUdDFEIqC_U57wYHzX5IOQiFOutCItZdyqGXZUpgRE9bWCMvhhWqt7EdEWzlvtB1yVZyyNfK-WQVqFjmXmONLgp-oTVg708aAuCVE5T9lApEumikOagVvUySS72b2g2W0_F84jdHenumAfGL580B0YqJVTTU3i5_bYjLTkdgNtSsz6pfw4D0gF8A9Sihz5LroxWINVEnPgcfPHixpKlSG7OGyioLFGzhx9fDutinLYJwARpImmiFA_hlqTWzvMbvbrb4NthehAyY6iKTIpg2xvRJ9aDgYou2735S1U1YINwzyP9cpPkPSV6r0mJ7q1EPm07nSzaqsGQAXgUgZ5Lbkxg1TvHboG3P092mdNUA_ImOA_X895XO7_0hWfA6Mq-U9GxE33qCBzpKbk-eOb1JiT8uylurDYt5wLAyfEuSwUCh56G8Yl0kSqGeWgczi5qIFRoNzYB7c5GW2vLhoqM_xta5VU95A5h916G_RHk64xH3XOVkxlspf2imp67XWf5s' \
-//   -H 'Content-Type: application/json' \
-//   -d '{
-//
-//   "songsPerDj": 1
-// }'
 
     // ========================================================
 

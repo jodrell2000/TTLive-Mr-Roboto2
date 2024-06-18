@@ -25,6 +25,8 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
     await userFunctions.rebuildUserList( state, databaseFunctions );
     // console.log( `startup roomData:${ JSON.stringify( roomData, null, 2 ) }` )
     await userFunctions.updateModeratorsFromRoomData( roomFunctions, databaseFunctions );
+    
+    // console.log(`startup theUsersList:${JSON.stringify(userFunctions.theUsersList(), null, 2)}`)
 
     //
     // // load in and user data on disk first

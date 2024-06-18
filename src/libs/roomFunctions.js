@@ -452,9 +452,9 @@ const roomFunctions = () => {
     escortDJsDown: async function ( data, currentDJ, botFunctions, userFunctions, chatFunctions, databaseFunctions ) {
       //iterates through the escort list and escorts all djs on the list off the stage.
 
-      if ( userFunctions.escortMeIsEnabled( currentDJ ) === true ) {
+      if ( await userFunctions.escortMeIsEnabled( currentDJ ) === true ) {
         userFunctions.removeDJ( currentDJ, 'DJ had enabled escortme' );
-        userFunctions.removeEscortMeFromUser( currentDJ, databaseFunctions );
+        await userFunctions.removeEscortMeFromUser( currentDJ, databaseFunctions );
 
         const theMessage = '@' + await userFunctions.getUsername( currentDJ ) + ' had enabled escortme';
         await chatFunctions.botSpeak( theMessage );
@@ -484,4 +484,4 @@ const roomFunctions = () => {
   }
 }
 
-export default roomFunctions();
+export default roomFunctions;

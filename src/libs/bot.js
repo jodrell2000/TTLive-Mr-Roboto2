@@ -32,6 +32,7 @@ export class Bot {
   // ========================================================
 
   async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions ) {
+    //console.log(`processNewMessages theUsersList length:${ userFunctions.theUsersList().length}`)
     const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp )
     if ( response?.data ) {
       const messages = response.data
@@ -72,26 +73,29 @@ export class Bot {
     this.socket.on( 'statefulMessage', async payload => {
       logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
 
-      if ( payload.name.includes ["votedOnSong"] ) {
-        console.log("Do nothing, handled by serverMessage")
-      } else if  ( payload.name.includes ["userJoined"] ) {
-        handlers[ payload.name ]( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
-      } else {
-        try {
-          payload.statePatch.forEach( patch => {
-            if ( patch.op === 'replace' || patch.op === 'add' ) {
-              // logger.debug( `patch: ${ JSON.stringify( patch ) }` )
-              this.ensurePathExists( self.state, patch.path );
-            }
-          } );
-          self.state = fastJson.applyPatch( self.state, payload.statePatch ).newDocument;
-        } catch ( error ) {
-          console.error( 'Error applying patch:', error );
-          // console.error( 'Payload state patch:', JSON.stringify( payload.statePatch, null, 2 ) );
-          // console.error( 'Current state:', JSON.stringify( self.state, null, 2 ) );
-        }
+      try {
+        payload.statePatch.forEach( patch => {
+          if ( patch.op === 'replace' || patch.op === 'add' ) {
+            // logger.debug( `patch: ${ JSON.stringify( patch ) }` )
+            this.ensurePathExists( self.state, patch.path );
+          }
+        } );
+        self.state = fastJson.applyPatch( self.state, payload.statePatch ).newDocument;
+      } catch ( error ) {
+        console.error( 'Error applying patch:', error );
+        // console.error( 'Payload state patch:', JSON.stringify( payload.statePatch, null, 2 ) );
+        // console.error( 'Current state:', JSON.stringify( self.state, null, 2 ) );
+      }
 
-        if ( handlers[ payload.name ] ) handlers[ payload.name ]( self.state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, this.socket )
+
+      if  ( ["userJoined", "userLeft"].includes(payload.name) ) {
+        await handlers[ payload.name ]( self.state, payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
+      } else  if ( payload.name === "votedOnSong" ) {
+        console.log("Do nothing, handled by serverMessage")
+      } else {
+        if ( payload.name !== "userJoined" && handlers[ payload.name ] ) {
+          await handlers[ payload.name ]( self.state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, this.socket )
+        }
       }
     } )
 

@@ -164,4 +164,4 @@ const videoFunctions = () => {
   };
 };
 
-export default videoFunctions();
+export default videoFunctions;

@@ -17,10 +17,21 @@ process.on('unhandledRejection', (reason, promise) => {
   // Recommended: send the information to a logging service or write to a log file
 });
 
+const commandFunctionsInstance = commandFunctions()
+const userFunctionsInstance = userFunctions()
+const roomFunctionsInstance = roomFunctions()
+const songFunctionsInstance = songFunctions()
+const chatFunctionsInstance = chatFunctions()
+const videoFunctionsInstance = videoFunctions()
+const documentationFunctionsInstance = documentationFunctions()
+const databaseFunctionsInstance = databaseFunctions()
+const dateFunctionsInstance = dateFunctions()
+const botFunctionsInstance = botFunctions()
+
 const roomBot = new Bot( process.env.JOIN_ROOM )
-await roomBot.connect( roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions )
-roomBot.configureListeners( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions )
+await roomBot.connect( roomFunctionsInstance, userFunctionsInstance, chatFunctionsInstance, songFunctionsInstance, botFunctionsInstance, databaseFunctionsInstance )
+roomBot.configureListeners( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance )
 const repeatedTasks = new Chain()
 repeatedTasks
-  .add( () => roomBot.processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions ) )
+  .add( () => roomBot.processNewMessages( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance ) )
   .every( 100 )

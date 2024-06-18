@@ -45,4 +45,4 @@ const dateFunctions = () => {
   }
 }
 
-export default dateFunctions();
+export default dateFunctions;

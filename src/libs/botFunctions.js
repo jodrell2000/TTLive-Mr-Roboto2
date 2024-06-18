@@ -202,21 +202,21 @@ const botFunctions = () => {
       const userID = userFunctions.whoSentTheCommand( data );
       const receiverID = await userFunctions.getCurrentDJID( data );
 
-      if ( userFunctions.isUserIDOnStage( userID ) ) {
+      if ( await userFunctions.isUserIDOnStage( userID ) ) {
         const randomMessage = messageVariable[ Math.floor( Math.random() * messageVariable.length ) ];
         const thisMessage = chatFunctions.buildUserToUserRandomMessage( userFunctions, userID, randomMessage, receiverID );
-        chatFunctions.botSpeak( thisMessage );
+        await chatFunctions.botSpeak( thisMessage );
         userFunctions.removeDJ( userID, 'DJ used the /dive command' );
       } else {
-        chatFunctions.botSpeak( 'You can\'t leave the stage if you\'re not on stage...' )
+        await chatFunctions.botSpeak( 'You can\'t leave the stage if you\'re not on stage...' )
       }
     },
 
-    refreshOnCommand: function ( data, chatFunctions ) {
+    refreshOnCommand: async function ( data, chatFunctions ) {
       if ( this.refreshingEnabled() ) {
-        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is already enabled' );
+        await chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is already enabled' );
       } else {
-        this.enableRefreshing( data, chatFunctions );
+        await this.enableRefreshing( data, chatFunctions );
       }
     },
 
@@ -658,4 +658,4 @@ const botFunctions = () => {
   }
 }
 
-export default botFunctions();
+export default botFunctions;

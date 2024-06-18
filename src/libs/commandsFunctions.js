@@ -883,7 +883,7 @@ const commandFunctions = () => {
   }
 }
 
-export default commandFunctions();
+export default commandFunctions;
 
 const listAlias = ( data, chatFunctions ) => {
   const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ aliasDataFileName }`;

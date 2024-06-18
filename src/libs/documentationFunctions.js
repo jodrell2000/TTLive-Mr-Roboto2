@@ -111,4 +111,4 @@ const documentationFunctions = () => {
 
 }
 
-export default documentationFunctions();
+export default documentationFunctions;

@@ -387,4 +387,4 @@ const songFunctions = () => {
   }
 }
 
-export default songFunctions();
+export default songFunctions;

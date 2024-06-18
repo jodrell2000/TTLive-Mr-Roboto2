@@ -115,9 +115,9 @@ const userFunctions = () => {
 
   return {
     getPreviousDJID: async () => previousDJID,
-    setPreviousDJID: async (uuid) => { previousDJID = uuid; },
+    setPreviousDJID: async ( uuid ) => { previousDJID = uuid; },
     getCurrentDJID: async () => currentDJID,
-    setCurrentDJID: async (uuid) => { currentDJID = uuid; },
+    setCurrentDJID: async ( uuid ) => { currentDJID = uuid; },
 
     debugPrintTheUsersList: function () {
       console.info( "Full theUsersList: " + JSON.stringify( theUsersList ) );
@@ -174,6 +174,8 @@ const userFunctions = () => {
           const userPosition = this.getPositionOnUsersList( userID );
 
           theUsersList[ userPosition ][ key ] = value;
+          //console.log(`storeUserData theUsersList[ userPosition ]:${JSON.stringify(theUsersList[ userPosition ],
+          // null, 2)}`)
 
           await databaseFunctions.storeUserData( theUsersList[ userPosition ] );
         } catch ( error ) {
@@ -203,9 +205,9 @@ const userFunctions = () => {
     userExists: async function ( userID ) {
       return theUsersList[ this.getPositionOnUsersList( userID ) ] !== undefined;
     },
-    
-    getUserProfileFromAPI: async function( uuid ) {
-      if ( typeof uuid !== undefined ) {
+
+    getUserProfileFromAPI: async function ( uuid ) {
+      if ( uuid !== undefined ) {
         const url = `https://api.prod.tt.fm/users/profiles?users=${ uuid }`;
         const headers = {
           'accept': 'application/json',
@@ -221,9 +223,9 @@ const userFunctions = () => {
         }
       }
     },
-    
-    updateUserFromProfile: async function( userProfile, databaseFunctions ) {
-      const username = userProfile.nickname
+
+    updateUserFromProfile: async function ( userProfile, databaseFunctions ) {
+      const username = encodeURIComponent( userProfile.nickname )
       const uuid = userProfile.uuid
       await this.storeUserData( uuid, "username", username, databaseFunctions );
     },
@@ -260,6 +262,43 @@ const userFunctions = () => {
       }
     },
 
+    findNewUserUUID: async function ( payload ) {
+      const userUUIDs = new Set( this.theUsersList().map( user => user.id ) );
+      const payloadUUIDs = await this.getUUIDsFromPayload( payload )
+
+      // Find UUIDs that are in payload but not in theUsersList
+      const missingUUIDs = [];
+      payloadUUIDs.forEach( uuid => {
+        if ( !userUUIDs.has( uuid ) ) {
+          missingUUIDs.push( uuid );
+        }
+      } );
+
+      return missingUUIDs;
+    },
+
+    getUUIDsFromPayload: async function (payload) {
+      const payloadUUIDs = new Set();
+
+      let theUUIDArray = [];
+      if (Array.isArray(payload.statePatch)) {
+        theUUIDArray = payload.statePatch;
+      } else if (Array.isArray(payload.allUsers)) {
+        theUUIDArray = payload.allUsers;
+      }
+
+      theUUIDArray.forEach(patch => {
+        if (patch.op === 'add' && patch.value && patch.value.uuid) {
+          payloadUUIDs.add(patch.value.uuid);
+        }
+        if (patch.op === 'add' && patch.path.includes('/allUserData/')) {
+          const uuid = patch.path.split('/').pop();
+          payloadUUIDs.add(uuid);
+        }
+      });
+      return Array.from(payloadUUIDs);
+    },
+
     getUserIDFromData: function ( data ) {
       return data.userid;
     },
@@ -272,31 +311,35 @@ const userFunctions = () => {
       }
     },
 
-    enableEscortMe: function ( data, chatFunctions, databaseFunctions ) {
-      const theUserID = this.whoSentTheCommand( data );
+    enableEscortMe: async function ( data, chatFunctions, databaseFunctions ) {
+      console.group( `enableEscortMe` )
+      const theUserID = await this.whoSentTheCommand( data );
+      console.log( `theUserID:${ theUserID }` )
       let theError = '';
-      if ( this.escortMeIsEnabled( theUserID ) ) {
+      if ( await this.escortMeIsEnabled( theUserID ) ) {
         theError += ", you've already enabled Escort Me...";
       }
-      if ( !this.isUserIDOnStage( theUserID ) ) {
+      if ( !await this.isUserIDOnStage( theUserID ) ) {
         theError += ", you're not on stage...";
       }
 
       if ( theError === '' ) {
-        this.addEscortMeToUser( theUserID, databaseFunctions );
-        chatFunctions.botSpeak( '@' + this.getUsername( theUserID ) + ' you will be escorted after you play your song' );
+        await this.addEscortMeToUser( theUserID, databaseFunctions );
+        await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + ' you will be escorted after you play' +
+          ' your song' );
       } else {
-        chatFunctions.botSpeak( '@' + this.getUsername( theUserID ) + theError );
+        await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + theError );
       }
+      console.groupEnd()
     },
 
-    disableEscortMe: function ( data, chatFunctions, databaseFunctions ) {
+    disableEscortMe: async function ( data, chatFunctions, databaseFunctions ) {
       const theUserID = this.whoSentTheCommand( data );
       let theError = '';
-      if ( !this.escortMeIsEnabled( theUserID ) ) {
+      if ( !await this.escortMeIsEnabled( theUserID ) ) {
         theError += ", you haven't enabled Escort Me..."
       }
-      if ( !this.isUserIDOnStage( theUserID ) ) {
+      if ( !await this.isUserIDOnStage( theUserID ) ) {
         theError += ", you're not on stage..."
       }
 
@@ -644,19 +687,19 @@ const userFunctions = () => {
         }
       }
     },
-    
+
     updateModeratorsFromRoomData: async function ( roomFunctions, databaseFunctions ) {
       const roomData = await roomFunctions.getRoomData()
       const roomRoles = roomData.roomRoles
 
       for ( const role of roomRoles ) {
-        if (role.role === "moderator" || role.role === "owner" || role.role === "coOwner" ) {
-          await this.addModerator(role.userUuid, databaseFunctions );
+        if ( role.role === "moderator" || role.role === "owner" || role.role === "coOwner" ) {
+          await this.addModerator( role.userUuid, databaseFunctions );
         }
       }
     },
-    
-    updateModeratorStatus: async function( uuid, roomFunctions ) {
+
+    updateModeratorStatus: async function ( uuid, roomFunctions ) {
       const roomData = await roomFunctions.getRoomData()
     },
 
@@ -670,9 +713,9 @@ const userFunctions = () => {
 
     isUserModerator: async function ( theUserID, roomFunctions ) {
       const roomData = await roomFunctions.getRoomData( process.env.ROOM_UUID )
-      return roomData.roomRoles.some(role =>
+      return roomData.roomRoles.some( role =>
         role.userUuid === theUserID &&
-        (role.role === 'owner' || role.role === 'coOwner' || role.role === 'moderator')
+        ( role.role === 'owner' || role.role === 'coOwner' || role.role === 'moderator' )
       );
     },
 
@@ -1296,8 +1339,11 @@ const userFunctions = () => {
       return bannedUsers.some( ( { id } ) => id === userID );
     },
 
-    isUserIDOnStage: function ( userID ) {
+    isUserIDOnStage: async function ( userID ) {
+      console.group( `isUserIDOnStage` )
       const onStage = djList.indexOf( userID );
+      console.log( `onStage:${ onStage }` )
+      console.groupEnd()
       return onStage !== -1;
     },
 
@@ -1947,8 +1993,8 @@ const userFunctions = () => {
     userJoinsRoom: async function ( userProfile, roomFunctions, databaseFunctions ) {
       const userID = userProfile.uuid
       const username = userProfile.nickname
-      
-      console.log(`userJoinsRoom: ${ username } joined`)
+
+      console.log( `userJoinsRoom: ${ username } joined` )
       //adds users who join the room to the user list if their not already on the list
       await this.addUserToTheUsersList( userID, username, databaseFunctions );
 
@@ -1967,9 +2013,13 @@ const userFunctions = () => {
         await this.removeUserIDFromAFKArray( userID );
       }
 
-      await this.updateModeratorStatus( userID, roomFunctions)
-      
+      await this.updateModeratorStatus( userID, roomFunctions )
+
       await this.addUserIsHere( userID, databaseFunctions );
+    },
+    
+    userLeavesRoom: async function( uuid, roomFunctions, databaseFunctions ) {
+      console.log(`${ uuid } left...`)
     },
 
     updateUsername: async function ( userID, username, databaseFunctions ) {
@@ -2020,10 +2070,12 @@ const userFunctions = () => {
         if ( typeof data.allUsers[ i ] !== 'undefined' ) {
           userID = data.allUsers[ i ].uuid
           userProfile = await this.getUserProfileFromAPI( userID )
-          if ( !await this.userExists( userID ) ) {
-            await this.addUserToTheUsersList( userID, userProfile )
+          if ( userProfile !== undefined ) {
+            if ( !await this.userExists( userID ) ) {
+              await this.addUserToTheUsersList( userID, userProfile )
+            }
+            await this.updateUserFromProfile( userProfile, databaseFunctions )
           }
-          await this.updateUserFromProfile( userProfile, databaseFunctions )
         }
       }
     },
@@ -2166,7 +2218,9 @@ const userFunctions = () => {
     },
 
     escortMeIsEnabled: async function ( userID ) {
+      console.group( `escortMeIsEnabled` )
       if ( await this.isUserInUsersList( userID ) ) {
+        console.groupEnd()
         return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'EscortMe' ] === true;
       }
     },
@@ -2549,4 +2603,4 @@ const userFunctions = () => {
   }
 }
 
-export default userFunctions();
+export default userFunctions;

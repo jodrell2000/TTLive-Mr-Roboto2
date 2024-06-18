@@ -967,4 +967,4 @@ const databaseFunctions = () => {
 
 }
 
-export default databaseFunctions();
+export default databaseFunctions;

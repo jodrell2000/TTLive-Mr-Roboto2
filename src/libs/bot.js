@@ -91,7 +91,7 @@ export class Bot {
       if  ( ["userJoined", "userLeft"].includes(payload.name) ) {
         await handlers[ payload.name ]( self.state, payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
       } else  if ( payload.name === "votedOnSong" ) {
-        console.log("Do nothing, handled by serverMessage")
+        // console.log("Do nothing, handled by serverMessage")
       } else {
         if ( payload.name !== "userJoined" && handlers[ payload.name ] ) {
           await handlers[ payload.name ]( self.state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, this.socket )
@@ -103,7 +103,7 @@ export class Bot {
       switch ( payload.name ) {
         case "playedOneTimeAnimation":
           logger.debug( `User ${ payload.params.userUuid } playedOneTimeAnimation` )
-          handlers.playedOneTimeAnimation( payload, userFunctions )
+          handlers.playedOneTimeAnimation( payload, userFunctions, songFunctions )
           break;
         case "kickedFromRoom":
           break;
@@ -115,7 +115,7 @@ export class Bot {
     } );
 
     this.socket.on( "serverMessage", ( payload ) => {
-      if ( payload.message.name.includes [ "votedOnSong"] ) {
+      if ( ["votedOnSong"].includes(payload.message.name) ) {
         handlers[ payload.message.name ]( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
       } else {
         if ( payload.message.statePatch ) {

@@ -27,6 +27,7 @@ export default async ( payload, userFunctions, roomFunctions, songFunctions, cha
     await songFunctions.resetUpVotes();
     await songFunctions.resetDownVotes();
     await songFunctions.resetSnagCount();
+    await songFunctions.resetJumpCount();
     await songFunctions.resetVoteSnagging();
     await botFunctions.clearAllTimers( userFunctions, roomFunctions, songFunctions, chatFunctions );
 

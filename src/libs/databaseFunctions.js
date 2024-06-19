@@ -396,8 +396,8 @@ const databaseFunctions = () => {
     saveLastSongStats: async function ( songFunctions ) {
       return this.getLastSongID( songFunctions.previousArtist(), songFunctions.previousTrack() )
         .then( ( theID ) => {
-          const query = "UPDATE tracksPlayed tp SET upvotes=?, downvotes=?, snags=? WHERE tp.id=?";
-          const values = [ songFunctions.previousUpVotes(), songFunctions.previousDownVotes(), songFunctions.previousSnags(), theID ];
+          const query = "UPDATE tracksPlayed tp SET upvotes=?, downvotes=?, snags=?, jumps=? WHERE tp.id=?";
+          const values = [ songFunctions.previousUpVotes(), songFunctions.previousDownVotes(), songFunctions.previousSnags(), songFunctions.previousJumps(), theID ];
           return this.runQuery( query, values )
         } )
         .catch( ( ex ) => { console.error( "Something went wrong saving the song stats: .then( ( theID ) " + ex ); } );

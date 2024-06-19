@@ -23,6 +23,7 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
     
     await userFunctions.resetUsersList();
     await userFunctions.rebuildUserList( state, databaseFunctions );
+
     // console.log( `startup roomData:${ JSON.stringify( roomData, null, 2 ) }` )
     await userFunctions.updateModeratorsFromRoomData( roomFunctions, databaseFunctions );
     

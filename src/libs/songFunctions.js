@@ -18,6 +18,7 @@ let snagSong = false; //if true causes the bot to add every song that plays to i
 let upVotes = [];
 let downVotes = [];
 let snags = [];
+let jumps = [];
 let voteCountSkip = 0;
 let previousSongStats = []; // grab the ending song votes before they're reset
 let ALLREADYCALLED = false; //resets votesnagging so that it can be called again
@@ -129,17 +130,35 @@ const songFunctions = () => {
     // ========================================================
 
     snagCount: () => snags.length,
-    
+
     recordSnag: async function(uuid) {
       if (!snags.includes(uuid)) {
         snags.push(uuid);
       }
     },
-    
+
     resetSnagCount: async function () {
       snags = [];
     },
-    
+
+    // ========================================================
+
+    // ========================================================
+    // Jump Functions
+    // ========================================================
+
+    jumpCount: () => jumps.length,
+
+    recordJump: async function(uuid) {
+      if (!jumps.includes(uuid)) {
+        jumps.push(uuid);
+      }
+    },
+
+    resetJumpCount: async function () {
+      jumps = [];
+    },
+
     // ========================================================
 
     // ========================================================
@@ -173,6 +192,7 @@ const songFunctions = () => {
     previousUpVotes: () => previousSongStats[ 'upvotes' ],
     previousDownVotes: () => previousSongStats[ 'downvotes' ],
     previousSnags: () => previousSongStats[ 'snags' ],
+    previousJumps: () => previousSongStats[ 'jumps' ],
     previousArtist: () => previousArtist,
     previousTrack: () => previousSong,
     previousDJID: () => previousDJID,
@@ -183,6 +203,7 @@ const songFunctions = () => {
       previousSongStats[ 'upvotes' ] = upVotes.length;
       previousSongStats[ 'downvotes' ] = downVotes.length;
       previousSongStats[ 'snags' ] = this.snagCount();
+      previousSongStats[ 'jumps' ] = this.jumpCount();
     },
 
     // ========================================================

@@ -1,7 +1,10 @@
 import { logger } from "../utils/logging.js";
 
-export default async ( state, payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
+export default async ( currentState, payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
   logger.debug( `=========================== userLeft.js ===========================` )
+  const uuids = await userFunctions.findLeftUserUUID( currentState  )
 
-  await userFunctions.rebuildUserList( state, databaseFunctions );
+  for ( const uuid of uuids ) {
+    await userFunctions.deregisterUser( uuid, databaseFunctions )
+  }
 }

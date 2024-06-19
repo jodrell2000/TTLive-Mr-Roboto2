@@ -185,8 +185,8 @@ const userFunctions = () => {
       }
     },
 
-    deleteUserData: function ( databaseFunctions, userID, key ) {
-      if ( this.userExists( userID ) ) {
+    deleteUserData: async function ( databaseFunctions, userID, key ) {
+      if ( await this.userExists( userID ) ) {
         delete theUsersList[ this.getPositionOnUsersList( userID ) ][ key ];
         databaseFunctions.storeUserData( theUsersList[ this.getPositionOnUsersList( userID ) ] );
       }
@@ -273,32 +273,34 @@ const userFunctions = () => {
           missingUUIDs.push( uuid );
         }
       } );
-
       return missingUUIDs;
+    },
+
+    findLeftUserUUID: async function ( payload ) {
+      const userUUIDs = new Set( this.theUsersList().map( user => user.id ) );
+      const payloadUUIDs = new Set( await this.getUUIDsFromPayload( payload ) )
+
+      const leftUUIDs = [];
+      userUUIDs.forEach(uuid => {
+        if (!payloadUUIDs.has(uuid)) {
+          leftUUIDs.push(uuid);
+        }
+      });
+      return leftUUIDs;
     },
 
     getUUIDsFromPayload: async function (payload) {
       const payloadUUIDs = new Set();
+      let theUUIDArray = payload.allUsers;
 
-      let theUUIDArray = [];
-      if (Array.isArray(payload.statePatch)) {
-        theUUIDArray = payload.statePatch;
-      } else if (Array.isArray(payload.allUsers)) {
-        theUUIDArray = payload.allUsers;
-      }
-
-      theUUIDArray.forEach(patch => {
-        if (patch.op === 'add' && patch.value && patch.value.uuid) {
-          payloadUUIDs.add(patch.value.uuid);
-        }
-        if (patch.op === 'add' && patch.path.includes('/allUserData/')) {
-          const uuid = patch.path.split('/').pop();
-          payloadUUIDs.add(uuid);
+      theUUIDArray.forEach(user => {
+        if (user.uuid) {
+          payloadUUIDs.add(user.uuid);
         }
       });
       return Array.from(payloadUUIDs);
     },
-
+    
     getUserIDFromData: function ( data ) {
       return data.userid;
     },
@@ -1917,7 +1919,8 @@ const userFunctions = () => {
         }
       }
 
-      this.removeUserIsHere( userID, databaseFunctions );
+      await this.removeUserIsHere( userID, databaseFunctions );
+      await this.removeUserFromUsersList( userID )
     },
 
     bootNewUserCheck: function ( userID, username ) {
@@ -2040,9 +2043,9 @@ const userFunctions = () => {
       }
     },
 
-    removeUserIsHere: function ( userID, databaseFunctions ) {
-      if ( this.userExists( userID ) ) {
-        this.deleteUserData( databaseFunctions, userID, "here" );
+    removeUserIsHere: async function ( userID, databaseFunctions ) {
+      if ( await this.userExists( userID ) ) {
+        await this.deleteUserData( databaseFunctions, userID, "here" );
       }
     },
 
@@ -2059,6 +2062,16 @@ const userFunctions = () => {
     addUserToTheUsersList: async function ( userID, userProfile ) {
       if ( !await this.isUserInUsersList( userID ) ) {
         theUsersList.push( { id: userID, username: userProfile.username } );
+      }
+    },
+    
+    removeUserFromUsersList: async function( userID ) {
+      if (await this.isUserInUsersList(userID)) {
+        const userIndex = theUsersList.findIndex(user => user.id === userID);
+
+        if (userIndex !== -1) {
+          theUsersList.splice(userIndex, 1);
+        }
       }
     },
 

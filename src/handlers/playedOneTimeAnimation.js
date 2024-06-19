@@ -1,26 +1,34 @@
 import { postMessage } from '../libs/cometchat.js'
-import { logger } from '../utils/logging.js'
 
-export default async ( payload, userFunctions ) => {
+export default async ( payload, userFunctions, songFunctions ) => {
   const room = process.env.ROOM_UUID
   const userID = payload.params.userUuid;
-  const username = await userFunctions.getUsername( userID )
-  logger.debug( `OneTimeAnimation: ${JSON.stringify( payload, null, 2 )}` )
-  if ( username ) {
+  console.log( `OneTimeAnimation: ${JSON.stringify( payload, null, 2 )}` )
+  
+  if ( payload.params.animation && payload.params.animation === "jump" ) {
+    await songFunctions.recordJump(userID);
+
+    const username = await userFunctions.getUsername( userID )
     const message = `${ username } jumped`
-
-    switch ( payload.params.animation ) {
-      case "jump":
-        return await postMessage( {
-          room,
-          message: message
-        } )
-        break;
+    return await postMessage( {
+      room,
+      message: message
+    } )
+  } else if ( payload.params.animation && payload.params.animation === "emoji" ) {
+    switch ( payload.params.emoji ) {
       case "💚":
-        break;
+      case "💜":
       case "⭐️":
+        try {
+          await songFunctions.recordSnag(userID);
+        } catch (error) {
+          console.error(`Error recording snag: ${error.message}`);
+        }
         break;
-
+      default:
+        console.warn(`Unhandled animation: ${payload.params.animation}`);
     }
   }
+
+  console.log(`playedAnimation snags: ${songFunctions.snagCount()}`);
 }

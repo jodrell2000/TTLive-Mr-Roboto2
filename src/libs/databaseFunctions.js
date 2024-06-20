@@ -169,35 +169,6 @@ const databaseFunctions = () => {
     // ========================================================
 
     // ========================================================
-    // File Functions
-    // ========================================================
-
-    writeUserDataToDisk: async function ( userObject ) {
-      const userID = userObject[ "id" ];
-      const dataFilePath = `${ dirname( require.main.filename ) }/data/users/${ userID }.json`;
-      fs.writeFileSync( dataFilePath, JSON.stringify( userObject ), function ( err ) {
-        if ( err ) {
-          return console.error( err );
-        }
-      } );
-    },
-
-    readAllUserDataFromDisk: function () {
-      const dataFilePath = `${ dirname( require.main.filename ) }/data/users/`;
-      let theUsersList = [];
-      fs.readdirSync( dataFilePath ).forEach( file => {
-        theUsersList.push( this.readUserDataFromFile( dataFilePath + file ) );
-      } )
-
-      return theUsersList;
-    },
-
-    readUserDataFromFile: function ( file ) {
-      const theData = fs.readFileSync( file, { encoding: 'utf8' } )
-      return JSON.parse( theData );
-    },
-
-    // ========================================================
     // Persistent User Functions
     // ========================================================
 

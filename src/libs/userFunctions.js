@@ -164,19 +164,11 @@ const userFunctions = () => {
     // User Storage Functions
     // ========================================================
 
-    initialUserDataLoad: function ( databaseFunctions ) {
-      theUsersList = databaseFunctions.readAllUserDataFromDisk();
-    },
-
     storeUserData: async function ( userID, key, value, databaseFunctions ) {
       if ( await this.userExists( userID ) && await this.getUsername( userID ) !== "Guest" ) {
         try {
           const userPosition = this.getPositionOnUsersList( userID );
-
           theUsersList[ userPosition ][ key ] = value;
-          //console.log(`storeUserData theUsersList[ userPosition ]:${JSON.stringify(theUsersList[ userPosition ],
-          // null, 2)}`)
-
           await databaseFunctions.storeUserData( theUsersList[ userPosition ] );
         } catch ( error ) {
           console.error( "Error storing user data:", error.message );
@@ -227,7 +219,9 @@ const userFunctions = () => {
     updateUserFromProfile: async function ( userProfile, databaseFunctions ) {
       const username = encodeURIComponent( userProfile.nickname )
       const uuid = userProfile.uuid
+      const createdAt = Date.parse(userProfile.createdAt)
       await this.storeUserData( uuid, "username", username, databaseFunctions );
+      await this.storeUserData( uuid, "joinTime", createdAt, databaseFunctions );
     },
 
     getUsername: async function ( userID ) {

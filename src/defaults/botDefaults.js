@@ -14,6 +14,6 @@ export default {
   
   headers: {
     'accept': 'application/json',
-    'Authorization': `Bearer ${process.env.TT_LIVE_AUTHTOKEN}`
+    'Authorization': `Bearer ${process.env.TTL_USER_TOKEN}`
   }
 }

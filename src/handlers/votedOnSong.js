@@ -14,6 +14,8 @@ export default async ( payload, userFunctions, roomFunctions, songFunctions, cha
 
     if (match) {
       const uuid = match[1];
+      await userFunctions.updateUserLastVoted( uuid, databaseFunctions )
+
       if (value === true) {
         await songFunctions.recordUpVotes( uuid );
       } else if (value === false) {

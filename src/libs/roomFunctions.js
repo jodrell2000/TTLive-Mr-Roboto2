@@ -66,7 +66,7 @@ const roomFunctions = () => {
       const url = `https://rooms.prod.tt.fm/rooms/uuid/${roomUUID}`;
       const headers = {
         'accept': 'application/json',
-        'Authorization': `Bearer ${process.env.TT_LIVE_AUTHTOKEN}`
+        'Authorization': `Bearer ${process.env.TTL_USER_TOKEN}`
       };
 
       try {
@@ -104,7 +104,7 @@ const roomFunctions = () => {
       const config = {
         headers: {
           'accept': 'application/json',
-          'Authorization': `Bearer ${process.env.TT_LIVE_AUTHTOKEN}`,
+          'Authorization': `Bearer ${process.env.TTL_USER_TOKEN}`,
           'Content-Type': 'application/json'
         }
       };

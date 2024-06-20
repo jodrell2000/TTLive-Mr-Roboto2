@@ -1,9 +1,8 @@
 import { postMessage } from '../libs/cometchat.js'
 
-export default async ( payload, userFunctions, songFunctions ) => {
+export default async ( payload, userFunctions, songFunctions, databaseFunctions ) => {
   const room = process.env.ROOM_UUID
   const userID = payload.params.userUuid;
-  console.log( `OneTimeAnimation: ${JSON.stringify( payload, null, 2 )}` )
   
   if ( payload.params.animation && payload.params.animation === "jump" ) {
     await songFunctions.recordJump(userID);
@@ -20,6 +19,7 @@ export default async ( payload, userFunctions, songFunctions ) => {
       case "💜":
       case "⭐️":
         try {
+          await userFunctions.updateUserLastSnagged( userID, databaseFunctions )
           await songFunctions.recordSnag(userID);
         } catch (error) {
           console.error(`Error recording snag: ${error.message}`);
@@ -29,6 +29,4 @@ export default async ( payload, userFunctions, songFunctions ) => {
         console.warn(`Unhandled animation: ${payload.params.animation}`);
     }
   }
-
-  console.log(`playedAnimation snags: ${songFunctions.snagCount()}`);
 }

@@ -211,7 +211,7 @@ const userFunctions = () => {
         const url = `https://api.prod.tt.fm/users/profiles?users=${ uuid }`;
         const headers = {
           'accept': 'application/json',
-          'Authorization': `Bearer ${ process.env.TT_LIVE_AUTHTOKEN }`
+          'Authorization': `Bearer ${ process.env.TTL_USER_TOKEN }`
         };
 
         try {
@@ -974,20 +974,20 @@ const userFunctions = () => {
       }
     },
 
-    updateUserLastSpoke: function ( userID, databaseFunctions ) {
-      this.storeUserData( userID, "lastSpoke", Date.now(), databaseFunctions )
+    updateUserLastSpoke: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, "lastSpoke", Date.now(), databaseFunctions )
     },
 
-    updateUserLastVoted: function ( userID, databaseFunctions ) {
-      this.storeUserData( userID, "lastVoted", Date.now(), databaseFunctions )
+    updateUserLastVoted: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, "lastVoted", Date.now(), databaseFunctions )
     },
 
-    updateUserLastSnagged: function ( userID, databaseFunctions ) {
-      this.storeUserData( userID, "lastSnagged", Date.now(), databaseFunctions )
+    updateUserLastSnagged: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, "lastSnagged", Date.now(), databaseFunctions )
     },
 
-    updateUserJoinedStage: function ( userID, databaseFunctions ) {
-      this.storeUserData( userID, "joinedStage", Date.now(), databaseFunctions )
+    updateUserJoinedStage: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, "joinedStage", Date.now(), databaseFunctions )
     },
 
     getIdleTime: function ( userID ) {

@@ -88,7 +88,7 @@ export class Bot {
       }
 
 
-      if  ( ["userJoined", "userLeft"].includes(payload.name) ) {
+      if  ( ["userJoined", "userLeft", "addedDj"].includes(payload.name) ) {
         await handlers[ payload.name ]( self.state, payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
       } else  if ( payload.name === "votedOnSong" ) {
         // console.log("Do nothing, handled by serverMessage")
@@ -103,7 +103,7 @@ export class Bot {
       switch ( payload.name ) {
         case "playedOneTimeAnimation":
           logger.debug( `User ${ payload.params.userUuid } playedOneTimeAnimation` )
-          handlers.playedOneTimeAnimation( payload, userFunctions, songFunctions )
+          handlers.playedOneTimeAnimation( payload, userFunctions, songFunctions, databaseFunctions )
           break;
         case "kickedFromRoom":
           break;

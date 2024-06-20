@@ -120,6 +120,20 @@ const databaseFunctions = () => {
         throw new Error( `Error writing user data to database: ${ error.message }` );
       }
     },
+    
+    loadUserFromDatabase: async function ( uuid ) {
+      const theQuery = "SELECT id, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke, currentPlayCount," +
+        " totalPlayCount, joinedStage, firstIdleWarning, secondIdleWarning, spamCount, lastSnagged, region," +
+        " BBBootTimestamp, noiceCount, propsCount, RoboCoins, here, password_hash, email FROM users where id = ?"
+      const theValues = [ uuid ];
+      try {
+        const result = await this.runQuery( theQuery, theValues );
+        return result[0]
+      } catch ( error ) {
+        console.error( `Unable to load user ${ uuid } from database:`, error.message );
+        throw error;
+      }
+    },
 
     // ========================================================
     // "Memory" Functions
@@ -191,11 +205,10 @@ const databaseFunctions = () => {
       try {
         const userToSave = this.removeUnsavableDataFromUser( userObject );
 
-        //await this.writeUserDataToDisk( userToSave );
         await this.writeUserDataToDatabase( userToSave );
-        return Promise.resolve(); // Resolve the promise
+        return Promise.resolve();
       } catch ( error ) {
-        return Promise.reject( error ); // Reject the promise
+        return Promise.reject( error );
       }
     },
 

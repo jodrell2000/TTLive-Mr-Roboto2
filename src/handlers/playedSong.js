@@ -4,21 +4,20 @@ import roomDefaults from "../defaults/roomDefaults.js";
 
 export default async ( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, socket ) => {
   logger.debug( `================== playedSong ====================` )
-  //await userFunctions.setPreviousDJID( await userFunctions.getCurrentDJID() )
 
   // end song
   let djID;
   if ( payload.nowPlaying && payload.nowPlaying.song ) {
     djID = payload.djs[ 0 ].uuid;
     await songFunctions.grabSongStats();
-    await userFunctions.setCurrentDJID( djID )
+    await userFunctions.setCurrentDJID( djID, databaseFunctions );
     const videoID = payload.nowPlaying.song.songShortId
     await chatFunctions.readSongStats( videoID, songFunctions, botFunctions, databaseFunctions, userFunctions );
     await databaseFunctions.saveLastSongStats( songFunctions );
     await userFunctions.incrementDJPlayCount( djID, databaseFunctions );
 
   // await userFunctions.removeDJsOverPlaylimit( data, chatFunctions, djID );
-  // await roomFunctions.escortDJsDown( data, djID, botFunctions, userFunctions, chatFunctions, databaseFunctions );
+    await roomFunctions.escortDJsDown( await userFunctions.getPreviousDJID(), botFunctions, userFunctions, chatFunctions, databaseFunctions, socket );
 
   // new song
 
@@ -29,7 +28,7 @@ export default async ( payload, userFunctions, roomFunctions, songFunctions, cha
     await songFunctions.resetSnagCount();
     await songFunctions.resetJumpCount();
     await songFunctions.resetVoteSnagging();
-    await botFunctions.clearAllTimers( userFunctions, roomFunctions, songFunctions, chatFunctions );
+    await botFunctions.clearAllTimers( userFunctions, roomFunctions, songFunctions, chatFunctions, socket );
 
     if ( payload.nowPlaying.song ) {
       songFunctions.getSongTags( payload )
@@ -47,11 +46,7 @@ export default async ( payload, userFunctions, roomFunctions, songFunctions, cha
   // bot votes, after 30 seconds in case a skip is needed
   await new Promise( resolve => {
     setTimeout( async () => {
-      await socket.action( ActionName.voteOnSong, {
-        roomUuid: process.env.ROOM_UUID,
-        userUuid: process.env.USERID,
-        songVotes: { like: true }
-      } );
+      await botFunctions.upVote( socket )
       resolve();
     }, 30 * 1000 );
   } );

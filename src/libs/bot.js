@@ -47,7 +47,7 @@ export class Bot {
             message: customMessage,
             sender,
             senderName: messages[ message ]?.data?.customData?.userName
-          }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions )
+          }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, this.socket )
         }
       }
     }
@@ -88,7 +88,7 @@ export class Bot {
       }
 
 
-      if  ( ["userJoined", "userLeft", "addedDj"].includes(payload.name) ) {
+      if  ( ["userJoined", "userLeft", "addedDj", "removedDj"].includes(payload.name) ) {
         await handlers[ payload.name ]( self.state, payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
       } else  if ( payload.name === "votedOnSong" ) {
         // console.log("Do nothing, handled by serverMessage")
@@ -140,9 +140,14 @@ export class Bot {
       }
     } );
 
-    this.socket.on( "error", ( message ) => {
+    this.socket.on( "error", async ( message ) => {
       logger.debug( `error --------------------------------------------` )
-      logger.debug( `error ${ JSON.stringify( message ) }` )
+      logger.debug( `error ${ message }` )
+      switch ( message ) {
+        case "Nothing is playing right now.":
+          await userFunctions.clearCurrentDJFlags( databaseFunctions )
+          break;
+      }
     } );
   }
 }

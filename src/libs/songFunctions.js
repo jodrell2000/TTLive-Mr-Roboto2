@@ -283,7 +283,7 @@ const songFunctions = () => {
       }
     },
 
-    startSongWatchdog( data, userFunctions ) {
+    startSongWatchdog( data, userFunctions, socket ) {
       const length = data.nowPlaying.song.duration;
       const watchedDJ = userFunctions.getCurrentDJID( data );
 
@@ -300,9 +300,10 @@ const songFunctions = () => {
         }
 
         //START THE 20 SEC TIMER
-        takedownTimer = setTimeout( function () {
+        takedownTimer = setTimeout( async function () {
           takedownTimer = null;
-          userFunctions.removeDJ( watchedDJ, 'DJ removed because of a stuck song issue' ); // Remove Saved DJ from last newsong call
+          await userFunctions.removeDJ( watchedDJ, 'DJ removed because of a stuck song issue', socket ); // Remove Saved
+          // DJ from last newsong call
         }, 20 * 1000 ); // Current DJ has 20 seconds to skip before they are removed
       }, ( length + 10 ) * 1000 ); //Timer expires 10 seconds after the end of the song, if not cleared by a newsong
     },

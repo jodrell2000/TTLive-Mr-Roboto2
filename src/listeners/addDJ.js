@@ -7,7 +7,7 @@ bot.on( 'add_dj', function ( data ) {
   [ OKToDJ, theMessage ] = userFunctions.checkOKToDJ( theUserID, roomFunctions );
 
   if ( !OKToDJ ) {
-    userFunctions.removeDJ( theUserID, 'User is not allowed to DJ so was removed' );
+    userFunctions.removeDJ( theUserID, 'User is not allowed to DJ so was removed', socket );
     userFunctions.incrementSpamCounter( theUserID, databaseFunctions );
     chatFunctions.botSpeak( theMessage );
   }

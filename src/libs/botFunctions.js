@@ -3,9 +3,8 @@ import botDefaults from '../defaults/botDefaults.js'
 import musicDefaults from '../defaults/musicDefaults.js'
 import { commandIdentifier } from '../defaults/chatDefaults.js'
 import axios from 'axios'
-
-
 import authModule from '../libs/auth.js'
+import { ActionName } from "ttfm-socket";
 
 let checkActivity = Date.now();
 let skipOn = null; //if true causes the bot to skip every song it plays, toggled on and off by commands
@@ -115,7 +114,7 @@ const botFunctions = () => {
 
       let minutes = Math.floor( currentTime / msecPerMinute );
 
-      chatFunctions.botSpeak( await userFunctions.getUsername( authModule.USERID ) + ' has been up for: ' + days + ' days, ' + hours + ' hours, ' + minutes + ' minutes' );
+      await chatFunctions.botSpeak( await userFunctions.getUsername( authModule.USERID ) + ' has been up for: ' + days + ' days, ' + hours + ' hours, ' + minutes + ' minutes' );
     },
 
     songStatsCommand: function ( data, chatFunctions ) {
@@ -151,11 +150,11 @@ const botFunctions = () => {
         await sleep( 100 );
         this.reportSongStats( data, chatFunctions );
         await sleep( 100 );
-        userFunctions.readQueue( data, chatFunctions );
+        await userFunctions.readQueue( data, chatFunctions );
         await sleep( 100 );
-        userFunctions.whatsPlayLimit( data, chatFunctions );
+        await userFunctions.whatsPlayLimit( data, chatFunctions );
         await sleep( 100 );
-        userFunctions.reportDJIdleStatus( data, chatFunctions );
+        await userFunctions.reportDJIdleStatus( data, chatFunctions );
         await sleep( 100 );
         this.reportRefreshStatus( data, chatFunctions );
         await sleep( 100 );
@@ -198,18 +197,25 @@ const botFunctions = () => {
       doInOrder();
     },
 
-    stageDiveCommand: async function ( data, chatFunctions, userFunctions, messageVariable ) {
-      const userID = userFunctions.whoSentTheCommand( data );
+    stageDiveCommand: async function ( data, chatFunctions, userFunctions, messageVariable, socket ) {
+      console.group(`stageDiveCommand`)
+      const userID = await userFunctions.whoSentTheCommand( data );
+      console.log(`userID:${userID}`)
       const receiverID = await userFunctions.getCurrentDJID( data );
+      console.log(`receiverID:${receiverID}`)
 
+      console.log(`isUserIDOnStage:${await userFunctions.isUserIDOnStage( userID )}`)
       if ( await userFunctions.isUserIDOnStage( userID ) ) {
         const randomMessage = messageVariable[ Math.floor( Math.random() * messageVariable.length ) ];
-        const thisMessage = chatFunctions.buildUserToUserRandomMessage( userFunctions, userID, randomMessage, receiverID );
+        console.log(`randomMessage:${randomMessage}`)
+        const thisMessage = await chatFunctions.buildUserToUserRandomMessage( userFunctions, userID, randomMessage, receiverID );
+        console.log(`thisMessage:${thisMessage}`)
         await chatFunctions.botSpeak( thisMessage );
-        userFunctions.removeDJ( userID, 'DJ used the /dive command' );
+        await userFunctions.removeDJ( userID, 'DJ used the /dive command', socket );
       } else {
         await chatFunctions.botSpeak( 'You can\'t leave the stage if you\'re not on stage...' )
       }
+      console.groupEnd()
     },
 
     refreshOnCommand: async function ( data, chatFunctions ) {
@@ -235,17 +241,17 @@ const botFunctions = () => {
       console.groupEnd();
     },
 
-    removeDJCommand: async function ( data, theMessage, userFunctions, chatFunctions ) {
+    removeDJCommand: async function ( data, theMessage, userFunctions, chatFunctions, socket ) {
       const djID = await userFunctions.getCurrentDJID( data );
 
       if ( theMessage !== '' ) {
         const djName = userFunctions.getUsername( djID );
         theMessage = '@' + djName + ', ' + theMessage;
 
-        chatFunctions.botSpeak( theMessage, true );
+        await chatFunctions.botSpeak( theMessage, true );
         this.logCommandUsage( userFunctions, 'removeDJ', data, theMessage )
       }
-      userFunctions.removeDJ( djID, 'The removeDJ command had been issued: ' + theMessage );
+      await userFunctions.removeDJ( djID, 'The removeDJ command had been issued: ' + theMessage, socket );
     },
 
     informDJCommand: async function ( data, theMessage, userFunctions, chatFunctions ) {
@@ -270,25 +276,27 @@ const botFunctions = () => {
 
     // ========================================================
 
-    upVote: async function ( roomBot ) {
-      // const url = `https://api.prod.tt.fm/users/profiles?users=${userID}`;
-      //
-      // const response = await axios.get(url, { headers });
-      //
-      // roomBot.action<AddDjAction>(ActionName.voteOnSong, { roomUuid: process.env.ROOM_UUID, userUuid:
-      // process.env.USERID, songVotes: upvote })
-      
+    upVote: async function ( socket ) {
+      await socket.action( ActionName.voteOnSong, {
+        roomUuid: botDefaults.roomUuid,
+        userUuid: botDefaults.botUuid,
+        songVotes: { like: true }
+      } );
     },
     
-    downvote: async function () {
-      
+    downvote: async function ( socket ) {
+      await socket.action( ActionName.voteOnSong, {
+        roomUuid: botDefaults.roomUuid,
+        userUuid: botDefaults.botUuid,
+        songVotes: { like: false }
+      } );
     },
     
     // ========================================================
 
     async readFavouriteArtist( data, chatFunctions, databaseFunctions ) {
       const favouriteArtist = await this.favouriteArtist( databaseFunctions );
-      chatFunctions.botSpeak( "This week, I have been mostly listening to " + favouriteArtist );
+      await chatFunctions.botSpeak( "This week, I have been mostly listening to " + favouriteArtist );
     },
 
     favouriteArtist: function ( databaseFunctions ) {
@@ -603,23 +611,23 @@ const botFunctions = () => {
       }
     },
 
-    clearAllTimers: async function ( userFunctions, roomFunctions, songFunctions, chatFunctions ) {
+    clearAllTimers: async function ( userFunctions, roomFunctions, songFunctions, chatFunctions, socket ) {
       await userFunctions.clearInformTimer( roomFunctions, chatFunctions );
       await roomFunctions.clearSongLimitTimer( userFunctions, roomFunctions, chatFunctions );
       songFunctions.clearWatchDogTimer();
       await songFunctions.clearTakedownTimer( userFunctions, roomFunctions, chatFunctions );
     },
 
-    checkOnNewSong: async function ( data, roomFunctions, songFunctions, userFunctions, chatFunctions ) {
+    checkOnNewSong: async function ( data, roomFunctions, songFunctions, userFunctions, chatFunctions, socket ) {
       const length = data.nowPlaying.song.duration
       const theDJID = data.djs[ 0 ].uuid
       const masterIndex = userFunctions.masterIds().indexOf( theDJID ); //used to tell whether current dj is on the master id's list or not
       const djName = userFunctions.getUsername( theDJID );
 
       //clears timers if previously set
-      await this.clearAllTimers( userFunctions, roomFunctions, songFunctions, chatFunctions );
+      await this.clearAllTimers( userFunctions, roomFunctions, songFunctions, chatFunctions, socket );
 
-      songFunctions.startSongWatchdog( data, userFunctions );
+      songFunctions.startSongWatchdog( data, userFunctions, socket );
 
       //this removes the user from the stage if their song is over the length limit and the don't skip
       let theTimeout = 60;
@@ -634,7 +642,7 @@ const botFunctions = () => {
             // start the timer
             roomFunctions.songLimitTimer = setTimeout( function () {
               roomFunctions.songLimitTimer = null;
-              userFunctions.removeDJ( theDJID, `DJ @${ djName } was removed because their song was over the length limit` ); // Remove Saved DJ from last newsong call
+              userFunctions.removeDJ( theDJID, `DJ @${ djName } was removed because their song was over the length limit`, socket ); // Remove Saved DJ from last newsong call
             }, theTimeout * 1000 ); // Current DJ has 20 seconds to skip before they are removed
           }
         }

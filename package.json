@@ -1,5 +1,5 @@
 {
-  "name": "Mr. Roboto",
+  "name": "Mr_Roboto",
   "version": "2",
   "description": "A bot to interact with users in chat on tt.live",
   "main": "src/index.js",

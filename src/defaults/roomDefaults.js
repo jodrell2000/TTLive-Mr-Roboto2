@@ -32,7 +32,7 @@ export default {  // selection of lines to pick for functions
   ],
 
   // other stuff
-  refreshingEnabled: true, //whether or not /refresh can be used or not (true = yes, false = no)
+  refreshingEnabled: true, //whether /refresh can be used or not (true = yes, false = no)
   amountOfTimeToRefresh: 120, //the amount of seconds someone has to use the refresh command(if enabled)
 
   HowManyVotesToSkip: 2, //how many votes for a song to get skipped(default value, only works if voteSkip = true)

@@ -414,12 +414,12 @@ const roomFunctions = () => {
       chatFunctions.botSpeak( theMessage, true );
     },
 
-    clearDecksForVIPs: function ( userFunctions, authModule ) {
+    clearDecksForVIPs: async function ( userFunctions, authModule, socket ) {
       if ( userFunctions.vipList.length !== 0 && userFunctions.howManyDJs() !== userFunctions.vipList.length ) {
         for ( let p = 0; p < userFunctions.howManyDJs(); p++ ) {
           let checkIfVip = userFunctions.vipList.indexOf( userFunctions.djList()[ p ] );
           if ( checkIfVip === -1 && userFunctions.djList()[ p ] !== authModule.USERID ) {
-            userFunctions.removeDJ( userFunctions.djList()[ p ], 'Removing non VIP DJs' );
+            await userFunctions.removeDJ( userFunctions.djList()[ p ], 'Removing non VIP DJs', socket );
           }
         }
       }
@@ -449,11 +449,11 @@ const roomFunctions = () => {
       }
     },
 
-    escortDJsDown: async function ( data, currentDJ, botFunctions, userFunctions, chatFunctions, databaseFunctions ) {
+    escortDJsDown: async function ( currentDJ, botFunctions, userFunctions, chatFunctions, databaseFunctions, socket ) {
       //iterates through the escort list and escorts all djs on the list off the stage.
 
       if ( await userFunctions.escortMeIsEnabled( currentDJ ) === true ) {
-        userFunctions.removeDJ( currentDJ, 'DJ had enabled escortme' );
+        await userFunctions.removeDJ( currentDJ, 'DJ had enabled escortme', socket );
         await userFunctions.removeEscortMeFromUser( currentDJ, databaseFunctions );
 
         const theMessage = '@' + await userFunctions.getUsername( currentDJ ) + ' had enabled escortme';

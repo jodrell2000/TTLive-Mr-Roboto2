@@ -4,6 +4,7 @@ SELECT DATE_ADD(NOW(), INTERVAL 1 DAY) INTO @endDate;
 SELECT COALESCE(v.artistDisplayName, v.artistName) AS "artist",
        COALESCE(v.trackDisplayName, v.trackName)   AS "track",
        (
+           1 + 
            SUM(tp.upvotes - tp.downvotes) +
            SUM(tp.snags * 6) +
            SUM(tp.jumps * 2) +
@@ -23,7 +24,7 @@ FROM users u
 WHERE tp.whenPlayed BETWEEN @startDate AND @endDate AND
       tp.playedLength > 60 AND
       u.username != 'Mr. Roboto' AND
-      DAYOFWEEK(tp.whenPlayed, 'UTC', 'US/Central')) IN ( 0, 1, 2, 3, 4, 5, 6 )
+      DAYOFWEEK(tp.whenPlayed) IN ( 0, 1, 2, 3, 4, 5, 6 )
 GROUP BY COALESCE(v.artistDisplayName, v.artistName),
          COALESCE(v.trackDisplayName, v.trackName)
 ORDER BY 3 DESC, 4 DESC
@@ -57,4 +58,33 @@ GROUP BY COALESCE(v.artistDisplayName, v.artistName),
     COALESCE(v.trackDisplayName, v.trackName)
 ORDER BY 3 DESC, 4 DESC
     LIMIT 15;
+
+
+
+
+
+
+
+SELECT '2024-01-01 00:00:00' INTO @startDate;
+SELECT COALESCE(v.artistDisplayName, v.artistName) AS "artist",
+       COALESCE(v.trackDisplayName, v.trackName)   AS "track",
+       (SUM(tp.upvotes - tp.downvotes) + SUM(tp.snags * 6) +
+        SUM(IF(c.command = 'props', e.count, 0)) * 5 +
+        SUM(IF(c.command = 'noice', e.count, 0)) * 5 +
+        SUM(IF(c.command = 'spin', e.count, 0)) * 5 +
+        SUM(IF(c.command = 'tune', e.count, 0)) * 5) *
+       COUNT(DISTINCT (u.id))                      AS "points",
+       count(tp.id)                                AS "plays"
+FROM users u
+         JOIN tracksPlayed tp ON tp.djID = u.id
+         JOIN videoData v ON tp.videoData_id = v.id
+         LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
+         LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
+WHERE CONVERT_TZ(tp.whenPlayed, "UTC", "US/Central") BETWEEN @startDate AND NOW() AND
+      tp.length <= 60 AND
+      u.username != "Mr. Roboto"
+GROUP BY COALESCE(v.artistDisplayName, v.artistName),
+         COALESCE(v.trackDisplayName, v.trackName)
+ORDER BY 3 DESC, 4 DESC
+LIMIT 150;
 

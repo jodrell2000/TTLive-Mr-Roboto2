@@ -78,8 +78,8 @@ const commandFunctions = () => {
   }
   generalCommands.roomstatus.help = "Show the list of regions that DJs are alerted about ";
 
-  generalCommands.dive = ( { data, botFunctions, chatFunctions, userFunctions } ) => {
-    botFunctions.stageDiveCommand( data, chatFunctions, userFunctions, chatCommandItems.stageDiveMessages );
+  generalCommands.dive = ( { data, botFunctions, chatFunctions, userFunctions, socket } ) => {
+    botFunctions.stageDiveCommand( data, chatFunctions, userFunctions, chatCommandItems.stageDiveMessages, socket );
   }
   generalCommands.dive.help = "Leave the DJ booth with style...stagedive tho' init!";
 
@@ -376,8 +376,8 @@ const commandFunctions = () => {
   moderatorCommands.sarahconner.help = "Shut down the Bot if it's causing problems";
   moderatorCommands.sarahconner.sampleArguments = [ "He started booting everyone!" ];
 
-  moderatorCommands.removedj = ( { data, args, botFunctions, userFunctions, chatFunctions } ) => {
-    botFunctions.removeDJCommand( data, reassembleArgs( args ), userFunctions, chatFunctions );
+  moderatorCommands.removedj = ( { data, args, botFunctions, userFunctions, chatFunctions, socket } ) => {
+    botFunctions.removeDJCommand( data, reassembleArgs( args ), userFunctions, chatFunctions, socket );
   }
   moderatorCommands.removedj.help = "Remove the current DJ from the decks. Add a message after the command to have it sent direct to the DJ (in public)";
 
@@ -750,7 +750,6 @@ const commandFunctions = () => {
           return false;
         }
       }
-
       // check if this was formatted as a command
       const commandString = "^" + commandIdentifier;
       return !!text.match( commandString );
@@ -797,7 +796,7 @@ const commandFunctions = () => {
     },
 
     // parseCommands: function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions ) {
-    parseCommands: async function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions ) {
+    parseCommands: async function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, socket ) {
       let senderID;
       
       logger.debug(`data: ${ JSON.stringify( data )}`)
@@ -821,6 +820,7 @@ const commandFunctions = () => {
           documentationFunctions,
           databaseFunctions,
           dateFunctions,
+          socket
           // mlFunctions,
         } );
       } else {

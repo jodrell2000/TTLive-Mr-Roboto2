@@ -11,6 +11,8 @@ export default {
   feart: true,
 
   botPlaylist: null, //the playlist for the bot
+  roomUuid: process.env.ROOM_UUID,
+  botUuid: process.env.USERID,
   
   headers: {
     'accept': 'application/json',

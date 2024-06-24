@@ -39,7 +39,7 @@ const databaseFunctions = () => {
     buildSaveUserQuery: async function ( userObject ) {
       const id = userObject[ "id" ];
       const userInfo = JSON.stringify( userObject ).replace( "'", "\\'" );
-      const username = userObject[ "username" ];
+      const username = encodeURIComponent( userObject[ "username" ] )
 
       let moderator = "False";
       let joinTime = 0;
@@ -120,7 +120,7 @@ const databaseFunctions = () => {
         throw new Error( `Error writing user data to database: ${ error.message }` );
       }
     },
-    
+
     loadUserFromDatabase: async function ( uuid ) {
       const theQuery = "SELECT id, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke, currentPlayCount," +
         " totalPlayCount, joinedStage, firstIdleWarning, secondIdleWarning, spamCount, lastSnagged, region," +
@@ -128,7 +128,7 @@ const databaseFunctions = () => {
       const theValues = [ uuid ];
       try {
         const result = await this.runQuery( theQuery, theValues );
-        return result[0]
+        return result[ 0 ]
       } catch ( error ) {
         console.error( `Unable to load user ${ uuid } from database:`, error.message );
         throw error;
@@ -149,14 +149,14 @@ const databaseFunctions = () => {
         throw error;
       }
     },
-    
+
     retrieveMemory: async function ( key ) {
       const theQuery = "SELECT theValue FROM persistentMemory WHERE theKey = ?";
       const theValues = [ key ];
       try {
         const result = await this.runQuery( theQuery, theValues );
-        if (result.length > 0) {
-          return result[0].theValue;
+        if ( result.length > 0 ) {
+          return result[ 0 ].theValue;
         } else {
           return null;
         }
@@ -165,7 +165,7 @@ const databaseFunctions = () => {
         throw error;
       }
     },
-    
+
     // ========================================================
 
     // ========================================================
@@ -181,6 +181,14 @@ const databaseFunctions = () => {
       } catch ( error ) {
         return Promise.reject( error );
       }
+    },
+
+    userExistsInDatabase: async function ( uuid ) {
+      const theQuery = "SELECT count(*) as theCount FROM users WHERE id = ?";
+      const theValues = [ uuid ];
+      const result = await this.runQuery( theQuery, theValues );
+
+      return result[0].theCount > 0;
     },
 
     removeUnsavableDataFromUser: function ( userObject ) {
@@ -279,7 +287,7 @@ const databaseFunctions = () => {
     // ========================================================
     // Song Data Functions
     // ========================================================
-    
+
     saveTrackData: async function ( djID, songData ) {
       if ( songData.songShortId ) {
         const videoDataID = songData.songShortId
@@ -290,7 +298,6 @@ const databaseFunctions = () => {
           .then( ( result ) => {
             return this.setTrackPlayedLength( result.insertId - 1 );
           } )
-
 
         const videoID = songData.songShortId
         const youTubeID = songData.musicProviders.youtube || null
@@ -310,7 +317,7 @@ const databaseFunctions = () => {
         }
       } else {
         logger.error( `databaseFunctions.saveTrackData songData.songShortId: ${ songData.songShortId }` )
-        console.log( JSON.stringify( songData, null, 2 ))
+        console.log( JSON.stringify( songData, null, 2 ) )
       }
     },
 

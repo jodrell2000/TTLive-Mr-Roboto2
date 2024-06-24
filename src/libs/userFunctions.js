@@ -9,6 +9,8 @@ import countryLookup from 'country-code-lookup';
 import { logger } from "../utils/logging.js";
 import { postMessage } from "./cometchat.js";
 import axios from "axios";
+import { ActionName } from "ttfm-socket";
+import botDefaults from "../defaults/botDefaults.js";
 
 let theUsersList = []; // object array of everyone in the room
 let afkPeople = []; //holds the userid of everyone who has used the /afk command
@@ -116,8 +118,6 @@ const userFunctions = () => {
   return {
     getPreviousDJID: async () => previousDJID,
     setPreviousDJID: async ( uuid ) => { previousDJID = uuid; },
-    getCurrentDJID: async () => currentDJID,
-    setCurrentDJID: async ( uuid ) => { currentDJID = uuid; },
 
     debugPrintTheUsersList: function () {
       console.info( "Full theUsersList: " + JSON.stringify( theUsersList ) );
@@ -217,7 +217,7 @@ const userFunctions = () => {
     },
 
     updateUserFromProfile: async function ( userProfile, databaseFunctions ) {
-      const username = encodeURIComponent( userProfile.nickname )
+      const username = userProfile.nickname
       const uuid = userProfile.uuid
       const createdAt = Date.parse(userProfile.createdAt)
       await this.storeUserData( uuid, "username", username, databaseFunctions );
@@ -239,7 +239,7 @@ const userFunctions = () => {
         const email = args[ args.length - 1 ];
 
         await this.storeUserData( userID, "email", email, databaseFunctions );
-        chatFunctions.botSpeak( 'Email address for ' + username + ' set to ' + email );
+        await chatFunctions.botSpeak( 'Email address for ' + username + ' set to ' + email );
       } catch ( error ) {
         console.error( 'Error setting email address:', error );
         throw error;
@@ -340,10 +340,10 @@ const userFunctions = () => {
       }
 
       if ( theError === '' ) {
-        this.removeEscortMeFromUser( theUserID, databaseFunctions );
-        chatFunctions.botSpeak( '@' + this.getUsername( theUserID ) + ' you will no longer be escorted after you play your song' );
+        await this.removeEscortMeFromUser( theUserID, databaseFunctions );
+        await chatFunctions.botSpeak( '@' + this.getUsername( theUserID ) + ' you will no longer be escorted after you play your song' );
       } else {
-        chatFunctions.botSpeak( '@' + this.getUsername( theUserID ) + theError );
+        await chatFunctions.botSpeak( '@' + this.getUsername( theUserID ) + theError );
       }
     },
 
@@ -357,27 +357,27 @@ const userFunctions = () => {
     // User Region Functions
     // ========================================================
 
-    checkUsersHaveRegions: function ( data, chatFunctions ) {
+    checkUsersHaveRegions: async function ( data, chatFunctions ) {
       let userID;
 
       for ( let userCount = 0; userCount < data.users.length; userCount++ ) {
         if ( typeof data.users[ userCount ] !== 'undefined' ) {
           userID = data.users[ userCount ].userid;
-          if ( this.userExists( userID ) ) {
+          if ( await this.userExists( userID ) ) {
             this.askUserToSetRegion( userID, chatFunctions );
           }
         }
       }
     },
 
-    askUserToSetRegion: function ( userID, chatFunctions ) {
-      if ( !this.getUserRegion( userID ) && !this.userWantsNoRegion( userID ) ) {
-        chatFunctions.botPM( "If you'd like me to check that videos are playable in your region, please set it using the command '" + chatDefaults.commandIdentifier + "myRegion XX'. Replace XX with a valid 2 letter country code https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2 If you want to not be asked this again please user the command '" + chatDefaults.commandIdentifier + "noRegion'", userID );
+    askUserToSetRegion: async function ( userID, chatFunctions ) {
+      if ( !await this.getUserRegion( userID ) && !this.userWantsNoRegion( userID ) ) {
+        await chatFunctions.botPM( "If you'd like me to check that videos are playable in your region, please set it using the command '" + commandIdentifier + "myRegion XX'. Replace XX with a valid 2 letter country code https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2 If you want to not be asked this again please user the command '" + commandIdentifier + "noRegion'", userID );
       }
     },
 
-    getUserRegion: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getUserRegion: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         const userPosition = this.getPositionOnUsersList( userID );
         const userRegion = theUsersList[ userPosition ][ 'region' ];
 
@@ -392,7 +392,7 @@ const userFunctions = () => {
       const userID = this.whoSentTheCommand( data );
 
       if ( args[ 0 ] === undefined ) {
-        chatFunctions.botSpeak( `@${ this.getUsername( userID ) } you must give a region code, e.g., \`/myregion GB\`. Please use one of the 2 character ISO country codes, [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)` );
+        await chatFunctions.botSpeak( `@${ await this.getUsername( userID ) } you must give a region code, e.g., \`/myregion GB\`. Please use one of the 2 character ISO country codes, [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)` );
         return;
       }
 
@@ -400,7 +400,7 @@ const userFunctions = () => {
       const isValidRegion = theRegion.length === 2 && countryLookup.byIso( theRegion ) !== null;
 
       if ( !isValidRegion ) {
-        chatFunctions.botSpeak( `@${ this.getUsername( userID ) } that region is not recognized. Please use one of the 2 character ISO country codes, [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)` );
+        await chatFunctions.botSpeak( `@${ await this.getUsername( userID ) } that region is not recognized. Please use one of the 2 character ISO country codes, [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)` );
       } else {
         console.log( "this.getUserRegion( userID ): " + this.getUserRegion( userID ) );
         if ( !this.getUserRegion( userID ) ) {
@@ -417,31 +417,31 @@ const userFunctions = () => {
       return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'noregion' ];
     },
 
-    storeUserRegion: function ( data, userID, region, chatFunctions, videoFunctions, databaseFunctions ) {
-      this.deleteUserWantsNoRegion( userID, data, videoFunctions, chatFunctions, databaseFunctions );
-      this.storeUserData( userID, "region", region, databaseFunctions );
+    storeUserRegion: async function ( data, userID, region, chatFunctions, videoFunctions, databaseFunctions ) {
+      await this.deleteUserWantsNoRegion( userID, data, videoFunctions, chatFunctions, databaseFunctions );
+      await this.storeUserData( userID, "region", region, databaseFunctions );
 
-      chatFunctions.botSpeak( "@" + this.getUsername( userID ) + " the region " + countryLookup.byIso( region ).country + " has been added to your user" );
+      await chatFunctions.botSpeak( "@" + await this.getUsername( userID ) + " the region " + countryLookup.byIso( region ).country + " has been added to your user" );
       this.updateRegionAlertsFromUsers( data, videoFunctions, chatFunctions );
     },
 
-    deleteUserRegion: function ( userID, data, videoFunctions, chatFunctions, databaseFunctions ) {
-      this.deleteUserData( databaseFunctions, userID, "region" );
+    deleteUserRegion: async function ( userID, data, videoFunctions, chatFunctions, databaseFunctions ) {
+      await this.deleteUserData( databaseFunctions, userID, "region" );
       this.updateRegionAlertsFromUsers( data, videoFunctions, chatFunctions );
     },
 
-    storeNoRegion: function ( data, chatFunctions, videoFunctions, databaseFunctions ) {
+    storeNoRegion: async function ( data, chatFunctions, videoFunctions, databaseFunctions ) {
       const userID = this.whoSentTheCommand( data );
 
-      this.deleteUserRegion( userID, data, videoFunctions, chatFunctions, databaseFunctions );
-      this.storeUserData( userID, "noregion", true, databaseFunctions );
+      await this.deleteUserRegion( userID, data, videoFunctions, chatFunctions, databaseFunctions );
+      await this.storeUserData( userID, "noregion", true, databaseFunctions );
 
-      chatFunctions.botSpeak( "You won't be asked again to set a region" );
+      await chatFunctions.botSpeak( "You won't be asked again to set a region" );
       this.updateRegionAlertsFromUsers( data, videoFunctions, chatFunctions );
     },
 
-    deleteUserWantsNoRegion: function ( userID, data, videoFunctions, chatFunctions, databaseFunctions ) {
-      this.deleteUserData( databaseFunctions, userID, "noregion" );
+    deleteUserWantsNoRegion: async function ( userID, data, videoFunctions, chatFunctions, databaseFunctions ) {
+      await this.deleteUserData( databaseFunctions, userID, "noregion" );
     },
 
     updateRegionAlertsFromUsers: function ( data, videoFunctions, chatFunctions ) {
@@ -520,14 +520,14 @@ const userFunctions = () => {
       } );
     },
 
-    clearSuperDJs: function ( data, chatFunctions ) {
+    clearSuperDJs: async function ( data, chatFunctions ) {
       superDJs = [];
-      this.readSuperDJs( data, chatFunctions );
+      await this.readSuperDJs( data, chatFunctions );
     },
 
-    readSuperDJs: function ( data, chatFunctions ) {
+    readSuperDJs: async function ( data, chatFunctions ) {
       if ( superDJs.length === 0 ) {
-        chatFunctions.botSpeak( "There are currently no SuperDJs" );
+        await chatFunctions.botSpeak( "There are currently no SuperDJs" );
       } else {
         let usernameArray = [];
         for ( let i = 0; i < superDJs.length; i++ ) {
@@ -536,17 +536,17 @@ const userFunctions = () => {
         }
         let usernameList = usernameArray.join( ', ' );
 
-        chatFunctions.botSpeak( "The current SuperDJs are " + usernameList );
+        await chatFunctions.botSpeak( "The current SuperDJs are " + usernameList );
       }
     },
 
     // ========================================================
 
-    readSingleUserStatus: function ( data, chatFunctions, roomFunctions ) {
+    readSingleUserStatus: async function ( data, chatFunctions, roomFunctions ) {
       let username = [];
       username.push( this.getUsername( this.whoSentTheCommand( data ) ) );
 
-      this.readUserStatus( data, username, chatFunctions, roomFunctions );
+      await this.readUserStatus( data, username, chatFunctions, roomFunctions );
     },
 
     readUserStatus: async function ( data, args, chatFunctions, roomFunctions ) {
@@ -557,108 +557,67 @@ const userFunctions = () => {
       theUsername = theUsername.substring( 0, theUsername.length - 1 );
 
       const theUserID = await this.getUserIDFromUsername( theUsername );
-      const roomJoined = formatRelativeTime( ( Date.now() - this.getUserJoinedRoom( theUserID ) ) / 1000 );
+      const roomJoined = formatRelativeTime( ( Date.now() - await this.getUserJoinedRoom( theUserID ) ) / 1000 );
       let modText = '';
       if ( await this.isUserModerator( theUserID, roomFunctions ) !== true ) {
         modText = 'not '
       }
-      const lastSpoke = formatRelativeTime( ( Date.now() - this.getUserLastSpoke( theUserID ) ) / 1000 );
-      const lastVoted = formatRelativeTime( ( Date.now() - this.getUserLastVoted( theUserID ) ) / 1000 );
-      const lastSnagged = formatRelativeTime( ( Date.now() - this.getUserLastSnagged( theUserID ) ) / 1000 );
-      const joinedStage = formatRelativeTime( ( Date.now() - this.getUserJoinedStage( theUserID ) ) / 1000 );
-      const spamCount = this.getUserSpamCount( theUserID );
-      const currentPlayCount = this.getDJCurrentPlayCount( theUserID );
-      const totalPlayCount = this.getDJTotalPlayCount( theUserID );
+      const lastSpoke = formatRelativeTime( ( Date.now() - await this.getUserLastSpoke( theUserID ) ) / 1000 );
+      const lastVoted = formatRelativeTime( ( Date.now() - await this.getUserLastVoted( theUserID ) ) / 1000 );
+      const lastSnagged = formatRelativeTime( ( Date.now() - await this.getUserLastSnagged( theUserID ) ) / 1000 );
+      const joinedStage = formatRelativeTime( ( Date.now() - await this.getUserJoinedStage( theUserID ) ) / 1000 );
+      const spamCount = await this.getUserSpamCount( theUserID );
+      const currentPlayCount = await this.getDJCurrentPlayCount( theUserID );
+      const totalPlayCount = await this.getDJTotalPlayCount( theUserID );
 
       if ( theUserID !== undefined ) {
-
-        const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
-
-        // the message is constructed in this way to add a brief pause before sending each part
-        // this ensures that the messages appear in the correct order
-        const readStatusInOrder = async () => {
-          chatFunctions.botSpeak( 'User info for ' + theUsername );
-          await sleep( 100 )
-
-          chatFunctions.botSpeak( '- userID is ' + theUserID );
-          await sleep( 100 )
-
-          chatFunctions.botSpeak( '- joined the room ' + roomJoined + ' ago' );
-          await sleep( 100 )
-
-          chatFunctions.botSpeak( '- is ' + modText + 'a Moderator' );
-          await sleep( 100 )
-
-          if ( lastSpoke !== false ) {
-            chatFunctions.botSpeak( '- spoke ' + lastSpoke + ' ago' );
-            await sleep( 100 )
-          }
-
-          if ( lastVoted !== false ) {
-            chatFunctions.botSpeak( '- voted ' + lastVoted + ' ago' );
-            await sleep( 100 )
-          }
-
-          if ( lastSnagged !== false ) {
-            chatFunctions.botSpeak( '- snagged ' + lastSnagged + ' ago' );
-            await sleep( 100 )
-          }
-
-          if ( joinedStage !== false ) {
-            chatFunctions.botSpeak( '- DJd ' + joinedStage + ' ago' );
-            await sleep( 100 )
-          }
-
-          chatFunctions.botSpeak( '- SPAM count=' + spamCount );
-          await sleep( 100 )
-
-          if ( currentPlayCount !== undefined ) {
-            chatFunctions.botSpeak( '- current playcount=' + currentPlayCount );
-            await sleep( 100 )
-          }
-
-          if ( !isNaN( totalPlayCount ) ) {
-            chatFunctions.botSpeak( '- total playcount=' + totalPlayCount );
-            await sleep( 100 )
-          }
-        }
-        readStatusInOrder();
+        const theMessage = `User info for ${theUsername}\n
+        - userID is ${theUserID}\n
+        - joined the room ${roomJoined} ago\n
+        - is ${modText} a Moderator\n
+        - spoke ${lastSpoke} ago\n
+        - voted ${lastVoted} ago\n
+        - snagged ${lastSnagged} ago\n
+        - DJd ${joinedStage} ago\n
+        - SPAM count=${spamCount}\n
+        - current playcount=${currentPlayCount}\n
+        - total playcount=${totalPlayCount}`
+        await chatFunctions.botSpeak( theMessage );
       } else {
-        chatFunctions.botSpeak( 'I couldn\'t find the details for that user. Please check the spelling, and capitalisation' );
+        await chatFunctions.botSpeak( 'I couldn\'t find the details for that user. Please check the spelling, and capitalisation' );
       }
-
     },
 
-    getUserJoinedRoom: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getUserJoinedRoom: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         let userPosition = this.getPositionOnUsersList( userID );
         return theUsersList[ userPosition ][ 'joinTime' ];
       }
     },
 
-    getUserLastVoted: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getUserLastVoted: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         let userPosition = this.getPositionOnUsersList( userID );
         return theUsersList[ userPosition ][ 'lastVoted' ];
       }
     },
 
-    getUserLastSpoke: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getUserLastSpoke: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         let userPosition = this.getPositionOnUsersList( userID );
         return theUsersList[ userPosition ][ 'lastSpoke' ];
       }
     },
 
-    getUserLastSnagged: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getUserLastSnagged: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         let userPosition = this.getPositionOnUsersList( userID );
         return theUsersList[ userPosition ][ 'lastSnagged' ];
       }
     },
 
-    getUserJoinedStage: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getUserJoinedStage: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         let userPosition = this.getPositionOnUsersList( userID );
         return theUsersList[ userPosition ][ 'joinedStage' ];
       }
@@ -672,13 +631,13 @@ const userFunctions = () => {
     // Moderator Management Functions
     // ========================================================
 
-    resetModerators: function ( data, databaseFunctions ) {
+    resetModerators: async function ( data, databaseFunctions ) {
       let userID;
       if ( data.room !== undefined ) {
         for ( let modLoop = 0; modLoop < data.room.metadata.moderator_id.length; modLoop++ ) {
           userID = data.room.metadata.moderator_id[ modLoop ];
-          if ( this.userExists( userID ) ) {
-            this.storeUserData( userID, 'moderator', true, databaseFunctions );
+          if ( await this.userExists( userID ) ) {
+            await this.storeUserData( userID, 'moderator', true, databaseFunctions );
           }
         }
       }
@@ -763,7 +722,7 @@ const userFunctions = () => {
     },
 
     incrementSpamCounter: async function ( userID, databaseFunctions ) {
-      if ( this.userExists( userID ) ) {
+      if ( await this.userExists( userID ) ) {
         const key = "spamCount";
         const value = this.getUserSpamCount( userID );
         await this.storeUserData( userID, key, value, databaseFunctions )
@@ -787,8 +746,8 @@ const userFunctions = () => {
       await this.storeUserData( userID, "spamCount", 0, databaseFunctions );
     },
 
-    getUserSpamCount: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getUserSpamCount: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'spamCount' ];
       }
     },
@@ -799,29 +758,29 @@ const userFunctions = () => {
     // Refresh Functions
     // ========================================================
 
-    refreshCommand: function ( data, chatFunctions, botFunctions, databaseFunctions ) {
+    refreshCommand: async function ( data, chatFunctions, botFunctions, databaseFunctions ) {
       const theUserID = this.whoSentTheCommand( data );
       let [ , theMessage ] = this.addRefreshToUser( theUserID, botFunctions, databaseFunctions );
 
-      chatFunctions.botSpeak( theMessage );
+      await chatFunctions.botSpeak( theMessage );
     },
 
-    addRefreshToUser: function ( userID, botFunctions, databaseFunctions ) {
+    addRefreshToUser: async function ( userID, botFunctions, databaseFunctions ) {
       if ( botFunctions.refreshingEnabled() ) {
-        if ( this.isUserInUsersList( userID ) ) {
-          if ( this.isUserIDOnStage( userID ) ) {
+        if ( await this.isUserInUsersList( userID ) ) {
+          if ( await this.isUserIDOnStage( userID ) ) {
             if ( !this.isUserInRefreshList( userID ) ) {
               const listPosition = this.getPositionOnUsersList( userID );
-              this.storeUserData( userID, 'RefreshStart', Date.now(), databaseFunctions );
-              this.storeUserData( userID, 'RefreshCount', this.getUsersRefreshCount() + 1, databaseFunctions );
-              this.storeUserData( userID, 'RefreshCurrentPlayCount', this.getDJCurrentPlayCount( userID ), databaseFunctions );
-              this.storeUserData( userID, 'RefreshTotalPlayCount', this.getDJTotalPlayCount( userID ), databaseFunctions );
+              await this.storeUserData( userID, 'RefreshStart', Date.now(), databaseFunctions );
+              await this.storeUserData( userID, 'RefreshCount', this.getUsersRefreshCount() + 1, databaseFunctions );
+              await this.storeUserData( userID, 'RefreshCurrentPlayCount', this.getDJCurrentPlayCount( userID ), databaseFunctions );
+              await this.storeUserData( userID, 'RefreshTotalPlayCount', this.getDJTotalPlayCount( userID ), databaseFunctions );
 
-              theUsersList[ listPosition ][ 'RefreshTimer' ] = setTimeout( function () {
-                this.removeRefreshFromUser( userID, databaseFunctions );
+              theUsersList[ listPosition ][ 'RefreshTimer' ] = setTimeout( async function () {
+                await this.removeRefreshFromUser( userID, databaseFunctions );
               }.bind( this ), roomDefaults.amountOfTimeToRefresh * 1000 );
 
-              let message = '@' + this.getUsername( userID ) + ' I\'ll hold your spot on stage for the next ' + roomDefaults.amountOfTimeToRefresh / 60 + ' minutes';
+              let message = '@' + await this.getUsername( userID ) + ' I\'ll hold your spot on stage for the next ' + roomDefaults.amountOfTimeToRefresh / 60 + ' minutes';
               return [ true, message ]
             } else {
               return [ false, "You're already using the refresh command" ];
@@ -837,17 +796,17 @@ const userFunctions = () => {
       }
     },
 
-    getUsersRefreshCount: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getUsersRefreshCount: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'RefreshCount' ];
       }
     },
 
-    removeRefreshFromUser: function ( userID, databaseFunctions ) {
-      this.deleteUserData( databaseFunctions, userID, "RefreshStart" );
-      this.deleteUserData( databaseFunctions, userID, "RefreshCurrentPlayCount" );
-      this.deleteUserData( databaseFunctions, userID, "RefreshTotalPlayCount" );
-      this.deleteUserData( databaseFunctions, userID, "RefreshTimer" );
+    removeRefreshFromUser: async function ( userID, databaseFunctions ) {
+      await this.deleteUserData( databaseFunctions, userID, "RefreshStart" );
+      await this.deleteUserData( databaseFunctions, userID, "RefreshCurrentPlayCount" );
+      await this.deleteUserData( databaseFunctions, userID, "RefreshTotalPlayCount" );
+      await this.deleteUserData( databaseFunctions, userID, "RefreshTimer" );
     },
 
     // ========================================================
@@ -856,14 +815,14 @@ const userFunctions = () => {
     // Refresh Helper Functions
     // ========================================================
 
-    isUserInRefreshList: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    isUserInRefreshList: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'RefreshStart' ] !== undefined;
       }
     },
 
-    getUsersRefreshCurrentPlayCount: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getUsersRefreshCurrentPlayCount: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         let listPosition = this.getPositionOnUsersList( userID );
         if ( theUsersList[ listPosition ][ 'RefreshCurrentPlayCount' ] !== undefined ) {
           return theUsersList[ listPosition ][ 'RefreshCurrentPlayCount' ];
@@ -873,8 +832,8 @@ const userFunctions = () => {
       }
     },
 
-    getUsersRefreshTotalPlayCount: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getUsersRefreshTotalPlayCount: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         let listPosition = this.getPositionOnUsersList( userID );
         if ( theUsersList[ listPosition ][ 'RefreshTotalPlayCount' ] !== undefined ) {
           return theUsersList[ listPosition ][ 'RefreshTotalPlayCount' ];
@@ -938,33 +897,33 @@ const userFunctions = () => {
       removeIdleDJs = false;
       this.reportDJIdleStatus( data, chatFunctions );
     },
-    reportDJIdleStatus: function ( data, chatFunctions ) {
+    reportDJIdleStatus: async function ( data, chatFunctions ) {
       if ( this.removeIdleDJs() ) {
-        chatFunctions.botSpeak( 'DJs who have been idle for longer than ' + this.djIdleLimit() + ' will be removed from the decks' )
+        await chatFunctions.botSpeak( 'DJs who have been idle for longer than ' + this.djIdleLimit() + ' will be removed from the decks' )
       } else {
-        chatFunctions.botSpeak( 'Automatic removal of idle DJs is disabled' )
+        await chatFunctions.botSpeak( 'Automatic removal of idle DJs is disabled' )
       }
     },
 
     idleFirstWarningTime: () => idleFirstWarningTime,
-    setIdleFirstWarningTime: function ( data, args, chatFunctions ) {
+    setIdleFirstWarningTime: async function ( data, args, chatFunctions ) {
       const newWarningTime = args[ 0 ];
       if ( isNaN( newWarningTime ) ) {
-        chatFunctions.botSpeak( 'I can\'t set the First Idle Warning time to ' + newWarningTime + ' minutes' );
+        await chatFunctions.botSpeak( 'I can\'t set the First Idle Warning time to ' + newWarningTime + ' minutes' );
       } else {
         idleFirstWarningTime = newWarningTime;
-        chatFunctions.botSpeak( 'DJs will now be given their first Idle warning after ' + newWarningTime + ' minutes' );
+        await chatFunctions.botSpeak( 'DJs will now be given their first Idle warning after ' + newWarningTime + ' minutes' );
       }
     },
 
     idleSecondWarningTime: () => idleSecondWarningTime,
-    setIdleSecondWarningTime: function ( data, args, chatFunctions ) {
+    setIdleSecondWarningTime: async function ( data, args, chatFunctions ) {
       const newWarningTime = args[ 0 ];
       if ( isNaN( newWarningTime ) ) {
-        chatFunctions.botSpeak( 'I can\'t set the Second Idle Warning time to ' + newWarningTime + ' minutes' );
+        await chatFunctions.botSpeak( 'I can\'t set the Second Idle Warning time to ' + newWarningTime + ' minutes' );
       } else {
         idleSecondWarningTime = newWarningTime;
-        chatFunctions.botSpeak( 'DJs will now be given their Second Idle Warning after ' + newWarningTime + ' minutes' );
+        await chatFunctions.botSpeak( 'DJs will now be given their Second Idle Warning after ' + newWarningTime + ' minutes' );
       }
     },
 
@@ -982,34 +941,35 @@ const userFunctions = () => {
 
     updateUserJoinedStage: async function ( userID, databaseFunctions ) {
       await this.storeUserData( userID, "joinedStage", Date.now(), databaseFunctions )
+      await this.storeUserData( userID, "currentPlayCount", 0, databaseFunctions )
     },
 
-    getIdleTime: function ( userID ) {
-      let userLastActive = this.getUserJoinedRoom( userID );
+    getIdleTime: async function ( userID ) {
+      let userLastActive = await this.getUserJoinedRoom( userID );
 
       if ( roomDefaults.voteMeansActive ) {
-        let lastVoted = this.getUserLastVoted( userID );
+        let lastVoted = await this.getUserLastVoted( userID );
         if ( lastVoted > userLastActive ) {
           userLastActive = lastVoted;
         }
       }
 
       if ( roomDefaults.speechMeansActive ) {
-        let lastSpoke = this.getUserLastSpoke( userID );
+        let lastSpoke = await this.getUserLastSpoke( userID );
         if ( lastSpoke > userLastActive ) {
           userLastActive = lastSpoke;
         }
       }
 
       if ( roomDefaults.snagMeansActive ) {
-        let lastSnagged = this.getUserLastSnagged( userID );
+        let lastSnagged = await this.getUserLastSnagged( userID );
         if ( lastSnagged > userLastActive ) {
           userLastActive = lastSnagged;
         }
       }
 
       if ( roomDefaults.djingMeansActive ) {
-        let joinedStage = this.getUserJoinedStage( userID );
+        let joinedStage = await this.getUserJoinedStage( userID );
         if ( joinedStage > userLastActive ) {
           userLastActive = joinedStage;
         }
@@ -1018,7 +978,7 @@ const userFunctions = () => {
       return ( Date.now() - userLastActive ) / 1000; // return usersAFK time in seconds
     },
 
-    idleWarning: function ( userID, threshold, chatFunctions ) {
+    idleWarning: async function ( userID, threshold, chatFunctions ) {
       let theMessage;
       let theActions = '';
       let idleLimit = this.djIdleLimit();
@@ -1047,7 +1007,7 @@ const userFunctions = () => {
         theMessage = 'You are over the idle limit of ' + idleLimit + ' minutes.';
       }
 
-      chatFunctions.botSpeak( '@' + this.getUsername( userID ) + ' ' + theMessage, roomDefaults.warnIdlePublic, userID );
+      await chatFunctions.botSpeak( '@' + await this.getUsername( userID ) + ' ' + theMessage, roomDefaults.warnIdlePublic, userID );
     },
 
     checkHasUserIdledOut: function ( userID, threshold ) {
@@ -1056,7 +1016,7 @@ const userFunctions = () => {
     },
 
     //removes idle dj's after roomDefaultsModule.djIdleLimit is up.
-    idledOutDJCheck: function ( roomDefaults, chatFunctions, databaseFunctions ) {
+    idledOutDJCheck: async function ( roomDefaults, chatFunctions, databaseFunctions, socket ) {
       let totalIdleAllowed = this.djIdleLimit();
       let firstWarning = this.idleFirstWarningTime();
       let finalWarning = this.idleSecondWarningTime();
@@ -1065,67 +1025,70 @@ const userFunctions = () => {
       for ( let djLoop = 0; djLoop < djList.length; djLoop++ ) {
         userID = djList[ djLoop ]; //Pick a DJ
         if ( userID !== authModule.USERID ) {
-          let idleTImeInMinutes = this.getIdleTime( userID ) / 60;
+          let idleTImeInMinutes = await this.getIdleTime( userID ) / 60;
           if ( idleTImeInMinutes > totalIdleAllowed ) {
-            this.idleWarning( userID, djIdleLimit, chatFunctions );
-            this.removeDJ( userID, 'DJ has idled out' ); //remove them
-            chatFunctions.botChat( 'The user ' + '@' + this.getUsername( userID ) + ' was removed for being over the ' + totalIdleAllowed + ' minute idle limit.' );
-          } else if ( ( idleTImeInMinutes > finalWarning ) && !this.hasDJHadSecondIdleWarning( userID ) ) {
-            this.setDJSecondIdleWarning( userID, databaseFunctions );
-            this.idleWarning( userID, finalWarning, chatFunctions );
-          } else if ( ( idleTImeInMinutes > firstWarning ) && !this.hasDJHadFirstIdleWarning( userID ) ) {
-            this.setDJFirstIdleWarning( userID, databaseFunctions );
-            this.idleWarning( userID, firstWarning, chatFunctions );
-          } else if ( idleTImeInMinutes < firstWarning && ( this.hasDJHadFirstIdleWarning( userID ) || this.hasDJHadSecondIdleWarning( userID ) ) ) {
-            this.resetDJIdleWarnings( userID, databaseFunctions );
+            await this.idleWarning( userID, djIdleLimit, chatFunctions );
+            await this.removeDJ( userID, 'DJ has idled out', socket ); //remove them
+            await chatFunctions.botChat( 'The user ' + '@' + await this.getUsername( userID ) + ' was removed for' +
+              ' being' +
+              ' over' +
+              ' the ' + totalIdleAllowed + ' minute idle limit.' );
+          } else if ( ( idleTImeInMinutes > finalWarning ) && !await this.hasDJHadSecondIdleWarning( userID ) ) {
+            await this.setDJSecondIdleWarning( userID, databaseFunctions );
+            await this.idleWarning( userID, finalWarning, chatFunctions );
+          } else if ( ( idleTImeInMinutes > firstWarning ) && !await this.hasDJHadFirstIdleWarning( userID ) ) {
+            await this.setDJFirstIdleWarning( userID, databaseFunctions );
+            await this.idleWarning( userID, firstWarning, chatFunctions );
+          } else if ( idleTImeInMinutes < firstWarning && ( await this.hasDJHadFirstIdleWarning( userID ) || await this.hasDJHadSecondIdleWarning( userID ) ) ) {
+            await this.resetDJIdleWarnings( userID, databaseFunctions );
           }
         }
       }
     },
 
-    setDJFirstIdleWarning: function ( userID, databaseFunctions ) {
-      if ( this.userExists( userID ) ) {
-        this.storeUserData( userID, "firstIdleWarning", true, databaseFunctions );
+    setDJFirstIdleWarning: async function ( userID, databaseFunctions ) {
+      if ( await this.userExists( userID ) ) {
+        await this.storeUserData( userID, "firstIdleWarning", true, databaseFunctions );
       }
     },
 
-    hasDJHadFirstIdleWarning: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    hasDJHadFirstIdleWarning: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'firstIdleWarning' ];
       }
     },
 
-    setDJSecondIdleWarning: function ( userID, databaseFunctions ) {
-      if ( this.userExists( userID ) ) {
-        this.storeUserData( userID, "secondIdleWarning", true, databaseFunctions );
+    setDJSecondIdleWarning: async function ( userID, databaseFunctions ) {
+      if ( await this.userExists( userID ) ) {
+        await this.storeUserData( userID, "secondIdleWarning", true, databaseFunctions );
       }
     },
 
-    hasDJHadSecondIdleWarning: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    hasDJHadSecondIdleWarning: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'secondIdleWarning' ];
       }
     },
 
-    resetDJIdleWarnings: function ( userID, databaseFunctions ) {
-      this.clearDJFirstIdleWarning( userID, databaseFunctions );
-      this.clearDJSecondIdleWarning( userID, databaseFunctions );
+    resetDJIdleWarnings: async function ( userID, databaseFunctions ) {
+      await this.clearDJFirstIdleWarning( userID, databaseFunctions );
+      await this.clearDJSecondIdleWarning( userID, databaseFunctions );
     },
 
-    clearDJFirstIdleWarning: function ( userID, databaseFunctions ) {
-      if ( this.userExists( userID ) ) {
-        this.storeUserData( userID, "firstIdleWarning", false, databaseFunctions );
+    clearDJFirstIdleWarning: async function ( userID, databaseFunctions ) {
+      if ( await this.userExists( userID ) ) {
+        await this.storeUserData( userID, "firstIdleWarning", false, databaseFunctions );
       }
     },
 
-    clearDJSecondIdleWarning: function ( userID, databaseFunctions ) {
-      if ( this.userExists( userID ) ) {
-        this.storeUserData( userID, "secondIdleWarning", false, databaseFunctions );
+    clearDJSecondIdleWarning: async function ( userID, databaseFunctions ) {
+      if ( await this.userExists( userID ) ) {
+        await this.storeUserData( userID, "secondIdleWarning", false, databaseFunctions );
       }
     },
 
     //this removes people on the floor, not the djs
-    roomIdleCheck: function ( roomDefaults, chatFunctions ) {
+    roomIdleCheck: async function ( roomDefaults, chatFunctions ) {
       if ( roomDefaults.roomIdle === true ) {
         let theUserID;
         for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
@@ -1133,12 +1096,12 @@ const userFunctions = () => {
 
           if ( theUserID !== authModule.USERID ) {
             if ( this.checkHasUserIdledOut( theUserID, roomDefaults.roomIdleLimit, 0 ) ) {
-              this.idleWarning( theUserID, 0, roomDefaults.roomIdleLimit, chatFunctions )
+              await this.idleWarning( theUserID, 0, roomDefaults.roomIdleLimit, chatFunctions )
               bot.boot( theUserID, 'you are over the idle limit' );
             } else if ( this.checkHasUserIdledOut( theUserID, roomDefaults.roomIdleLimit, 1 ) ) {
-              this.idleWarning( theUserID, 1, roomDefaults.roomIdleLimit, chatFunctions )
+              await this.idleWarning( theUserID, 1, roomDefaults.roomIdleLimit, chatFunctions )
             } else if ( this.checkHasUserIdledOut( theUserID, roomDefaults.roomIdleLimit, 5 ) ) {
-              this.idleWarning( theUserID, 5, roomDefaults.roomIdleLimit, chatFunctions )
+              await this.idleWarning( theUserID, 5, roomDefaults.roomIdleLimit, chatFunctions )
             }
           }
         }
@@ -1155,16 +1118,16 @@ const userFunctions = () => {
       return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'welcomeTimer' ] === true;
     },
 
-    activateUsersWelcomeTimer: function ( userID, databaseFunctions ) {
-      this.storeUserData( userID, "welcomeTimer", true, databaseFunctions );
+    activateUsersWelcomeTimer: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, "welcomeTimer", true, databaseFunctions );
 
-      setTimeout( function () {
-        this.clearUsersWelcomeTimer( userID, databaseFunctions );
+      setTimeout( async function () {
+        await this.clearUsersWelcomeTimer( userID, databaseFunctions );
       }.bind( this ), 5 * 60 * 1000 );
     },
 
-    clearUsersWelcomeTimer: function ( userID, databaseFunctions ) {
-      this.storeUserData( userID, "welcomeTimer", false, databaseFunctions );
+    clearUsersWelcomeTimer: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, "welcomeTimer", false, databaseFunctions );
     },
 
     // ========================================================
@@ -1178,12 +1141,12 @@ const userFunctions = () => {
       afkPeople = []
     },
 
-    whosAFK: function ( data, chatFunctions ) {
+    whosAFK: async function ( data, chatFunctions ) {
       let userList = '';
       let afkCount = 0;
       for ( let userLoop = 0; userLoop < this.afkPeople().length; userLoop++ ) {
         afkCount++;
-        userList += this.getUsername( this.afkPeople()[ userLoop ] ) + ', ';
+        userList += await this.getUsername( this.afkPeople()[ userLoop ] ) + ', ';
       }
 
       userList = userList.substring( 0, userList.length - 2 );
@@ -1199,9 +1162,9 @@ const userFunctions = () => {
           userList += ' are';
         }
         userList += ' marked as AFK';
-        chatFunctions.botSpeak( userList )
+        await chatFunctions.botSpeak( userList )
       } else {
-        chatFunctions.botSpeak( "No one...everyone's here :-)" )
+        await chatFunctions.botSpeak( "No one...everyone's here :-)" )
       }
     },
 
@@ -1210,26 +1173,26 @@ const userFunctions = () => {
       return isAlreadyAfk !== -1;
     },
 
-    switchUserAFK: function ( data, chatFunctions ) {
+    switchUserAFK: async function ( data, chatFunctions ) {
       const theUserID = this.whoSentTheCommand( data );
       if ( this.isUserAFK( theUserID ) === true ) {
-        this.removeUserFromAFKList( data, chatFunctions );
+        await this.removeUserFromAFKList( data, chatFunctions );
       } else {
-        this.addToAFKList( data, chatFunctions );
+        await this.addToAFKList( data, chatFunctions );
       }
     },
 
-    addToAFKList: function ( data, chatFunctions ) {
+    addToAFKList: async function ( data, chatFunctions ) {
       const theUserID = this.whoSentTheCommand( data );
 
       afkPeople.push( theUserID );
-      chatFunctions.botSpeak( '@' + this.getUsername( theUserID ) + ' you are marked as afk' )
+      await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + ' you are marked as afk' )
     },
 
     removeUserFromAFKList: async function ( data, chatFunctions ) {
       const theUserID = this.whoSentTheCommand( data );
       await this.removeUserIDFromAFKArray( theUserID );
-      chatFunctions.botSpeak( '@' + this.getUsername( theUserID ) + ' you are no longer afk' )
+      await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + ' you are no longer afk' )
     },
 
     removeUserIDFromAFKArray: async function ( theUserID ) {
@@ -1241,8 +1204,8 @@ const userFunctions = () => {
       return afkPeople.length;
     },
 
-    sendUserIsAFKMessage: function ( data, userID, chatFunctions ) {
-      chatFunctions.botSpeak( '@' + this.getUsername( userID ) + ' is currently AFK, sorry' )
+    sendUserIsAFKMessage: async function ( data, userID, chatFunctions ) {
+      await chatFunctions.botSpeak( '@' + await this.getUsername( userID ) + ' is currently AFK, sorry' )
     },
 
     // ========================================================
@@ -1261,7 +1224,8 @@ const userFunctions = () => {
       djList.push( userID );
     },
 
-    removeDJFromList: function ( userID ) {
+    removeDJFromList: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, "currentDJ", false, databaseFunctions );
       const listPosition = djList.indexOf( userID )
       if ( listPosition !== -1 ) {
         djList.splice( listPosition, 1 );
@@ -1272,31 +1236,27 @@ const userFunctions = () => {
       return djList.length;
     },
 
-    clearCurrentDJFlags: function ( databaseFunctions ) {
+    clearCurrentDJFlags: async function ( databaseFunctions ) {
       for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
-        this.storeUserData( theUsersList[ userLoop ][ 'id' ], "currentDJ", false, databaseFunctions );
+        await this.storeUserData( theUsersList[ userLoop ][ 'id' ], "currentDJ", false, databaseFunctions );
       }
     },
 
-    // setCurrentDJ: async function ( userID, databaseFunctions ) {
-    //   logger.debug(`* setCurrentDJ * userID: ${userID}` )
-    //   this.clearCurrentDJFlags( databaseFunctions )
-    //   if ( this.userExists( userID ) ) {
-    //     await this.storeUserData( userID, "currentDJ", true, databaseFunctions );
-    //   }
-    // },
-    //
-    // getCurrentDJID: async function ( data ) {
-    //   // logger.debug(`getCurrentDJID data: ${JSON.stringify(data)}`)
-    //   return data.sender
-    //   // for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
-    //   //   if ( theUsersList[ userLoop ][ 'currentDJ' ] === true ) {
-    //   //     return theUsersList[ userLoop ][ 'id' ];
-    //   //   }
-    //   // }
-    //   //
-    //   // return null;
-    // },
+    setCurrentDJID: async function ( userID, databaseFunctions ) {
+      await this.clearCurrentDJFlags( databaseFunctions )
+      if ( await this.userExists( userID ) ) {
+        await this.storeUserData( userID, "currentDJ", true, databaseFunctions );
+      }
+    },
+
+    getCurrentDJID: async function ( data ) {
+      for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
+        if ( theUsersList[ userLoop ][ 'currentDJ' ] === true ) {
+          return theUsersList[ userLoop ][ 'id' ];
+        }
+      }
+      return null;
+    },
 
     getLastDJID: function () {
       return djList[ this.howManyDJs() - 1 ];
@@ -1337,6 +1297,7 @@ const userFunctions = () => {
 
     isUserIDOnStage: async function ( userID ) {
       console.group( `isUserIDOnStage` )
+      console.log( `onStage:${ JSON.stringify(djList,null,2) }` )
       const onStage = djList.indexOf( userID );
       console.log( `onStage:${ onStage }` )
       console.groupEnd()
@@ -1350,18 +1311,17 @@ const userFunctions = () => {
 
     resetDJs: function ( data ) {
       this.clearDJList();
-      let djID;
-      if ( data.room !== undefined ) {
-        for ( let djLoop = 0; djLoop < data.room.metadata.djs.length; djLoop++ ) {
-          djID = data.room.metadata.djs[ djLoop ];
-          if ( typeof djID !== 'undefined' ) {
-            this.addDJToList( djID );
+
+      for (const item of data) {
+        if (item.uuid) {
+          if ( typeof item.uuid !== 'undefined' ) {
+            this.addDJToList( item.uuid );
           }
         }
       }
     },
 
-    checkOKToDJ: function ( theUserID, roomFunctions ) {
+    checkOKToDJ: async function ( theUserID, roomFunctions ) {
       if ( theUserID === authModule.USERID ) {
         return [ true, '' ];
       }
@@ -1375,58 +1335,78 @@ const userFunctions = () => {
       }
 
       if ( roomDefaults.queueActive ) {
-        if ( this.isUserInRefreshList( theUserID ) ) {
+        if ( await this.isUserInRefreshList( theUserID ) ) {
           return [ true, '' ];
         }
 
         if ( this.isUserIDInQueue( theUserID ) ) {
           if ( theUserID !== this.headOfQueue() ) {
-            return [ false, '@' + this.getUsername( theUserID ) + ', sorry, but you are not first in queue. please wait your turn.' ];
+            return [ false, '@' + await this.getUsername( theUserID ) + ', sorry, but you are not first in queue.' +
+            ' please' +
+            ' wait your turn.' ];
           } else {
             return [ true, '' ];
           }
         } else {
-          return [ false, '@' + this.getUsername( theUserID ) + ', the queue is currently active. To add yourself to the queue type ' + chatDefaults.commandIdentifier + 'addme. To remove yourself from the queue type ' + chatDefaults.commandIdentifier + 'removeme.' ];
+          return [ false, '@' + await this.getUsername( theUserID ) + ', the queue is currently active. To add' +
+          ' yourself' +
+          ' to' +
+          ' the queue type ' + commandIdentifier + 'addme. To remove yourself from the queue type' +
+          ' ' + commandIdentifier + 'removeme.' ];
         }
       }
 
       if ( this.refreshDJCount() + this.djList().length >= roomFunctions.maxDJs() ) {
-        return [ false, '@' + this.getUsername( theUserID ) + ', sorry, but I\'m holding that spot for someone in the refresh list' ];
+        return [ false, '@' + await this.getUsername( theUserID ) + ', sorry, but I\'m holding that spot for someone' +
+        ' in' +
+        ' the refresh list' ];
       }
 
       for ( let banLoop = 0; banLoop < roomFunctions.tempBanList().length; banLoop++ ) {
         if ( theUserID === roomFunctions.tempBanList()[ banLoop ] ) {
-          return [ false, '@' + this.getUsername( theUserID ) + ', you are banned from djing. Please speak to a Mod to find out why' ];
+          return [ false, '@' + await this.getUsername( theUserID ) + ', you are banned from djing. Please speak to a' +
+          ' Mod' +
+          ' to find out why' ];
         }
       }
 
       if ( this.isUserIDStageBanned( theUserID ) ) {
-        return [ false, '@' + this.getUsername( theUserID ) + ', you are banned from djing. Please speak to a Mod to find out why' ];
+        return [ false, '@' + await this.getUsername( theUserID ) + ', you are banned from djing. Please speak to a' +
+        ' Mod' +
+        ' to find out why' ];
       }
 
-      if ( this.getUserSpamCount( theUserID ) >= roomDefaults.spamLimit ) {
-        return [ false, '@' + this.getUsername( theUserID ) + ', you\'ve been SPAMming too much...please want a few minutes before trying again' ];
+      if ( await this.getUserSpamCount( theUserID ) >= roomDefaults.spamLimit ) {
+        return [ false, '@' + await this.getUsername( theUserID ) + ', you\'ve been SPAMming too much...please want a' +
+        ' few' +
+        ' minutes before trying again' ];
       }
 
       return [ true, '' ];
     },
 
-    resetDJFlags: function ( userID, databaseFunctions ) {
-      if ( this.userExists( ( userID ) ) ) {
-        this.resetDJCurrentPlayCount( userID, databaseFunctions );
-        this.clearDJFirstIdleWarning( userID, databaseFunctions );
-        this.clearDJSecondIdleWarning( userID, databaseFunctions );
+    resetDJFlags: async function ( userID, databaseFunctions ) {
+      if ( await this.userExists( ( userID ) ) ) {
+        await this.resetDJCurrentPlayCount( userID, databaseFunctions );
+        await this.clearDJFirstIdleWarning( userID, databaseFunctions );
+        await this.clearDJSecondIdleWarning( userID, databaseFunctions );
       }
     },
 
-    removeDJ: function ( djID, message ) {
+    removeDJ: async function ( djID, message, socket ) {
       console.group( '! removeDJ ===============================' );
       console.log( '========================================' );
 
       console.log( 'DJ removed at ' + moment().format( 'DD/MM/yyyy HH:mm:ss' ) );
-      console.log( 'The DJ ' + this.getUsername( djID ) + ' with ID ' + djID + ' is being removed from the decks' );
+      console.log( 'The DJ ' + await this.getUsername( djID ) + ' with ID ' + djID + ' is being removed from the' +
+        ' decks' );
       console.log( 'Reason: ' + message );
-      // bot.remDj( djID );
+
+      await socket.action( ActionName.removeDj, {
+        roomUuid: botDefaults.roomUuid,
+        userUuid: botDefaults.botUuid,
+        djUuid: djID
+      } );
 
       console.log( '========================================' );
       console.groupEnd();
@@ -1438,14 +1418,14 @@ const userFunctions = () => {
     // DJ Play Limit Functions
     // ========================================================
 
-    removeDJsOverPlaylimit: async function ( data, chatFunctions, userID ) {
+    removeDJsOverPlaylimit: async function ( data, chatFunctions, userID, socket ) {
       if ( this.DJPlaysLimited() === true && !superDJs.includes( userID ) ) {
 
-        if ( userID !== authModule.USERID && this.isCurrentDJ( data, userID ) && this.getDJCurrentPlayCount( userID ) >= this.DJsPlayLimit() ) {
-          if ( this.userExists( userID ) ) {
-            chatFunctions.overPlayLimit( data, this.getUsername( userID ), this.DJsPlayLimit() );
+        if ( userID !== authModule.USERID && this.isCurrentDJ( data, userID ) && await this.getDJCurrentPlayCount( userID ) >= this.DJsPlayLimit() ) {
+          if ( await this.userExists( userID ) ) {
+            await chatFunctions.overPlayLimit( data, this.getUsername( userID ), this.DJsPlayLimit() );
 
-            this.removeDJ( userID, 'DJ is over play limit' );
+            await this.removeDJ( userID, 'DJ is over play limit', socket );
           }
         }
       }
@@ -1464,26 +1444,26 @@ const userFunctions = () => {
       DJsPlayLimit = value;
     },
 
-    playLimitOnCommand: function ( data, args, chatFunctions ) {
+    playLimitOnCommand: async function ( data, args, chatFunctions ) {
       let theNewPlayLimit = args[ 0 ];
       if ( isNaN( theNewPlayLimit ) ) {
         theNewPlayLimit = musicDefaults.DJsPlayLimit
       }
       this.enablePlayLimit();
       this.setDJsPlayLimit( theNewPlayLimit );
-      chatFunctions.botSpeak( 'The play limit is now set to ' + this.DJsPlayLimit() );
+      await chatFunctions.botSpeak( 'The play limit is now set to ' + this.DJsPlayLimit() );
     },
 
-    playLimitOffCommand: function ( data, chatFunctions ) {
+    playLimitOffCommand: async function ( data, chatFunctions ) {
       this.disablePlayLimit();
-      chatFunctions.botSpeak( 'The play limit is now disabled' );
+      await chatFunctions.botSpeak( 'The play limit is now disabled' );
     },
 
-    whatsPlayLimit: function ( data, chatFunctions ) {
+    whatsPlayLimit: async function ( data, chatFunctions ) {
       if ( this.DJPlaysLimited() ) {
-        chatFunctions.botSpeak( 'The DJ play limit is currently set to ' + this.DJsPlayLimit() );
+        await chatFunctions.botSpeak( 'The DJ play limit is currently set to ' + this.DJsPlayLimit() );
       } else {
-        chatFunctions.botSpeak( 'The DJ play limit is not currently active' );
+        await chatFunctions.botSpeak( 'The DJ play limit is not currently active' );
       }
     },
 
@@ -1493,16 +1473,16 @@ const userFunctions = () => {
     // DJ Play Count Functions
     // ========================================================
 
-    deleteAllDJsPlayCounts: function ( databaseFunctions ) {
+    deleteAllDJsPlayCounts: async function ( databaseFunctions ) {
       for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
-        this.deleteAllDJPlayCounts( theUsersList[ userLoop ][ 'id' ], databaseFunctions );
+        await this.deleteAllDJPlayCounts( theUsersList[ userLoop ][ 'id' ], databaseFunctions );
       }
     },
 
-    initialiseAllDJPlayCounts: function ( userID, databaseFunctions ) {
-      if ( this.isUserInUsersList( userID ) ) {
+    initialiseAllDJPlayCounts: async function ( userID, databaseFunctions ) {
+      if ( await this.isUserInUsersList( userID ) ) {
         this.setDJCurrentPlayCount( userID, 0, databaseFunctions );
-        this.setDJTotalPlayCount( userID, 0, databaseFunctions );
+        await this.setDJTotalPlayCount( userID, 0, databaseFunctions );
       }
     },
 
@@ -1511,34 +1491,35 @@ const userFunctions = () => {
         if ( isNaN( theUsersList[ this.getPositionOnUsersList( userID ) ][ 'currentPlayCount' ] ) ) {
           this.setDJCurrentPlayCount( userID, 1, databaseFunctions );
         } else {
-          await this.storeUserData( userID, "currentPlayCount", this.getDJCurrentPlayCount( userID ) + 1, databaseFunctions );
+          await this.storeUserData( userID, "currentPlayCount", await this.getDJCurrentPlayCount( userID ) + 1, databaseFunctions );
         }
 
         if ( isNaN( theUsersList[ this.getPositionOnUsersList( userID ) ][ 'totalPlayCount' ] ) ) {
-          this.setDJTotalPlayCount( userID, 1, databaseFunctions );
+          await this.setDJTotalPlayCount( userID, 1, databaseFunctions );
         } else {
-          await this.storeUserData( userID, "totalPlayCount", this.getDJTotalPlayCount( userID ) + 1, databaseFunctions );
+          await this.storeUserData( userID, "totalPlayCount", await this.getDJTotalPlayCount( userID ) + 1, databaseFunctions );
         }
       }
     },
 
-    decrementDJCurrentPlayCount: function ( userID, databaseFunctions ) {
-      this.storeUserData( userID, "currentPlayCount", this.getDJCurrentPlayCount( userID ) - 1, databaseFunctions );
+    decrementDJCurrentPlayCount: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, "currentPlayCount", await this.getDJCurrentPlayCount( userID ) - 1, databaseFunctions );
     },
 
-    resetDJCurrentPlayCount: function ( userID, databaseFunctions ) {
-      if ( this.userExists( userID ) ) {
+    resetDJCurrentPlayCount: async function ( userID, databaseFunctions ) {
+      if ( await this.userExists( userID ) ) {
         this.setDJCurrentPlayCount( userID, 0, databaseFunctions );
       }
     },
 
     setDJCurrentPlaycountCommand: async function ( data, theCount, theUsername, chatFunctions, databaseFunctions ) {
       if ( theCount === undefined || isNaN( theCount ) ) {
-        chatFunctions.botSpeak( "The new playcount doesn't seem to be a number. Check the command help for an example" )
+        await chatFunctions.botSpeak( "The new playcount doesn't seem to be a number. Check the command help for an" +
+          " example" )
       } else if ( theUsername === '' || theUsername === undefined ) {
-        chatFunctions.botSpeak( "I can't see a username there. Check the command help for an example" )
+        await chatFunctions.botSpeak( "I can't see a username there. Check the command help for an example" )
       } else {
-        chatFunctions.botSpeak( "Setting the Current playcount for @" + theUsername + " to " + theCount )
+        await chatFunctions.botSpeak( "Setting the Current playcount for @" + theUsername + " to " + theCount )
         this.setDJCurrentPlayCount( await this.getUserIDFromUsername( theUsername ), theCount, databaseFunctions );
       }
     },
@@ -1550,41 +1531,41 @@ const userFunctions = () => {
       this.storeUserData( userID, "currentPlayCount", theCount, databaseFunctions )
     },
 
-    resetDJTotalPlayCount: function ( userID, databaseFunctions ) {
-      if ( this.userExists( userID ) ) {
-        this.setDJTotalPlayCount( userID, 0, databaseFunctions );
+    resetDJTotalPlayCount: async function ( userID, databaseFunctions ) {
+      if ( await this.userExists( userID ) ) {
+        await this.setDJTotalPlayCount( userID, 0, databaseFunctions );
       }
     },
 
-    setDJTotalPlayCount: function ( userID, theCount, databaseFunctions ) {
+    setDJTotalPlayCount: async function ( userID, theCount, databaseFunctions ) {
       if ( theCount === undefined ) {
         theCount = 0
       }
 
-      if ( this.userExists( userID ) ) {
-        this.storeUserData( userID, "totalPlayCount", theCount, databaseFunctions )
+      if ( await this.userExists( userID ) ) {
+        await this.storeUserData( userID, "totalPlayCount", theCount, databaseFunctions )
       }
     },
 
-    deleteAllDJPlayCounts: function ( userID, databaseFunctions ) {
-      this.deleteUserData( databaseFunctions, userID, 'currentPlayCount' );
-      this.deleteUserData( databaseFunctions, userID, 'totalPlayCount' );
+    deleteAllDJPlayCounts: async function ( userID, databaseFunctions ) {
+      await this.deleteUserData( databaseFunctions, userID, 'currentPlayCount' );
+      await this.deleteUserData( databaseFunctions, userID, 'totalPlayCount' );
     },
 
-    getDJCurrentPlayCount: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getDJCurrentPlayCount: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'currentPlayCount' ];
       }
     },
 
-    getDJTotalPlayCount: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getDJTotalPlayCount: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'totalPlayCount' ];
       }
     },
 
-    djPlaysCommand: function ( data, chatFunctions ) {
-      chatFunctions.botSpeak( this.buildDJPlaysMessage() );
+    djPlaysCommand: async function ( data, chatFunctions ) {
+      await chatFunctions.botSpeak( this.buildDJPlaysMessage() );
     },
 
     buildDJPlaysMessage: function () {
@@ -1676,14 +1657,15 @@ const userFunctions = () => {
       if ( err !== true ) {
         queueList.splice( newPosition, 0, userID );
       } else {
-        chatFunctions.botSpeak( "The user " + this.getUsername( userID ) + " is not currently in the queue" );
+        await chatFunctions.botSpeak( "The user " + await this.getUsername( userID ) + " is not currently in the" +
+          " queue" );
       }
       this.readQueue( data, chatFunctions );
     },
 
-    moveUserToHeadOfQueue: function ( data, args, chatFunctions, botFunctions ) {
+    moveUserToHeadOfQueue: async function ( data, args, chatFunctions, botFunctions ) {
       args[ 1 ] = 1;
-      this.changeUsersQueuePosition( data, args, chatFunctions, botFunctions );
+      await this.changeUsersQueuePosition( data, args, chatFunctions, botFunctions );
     },
 
     // ========================================================
@@ -1706,17 +1688,18 @@ const userFunctions = () => {
       notifyThisDJ = null;
     },
 
-    whatsMyQueuePosition: function ( data, chatFunctions ) {
+    whatsMyQueuePosition: async function ( data, chatFunctions ) {
       const userID = this.whoSentTheCommand( data );
 
       if ( !roomDefaults.queueActive ) {
-        chatFunctions.botSpeak( '@' + this.getUsername( userID ) + ', the queue is currently disabled' );
+        await chatFunctions.botSpeak( '@' + await this.getUsername( userID ) + ', the queue is currently disabled' );
       } else {
         const queuePosition = queueList.findIndex( ( { id } ) => id === userID ) + 1;
         if ( queuePosition !== -1 ) {
-          chatFunctions.botSpeak( '@' + this.getUsername( userID ) + ', you are currently at position ' + queuePosition + ' in the queue' );
+          await chatFunctions.botSpeak( '@' + await this.getUsername( userID ) + ', you are currently at position ' + queuePosition + ' in the queue' );
         } else {
-          chatFunctions.botSpeak( '@' + this.getUsername( userID ) + ', you are not currently in the queue' );
+          await chatFunctions.botSpeak( '@' + await this.getUsername( userID ) + ', you are not currently in the' +
+            ' queue' );
         }
       }
     },
@@ -1733,60 +1716,64 @@ const userFunctions = () => {
       }
     },
 
-    removeNotifyDJFromQueue: function ( botFunctions, userFunctions ) {
-      bot.speak( 'Sorry @' + userFunctions.getUsername( this.notifyThisDJ().toString() ) + ' you have run out of time.' );
+    removeNotifyDJFromQueue: async function ( botFunctions, userFunctions ) {
+      await chatFunctions.botSpeak( 'Sorry @' + await userFunctions.getUsername( this.notifyThisDJ().toString() ) + ' you' +
+        ' have run out of time.' );
       this.removeUserFromQueue( this.notifyThisDJ(), botFunctions );
       this.clearDJToNotify();
       botFunctions.setSayOnce( true );
     },
 
-    removeme: function ( data, chatFunctions, botFunctions ) {
+    removeme: async function ( data, chatFunctions, botFunctions ) {
       const userID = this.whoSentTheCommand( data );
       if ( this.isUserIDInQueue( userID ) ) {
         this.removeUserFromQueue( userID, botFunctions )
-        chatFunctions.botSpeak( "@" + this.getUsername( userID ) + ', I\'ve removed you from the queue' );
+        await chatFunctions.botSpeak( "@" + await this.getUsername( userID ) + ', I\'ve removed you from the queue' );
       } else {
-        chatFunctions.botSpeak( "@" + this.getUsername( userID ) + ', you\'re not currently in the queue. Use the ' + chatDefaults.commandIdentifier + 'addme command to join' );
+        await chatFunctions.botSpeak( "@" + await this.getUsername( userID ) + ', you\'re not currently in the queue.' +
+          ' Use' +
+          ' the' +
+          ' ' + commandIdentifier + 'addme command to join' );
       }
-      this.readQueue( data, chatFunctions )
+      await this.readQueue( data, chatFunctions )
     },
 
-    enableQueue: function ( data, chatFunctions ) {
+    enableQueue: async function ( data, chatFunctions ) {
       if ( roomDefaults.queueActive === true ) {
-        chatFunctions.botSpeak( "The queue is already enabled" );
+        await chatFunctions.botSpeak( "The queue is already enabled" );
       } else {
         roomDefaults.queueActive = true;
-        chatFunctions.botSpeak( "The queue is now on" );
+        await chatFunctions.botSpeak( "The queue is now on" );
       }
     },
 
-    disableQueue: function ( data, chatFunctions ) {
+    disableQueue: async function ( data, chatFunctions ) {
       if ( roomDefaults.queueActive !== true ) {
-        chatFunctions.botSpeak( "The queue is already disabled" );
+        await chatFunctions.botSpeak( "The queue is already disabled" );
       } else {
         roomDefaults.queueActive = false;
-        chatFunctions.botSpeak( "The queue is now off" );
+        await chatFunctions.botSpeak( "The queue is now off" );
       }
     },
 
-    readQueue: function ( data, chatFunctions ) {
+    readQueue: async function ( data, chatFunctions ) {
       if ( roomDefaults.queueActive === true ) {
-        chatFunctions.botSpeak( this.buildQueueMessage() );
+        await chatFunctions.botSpeak( this.buildQueueMessage() );
       } else {
-        chatFunctions.botSpeak( "The DJ queue is not active" );
+        await chatFunctions.botSpeak( "The DJ queue is not active" );
       }
     },
 
-    buildQueueMessage: function () {
+    buildQueueMessage: async function () {
       let listOfUsers = '';
       let message;
       let thisQueuePosition = 1;
 
-      queueList.forEach( function ( userID ) {
+      queueList.forEach( async function ( userID ) {
         if ( listOfUsers === '' ) {
-          listOfUsers = '[' + thisQueuePosition + '] ' + this.getUsername( userID );
+          listOfUsers = '[' + thisQueuePosition + '] ' + await this.getUsername( userID );
         } else {
-          listOfUsers = listOfUsers + ', [' + thisQueuePosition + '] ' + this.getUsername( userID );
+          listOfUsers = listOfUsers + ', [' + thisQueuePosition + '] ' + await this.getUsername( userID );
 
         }
         thisQueuePosition++;
@@ -1978,7 +1965,7 @@ const userFunctions = () => {
     },
 
     addUserJoinedTime: async function ( userID, databaseFunctions ) {
-      if ( await this.userExists( userID ) && !this.getUserJoinedRoom( userID ) ) {
+      if ( await this.userExists( userID ) && !await this.getUserJoinedRoom( userID ) ) {
         await this.storeUserData( userID, "joinTime", Date.now(), databaseFunctions )
       }
     },
@@ -2226,9 +2213,7 @@ const userFunctions = () => {
     },
 
     escortMeIsEnabled: async function ( userID ) {
-      console.group( `escortMeIsEnabled` )
       if ( await this.isUserInUsersList( userID ) ) {
-        console.groupEnd()
         return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'EscortMe' ] === true;
       }
     },
@@ -2243,44 +2228,52 @@ const userFunctions = () => {
       return "604154083f4bfc001c3a42ed";
     },
 
-    bbBoot: function ( data, chatFunctions, databaseFunctions ) {
+    bbBoot: async function ( data, chatFunctions, databaseFunctions ) {
       const bootingUserID = this.whoSentTheCommand( data );
 
       if ( bootingUserID === this.bbUserID() ) {
-        chatFunctions.botSpeak( "You can't boot yourself @Bukkake, you ain't that flexible!" );
+        await chatFunctions.botSpeak( "You can't boot yourself @Bukkake, you ain't that flexible!" );
       } else if ( bootingUserID === authModule.USERID ) {
         // you can't use the bot to speak the boot command
-        chatFunctions.botSpeak( "Yeah, nope..." );
+        await chatFunctions.botSpeak( "Yeah, nope..." );
       } else {
         if ( this.isBBHere() ) {
           if ( this.canBBBoot( bootingUserID ) ) {
             if ( this.canBBBeBooted() ) {
-              const bootMessage = "Sorry @Bukkake, you got booted by @" + this.getUsername( bootingUserID ) + ". They win 5 RoboCoins!!!";
-              this.bbBootSomeone( data, this.bbUserID(), bootingUserID, bootMessage, chatFunctions, databaseFunctions );
+              const bootMessage = "Sorry @Bukkake, you got booted by @" + await this.getUsername( bootingUserID ) + ". They win 5 RoboCoins!!!";
+              await this.bbBootSomeone( data, this.bbUserID(), bootingUserID, bootMessage, chatFunctions, databaseFunctions );
             } else {
-              const bootMessage = "Sorry " + this.getUsername( bootingUserID ) + ", you lose. BB was booted within the last 24Hrs. @Bukkake wins 1 RoboCoin!";
-              this.bbBootSomeone( data, bootingUserID, bootingUserID, bootMessage, chatFunctions, databaseFunctions );
+              const bootMessage = "Sorry " + await this.getUsername( bootingUserID ) + ", you lose. BB was booted" +
+                " within" +
+                " the last 24Hrs. @Bukkake wins 1 RoboCoin!";
+              await this.bbBootSomeone( data, bootingUserID, bootingUserID, bootMessage, chatFunctions, databaseFunctions );
             }
           } else {
-            const msSinceLastBoot = Date.now() - this.getBBBootedTimestamp( bootingUserID );
+            const msSinceLastBoot = Date.now() - await this.getBBBootedTimestamp( bootingUserID );
             const formatttedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
-            chatFunctions.botSpeak( 'Sorry @' + this.getUsername( bootingUserID ) + ", you can't play BBBoot again yet. You last played " + formatttedLastBBBooted + " ago" );
+            await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
+              " BBBoot" +
+              " again" +
+              " yet. You last played " + formatttedLastBBBooted + " ago" );
           }
         } else {
-          chatFunctions.botSpeak( 'Sorry @' + this.getUsername( bootingUserID ) + ", but I can't boot BB if they're not here!" );
+          await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", but I can't boot BB" +
+            " if" +
+            " they're" +
+            " not here!" );
         }
       }
 
     },
 
-    getBBBootedTimestamp: function ( userID ) {
-      if ( this.userExists( userID ) ) {
+    getBBBootedTimestamp: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
         return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'BBBootTimestamp' ];
       }
     },
 
-    updateBBBootedTimestamp: function ( userID, databaseFunctions ) {
-      this.storeUserData( userID, "BBBootTimestamp", Date.now(), databaseFunctions );
+    updateBBBootedTimestamp: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, "BBBootTimestamp", Date.now(), databaseFunctions );
     },
 
     isBBHere: function () {
@@ -2300,20 +2293,20 @@ const userFunctions = () => {
       return Date.now() - this.getBBBootedTimestamp( userID ) >= 3600000 * hours;
     },
 
-    bbBootSomeone: function ( data, bootedUserID, bootingUserID, bootMessage, chatFunctions, databaseFunctions ) {
+    bbBootSomeone: async function ( data, bootedUserID, bootingUserID, bootMessage, chatFunctions, databaseFunctions ) {
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
 
       const performInOrder = async () => {
-        chatFunctions.botSpeak( "Nah Nah Nah Nah..." );
+        await chatFunctions.botSpeak( "Nah Nah Nah Nah..." );
         await sleep( 2000 )
 
-        chatFunctions.botSpeak( "Nah Nah Nah Nah..." );
+        await chatFunctions.botSpeak( "Nah Nah Nah Nah..." );
         await sleep( 2000 )
 
-        chatFunctions.botSpeak( "Hey Hey Hey..." );
+        await chatFunctions.botSpeak( "Hey Hey Hey..." );
         await sleep( 2000 )
 
-        chatFunctions.botSpeak( "Goodbye @" + this.getUsername( bootedUserID ) );
+        await chatFunctions.botSpeak( "Goodbye @" + await this.getUsername( bootedUserID ) );
         await sleep( 5000 )
 
         this.bootThisUser( bootedUserID, bootMessage )
@@ -2323,12 +2316,12 @@ const userFunctions = () => {
         this.updateBBBootedTimestamp( bootedUserID, databaseFunctions );
         await sleep( 100 )
       }
-      performInOrder();
+      await performInOrder();
 
       if ( bootedUserID === this.bbUserID() ) {
-        this.updateRoboCoins( bootingUserID, this.getRoboCoins( bootingUserID ) + 5, databaseFunctions )
+        await this.updateRoboCoins( bootingUserID, await this.getRoboCoins( bootingUserID ) + 5, databaseFunctions )
       } else {
-        this.updateRoboCoins( this.bbUserID(), this.getRoboCoins( this.bbUserID() ) + 1, databaseFunctions )
+        await this.updateRoboCoins( this.bbUserID(), await this.getRoboCoins( this.bbUserID() ) + 1, databaseFunctions )
       }
     },
 
@@ -2378,7 +2371,7 @@ const userFunctions = () => {
         if ( userRoboCoins >= numCoins ) {
           return true;
         } else {
-          chatFunctions.botSpeak( "Sorry @" + this.getUsername( userID ) + " you can't afford " + numCoins + " RoboCoins for that" );
+          await chatFunctions.botSpeak( "Sorry @" + await this.getUsername( userID ) + " you can't afford " + numCoins + " RoboCoins for that" );
           throw new Error( 'Insufficient funds' );
         }
       } catch ( error ) {
@@ -2441,7 +2434,7 @@ const userFunctions = () => {
 
     validateNumCoins: async function ( numCoins, sendingUserID, chatFunctions, data ) {
       if ( numCoins === undefined || isNaN( numCoins ) ) {
-        chatFunctions.botSpeak( '@' + this.getUsername( sendingUserID ) + ' you must give a number of coins to send, e.g. giverc 10 username' );
+        await chatFunctions.botSpeak( '@' + await this.getUsername( sendingUserID ) + ' you must give a number of coins to send, e.g. giverc 10 username' );
         throw new Error( 'Invalid number of coins' );
       }
       return true;
@@ -2449,11 +2442,11 @@ const userFunctions = () => {
 
     validateReceivingUser: async function ( args, receivingUserID, sendingUserID, chatFunctions, data ) {
       if ( args[ 1 ] === undefined ) {
-        chatFunctions.botSpeak( '@' + this.getUsername( sendingUserID ) + ' you must give the name of the user to send RoboCoins to, e.g. giverc 10 username' );
+        await chatFunctions.botSpeak( '@' + await this.getUsername( sendingUserID ) + ' you must give the name of the user to send RoboCoins to, e.g. giverc 10 username' );
         throw new Error( 'No receiving user specified' );
       }
       if ( receivingUserID === undefined ) {
-        chatFunctions.botSpeak( '@' + this.getUsername( sendingUserID ) + " I can't find that username" );
+        await chatFunctions.botSpeak( '@' + await this.getUsername( sendingUserID ) + " I can't find that username" );
         throw new Error( 'User not found' );
       }
       return true;
@@ -2483,7 +2476,7 @@ const userFunctions = () => {
       try {
         const userID = this.whoSentTheCommand( data );
         const theCoins = await this.getRoboCoins( userID );
-        chatFunctions.botSpeak( '@' + this.getUsername( userID ) + " you currently have " + parseFloat( theCoins ).toFixed( 2 ) + " RoboCoins" );
+        await chatFunctions.botSpeak( '@' + await this.getUsername( userID ) + " you currently have " + parseFloat( theCoins ).toFixed( 2 ) + " RoboCoins" );
       } catch ( error ) {
         console.error( "Error reading RoboCoins:", error.message );
         // Handle the error as needed
@@ -2514,7 +2507,7 @@ const userFunctions = () => {
           chatFunctions.botSpeak( "@" + this.getUsername( sendingUserID ) + " give RoboCoins command timed out" );
         }, 60 * 1000 );
 
-        chatFunctions.botSpeak( "@" + this.getUsername( sendingUserID ) + " please send the command /confirm to confirm you want to spend " + numCoins + " RoboCoins" );
+        await chatFunctions.botSpeak( "@" + await this.getUsername( sendingUserID ) + " please send the command /confirm to confirm you want to spend " + numCoins + " RoboCoins" );
       } catch ( error ) {
         if ( error instanceof Error ) {
           // If it's an instance of Error, pass the error object with its details
@@ -2541,16 +2534,16 @@ const userFunctions = () => {
             console.error( 'Error confirming command:', error );
           } );
       } else {
-        chatFunctions.botSpeak( "@" + this.getUsername( sendingUserID ) + " there's nothing to confirm??" );
+        await chatFunctions.botSpeak( "@" + await this.getUsername( sendingUserID ) + " there's nothing to confirm??" );
       }
     },
 
     giveRoboCoinAction: async function ( sendingUserID, receivingUserID, numCoins, changeReason, changeID, chatFunctions, databaseFunctions, data ) {
       try {
-        await this.subtractRoboCoins( sendingUserID, numCoins, changeReason + " to " + this.getUsername( receivingUserID ), changeID, databaseFunctions );
-        await this.addRoboCoins( receivingUserID, numCoins, changeReason + " from " + this.getUsername( sendingUserID ), changeID, databaseFunctions );
+        await this.subtractRoboCoins( sendingUserID, numCoins, changeReason + " to " + await this.getUsername( receivingUserID ), changeID, databaseFunctions );
+        await this.addRoboCoins( receivingUserID, numCoins, changeReason + " from " + await this.getUsername( sendingUserID ), changeID, databaseFunctions );
 
-        chatFunctions.botSpeak( "@" + this.getUsername( sendingUserID ) + " gave " + numCoins + " to @" + this.getUsername( receivingUserID ) );
+        await chatFunctions.botSpeak( "@" + await this.getUsername( sendingUserID ) + " gave " + numCoins + " to @" + await this.getUsername( receivingUserID ) );
         return Promise.resolve(); // Resolve the promise after successful execution
       } catch ( error ) {
         await this.handleError( error, chatFunctions, data );
@@ -2565,7 +2558,7 @@ const userFunctions = () => {
     // ========================================================
 
     wibble: async function ( data, chatFunctions ) {
-      chatFunctions.botSpeak( "wibble" );
+      await chatFunctions.botSpeak( "wibble" );
     },
 
     chargeMe: async function ( callCost, data, chatFunctions, databaseFunctions, functionCall, description = "" ) {
@@ -2582,12 +2575,15 @@ const userFunctions = () => {
           } );
         };
 
-        functionStore[ sendingUserID + "timeout" ] = setTimeout( () => {
+        functionStore[ sendingUserID + "timeout" ] = setTimeout( async () => {
           functionStore[ sendingUserID + "function" ] = null;
-          chatFunctions.botSpeak( "@" + this.getUsername( sendingUserID ) + " command timed out" );
+          await chatFunctions.botSpeak( "@" + await this.getUsername( sendingUserID ) + " command timed out" );
         }, 60 * 1000 );
 
-        chatFunctions.botSpeak( "@" + this.getUsername( sendingUserID ) + " please send the command /confirm to confirm you want to spend " + callCost + " RoboCoins " + description );
+        await chatFunctions.botSpeak( "@" + await this.getUsername( sendingUserID ) + " please send the command" +
+          " /confirm" +
+          " to" +
+          " confirm you want to spend " + callCost + " RoboCoins " + description );
 
       } catch ( error ) {
         if ( error instanceof Error ) {

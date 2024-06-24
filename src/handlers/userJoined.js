@@ -5,9 +5,15 @@ export default async ( currentState, payload, userFunctions, roomFunctions, song
   const newUsers = await userFunctions.findNewUserUUID( currentState )
   for (const uuid of newUsers) {
     const userProfile = await userFunctions.getUserProfileFromAPI( uuid )
-    const nickname = userProfile.nickname
-    
-    await userFunctions.userJoinsRoom( userProfile, roomFunctions, databaseFunctions );
-    await chatFunctions.userGreeting( uuid, nickname, roomFunctions, userFunctions, databaseFunctions )
-  }
+    const nickname = userProfile?.nickname;
+    if (nickname) {
+      try {
+        await userFunctions.userJoinsRoom(userProfile, roomFunctions, databaseFunctions);
+        await chatFunctions.userGreeting(uuid, nickname, roomFunctions, userFunctions, databaseFunctions);
+      } catch (error) {
+        console.error('Error handling user join:', error);
+      }
+    } else {
+      console.warn('User profile does not have a nickname:', JSON.stringify(userProfile,null,2));
+    }  }
 }

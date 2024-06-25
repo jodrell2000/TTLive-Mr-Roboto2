@@ -257,6 +257,7 @@ const userFunctions = () => {
     },
 
     findNewUserUUID: async function ( payload ) {
+      console.log(`findNewUserUUID payload:${JSON.stringify(payload,null,2)}`)
       const userUUIDs = new Set( this.theUsersList().map( user => user.id ) );
       const payloadUUIDs = await this.getUUIDsFromPayload( payload )
 
@@ -2046,6 +2047,7 @@ const userFunctions = () => {
     },
 
     addUserToTheUsersList: async function ( userID, userProfile ) {
+      console.log(`addUserToTheUsersList userID:${userID}`)
       if ( !await this.isUserInUsersList( userID ) ) {
         theUsersList.push( { id: userID, username: userProfile.username } );
       }
@@ -2062,6 +2064,7 @@ const userFunctions = () => {
     },
 
     rebuildUserList: async function ( data, databaseFunctions ) {
+      console.log(`rebuildUserList data.allUsers:${JSON.stringify(data.allUsers,null,2)}`)
       let userID
       let userProfile
 

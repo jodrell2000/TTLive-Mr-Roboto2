@@ -1977,8 +1977,13 @@ const userFunctions = () => {
     userJoinsRoom: async function ( userProfile, roomFunctions, databaseFunctions ) {
       const userID = userProfile.uuid
       const username = userProfile.nickname
-
       console.log( `userJoinsRoom: ${ username } joined` )
+
+      const userFromDatabase = await databaseFunctions.loadUserFromDatabase( userID )
+      if ( userFromDatabase !== undefined ) {
+        theUsersList.push( userFromDatabase );
+      }
+
       //adds users who join the room to the user list if their not already on the list
       await this.addUserToTheUsersList( userID, username, databaseFunctions );
 

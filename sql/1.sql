@@ -20,6 +20,8 @@ CREATE TABLE persistentMemory (
 
 ALTER TABLE tracksPlayed ADD COLUMN jumps INT UNSIGNED DEFAULT 0 AFTER snags;
 
+alter table users drop column userInfo;
+
 
 SELECT tp.id, tp.whenPlayed,
 u.username,

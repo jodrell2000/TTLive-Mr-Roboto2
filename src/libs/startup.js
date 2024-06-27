@@ -7,6 +7,7 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
   try {
     await roomFunctions.storeRoomData( roomUUID )
     
+    await databaseFunctions.resetAllCurrentDJs()
     await botFunctions.reloadMemory( databaseFunctions, roomFunctions );
     
     await chatFunctions.botChat("System online...")

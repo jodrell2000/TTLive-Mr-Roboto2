@@ -246,6 +246,17 @@ const databaseFunctions = () => {
         throw error; // Rethrow the error if necessary
       }
     },
+    
+    resetAllCurrentDJs: async function () {
+      const theQuery = "UPDATE users SET currentDJ = false";
+      const theValues = [ ];
+      try {
+        return await this.runQuery( theQuery, theValues );
+      } catch ( error ) {
+        console.error( 'Error in resetAllCurrentDJs:', error.message );
+        throw error; 
+      }
+    },
 
     // ========================================================
 
@@ -261,8 +272,7 @@ const databaseFunctions = () => {
         return await this.runQuery( theQuery, values );
       } catch ( error ) {
         console.error( 'Error in saveRoboCoinAudit:', error.message );
-        // Handle the error as needed
-        throw error; // Rethrow the error if necessary
+        throw error; 
       }
     },
 

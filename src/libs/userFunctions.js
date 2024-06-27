@@ -2063,14 +2063,21 @@ const userFunctions = () => {
       for ( let i = 0; i < data.allUsers.length; i++ ) {
         if ( typeof data.allUsers[ i ] !== 'undefined' ) {
           userID = data.allUsers[ i ].uuid
-          theUsersList.push( await databaseFunctions.loadUserFromDatabase( userID ) );
-          userProfile = await this.getUserProfileFromAPI( userID )
+          
+          const userProfile = await this.getUserProfileFromAPI( userID )
+          const userFromDatabase = await databaseFunctions.loadUserFromDatabase( userID )
+          
+          if ( userFromDatabase !== undefined ) {
+            theUsersList.push( userFromDatabase );
+          }
+
           if ( userProfile !== undefined ) {
             if ( !await this.userExists( userID ) ) {
               await this.addUserToTheUsersList( userID, userProfile )
             }
-            await this.updateUserFromProfile( userProfile, databaseFunctions )
           }
+
+          await this.updateUserFromProfile( userProfile, databaseFunctions )
         }
       }
     },

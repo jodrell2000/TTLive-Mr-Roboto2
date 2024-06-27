@@ -38,7 +38,6 @@ const databaseFunctions = () => {
 
     buildSaveUserQuery: async function ( userObject ) {
       const id = userObject[ "id" ];
-      const userInfo = JSON.stringify( userObject ).replace( "'", "\\'" );
       const username = encodeURIComponent( userObject[ "username" ] )
 
       let moderator = "False";
@@ -84,11 +83,11 @@ const databaseFunctions = () => {
       if ( userObject[ "password_hash" ] !== undefined ) { password_hash = userObject[ "password_hash" ] }
 
       return `REPLACE
-                  INTO users (id, userInfo, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke,
+                  INTO users (id, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke,
                               currentPlayCount, totalPlayCount, joinedStage, firstIdleWarning,
                               secondIdleWarning, spamCount, lastSnagged, region, BBBootTimestamp,
                               noiceCount, propsCount, RoboCoins, here, password_hash, email)
-              VALUES ("${ id }", '${ userInfo }', "${ username }",
+              VALUES ("${ id }", "${ username }",
                       ${ moderator },
                       ${ joinTime },
                       "${ currentDJ }",

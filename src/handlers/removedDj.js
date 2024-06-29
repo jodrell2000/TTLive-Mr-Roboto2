@@ -2,9 +2,32 @@ export default async ( currentState, payload, userFunctions, roomFunctions, song
   // console.log(`removedDJ payload:${JSON.stringify(payload,null,2)}`)
   for ( const patch of payload.statePatch ) {
     if (patch.path.startsWith('/audienceUsers/') && patch.path.endsWith('/uuid')) {
-      const uuid = patch.value;
-      await userFunctions.removeDJFromList( uuid, databaseFunctions )
-      await userFunctions.removeEscortMeFromUser( uuid, databaseFunctions );
+      const theUserID = patch.value;
+      await userFunctions.resetDJFlags( theUserID, databaseFunctions );
+
+      //gives them one chance to get off-stage, then after that they're play limit is treated as normal
+      if ( typeof await userFunctions.getUsersRefreshCurrentPlayCount[ theUserID ] == 'number' && await userFunctions.isUserInRefreshList( theUserID ) === false ) {
+        delete await userFunctions.getUsersRefreshCurrentPlayCount[ theUserID ]
+      }
+
+      await userFunctions.removeDJFromList( theUserID, databaseFunctions )
+
+      // this is for /warnme
+      if ( userFunctions.warnme().length !== 0 ) {
+        let areTheyBeingWarned = userFunctions.warnme().indexOf( theUserID );
+        if ( areTheyBeingWarned !== -1 ) { //if they're on /warnme and they leave the stage
+          userFunctions.warnme().splice( areTheyBeingWarned, 1 );
+        }
+      }
+
+      //checks if when someone gets off the stage, if the person
+      //on the left is now the next dj
+      userFunctions.warnMeCall( roomFunctions );
+
+      //check to see if conditions are met for bots autodjing feature
+      // await botFunctions.checkAutoDJing( userFunctions );
+
+      await userFunctions.removeEscortMeFromUser( theUserID, databaseFunctions );
     }
   }
 }

@@ -305,7 +305,10 @@ const databaseFunctions = () => {
         let values = [ djID, videoDataID, length ];
         await this.runQuery( theQuery, values )
           .then( ( result ) => {
-            return this.setTrackPlayedLength( result.insertId - 1 );
+            const lastTrackID = result.insertId - 1
+            if ( !this.isPlayedLengthSet( lastTrackID )) {
+              return this.setTrackPlayedLength( lastTrackID );
+            }
           } )
 
         const videoID = songData.songShortId
@@ -344,7 +347,7 @@ const databaseFunctions = () => {
       }
     },
 
-    setTrackPlayedLength: function ( trackID ) {
+    setTrackPlayedLength: async function ( trackID ) {
       return this.calcTrackPlayedLength( trackID )
         .then( ( playedLength ) => {
           let theQuery = "UPDATE tracksPlayed SET playedLength = ? WHERE id = ?;"
@@ -353,9 +356,16 @@ const databaseFunctions = () => {
         } )
     },
     
+    isPlayedLengthSet: async function ( trackID ) {
+      const theQuery = "SELECT playedLength FROM tracksPlayed where id = ?"
+      const values = [ trackID ];
+      const result = await this.runQuery( theQuery, values );
+      return result[0]['playedLength'] !== 0;
+    },
+    
     setPlayedLengthForLastTrack: async function () {
       const theQuery = "SELECT MAX(id) as id FROM tracksPlayed"
-      const values = [  ];
+      const values = [ ];
       const result = await this.runQuery( theQuery, values );
       const id = result[ 0 ][ 'id' ];
       

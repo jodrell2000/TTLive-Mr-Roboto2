@@ -350,6 +350,13 @@ const databaseFunctions = () => {
         } )
     },
     
+    isPlayedLengthSet: async function ( trackID ) {
+      const theQuery = "SELECT playedLength FROM tracksPlayed where id = ?"
+      const values = [ trackID ];
+      const result = await this.runQuery( theQuery, values );
+      return result[0]['playedLength'] !== 0;
+    },
+    
     setPlayedLengthForLastTrack: async function () {
       let theQuery = "SELECT id, whenPlayed FROM tracksPlayed ORDER BY id DESC LIMIT 1"
       let values = [ ];
@@ -357,11 +364,13 @@ const databaseFunctions = () => {
       const trackID = result[ 0 ][ 'id' ];
       const whenPlayed = result[ 0 ][ 'whenPlayed' ]
 
-      const now = new Date();
-      const playedLength = Math.floor((now - whenPlayed) / 1000); // played length in seconds
-      theQuery = "UPDATE tracksPlayed SET playedLength = ? WHERE id = ?;"
-      values = [ playedLength, trackID ];
-      return await this.runQuery( theQuery, values );
+      if ( !await this.isPlayedLengthSet( trackID ) ) {
+        const now = new Date();
+        const playedLength = Math.floor( ( now - whenPlayed ) / 1000 ); // played length in seconds
+        theQuery = "UPDATE tracksPlayed SET playedLength = ? WHERE id = ?;"
+        values = [ playedLength, trackID ];
+        return await this.runQuery( theQuery, values );
+      }
     },
 
     getArtistID: function ( theName ) {

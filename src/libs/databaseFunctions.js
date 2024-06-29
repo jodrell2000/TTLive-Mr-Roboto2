@@ -121,7 +121,6 @@ const databaseFunctions = () => {
     },
 
     loadUserFromDatabase: async function ( uuid ) {
-      console.log(`loadUserFromDatabase uuid:${uuid}`)
       const theQuery = "SELECT id, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke, currentPlayCount," +
         " totalPlayCount, joinedStage, firstIdleWarning, secondIdleWarning, spamCount, lastSnagged, region," +
         " BBBootTimestamp, noiceCount, propsCount, RoboCoins, here, password_hash, email FROM users where id = ?"

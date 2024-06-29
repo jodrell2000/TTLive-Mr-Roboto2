@@ -6,8 +6,6 @@ import { commandIdentifier } from '../defaults/chatDefaults.js'
 import authModule from '../libs/auth.js';
 import auth from '../libs/auth.js';
 import countryLookup from 'country-code-lookup';
-import { logger } from "../utils/logging.js";
-import { postMessage } from "./cometchat.js";
 import axios from "axios";
 import { ActionName } from "ttfm-socket";
 import botDefaults from "../defaults/botDefaults.js";
@@ -67,7 +65,6 @@ let idleFirstWarningTime = roomDefaults.djIdleLimitThresholds[ 1 ];
 let idleSecondWarningTime = roomDefaults.djIdleLimitThresholds[ 2 ];
 
 let previousDJID = null;
-let currentDJID = null;
 
 let functionStore = []; // store give RoboCoin callback functions
 
@@ -1249,7 +1246,7 @@ const userFunctions = () => {
       }
     },
 
-    getCurrentDJID: async function ( data ) {
+    getCurrentDJID: async function ( ) {
       for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
         if ( theUsersList[ userLoop ][ 'currentDJ' ] === true ) {
           return theUsersList[ userLoop ][ 'id' ];
@@ -2063,9 +2060,7 @@ const userFunctions = () => {
     },
 
     rebuildUserList: async function ( data, databaseFunctions ) {
-      console.log(`rebuildUserList data.allUsers:${JSON.stringify(data.allUsers,null,2)}`)
       let userID
-      let userProfile
 
       for ( let i = 0; i < data.allUsers.length; i++ ) {
         if ( typeof data.allUsers[ i ] !== 'undefined' ) {

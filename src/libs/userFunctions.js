@@ -257,7 +257,6 @@ const userFunctions = () => {
     },
 
     findNewUserUUID: async function ( payload ) {
-      console.log(`findNewUserUUID payload:${JSON.stringify(payload,null,2)}`)
       const userUUIDs = new Set( this.theUsersList().map( user => user.id ) );
       const payloadUUIDs = await this.getUUIDsFromPayload( payload )
 

@@ -366,7 +366,7 @@ const databaseFunctions = () => {
       const theQuery = "SELECT MAX(id) as id FROM tracksPlayed"
       const values = [ ];
       const result = await this.runQuery( theQuery, values );
-      const id = result[ 0 ][ 'id' ];
+      const id = result[ 0 ][ 'id' ] - 1;
       console.log(`setPlayedLengthForLastTrack id:${id}`)
       
       await this.setTrackPlayedLength( id );

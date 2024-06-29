@@ -345,8 +345,10 @@ const databaseFunctions = () => {
     },
 
     setTrackPlayedLength: async function ( trackID ) {
+      console.log(`setTrackPlayedLength trackID:${trackID}`)
       return this.calcTrackPlayedLength( trackID )
         .then( ( playedLength ) => {
+          console.log(`setTrackPlayedLength playedLength:${playedLength}`)
           let theQuery = "UPDATE tracksPlayed SET playedLength = ? WHERE id = ?;"
           let values = [ playedLength, trackID ];
           return this.runQuery( theQuery, values );
@@ -365,6 +367,7 @@ const databaseFunctions = () => {
       const values = [ ];
       const result = await this.runQuery( theQuery, values );
       const id = result[ 0 ][ 'id' ];
+      console.log(`setPlayedLengthForLastTrack id:${id}`)
       
       await this.setTrackPlayedLength( id );
     },

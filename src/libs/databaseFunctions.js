@@ -352,6 +352,15 @@ const databaseFunctions = () => {
           return this.runQuery( theQuery, values );
         } )
     },
+    
+    setPlayedLengthForLastTrack: async function () {
+      const theQuery = "SELECT MAX(id) as id FROM tracksPlayed"
+      const values = [  ];
+      const result = await this.runQuery( theQuery, values );
+      const id = result[ 0 ][ 'id' ];
+      
+      await this.setPlayedLengthForLastTrack( id );
+    },
 
     getArtistID: function ( theName ) {
       const selectQuery = `SELECT id

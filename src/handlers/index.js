@@ -6,6 +6,7 @@ import playedOneTimeAnimation from "./playedOneTimeAnimation.js";
 import votedOnSong from "./votedOnSong.js";
 import addedDj from "./addedDj.js";
 import removedDj from "./removedDj.js";
+import nothingPlaying from "./nothingPlaying.js";
 
 const handlers = {
   message,
@@ -15,7 +16,8 @@ const handlers = {
   playedOneTimeAnimation,
   votedOnSong,
   addedDj,
-  removedDj
+  removedDj,
+  nothingPlaying
 }
 
 export default handlers;

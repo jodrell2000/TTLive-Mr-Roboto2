@@ -5,7 +5,6 @@ import { joinChat, getMessages } from './cometchat.js'
 import { logger } from '../utils/logging.js'
 import handlers from '../handlers/index.js'
 import startup from '../libs/startup.js'
-import nothingPlaying from "../handlers/nothingPlaying.js";
 
 export class Bot {
   constructor( slug ) {
@@ -146,7 +145,7 @@ export class Bot {
       logger.debug( `error ${ message }` )
       switch ( message ) {
         case "Nothing is playing right now.":
-          handlers[ nothingPlaying ]( userFunctions, databaseFunctions )
+          handlers.nothingPlaying( userFunctions, databaseFunctions )
           break;
       }
     } );

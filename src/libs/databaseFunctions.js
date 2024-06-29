@@ -1,7 +1,4 @@
 import pool from '../libs/dbConnectionPool.js'
-
-import dirname from "path"
-import fs from "fs"
 import { logger } from "../utils/logging.js";
 
 const databaseFunctions = () => {
@@ -369,7 +366,7 @@ const databaseFunctions = () => {
       const result = await this.runQuery( theQuery, values );
       const id = result[ 0 ][ 'id' ];
       
-      await this.setPlayedLengthForLastTrack( id );
+      await this.setTrackPlayedLength( id );
     },
 
     getArtistID: function ( theName ) {

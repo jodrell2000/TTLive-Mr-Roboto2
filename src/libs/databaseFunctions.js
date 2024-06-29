@@ -301,8 +301,11 @@ const databaseFunctions = () => {
         let theQuery = "INSERT INTO tracksPlayed (djID, videoData_id, length) VALUES (?, ?, ?);"
         let values = [ djID, videoDataID, length ];
         await this.runQuery( theQuery, values )
-          .then( ( result ) => {
-            return this.setTrackPlayedLength( result.insertId - 1 );
+          .then( async ( result ) => {
+            const trackID = result.insertId - 1
+            if ( !await this.isPlayedLengthSet( trackID ) ) {
+              return this.setTrackPlayedLength( trackID );
+            }
           } )
 
         const videoID = songData.songShortId

@@ -302,10 +302,7 @@ const databaseFunctions = () => {
         let values = [ djID, videoDataID, length ];
         await this.runQuery( theQuery, values )
           .then( ( result ) => {
-            const lastTrackID = result.insertId - 1
-            if ( !this.isPlayedLengthSet( lastTrackID )) {
-              return this.setTrackPlayedLength( lastTrackID );
-            }
+            return this.setTrackPlayedLength( result.insertId - 1 );
           } )
 
         const videoID = songData.songShortId
@@ -345,31 +342,26 @@ const databaseFunctions = () => {
     },
 
     setTrackPlayedLength: async function ( trackID ) {
-      console.log(`setTrackPlayedLength trackID:${trackID}`)
       return this.calcTrackPlayedLength( trackID )
         .then( ( playedLength ) => {
-          console.log(`setTrackPlayedLength playedLength:${playedLength}`)
           let theQuery = "UPDATE tracksPlayed SET playedLength = ? WHERE id = ?;"
           let values = [ playedLength, trackID ];
           return this.runQuery( theQuery, values );
         } )
     },
     
-    isPlayedLengthSet: async function ( trackID ) {
-      const theQuery = "SELECT playedLength FROM tracksPlayed where id = ?"
-      const values = [ trackID ];
-      const result = await this.runQuery( theQuery, values );
-      return result[0]['playedLength'] !== 0;
-    },
-    
     setPlayedLengthForLastTrack: async function () {
-      const theQuery = "SELECT MAX(id) as id FROM tracksPlayed"
-      const values = [ ];
+      let theQuery = "SELECT id, whenPlayed FROM tracksPlayed ORDER BY id DESC LIMIT 1"
+      let values = [ ];
       const result = await this.runQuery( theQuery, values );
-      const id = result[ 0 ][ 'id' ] - 1;
-      console.log(`setPlayedLengthForLastTrack id:${id}`)
-      
-      await this.setTrackPlayedLength( id );
+      const trackID = result[ 0 ][ 'id' ];
+      const whenPlayed = result[ 0 ][ 'whenPlayed' ]
+
+      const now = new Date();
+      const playedLength = Math.floor((now - whenPlayed) / 1000); // played length in seconds
+      theQuery = "UPDATE tracksPlayed SET playedLength = ? WHERE id = ?;"
+      values = [ playedLength, trackID ];
+      return await this.runQuery( theQuery, values );
     },
 
     getArtistID: function ( theName ) {

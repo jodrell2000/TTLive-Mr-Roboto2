@@ -31,7 +31,7 @@ export class Bot {
 
   // ========================================================
 
-  async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions ) {
+  async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions ) {
     //console.log(`processNewMessages theUsersList length:${ userFunctions.theUsersList().length}`)
     const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp )
     if ( response?.data ) {
@@ -47,7 +47,7 @@ export class Bot {
             message: customMessage,
             sender,
             senderName: messages[ message ]?.data?.customData?.userName
-          }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, this.socket )
+          }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, this.socket )
         }
       }
     }
@@ -66,7 +66,7 @@ export class Bot {
     }
   }
 
-  configureListeners( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions ) {
+  configureListeners( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions ) {
     const self = this
     logger.debug( 'Setting up listeners' )
 
@@ -145,7 +145,7 @@ export class Bot {
       logger.debug( `error ${ message }` )
       switch ( message ) {
         case "Nothing is playing right now.":
-          handlers.nothingPlaying( userFunctions, databaseFunctions )
+          handlers.nothingPlaying( userFunctions, databaseFunctions, botFunctions )
           break;
       }
     } );

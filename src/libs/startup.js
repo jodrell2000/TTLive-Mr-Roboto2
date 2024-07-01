@@ -32,6 +32,6 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
     await userFunctions.updateModeratorsFromRoomData( roomFunctions, databaseFunctions );
     
   } catch ( err ) {
-    console.error( 'Error', 'Unable to join the room due to an error: ' + err.toString() );
+    console.error( 'Error', 'There was an issue on startup: ' + err.toString() );
   }
 }

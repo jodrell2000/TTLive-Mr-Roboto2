@@ -471,15 +471,10 @@ const commandFunctions = () => {
   }
   moderatorCommands.single.help = "Sets DJs to play 1 tracks each";
   
-  // moderatorCommands.askbard = ( { botFunctions, data, args, chatFunctions, mlFunctions } ) => {
-  //     botFunctions.askBardCommand( data, reassembleArgs( args ), chatFunctions, mlFunctions );
-  // }
-  // moderatorCommands.askbard.help = "Talk to Robo via Bard";
-
-  // moderatorCommands.askchatgpt = ( { botFunctions, data, args, chatFunctions, mlFunctions } ) => {
-  //     botFunctions.askChatGPTCommand( data, reassembleArgs( args ), chatFunctions, mlFunctions );
-  // }
-  // moderatorCommands.askchatgpt.help = "Talk to Robo via Bard";
+  moderatorCommands.question = ( { data, args, chatFunctions, mlFunctions } ) => {
+      mlFunctions.askOllama( reassembleArgs( args ) );
+  }
+  moderatorCommands.question.help = "Talk to Robo";
 
   // #############################################
   // Moderator Greeting commands
@@ -796,7 +791,7 @@ const commandFunctions = () => {
     },
 
     // parseCommands: function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions ) {
-    parseCommands: async function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, socket ) {
+    parseCommands: async function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions, socket ) {
       let senderID;
       
       logger.debug(`data: ${ JSON.stringify( data )}`)
@@ -820,6 +815,7 @@ const commandFunctions = () => {
           documentationFunctions,
           databaseFunctions,
           dateFunctions,
+          mlFunctions,
           socket
           // mlFunctions,
         } );

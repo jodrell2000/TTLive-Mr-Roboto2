@@ -1,4 +1,5 @@
 import { logger } from "../utils/logging.js";
+import botDefaults from "../defaults/botDefaults.js";
 
 export default async ( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
 
@@ -23,4 +24,10 @@ export default async ( payload, userFunctions, roomFunctions, songFunctions, cha
       }
     }
   }
+
+  // if ( botDefaults.autoSnag === true && songFunctions.snagSong() === false && songFunctions.upVotes() >= botDefaults.howManyVotes && songFunctions.ALLREADYCALLED() === false ) {
+  //   songFunctions.songSnagged();
+  //   botFunctions.checkAndAddToPlaylist( songFunctions );
+  // }
+
 }

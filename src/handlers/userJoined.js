@@ -14,6 +14,6 @@ export default async ( currentState, payload, userFunctions, roomFunctions, song
         console.error('Error handling user join:', error);
       }
     } else {
-      console.warn('User profile does not have a nickname:', JSON.stringify(userProfile,null,2));
+      console.warn('User profile does not have a nickname:', JSON.stringify(payload,null,2));
     }  }
 }

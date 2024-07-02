@@ -1296,9 +1296,10 @@ const userFunctions = () => {
 
     isUserIDOnStage: async function ( userID ) {
       console.group( `isUserIDOnStage` )
-      console.log( `onStage:${ JSON.stringify(djList,null,2) }` )
+      console.log( `isUserIDOnStage userID:${ userID }` )
+      console.log( `isUserIDOnStage djList:${ JSON.stringify(djList,null,2) }` )
       const onStage = djList.indexOf( userID );
-      console.log( `onStage:${ onStage }` )
+      console.log( `isUserIDOnStage onStage:${ onStage }` )
       console.groupEnd()
       return onStage !== -1;
     },

@@ -327,7 +327,7 @@ const userFunctions = () => {
     },
 
     disableEscortMe: async function ( data, chatFunctions, databaseFunctions ) {
-      const theUserID = this.whoSentTheCommand( data );
+      const theUserID = await this.whoSentTheCommand( data );
       let theError = '';
       if ( !await this.escortMeIsEnabled( theUserID ) ) {
         theError += ", you haven't enabled Escort Me..."

@@ -338,9 +338,11 @@ const userFunctions = () => {
 
       if ( theError === '' ) {
         await this.removeEscortMeFromUser( theUserID, databaseFunctions );
-        await chatFunctions.botSpeak( '@' + this.getUsername( theUserID ) + ' you will no longer be escorted after you play your song' );
+        await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + ' you will no longer be escorted' +
+          ' after' +
+          ' you play your song' );
       } else {
-        await chatFunctions.botSpeak( '@' + this.getUsername( theUserID ) + theError );
+        await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + theError );
       }
     },
 

@@ -8,11 +8,15 @@ export default async ( payload, userFunctions, songFunctions, databaseFunctions 
     await songFunctions.recordJump(userID);
 
     const username = await userFunctions.getUsername( userID )
-    const message = `${ username } jumped`
-    return await postMessage( {
-      room,
-      message: message
-    } )
+    if ( username === undefined) {
+      console.log(`playedOneTimeAnnimation jumped undefined user: ${JSON.stringify(payload, null, 2)}`)
+    } else {
+      const message = `${ username } jumped`
+      return await postMessage( {
+        room,
+        message: message
+      } )
+    }
   } else if ( payload.params.animation && payload.params.animation === "emoji" ) {
     switch ( payload.params.emoji ) {
       case "💚":

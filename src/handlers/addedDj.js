@@ -6,7 +6,7 @@ export default async ( currentState, payload, userFunctions, roomFunctions, song
     if (patch.path.startsWith('/djs/')) {
       const theUserID = patch.value.uuid;
       
-      [ OKToDJ, theMessage ] = userFunctions.checkOKToDJ( theUserID, roomFunctions );
+      [ OKToDJ, theMessage ] = await userFunctions.checkOKToDJ( theUserID, roomFunctions );
 
       if ( !OKToDJ ) {
         await userFunctions.removeDJ( theUserID, 'User is not allowed to DJ so was removed' );

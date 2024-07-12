@@ -1,0 +1,54 @@
+{
+  "statePatch": [
+    {
+      "op": "replace",
+      "path": "/vibeMeter",
+      "value": 0.1111111111111111
+    },
+    {
+      "op": "add",
+      "path": "/floorUsers/7",
+      "value": {
+        "uuid": "20dcc8db-9304-45ab-be36-0f2e9d5f755f",
+        "tokenRole": "guest",
+        "canDj": true
+      }
+    },
+    {
+      "op": "add",
+      "path": "/audienceUsers/7",
+      "value": {
+        "uuid": "20dcc8db-9304-45ab-be36-0f2e9d5f755f",
+        "tokenRole": "guest",
+        "canDj": true
+      }
+    },
+    {
+      "op": "add",
+      "path": "/allUsers/9",
+      "value": {
+        "uuid": "20dcc8db-9304-45ab-be36-0f2e9d5f755f",
+        "tokenRole": "guest",
+        "canDj": true
+      }
+    },
+    {
+      "op": "add",
+      "path": "/allUserData/20dcc8db-9304-45ab-be36-0f2e9d5f755f",
+      "value": {
+        "userProfile": {
+          "color": "#FFFFFF",
+          "nickname": "ghost-9910",
+          "uuid": "20dcc8db-9304-45ab-be36-0f2e9d5f755f",
+          "avatarId": "ghost"
+        },
+        "position": {
+          "x": 44.8,
+          "y": 78.4
+        },
+        "songVotes": {
+        }
+      }
+    }
+  ]
+}

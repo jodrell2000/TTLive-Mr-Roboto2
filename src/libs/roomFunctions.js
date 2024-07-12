@@ -63,7 +63,7 @@ const roomFunctions = () => {
     // ========================================================
 
     storeRoomData: async function (roomUUID) {
-      const url = `https://rooms.prod.tt.fm/rooms/uuid/${roomUUID}`;
+      const url = `https://gateway.prod.tt.fm/api/room-service/rooms/uuid/${roomUUID}`;
       const headers = {
         'accept': 'application/json',
         'Authorization': `Bearer ${process.env.TTL_USER_TOKEN}`
@@ -100,7 +100,7 @@ const roomFunctions = () => {
     setPlayableTracks: async function ( numTracks, theMessage, chatFunctions ) {
       const roomData = await this.getRoomData()
       const roomSlug = roomData.slug
-      const url = `https://rooms.prod.tt.fm/rooms/${ roomSlug }`;
+      const url = `https://gateway.prod.tt.fm/api/room-service/rooms/${ roomSlug }`;
       const config = {
         headers: {
           'accept': 'application/json',

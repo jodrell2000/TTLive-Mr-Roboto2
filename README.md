@@ -25,14 +25,14 @@ To get the bot token you'll first need to authenticate using your own token. To 
 * the vaule you need is stored in "token-storage" and looks something like this
 
   eyJhbGciOiJSUsfdgadfsgsdfgsdfgsdfpXVCJ9. eyJpZCI6MjA0LCJzdWIiOiJmsdfgsdfgsdYi0yY2RmYWNiY2FmYmMiLCJyb2xlIjoidXNlciIsInN1YnNjcmlwdGlvbklkIjoiIiwiY2FwYWJpbGl0aWVzIjpbIsdfgsdfgsdfJ1c2VyIiwiaWF0IjoxNzE1NzkxNDcwLCJleHAiOjIwMzExNTE0NzAsImlzcyI6InR1cm50YWJsZS11c2VyLXNlcnZpY2UifQ.Asdfgsdfgsdfgu4sdfgsdfgsdfgVftqWLMvBNCsJBz2QRmBA1wdG9yXp4-MvjeTK5ojU2Qm3hFH051Znr86lT-OfqH0s1F2GzWuacmAJoRsdfgsdfgsdfgXZboOpDmKN-ceEsksdfgsdfsdfgsdfgsdfYB-gTQUBgzKz_AjhJM7ctmsdfgsdfgsdj_xrb6y71HJPkwZSyDxArJ2q3noUCgF5GKm0l9p8C6MWQ6qkvxAXiXn-ybZzNh7bfs3nJcsdfgsdfgsdfuE4JnrpJm0LFbuR8Ug_v3uXJeDRX7KW6mHfsjHsws6sXqdGH9421KM4tyggE6yPv0Np4jFQsxI_Uf6PISi1aDPxHlttQV4iPuvPXc4g8pS6ATCm1bX-hE3vKa2y8xcIj_cw2F2vsdfgsdfgsdfgsdfg2AKEHBQkMfL_jvmYzp8gD-NZkX_iANwCZ9RukjVpUi9sdfgsdfgsdfgszkbxeacBsHkz7Euv43JkLljM21tIj5NI
-* Once you have it visit https://api.prod.tt.fm/api/ and click the green Authorize 
+* Once you have it visit https://gateway.prod.tt.fm/api/user-service/api/ and click the green Authorize 
   button at the top of the page
 * Paste in your token
 * Click Authorize
 * Close the box
 
 Now that you're authorized you can create the token to represent your Bot. Note, each tt.live user can only have one Bot
-* head to https://api.prod.tt.fm/api/#/Bot%20endpoints/signUpBot (actually just further down the page you're 
+* head to https://gateway.prod.tt.fm/api/user-service/api/#/Bot%20endpoints/signUpBot (actually just further down the page you're 
   already on)
 * Click "Try it out"
 * Edit the request body and enter your new Bots name, the avatar you want to use (bot-1 and bot-2 are dedicated bot 
@@ -49,7 +49,7 @@ Now that you're authorized you can create the token to represent your Bot. Note,
   somewhere safe as you won't be able to access it again or recover it if you lose it
 
 Next you're going to need a chat token so that the Bot can speak!
-* head to https://api.prod.tt.fm/api/#/CometChat/getUserCometChatAuthToken
+* head to https://gateway.prod.tt.fm/api/user-service/api/#/CometChat/getUserCometChatAuthToken
   * if the padlock there is locked, it'll be because you're still logged in, click it and log out
 * Click the unlocked padlock, and paste in the auth token for the bot. **NOTE NOT** your personal token
 * Click "Try it Out"
@@ -57,14 +57,14 @@ Next you're going to need a chat token so that the Bot can speak!
 * The Response Body will contain the chat token you need
 
 To get the ID for the Bot...
-* Go to https://api.prod.tt.fm/api/#/User%20profile/getProfile
+* Go to https://gateway.prod.tt.fm/api/user-service/api/#/User%20profile/getProfile
 * as above, make sure you're authenticated with the Bot's auth-token, not yours
 * Click "Try it Out"
 * Click "Execute"
 * The response body contains the user details for your Bot. At the bottom you'll see "uuid", this si the value you need
 
 To get the Room ID that you want the Bot to connect to...
-* Go to https://rooms.prod.tt.fm/api/#/Rooms%20data/getRoom
+* Go to https://gateway.prod.tt.fm/api/room-service/api/#/Rooms%20data/getRoom
 * You can use either your personal token, or the Bot token here
 * Click "Try it Out"
 * Enter the slug for your room in the text box
@@ -118,7 +118,7 @@ ANNOUNCE_SONG_DETAILS_COUNT=
 `CHAT_AVATAR_ID` is the avatar that the bot should use within chat - the options availabe can be obtained via request on Discord.  
 `CHAT_NAME` is the name your bot should label itself with (also used to respond to mentions).  
 `CHAT_COLOUR` is the font colour to use for the bots namke in sent messages.  
-`ROOM_UUID` is the UUID for the room you will be accessing (can be obtained from [here](https://rooms.prod.tt.fm/api/#/Rooms%20data/getRoom)).  
+`ROOM_UUID` is the UUID for the room you will be accessing (can be obtained from [here](https://gateway.prod.tt.fm/api/room-service/api/#/Rooms%20data/getRoom)).  
 `TTL_USER_TOKEN` Is your JWT to access TTL (you can grab this from any netwrok requests made via your browser).  
 `BARD_COOKIE` is used for the connection to the Bard API - please see [the package documentation](https://www.npmjs.com/package/bard-ai) to obtain this value.  
 `OPENAI_API_KEY` as a fallback to Bard, the service can also use OpenAI. Please create an account and get an access key [here](https://openai.com/).  

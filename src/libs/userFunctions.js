@@ -205,6 +205,9 @@ const userFunctions = () => {
 
         try {
           const response = await axios.get( url, { headers } );
+          
+          console.log(`getUserProfileFromAPI profile: ${JSON.stringify(response.data[ 0 ]?.userProfile, null, 2)}`)
+          
           return response.data[ 0 ]?.userProfile;
         } catch ( error ) {
           console.error( 'Error fetching user profile:', error );

@@ -57,8 +57,8 @@ app.use( session( {
   saveUninitialized: true
 } ) );
 
-// serve static files from teh images folder
-app.use( '/images', express.static( path.join( __dirname, 'images' ) ) );
+// serve static files from the images folder
+app.use( '/images', express.static( '/home/jodrell/apps/mr_roboto/TTLive-Mr-Roboto2images' ) );
 
 // client authentication
 app.use( ( req, res, next ) => {

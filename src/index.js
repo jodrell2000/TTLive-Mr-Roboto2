@@ -39,16 +39,16 @@ repeatedTasks
   .every( 100 )
 
 // web pages 'n' stuff!
-const express = require( 'express' );
-const path = require( 'path' );
+import express from 'express'
+import path from 'path'
 const app = express();
-const pug = require( 'pug' );
-const bodyParser = require( 'body-parser' );
-const dayjs = require( 'dayjs' );
-const utc = require( 'dayjs/plugin/utc' );
+import pug from 'pug'
+import bodyParser from 'body-parser'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 dayjs.extend( utc )
-const bcrypt = require( 'bcrypt' );
-const session = require( 'express-session' );
+import bcrypt from 'bcrypt'
+import session from 'express-session'
 
 
 app.use( session( {

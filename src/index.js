@@ -45,7 +45,7 @@ import path from 'path'
 import pug from 'pug'
 import bodyParser from 'body-parser'
 import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
+import utc from 'dayjs/plugin/utc.js'
 dayjs.extend( utc )
 import bcrypt from 'bcrypt'
 import session from 'express-session'

@@ -31,6 +31,12 @@ const botFunctionsInstance = botFunctions()
 const mlFunctionsInstance = mlFunctions()
 
 const roomBot = new Bot( process.env.JOIN_ROOM )
+
+roomBot.on("reconnect", async () => {
+  const { state } = await socketClient.joinRoom(token, params);
+  set({ state }); // Or do whatever you normally do with the state
+});
+
 await roomBot.connect( roomFunctionsInstance, userFunctionsInstance, chatFunctionsInstance, songFunctionsInstance, botFunctionsInstance, databaseFunctionsInstance )
 roomBot.configureListeners( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance )
 const repeatedTasks = new Chain()

@@ -26,6 +26,13 @@ export class Bot {
     } )
     this.state = connection.state
 
+    this.socket.on("reconnect", async () => {
+      const { state } = await this.socket.joinRoom( process.env.TTL_USER_TOKEN, {
+        roomUuid: process.env.ROOM_UUID
+      } );
+      this.state = connection.state
+    });
+
     await startup( process.env.ROOM_UUID, this.state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions )
   }
 

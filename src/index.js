@@ -12,7 +12,6 @@ import databaseFunctions from './libs/databaseFunctions.js'
 import dateFunctions from './libs/dateFunctions.js'
 import botFunctions from './libs/botFunctions.js'
 import mlFunctions from './libs/mlFunctions.js'
-import path from "path";
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);

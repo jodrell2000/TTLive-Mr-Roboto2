@@ -39,9 +39,9 @@ repeatedTasks
   .every( 100 )
 
 // web pages 'n' stuff!
-import express from 'express'
-import path from 'path'
+import express from 'express';
 const app = express();
+import path from 'path'
 import pug from 'pug'
 import bodyParser from 'body-parser'
 import dayjs from 'dayjs'

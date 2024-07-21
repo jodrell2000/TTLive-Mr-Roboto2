@@ -121,7 +121,9 @@ app.post( '/updateArtistDisplayName', async ( req, res ) => {
     await databaseFunctionsInstance.updateArtistDisplayName( videoData_id, artistDisplayName );
 
     const userID = await userFunctionsInstance.getUserIDFromUsername( username );
+    console.log(`updateArtistDisplayName userID:${userID}`)
     const numCoins = songFunctionsInstance.fixTrackPayments();
+    console.log(`updateArtistDisplayName numCoins:${numCoins}`)
     const changeReason = "Fixed artist name for " + videoData_id;
     const changeID = 5;
     await userFunctionsInstance.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctionsInstance );

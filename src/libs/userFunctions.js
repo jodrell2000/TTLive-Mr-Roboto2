@@ -2403,6 +2403,7 @@ const userFunctions = () => {
     addRoboCoins: async function ( userID, numCoins, changeReason, changeID, databaseFunctions ) {
       try {
         const coins = parseFloat( numCoins );
+        console.log(`addRoboCoins coins:${coins}`)
         await this.processRoboCoins( userID, coins, changeReason, changeID, addRCOperation, databaseFunctions );
       } catch ( error ) {
         console.error( 'Error in addRoboCoins:', error.message );
@@ -2413,9 +2414,12 @@ const userFunctions = () => {
     processRoboCoins: async function ( userID, numCoins, changeReason, changeID, operation, databaseFunctions ) {
       try {
         const before = await this.getRoboCoins( userID );
+        console.log(`processRoboCoins before:${before}`)
         const updatedCoins = await operation( before, numCoins );
+        console.log(`processRoboCoins updatedCoins:${updatedCoins}`)
         await this.updateRoboCoins( userID, updatedCoins, databaseFunctions );
         const after = await this.getRoboCoins( userID );
+        console.log(`processRoboCoins after:${after}`)
 
         // Pass positive or negative numCoins to auditRoboCoin based on the type of operation
         await this.auditRoboCoin( userID, before, after, operation === addRCOperation ? numCoins : -numCoins, changeReason, changeID, databaseFunctions );

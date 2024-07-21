@@ -642,9 +642,6 @@ const databaseFunctions = () => {
                     ${ orderByClause }
           LIMIT 50`;
 
-      console.log(`selectQuery:${selectQuery}`)
-      console.log(`values:${values}`)
-
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {
           return result;

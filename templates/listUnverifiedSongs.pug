@@ -119,13 +119,13 @@ html(lang="en")
                 if song.youTubeID
                     a(href=`https://www.youtube.com/watch?v=${ encodeURIComponent( song.youTubeID ) }`, target="_blank")
                         img(src="./images/youTube-icon.png", alt="YouTube Video")
-                if song.appleID
-                    a(href=`https://www.youtube.com/watch?v=${ encodeURIComponent( song.youTubeID ) }`, target="_blank")
-                        img(src="./images/apple-icon.png", alt="Apple Music")
-                    
-                    https://geo.music.apple.com/us/album/_/1452842273?i=1452842705&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m
-                    https://geo.music.apple.com/us/album/_/1440841956?i=1440842097&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m
-                    https://music.apple.com/gb/album/wouldnt-it-be-good/1442322672?i=1442322681
+                //if song.appleID
+                //    a(href=`https://www.youtube.com/watch?v=${ encodeURIComponent( song.youTubeID ) }`, target="_blank")
+                //        img(src="./images/apple-icon.png", alt="Apple Music")
+                //    
+                //    https://geo.music.apple.com/us/album/_/1452842273?i=1452842705&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m
+                //    https://geo.music.apple.com/us/album/_/1440841956?i=1440842097&mt=1&app=music&ls=1&at=1000lHKX&ct=api_http&itscg=30200&itsct=odsl_m
+                //    https://music.apple.com/gb/album/wouldnt-it-be-good/1442322672?i=1442322681
                 if song.spotifyID
                     a(href=`https://open.spotify.com/track/${ encodeURIComponent( song.youTubeID ) }`, target="_blank")
                         img(src="./images/spotify-icon.png", alt="Spotify")

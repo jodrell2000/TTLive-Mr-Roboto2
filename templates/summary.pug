@@ -71,5 +71,5 @@ html(lang="en")
         tbody
         each dj in top10DJs
             tr
-            td= dj.dj
+            td= decodeURIComponent(dj.dj)
             td= dj.points

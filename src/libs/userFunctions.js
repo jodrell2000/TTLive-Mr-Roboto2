@@ -2508,8 +2508,8 @@ const userFunctions = () => {
         await this.canUserAffordToSpendThisMuch( sendingUserID, numCoins, chatFunctions, data );
 
         functionStore[ sendingUserID + "function" ] = () => {
-          return new Promise( ( innerResolve, innerReject ) => {
-            this.giveRoboCoinAction( sendingUserID, receivingUserID, numCoins, "Give RoboCoin", 2, chatFunctions, databaseFunctions, data )
+          return new Promise( async ( innerResolve, innerReject ) => {
+            await this.giveRoboCoinAction( sendingUserID, receivingUserID, numCoins, "Give RoboCoin", 2, chatFunctions, databaseFunctions, data )
               .then( () => innerResolve() )
               .catch( ( error ) => innerReject( error ) );
           } );

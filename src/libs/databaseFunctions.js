@@ -760,11 +760,17 @@ const databaseFunctions = () => {
     async fullTop10Results( startDate, endDate, includeDays = [ 0, 1, 2, 3, 4, 5, 6 ] ) {
       const selectQuery = `SELECT COALESCE(v.artistDisplayName, v.artistName) AS "artist",
                                   COALESCE(v.trackDisplayName, v.trackName)   AS "track",
-                                  (SUM(tp.upvotes - tp.downvotes) + SUM(tp.snags * 6) +
-                                   SUM(IF(c.command = 'props', e.count, 0)) * 5 +
-                                   SUM(IF(c.command = 'noice', e.count, 0)) * 5 +
-                                   SUM(IF(c.command = 'spin', e.count, 0)) * 5 +
-                                   SUM(IF(c.command = 'tune', e.count, 0)) * 5) *
+                                  (
+                                      1 +
+                                      SUM(tp.upvotes - tp.downvotes) +
+                                      SUM(tp.snags * 6) +
+                                      SUM(tp.jumps * 2) +
+                                      SUM(IF(c.command = 'props', e.count, 0)) * 5 +
+                                      SUM(IF(c.command = 'noice', e.count, 0)) * 5 +
+                                      SUM(IF(c.command = 'spin', e.count, 0)) * 5 +
+                                      SUM(IF(c.command = 'chips', e.count, 0)) * 5 +
+                                      SUM(IF(c.command = 'tune', e.count, 0)) * 5
+                                  ) *
                                   COUNT(DISTINCT (u.id))                      AS "points",
                                   count(tp.id)                                AS "plays"
                            FROM users u

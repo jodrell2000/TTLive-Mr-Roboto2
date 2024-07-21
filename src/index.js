@@ -85,11 +85,11 @@ app.get( '/listunverified', async ( req, res ) => {
     const searchParam = req.body.searchTerm || req.query.searchTerm || '';
     const dbSearchArgs = req.query || req.body;
 
-    const songList = await databaseFunctions.getUnverifiedSongList( dbSearchArgs );
-    const dbStats = await databaseFunctions.getVerifiedStats();
-    const djStatsObject = await databaseFunctions.getVerificationDJStats();
+    const songList = await databaseFunctionsInstance.getUnverifiedSongList( dbSearchArgs );
+    const dbStats = await databaseFunctionsInstance.getVerifiedStats();
+    const djStatsObject = await databaseFunctionsInstance.getVerificationDJStats();
     const unfixedCount = dbStats[ 'Unfixed' ];
-    let availableRoboCoins = songFunctions.fixTrackPayments() * unfixedCount;
+    let availableRoboCoins = songFunctionsInstance.fixTrackPayments() * unfixedCount;
     availableRoboCoins = availableRoboCoins.toFixed( 2 );
     const djStats = Object.entries( djStatsObject ).slice( 0, 7 );
 
@@ -118,13 +118,13 @@ app.post( '/updateArtistDisplayName', async ( req, res ) => {
     const whereParam = req.body.where || req.query.where || '';
     const searchParam = req.body.searchTerm || req.query.searchTerm || '';
 
-    await databaseFunctions.updateArtistDisplayName( videoData_id, artistDisplayName );
+    await databaseFunctionsInstance.updateArtistDisplayName( videoData_id, artistDisplayName );
 
-    const userID = await userFunctions.getUserIDFromUsername( username );
-    const numCoins = songFunctions.fixTrackPayments();
+    const userID = await userFunctionsInstance.getUserIDFromUsername( username );
+    const numCoins = songFunctionsInstance.fixTrackPayments();
     const changeReason = "Fixed artist name for " + videoData_id;
     const changeID = 5;
-    await userFunctions.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctions );
+    await userFunctionsInstance.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctionsInstance );
 
     const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam } );
     const redirectUrl = '/listunverified?' + queryParams.toString();
@@ -143,13 +143,13 @@ app.post( '/updateTrackDisplayName', async ( req, res ) => {
     const whereParam = req.body.where || req.query.where || '';
     const searchParam = req.body.searchTerm || req.query.searchTerm || '';
 
-    await databaseFunctions.updateTrackDisplayName( videoData_id, trackDisplayName );
+    await databaseFunctionsInstance.updateTrackDisplayName( videoData_id, trackDisplayName );
 
-    const userID = await userFunctions.getUserIDFromUsername( username );
-    const numCoins = songFunctions.fixTrackPayments();
+    const userID = await userFunctionsInstance.getUserIDFromUsername( username );
+    const numCoins = songFunctionsInstance.fixTrackPayments();
     const changeReason = "Fixed track name for " + videoData_id;
     const changeID = 5;
-    await userFunctions.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctions );
+    await userFunctionsInstance.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctionsInstance );
 
     const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam } );
     const redirectUrl = '/listunverified?' + queryParams.toString();
@@ -168,16 +168,16 @@ async function getTop10( req, res, functionName, templateFile ) {
   try {
     const { startDate, endDate } = req.query;
     const [ formStartDate, formEndDate, linkStartDate, linkEndDate ] = [
-      dateFunctions.formStartDate( dayjs, startDate ),
-      dateFunctions.formEndDate( dayjs, endDate ),
-      dateFunctions.linkStartDate( dayjs, startDate ),
-      dateFunctions.linkEndDate( dayjs, endDate ),
+      dateFunctionsInstance.formStartDate( dayjs, startDate ),
+      dateFunctionsInstance.formEndDate( dayjs, endDate ),
+      dateFunctionsInstance.linkStartDate( dayjs, startDate ),
+      dateFunctionsInstance.linkEndDate( dayjs, endDate ),
     ];
     const [ top10SongList, top1080sSongList, top10WednesdaySongList, top10FridaySongList ] = await Promise.all( [
-      databaseFunctions[ functionName ]( dateFunctions.dbStartDate( dayjs, startDate ), dateFunctions.dbEndDate( dayjs, endDate ) ),
-      databaseFunctions[ functionName ]( dateFunctions.dbStartDate( dayjs, startDate ), dateFunctions.dbEndDate( dayjs, endDate ), [ 0, 1, 2, 3, 5 ] ),
-      databaseFunctions[ functionName ]( dateFunctions.dbStartDate( dayjs, startDate ), dateFunctions.dbEndDate( dayjs, endDate ), [ 4 ] ),
-      databaseFunctions[ functionName ]( dateFunctions.dbStartDate( dayjs, startDate ), dateFunctions.dbEndDate( dayjs, endDate ), [ 6 ] ),
+      databaseFunctionsInstance[ functionName ]( dateFunctionsInstance.dbStartDate( dayjs, startDate ), dateFunctionsInstance.dbEndDate( dayjs, endDate ) ),
+      databaseFunctionsInstance[ functionName ]( dateFunctionsInstance.dbStartDate( dayjs, startDate ), dateFunctionsInstance.dbEndDate( dayjs, endDate ), [ 0, 1, 2, 3, 5 ] ),
+      databaseFunctionsInstance[ functionName ]( dateFunctionsInstance.dbStartDate( dayjs, startDate ), dateFunctionsInstance.dbEndDate( dayjs, endDate ), [ 4 ] ),
+      databaseFunctionsInstance[ functionName ]( dateFunctionsInstance.dbStartDate( dayjs, startDate ), dateFunctionsInstance.dbEndDate( dayjs, endDate ), [ 6 ] ),
     ] );
     const html = pug.renderFile( `./templates/${ templateFile }.pug`, {
       top10SongList,
@@ -200,14 +200,14 @@ async function getSummary( req, res, templateFile ) {
   try {
     const { startDate, endDate } = req.query;
     const [ formStartDate, formEndDate, linkStartDate, linkEndDate ] = [
-      dateFunctions.formStartDate( dayjs, startDate ),
-      dateFunctions.formEndDate( dayjs, endDate ),
-      dateFunctions.linkStartDate( dayjs, startDate ),
-      dateFunctions.linkEndDate( dayjs, endDate ),
+      dateFunctionsInstance.formStartDate( dayjs, startDate ),
+      dateFunctionsInstance.formEndDate( dayjs, endDate ),
+      dateFunctionsInstance.linkStartDate( dayjs, startDate ),
+      dateFunctionsInstance.linkEndDate( dayjs, endDate ),
     ];
     const [ summary, top10DJs ] = await Promise.all( [
-      databaseFunctions.roomSummaryResults( dateFunctions.dbStartDate( dayjs, startDate ), dateFunctions.dbEndDate( dayjs, endDate ) ),
-      databaseFunctions.top10DJResults( dateFunctions.dbStartDate( dayjs, startDate ), dateFunctions.dbEndDate( dayjs, endDate ) ),
+      databaseFunctionsInstance.roomSummaryResults( dateFunctionsInstance.dbStartDate( dayjs, startDate ), dateFunctionsInstance.dbEndDate( dayjs, endDate ) ),
+      databaseFunctionsInstance.top10DJResults( dateFunctionsInstance.dbStartDate( dayjs, startDate ), dateFunctionsInstance.dbEndDate( dayjs, endDate ) ),
     ] );
     const html = pug.renderFile( `./templates/${ templateFile }.pug`, {
       summary,
@@ -257,7 +257,7 @@ app.get( '/', function ( req, res ) {
 } );
 
 app.post( '/songstatus', async function ( req, res ) {
-  let videoStatus = await videoFunctions.checkVideoStatus( req.body.videoIDs )
+  let videoStatus = await videoFunctionsInstance.checkVideoStatus( req.body.videoIDs )
   res.send( videoStatus );
 } );
 
@@ -301,19 +301,19 @@ app.get( '/signup', ( req, res ) => {
 
 app.post( '/signup', async ( req, res, next ) => {
   const { email, username, password, confirmPassword } = req.body;
-  const userID = await userFunctions.getUserIDFromUsername( username );
+  const userID = await userFunctionsInstance.getUserIDFromUsername( username );
 
   try {
     if ( password !== confirmPassword ) {
       return res.status( 400 ).send( 'Passwords do not match' );
     }
 
-    const user = userFunctions.userExists( userID );
+    const user = userFunctionsInstance.userExists( userID );
     if ( !user ) {
       return res.status( 400 ).send( 'User does not exist' );
     }
 
-    const verify = await userFunctions.verifyUsersEmail( userID, email, databaseFunctions );
+    const verify = await userFunctionsInstance.verifyUsersEmail( userID, email, databaseFunctionsInstance );
     if ( !verify ) {
       return res.status( 400 ).send( "User's email does not match" );
     }
@@ -363,7 +363,7 @@ app.post( '/login', async ( req, res ) => {
 
 async function authentication( username, password ) {
   try {
-    const hashedPassword = await databaseFunctions.retrieveHashedPassword( username );
+    const hashedPassword = await databaseFunctionsInstance.retrieveHashedPassword( username );
     if ( !hashedPassword ) {
       return false; // User not found
     }
@@ -377,8 +377,8 @@ async function authentication( username, password ) {
 
 async function setPassword( { username, passwordHash } ) {
   try {
-    const userID = await userFunctions.getUserIDFromUsername( username );
-    await userFunctions.storeUserData( userID, "password_hash", passwordHash, databaseFunctions );
+    const userID = await userFunctionsInstance.getUserIDFromUsername( username );
+    await userFunctionsInstance.storeUserData( userID, "password_hash", passwordHash, databaseFunctionsInstance );
     return true;
   } catch ( error ) {
     console.error( 'Error setting password:', error );

@@ -8,6 +8,7 @@ export default async ( payload, userFunctions, roomFunctions, songFunctions, cha
   // end song
   let djID;
   if ( payload.nowPlaying && payload.nowPlaying.song ) {
+    console.log(JSON.stringify(payload.nowPlaying.song, null, 2))
     djID = payload.djs[ 0 ].uuid;
     await songFunctions.grabSongStats();
     await userFunctions.setCurrentDJID( djID, databaseFunctions );

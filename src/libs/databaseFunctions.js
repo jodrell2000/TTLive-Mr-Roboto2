@@ -628,7 +628,9 @@ const databaseFunctions = () => {
       }
 
       const selectQuery = `
-          SELECT tp.videoData_id,
+          SELECT v.youTubeID,
+                 v.appleID,
+                 SUBSTRING(v.spotifyID,15) AS "spotifyID",
                  v.artistName,
                  v.artistDisplayName,
                  v.trackName,

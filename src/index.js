@@ -112,7 +112,6 @@ app.get( '/listunverified', async ( req, res ) => {
 app.post( '/updateArtistDisplayName', async ( req, res ) => {
   try {
     const username = req.session.user;
-    console.log(`updateArtistDisplayName username:${username}`)
 
     const videoData_id = req.body.videoData_id;
     const artistDisplayName = req.body.artistDisplayName;
@@ -120,12 +119,12 @@ app.post( '/updateArtistDisplayName', async ( req, res ) => {
     const whereParam = req.body.where || req.query.where || '';
     const searchParam = req.body.searchTerm || req.query.searchTerm || '';
 
+    console.log(`updateArtistDisplayName videoData_id:${videoData_id}`)
+    console.log(`updateArtistDisplayName artistDisplayName:${artistDisplayName}`)
     await databaseFunctionsInstance.updateArtistDisplayName( videoData_id, artistDisplayName );
 
     const userID = await userFunctionsInstance.getUserIDFromUsername( username );
-    console.log(`updateArtistDisplayName userID:${userID}`)
     const numCoins = songFunctionsInstance.fixTrackPayments();
-    console.log(`updateArtistDisplayName numCoins:${numCoins}`)
     const changeReason = "Fixed artist name for " + videoData_id;
     const changeID = 5;
     await userFunctionsInstance.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctionsInstance );

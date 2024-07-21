@@ -196,17 +196,20 @@ const userFunctions = () => {
     },
 
     getUserProfileFromAPI: async function ( uuid ) {
+      console.log(`getUserProfileFromAPI uuid:${uuid}`)
       if ( uuid !== undefined ) {
         const url = `https://gateway.prod.tt.fm/api/user-service/users/profiles?users=${ uuid }`;
+        console.log(`getUserProfileFromAPI url:${url}`)
         const headers = {
           'accept': 'application/json',
           'Authorization': `Bearer ${ process.env.TTL_USER_TOKEN }`
         };
+        console.log(`getUserProfileFromAPI headers:${headers}`)
 
         try {
           const response = await axios.get( url, { headers } );
           
-          // console.log(`getUserProfileFromAPI profile: ${JSON.stringify(response.data[ 0 ]?.userProfile, null, 2)}`)
+          console.log(`getUserProfileFromAPI profile: ${JSON.stringify(response.data[ 0 ]?.userProfile, null, 2)}`)
           
           return response.data[ 0 ]?.userProfile;
         } catch ( error ) {

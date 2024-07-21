@@ -1,8 +1,8 @@
 SELECT DATE_SUB(NOW(), INTERVAL 1 WEEK) INTO @startDate;
 SELECT DATE_ADD(NOW(), INTERVAL 1 DAY) INTO @endDate;
 
-SELECT "2024-07-04 12:00:00" INTO @startDate;
-SELECT "2024-07-11 12:00:00" INTO @endDate;
+SELECT "2024-07-11 12:00:00" INTO @startDate;
+SELECT "2024-07-18 12:00:00" INTO @endDate;
 
 
 SELECT COALESCE(v.artistDisplayName, v.artistName) AS "artist",

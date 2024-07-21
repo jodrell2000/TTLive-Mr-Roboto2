@@ -1,5 +1,5 @@
-SELECT "2024-07-04 12:00:00" INTO @startDate;
-SELECT "2024-07-11 12:00:00" INTO @endDate;
+SELECT "2024-07-11 12:00:00" INTO @startDate;
+SELECT "2024-07-18 12:00:00" INTO @endDate;
 
 SELECT u.username,
        (
@@ -26,7 +26,7 @@ WHERE tp.whenPlayed BETWEEN @startDate AND @endDate AND
       DAYOFWEEK(tp.whenPlayed) IN ( 0, 1, 2, 3, 4, 5, 6 )
 GROUP BY u.username
 ORDER BY 2 DESC, 3 DESC
-LIMIT 5;
+LIMIT 10;
 
 
 

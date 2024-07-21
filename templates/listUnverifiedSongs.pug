@@ -118,7 +118,7 @@ html(lang="en")
             td
                 if song.youTubeID
                     a(href=`https://www.youtube.com/watch?v=${ encodeURIComponent( song.youTubeID ) }`, target="_blank")
-                        img(src="../images/youTube-icon.png", alt="YouTube Video")
+                        img(src="/images/youTube-icon.png", alt="YouTube Video")
                 //if song.appleID
                 //    a(href=`https://www.youtube.com/watch?v=${ encodeURIComponent( song.youTubeID ) }`, target="_blank")
                 //        img(src="./images/apple-icon.png", alt="Apple Music")
@@ -128,7 +128,7 @@ html(lang="en")
                 //    https://music.apple.com/gb/album/wouldnt-it-be-good/1442322672?i=1442322681
                 if song.spotifyID
                     a(href=`https://open.spotify.com/track/${ encodeURIComponent( song.youTubeID ) }`, target="_blank")
-                        img(src="../images/spotify-icon.png", alt="Spotify")
+                        img(src="/images/spotify-icon.png", alt="Spotify")
             td
                 a(href=`https://hang.smufflersworld.com/listunverified?sort=artist&where=artist&searchTerm=${ encodeURIComponent( song.artistName ) }`) #{song.artistName}
             td

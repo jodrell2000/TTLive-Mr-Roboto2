@@ -204,7 +204,7 @@ const userFunctions = () => {
           'accept': 'application/json',
           'Authorization': `Bearer ${ process.env.TTL_USER_TOKEN }`
         };
-        console.log(`getUserProfileFromAPI headers:${headers}`)
+        console.log(`getUserProfileFromAPI headers:${JSON.stringify(headers, null, 2)}`)
 
         try {
           const response = await axios.get( url, { headers } );

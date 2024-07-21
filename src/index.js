@@ -58,7 +58,7 @@ app.use( session( {
 } ) );
 
 // serve static files from the images folder
-app.use( '/images', express.static( '/home/jodrell/apps/mr_roboto/TTLive-Mr-Roboto2images' ) );
+app.use( '/images', express.static( '/home/jodrell/apps/mr_roboto/TTLive-Mr-Roboto2/images' ) );
 
 // client authentication
 app.use( ( req, res, next ) => {

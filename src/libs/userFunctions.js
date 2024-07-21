@@ -300,6 +300,8 @@ const userFunctions = () => {
     },
 
     getUserIDFromUsername: async function ( theUsername ) {
+      console.log(`getUserIDFromUsername theUsername:${theUsername}`)
+      console.log(`getUserIDFromUsername theUsersList:${JSON.stringify(theUsersList)}`)
       for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
         if ( theUsersList[ userLoop ].username === theUsername ) {
           return theUsersList[ userLoop ].id;

@@ -29,15 +29,15 @@ html(lang="en")
 
         ul
         li
-            a(href=`http://141.147.86.68:8585/fullTop10?startDate=${ linkStartDate }&endDate=${ linkEndDate }`) Full Top 10 Lists
+            a(href=`https://hang.smufflersworld.com/fullTop10?startDate=${ linkStartDate }&endDate=${ linkEndDate }`) Full Top 10 Lists
         li
-            a(href=`http://141.147.86.68:8585/likesTop10?startDate=${ linkStartDate }&endDate=${ linkEndDate }`) Top 10 (Likes Only)
+            a(href=`https://hang.smufflersworld.com/likesTop10?startDate=${ linkStartDate }&endDate=${ linkEndDate }`) Top 10 (Likes Only)
         li
-            a(href=`http://141.147.86.68:8585/mostplayedartists?startDate=${ linkStartDate }&endDate=${ linkEndDate }`) Most Played Artists
+            a(href=`https://hang.smufflersworld.com/mostplayedartists?startDate=${ linkStartDate }&endDate=${ linkEndDate }`) Most Played Artists
         li
-            a(href=`http://141.147.86.68:8585/mostplayedtracks?startDate=${ linkStartDate }&endDate=${ linkEndDate }`) Most Played Tracks
+            a(href=`https://hang.smufflersworld.com/mostplayedtracks?startDate=${ linkStartDate }&endDate=${ linkEndDate }`) Most Played Tracks
         li
-            a(href=`http://141.147.86.68:8585/summary?startDate=${ linkStartDate }&endDate=${ linkEndDate }`) Room Summary & Top DJs
+            a(href=`https://hang.smufflersworld.com/summary?startDate=${ linkStartDate }&endDate=${ linkEndDate }`) Room Summary & Top DJs
 
         form(action='/fulltop10' method='GET')
             label(for='startDate') Start Date:
@@ -57,9 +57,9 @@ html(lang="en")
             each song in top10SongList
                 tr
                 td
-                    a(href=`http://141.147.86.68:8585/listunverified?sort=artist&where=artist&searchTerm=${ encodeURIComponent( song.artist ) }`) #{song.artist}
+                    a(href=`https://hang.smufflersworld.com/listunverified?sort=artist&where=artist&searchTerm=${ encodeURIComponent( song.artist ) }`) #{song.artist}
                 td
-                    a(href=`http://141.147.86.68:8585/listunverified?sort=track&where=track&searchTerm=${ encodeURIComponent( song.track ) }`) #{song.track}
+                    a(href=`https://hang.smufflersworld.com/listunverified?sort=track&where=track&searchTerm=${ encodeURIComponent( song.track ) }`) #{song.track}
                 td= song.points
                 td= song.plays
 
@@ -76,9 +76,9 @@ html(lang="en")
             each song in top1080sSongList
                 tr
                 td
-                    a(href=`http://141.147.86.68:8585/listunverified?sort=artist&where=artist&searchTerm=${ encodeURIComponent( song.artist ) }`) #{song.artist}
+                    a(href=`https://hang.smufflersworld.com/listunverified?sort=artist&where=artist&searchTerm=${ encodeURIComponent( song.artist ) }`) #{song.artist}
                 td
-                    a(href=`http://141.147.86.68:8585/listunverified?sort=track&where=track&searchTerm=${ encodeURIComponent( song.track ) }`) #{song.track}
+                    a(href=`https://hang.smufflersworld.com/listunverified?sort=track&where=track&searchTerm=${ encodeURIComponent( song.track ) }`) #{song.track}
                 td= song.points
                 td= song.plays
 
@@ -96,9 +96,9 @@ html(lang="en")
             each song in top10WednesdaySongList
                 tr
                 td
-                    a(href=`http://141.147.86.68:8585/listunverified?sort=artist&where=artist&searchTerm=${ encodeURIComponent( song.artist ) }`) #{song.artist}
+                    a(href=`https://hang.smufflersworld.com/listunverified?sort=artist&where=artist&searchTerm=${ encodeURIComponent( song.artist ) }`) #{song.artist}
                 td
-                    a(href=`http://141.147.86.68:8585/listunverified?sort=track&where=track&searchTerm=${ encodeURIComponent( song.track ) }`) #{song.track}
+                    a(href=`https://hang.smufflersworld.com/listunverified?sort=track&where=track&searchTerm=${ encodeURIComponent( song.track ) }`) #{song.track}
                 td= song.points
                 td= song.plays
 
@@ -116,8 +116,8 @@ html(lang="en")
             each song in top10FridaySongList
                 tr
                 td
-                    a(href=`http://141.147.86.68:8585/listunverified?sort=artist&where=artist&searchTerm=${ encodeURIComponent( song.artist ) }`) #{song.artist}
+                    a(href=`https://hang.smufflersworld.com/listunverified?sort=artist&where=artist&searchTerm=${ encodeURIComponent( song.artist ) }`) #{song.artist}
                 td
-                    a(href=`http://141.147.86.68:8585/listunverified?sort=track&where=track&searchTerm=${ encodeURIComponent( song.track ) }`) #{song.track}
+                    a(href=`https://hang.smufflersworld.com/listunverified?sort=track&where=track&searchTerm=${ encodeURIComponent( song.track ) }`) #{song.track}
                 td= song.points
                 td= song.plays

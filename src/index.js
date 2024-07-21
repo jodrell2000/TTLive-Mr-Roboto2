@@ -119,8 +119,6 @@ app.post( '/updateArtistDisplayName', async ( req, res ) => {
     const whereParam = req.body.where || req.query.where || '';
     const searchParam = req.body.searchTerm || req.query.searchTerm || '';
 
-    console.log(`updateArtistDisplayName videoData_id:${videoData_id}`)
-    console.log(`updateArtistDisplayName artistDisplayName:${artistDisplayName}`)
     await databaseFunctionsInstance.updateArtistDisplayName( videoData_id, artistDisplayName );
 
     const userID = await userFunctionsInstance.getUserIDFromUsername( username );

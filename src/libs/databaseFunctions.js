@@ -859,15 +859,21 @@ const databaseFunctions = () => {
       }
     },
 
+
     async mostPlayedArtistsResults( startDate, endDate, includeDays = [ 0, 1, 2, 3, 4, 5, 6 ] ) {
       const selectQuery = `SELECT artist, COUNT(*) as "plays", SUM(points) as "points"
                            FROM (SELECT COALESCE(v.artistDisplayName, v.artistName) as "artist",
-                                        (tp.upvotes - tp.downvotes + (tp.snags * 6) +
-                                         SUM(IF(c.command = 'props', e.count, 0)) * 5 +
-                                         SUM(IF(c.command = 'noice', e.count, 0)) * 5 +
-                                         SUM(IF(c.command = 'spin', e.count, 0)) * 5 +
-                                         SUM(IF(c.command = 'tune', e.count, 0)) * 5) *
-                                        COUNT(DISTINCT (u.id))                      AS points
+                                        ( 1 +
+                                        SUM(tp.upvotes - tp.downvotes) +
+                                        SUM(tp.snags * 6) +
+                                        SUM(tp.jumps * 2) +
+                                        SUM(IF(c.command = 'props', e.count, 0)) * 5 +
+                                        SUM(IF(c.command = 'noice', e.count, 0)) * 5 +
+                                        SUM(IF(c.command = 'spin', e.count, 0)) * 5 +
+                                        SUM(IF(c.command = 'chips', e.count, 0)) * 5 +
+                                        SUM(IF(c.command = 'tune', e.count, 0)) * 5
+                                        ) *
+                                        COUNT(DISTINCT (u.id))                      AS "points"
                                  FROM users u
                                           JOIN tracksPlayed tp ON tp.djID = u.id
                                           JOIN videoData v ON tp.videoData_id = v.id
@@ -915,16 +921,21 @@ const databaseFunctions = () => {
     async top10DJResults( startDate, endDate ) {
       const selectQuery = `SELECT dj, SUM(points) as "points"
                            FROM (SELECT u.username                                    as "dj",
-                                        SUM(tp.upvotes) - SUM(tp.downvotes) + SUM(tp.snags * 6) +
-                                        (SUM(IF(c.command = 'props', e.count, 0)) * 5) +
-                                        (SUM(IF(c.command = 'noice', e.count, 0)) * 5) +
-                                        (SUM(IF(c.command = 'spin', e.count, 0)) * 5) +
-                                        (SUM(IF(c.command = 'tune', e.count, 0)) * 5) AS points
+                                    ( 1 +
+                                    SUM(tp.upvotes - tp.downvotes) +
+                                    SUM(tp.snags * 6) +
+                                    SUM(tp.jumps * 2) +
+                                    SUM(IF(c.command = 'props', e.count, 0)) * 5 +
+                                    SUM(IF(c.command = 'noice', e.count, 0)) * 5 +
+                                    SUM(IF(c.command = 'spin', e.count, 0)) * 5 +
+                                    SUM(IF(c.command = 'chips', e.count, 0)) * 5 +
+                                    SUM(IF(c.command = 'tune', e.count, 0)) * 5
+                                    ) AS "points"
                                  FROM users u
-                                          JOIN tracksPlayed tp ON tp.djID = u.id
-                                          JOIN videoData v ON tp.videoData_id = v.id
-                                          LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
-                                          LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
+                                        JOIN tracksPlayed tp ON tp.djID = u.id
+                                        JOIN videoData v ON tp.videoData_id = v.id
+                                        LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
+                                        LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                                  WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                        tp.playedLength > 60
                                  GROUP BY tp.id, u.username) trackPoints

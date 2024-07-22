@@ -641,7 +641,7 @@ const databaseFunctions = () => {
                    JOIN videoData v ON v.id = tp.videoData_id
           WHERE ${ whereClause }
                     ${ orderByClause }
-          LIMIT 50`;
+          LIMIT 100`;
 
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {

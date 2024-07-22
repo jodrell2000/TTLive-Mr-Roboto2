@@ -356,6 +356,7 @@ const databaseFunctions = () => {
 
       try {
         const result = await this.runQuery( theQuery, values );
+        console.log(`getVideoDataID result:${JSON.stringify(result, null, 2)}`)
         if (result.length > 0) {
           return result[0]['id'];
         } else {

@@ -2083,7 +2083,9 @@ const userFunctions = () => {
             }
           }
 
-          await this.updateUserFromProfile( userProfile, databaseFunctions )
+          if ( userProfile !== undefined && userFromDatabase !== undefined ) {
+            await this.updateUserFromProfile( userProfile, databaseFunctions )
+          }
         }
       }
     },

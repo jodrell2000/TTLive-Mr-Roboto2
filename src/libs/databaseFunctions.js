@@ -786,7 +786,7 @@ const databaseFunctions = () => {
                            GROUP BY COALESCE(v.artistDisplayName, v.artistName),
                                     COALESCE(v.trackDisplayName, v.trackName)
                            ORDER BY 3 DESC, 4 DESC
-                           LIMIT 15;`;
+                           LIMIT 20;`;
 
       const values = [ startDate, endDate ];
 

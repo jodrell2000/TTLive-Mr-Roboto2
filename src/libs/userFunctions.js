@@ -196,6 +196,7 @@ const userFunctions = () => {
     },
 
     getUserProfileFromAPI: async function ( uuid ) {
+      console.log(`getUserProfileFromAPI uuid:${uuid}`)
       if ( uuid !== undefined ) {
         const url = `https://gateway.prod.tt.fm/api/user-service/users/profiles?users=${ uuid }`;
         const headers = {

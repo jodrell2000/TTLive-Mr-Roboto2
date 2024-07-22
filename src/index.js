@@ -150,6 +150,8 @@ app.post( '/updateTrackDisplayName', async ( req, res ) => {
     const numCoins = songFunctionsInstance.fixTrackPayments();
     const changeReason = "Fixed track name for " + videoData_id;
     const changeID = 5;
+    console.log(`updateTrackDisplayName username:${username}`)
+    console.log(`updateTrackDisplayName userID:${userID}`)
     await userFunctionsInstance.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctionsInstance );
 
     const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam } );

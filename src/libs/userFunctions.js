@@ -223,10 +223,15 @@ const userFunctions = () => {
     },
 
     getUsername: async function ( userID ) {
-      const userProfile = await this.getUserProfileFromAPI( userID )
+      if ( await this.userExists( userID ) ) {
+        let theUser = theUsersList.find( ( { id } ) => id === userID );
+        return theUser.username;
+      } else {
+        const userProfile = await this.getUserProfileFromAPI( userID )
 
-      if ( userProfile && userProfile.nickname ) {
-        return userProfile.nickname;
+        if ( userProfile && userProfile.nickname ) {
+          return userProfile.nickname;
+        }
       }
     },
 

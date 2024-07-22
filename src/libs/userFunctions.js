@@ -2527,7 +2527,7 @@ const userFunctions = () => {
     },
 
     confirmCommand: async function ( data, chatFunctions ) {
-      const sendingUserID = this.whoSentTheCommand( data );
+      const sendingUserID = await this.whoSentTheCommand( data );
       if ( functionStore && functionStore[ sendingUserID + "function" ] && typeof functionStore[ sendingUserID + "function" ] === 'function' ) {
         functionStore[ sendingUserID + "function" ]()
           .then( () => {

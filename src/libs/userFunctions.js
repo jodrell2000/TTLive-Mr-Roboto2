@@ -303,6 +303,7 @@ const userFunctions = () => {
     },
 
     getUserIDFromUsername: async function ( theUsername ) {
+      console.log(`getUserIDFromUsername theUserList:${JSON.stringify(theUsersList,null,2)}`)
       for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
         if ( theUsersList[ userLoop ].username.toLowerCase() === theUsername.toLowerCase() ) {
           return theUsersList[ userLoop ].id;

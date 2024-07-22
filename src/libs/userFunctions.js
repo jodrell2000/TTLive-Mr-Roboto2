@@ -214,6 +214,8 @@ const userFunctions = () => {
       }
     },
 
+    https://gateway.prod.tt.fm/api/user-service/users/profiles?users=875d9f55-031d-413b-a44f-33bc0b2b19f4
+
     updateUserFromProfile: async function ( userProfile, databaseFunctions ) {
       const username = userProfile.nickname
       const uuid = userProfile.uuid

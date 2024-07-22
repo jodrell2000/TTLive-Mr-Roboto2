@@ -356,7 +356,11 @@ const databaseFunctions = () => {
 
       try {
         const result = await this.runQuery( theQuery, values );
-        return result[ 0 ][ 'id' ];
+        if (result.length > 0) {
+          return result[0]['id'];
+        } else {
+          return false;
+        }
       } catch ( error ) {
         console.error( "Error:", error );
         throw error;

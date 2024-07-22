@@ -295,49 +295,66 @@ const databaseFunctions = () => {
     // ========================================================
 
     saveTrackData: async function ( djID, songData ) {
-      if ( songData.songShortId ) {
-        const videoDataID = songData.songShortId
-        const length = songData.duration
-        let theQuery = "INSERT INTO tracksPlayed (djID, videoData_id, length) VALUES (?, ?, ?);"
-        let values = [ djID, videoDataID, length ];
-        await this.runQuery( theQuery, values )
-          .then( async ( result ) => {
-            const trackID = result.insertId - 1
-            if ( !await this.isPlayedLengthSet( trackID ) ) {
-              return this.setTrackPlayedLength( trackID );
-            }
-          } )
-
-        const videoID = songData.songShortId
+      let songShortId
+      if ( await this.doesTrackMatchingShortCodeExists( songData.songShortId ) ) {
+        songShortId = songData.songShortId
+        await this.saveTrackPlayed(djID, songShortId, songData.duration)
+      } else {
+        const songShortId = songData.songShortId
         const youTubeID = songData.musicProviders.youtube || null
         const appleID = songData.musicProviders.apple || null
         const spotifyID = songData.musicProviders.spotify || null
-
         const artist = songData.artistName;
         const song = songData.trackName;
 
-        const exists = await this.checkVideoDataExists( videoID );
+        let videoID 
+        videoID = await this.getVideoDataID( songShortId, youTubeID, appleID, spotifyID );
 
-        if ( !exists ) {
+        if ( !videoID ) {
           let theQuery = "INSERT INTO videoData (id, artistName, trackName, youTubeID, appleID, spotifyID) VALUES" +
             " (?, ?, ?, ?, ?, ?)";
-          const values = [ videoID, artist, song, youTubeID, appleID, spotifyID ];
+          const values = [ songShortId, artist, song, youTubeID, appleID, spotifyID ];
           await this.runQuery( theQuery, values )
+          videoID = await this.getVideoDataID( songShortId, youTubeID, appleID, spotifyID );
         }
-      } else {
-        logger.error( `databaseFunctions.saveTrackData songData.songShortId: ${ songData.songShortId }` )
-        console.log( JSON.stringify( songData, null, 2 ) )
+        await this.saveTrackPlayed(djID, videoID, songData.duration)
       }
     },
-
-    checkVideoDataExists: async function ( videoData_id ) {
+    
+    saveTrackPlayed: async function( djID, videoDataID, length ) {
+      let theQuery = "INSERT INTO tracksPlayed (djID, videoData_id, length) VALUES (?, ?, ?);"
+      let values = [ djID, videoDataID, length ];
+      await this.runQuery( theQuery, values )
+        .then( async ( result ) => {
+          const trackID = result.insertId - 1
+          if ( !await this.isPlayedLengthSet( trackID ) ) {
+            return this.setTrackPlayedLength( trackID );
+          }
+        } )
+    },
+    
+    doesTrackMatchingShortCodeExists: async function ( videoID ) {
       const theQuery = "SELECT COUNT(id) as count FROM videoData WHERE id = ?";
-      const values = [ videoData_id ];
+      const values = [ videoID ];
 
       try {
         const result = await this.runQuery( theQuery, values );
         const count = result[ 0 ][ 'count' ];
         return count !== 0;
+      } catch ( error ) {
+        console.error( "Error:", error );
+        throw error;
+      }
+    },
+
+    getVideoDataID: async function ( videoID, youTubeID, appleID, spotifyID ) {
+      const theQuery = "SELECT id FROM videoData WHERE id = ? OR youTubeID = ? OR appleID = ? OR spotifyID = ?" +
+        " ORDER BY youTubeID DESC, appleID DESC, spotifyID DESC LIMIT 1";
+      const values = [ videoID, youTubeID, appleID, spotifyID ];
+
+      try {
+        const result = await this.runQuery( theQuery, values );
+        return result[ 0 ][ 'id' ];
       } catch ( error ) {
         console.error( "Error:", error );
         throw error;

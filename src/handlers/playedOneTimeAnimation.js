@@ -9,7 +9,7 @@ export default async ( payload, userFunctions, songFunctions, databaseFunctions 
 
     // const username = await userFunctions.getUsername( userID )
     // if ( username === undefined) {
-    //   console.log(`playedOneTimeAnnimation jumped undefined user: ${JSON.stringify(payload, null, 2)}`)
+    //   console.log(`playedOneTimeAnimation jumped undefined user: ${JSON.stringify(payload, null, 2)}`)
     // } else {
     //   const message = `${ username } jumped`
     //   return await postMessage( {

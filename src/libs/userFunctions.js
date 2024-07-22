@@ -2422,6 +2422,11 @@ const userFunctions = () => {
     },
 
     processRoboCoins: async function ( userID, numCoins, changeReason, changeID, operation, databaseFunctions ) {
+      console.log(`processRoboCoins userID:${userID}`)
+      console.log(`processRoboCoins numCoins:${numCoins}`)
+      console.log(`processRoboCoins changeReason:${changeReason}`)
+      console.log(`processRoboCoins changeID:${changeID}`)
+      console.log(`processRoboCoins operation:${operation}`)
       try {
         const before = await this.getRoboCoins( userID );
         const updatedCoins = await operation( before, numCoins );

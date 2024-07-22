@@ -2058,15 +2058,21 @@ const userFunctions = () => {
     },
 
     rebuildUserList: async function ( data, databaseFunctions ) {
+      console.log(`rebuildUserList here`)
       let userID
 
+      console.log(`rebuildUserList data.allUsers.length:${data.allUsers.length}`)
       for ( let i = 0; i < data.allUsers.length; i++ ) {
         if ( typeof data.allUsers[ i ] !== 'undefined' ) {
           userID = data.allUsers[ i ].uuid
-          
+          console.log(`rebuildUserList userID:${userID}`)
+
           const userProfile = await this.getUserProfileFromAPI( userID )
+          console.log(`rebuildUserList userProfile:${JSON.stringify(userProfile, null, 2)}`)
+
           const userFromDatabase = await databaseFunctions.loadUserFromDatabase( userID )
-          
+          console.log(`rebuildUserList userFromDatabase:${JSON.stringify(userFromDatabase, null, 2)}`)
+
           if ( userFromDatabase !== undefined ) {
             theUsersList.push( userFromDatabase );
           }

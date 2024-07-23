@@ -309,6 +309,7 @@ const userFunctions = () => {
           return theUsersList[ userLoop ].id;
         }
       }
+      
     },
 
     enableEscortMe: async function ( data, chatFunctions, databaseFunctions ) {
@@ -2501,7 +2502,7 @@ const userFunctions = () => {
 
     readMyRoboCoin: async function ( data, chatFunctions ) {
       try {
-        const userID = this.whoSentTheCommand( data );
+        const userID = await this.whoSentTheCommand( data );
         const theCoins = await this.getRoboCoins( userID );
         await chatFunctions.botSpeak( '@' + await this.getUsername( userID ) + " you currently have " + parseFloat( theCoins ).toFixed( 2 ) + " RoboCoins" );
       } catch ( error ) {

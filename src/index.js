@@ -365,8 +365,9 @@ app.post( '/login', async ( req, res ) => {
 } );
 
 async function authentication( username, password ) {
+  
   try {
-    const hashedPassword = await databaseFunctionsInstance.retrieveHashedPassword( username );
+    const hashedPassword = await databaseFunctionsInstance.retrieveHashedPassword( encodeURIComponent(username) );
     if ( !hashedPassword ) {
       return false; // User not found
     }

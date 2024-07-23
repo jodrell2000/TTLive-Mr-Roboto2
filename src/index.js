@@ -315,12 +315,6 @@ app.post( '/signup', async ( req, res, next ) => {
     if ( !user ) {
       return res.status( 400 ).send( 'User does not exist' );
     }
-
-    console.log(`signup userID:${userID}`)
-    console.log(`signup email:${email}`)
-    console.log(`signup username:${username}`)
-    console.log(`signup password:${password}`)
-    console.log(`signup confirmPassword:${confirmPassword}`)
     const verify = await userFunctionsInstance.verifyUsersEmail( userID, email, databaseFunctionsInstance );
     if ( !verify ) {
       return res.status( 400 ).send( "User's email does not match" );
@@ -359,7 +353,6 @@ app.get( '/login', ( req, res ) => {
 
 app.post( '/login', async ( req, res ) => {
   const { username, password } = req.body;
-  console.log(`login username:${username} password:${password}`)
   if ( await authentication( username, password ) ) {
     req.session.user = username;
     const redirectTo = req.session.originalUrl || '/listunverified';
@@ -374,8 +367,6 @@ async function authentication( username, password ) {
   
   try {
     const hashedPassword = await databaseFunctionsInstance.retrieveHashedPassword( encodeURIComponent(username) );
-    console.log(`authentication hashedPassword:${hashedPassword}`)
-    console.log(`authentication password:${password}`)
     if ( !hashedPassword ) {
       return false; // User not found
     }

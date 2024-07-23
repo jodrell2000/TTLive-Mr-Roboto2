@@ -101,7 +101,7 @@ html(lang="en")
                 if djStats
                     ol
                         each value, key in djStats
-                            li #{value}
+                            li #{decodeURIComponent(value)}
 
     table#songqueue
         thead

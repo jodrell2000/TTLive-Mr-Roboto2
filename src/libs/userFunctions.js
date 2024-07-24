@@ -158,6 +158,42 @@ const userFunctions = () => {
     },
 
     // ========================================================
+    // API Functions
+    // ========================================================
+
+    apiGet: async function ( url ) {
+      const headers = {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${ process.env.TTL_USER_TOKEN }`
+      };
+
+      try {
+        return await axios.get( url, { headers } );
+      } catch ( error ) {
+        console.error( `Error calling get api...error:${error}\nurl:${url}` );
+        throw error;
+      }
+    },
+
+    apiPost: async function ( url, payload ) {
+      const headers = {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${ process.env.TTL_USER_TOKEN }`
+      };
+
+      try {
+        return await axios.post(url, payload, { headers })
+      } catch ( error ) {
+        console.error( `Error calling post api...error:${error}\nurl:${url}\npayload:${payload}` );
+        throw error;
+      }
+    },
+
+    
+    // ========================================================
+
+
+    // ========================================================
     // User Storage Functions
     // ========================================================
 
@@ -199,13 +235,8 @@ const userFunctions = () => {
       console.log(`getUserProfileFromAPI uuid:${uuid}`)
       if ( uuid !== undefined ) {
         const url = `https://gateway.prod.tt.fm/api/user-service/users/profiles?users=${ uuid }`;
-        const headers = {
-          'accept': 'application/json',
-          'Authorization': `Bearer ${ process.env.TTL_USER_TOKEN }`
-        };
-
         try {
-          const response = await axios.get( url, { headers } );
+          const response = await this.apiGet( url )
           return response.data[ 0 ]?.userProfile;
         } catch ( error ) {
           console.error( 'Error fetching user profile:', error );
@@ -1938,16 +1969,22 @@ const userFunctions = () => {
       return [ bootUser, bootMessage ];
     },
 
-    bootThisUser: function ( userID, bootMessage ) {
+    bootThisUser: async function ( userID, bootMessage ) {
+
+      const bootPayload = `{ "userUuid": "${userID}" }`
+      const url = "https://api.prod.tt.fm/users/kick"
       console.group( "! bootThisUser ===============================" );
       console.log( '========================================' );
-      if ( bootMessage == null ) {
-        console.log( "Booting userID:" + userID );
-        bot.boot( userID );
-      } else {
-        console.log( "Booting userID:" + userID + " with message:" + bootMessage );
-        bot.bootUser( userID, bootMessage );
-      }
+      console.log( "Booting userID:" + userID );
+
+      await this.apiPost( url, bootPayload )
+
+      // need to figure out PMs to do this bit
+      // if ( bootMessage == null ) {
+      // } else {
+      //   console.log( "Booting userID:" + userID + " with message:" + bootMessage );
+      //   bot.bootUser( userID, bootMessage );
+      // }
       console.groupEnd();
     },
 
@@ -2247,15 +2284,17 @@ const userFunctions = () => {
     // Special Functions
     // ========================================================
 
-    bbUserID: function () {
-      return "604154083f4bfc001c3a42ed";
+    bbUserID: async function () {
+      return "da447bd2-5dbb-45f7-a591-c3756a8c4a84";
     },
 
     bbBoot: async function ( data, chatFunctions, databaseFunctions ) {
-      const bootingUserID = this.whoSentTheCommand( data );
+      const bootingUserID = await this.whoSentTheCommand( data );
+      const bbID = await this.bbUserID()
+      const bbUsername = await this.getUsername( bbID )
 
-      if ( bootingUserID === this.bbUserID() ) {
-        await chatFunctions.botSpeak( "You can't boot yourself @Bukkake, you ain't that flexible!" );
+      if ( bootingUserID === bbID ) {
+        await chatFunctions.botSpeak( `You can't boot yourself @${bbUsername}, you ain't that flexible!` );
       } else if ( bootingUserID === authModule.USERID ) {
         // you can't use the bot to speak the boot command
         await chatFunctions.botSpeak( "Yeah, nope..." );
@@ -2263,27 +2302,22 @@ const userFunctions = () => {
         if ( this.isBBHere() ) {
           if ( this.canBBBoot( bootingUserID ) ) {
             if ( this.canBBBeBooted() ) {
-              const bootMessage = "Sorry @Bukkake, you got booted by @" + await this.getUsername( bootingUserID ) + ". They win 5 RoboCoins!!!";
+              const bootMessage = "Sorry @${bbUsername}, you got booted by @" + await this.getUsername( bootingUserID ) + ". They win 5 RoboCoins!!!";
               await this.bbBootSomeone( data, this.bbUserID(), bootingUserID, bootMessage, chatFunctions, databaseFunctions );
             } else {
-              const bootMessage = "Sorry " + await this.getUsername( bootingUserID ) + ", you lose. BB was booted" +
-                " within" +
-                " the last 24Hrs. @Bukkake wins 1 RoboCoin!";
+              const bootMessage = "Sorry " + await this.getUsername( bootingUserID ) + ", you lose. @${bbUsername} was booted" +
+                " within the last 24Hrs. @${bbUsername} wins 1 RoboCoin!";
               await this.bbBootSomeone( data, bootingUserID, bootingUserID, bootMessage, chatFunctions, databaseFunctions );
             }
           } else {
             const msSinceLastBoot = Date.now() - await this.getBBBootedTimestamp( bootingUserID );
-            const formatttedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
+            const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
             await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
-              " BBBoot" +
-              " again" +
-              " yet. You last played " + formatttedLastBBBooted + " ago" );
+              " BBBoot  again  yet. You last played " + formattedLastBBBooted + " ago" );
           }
         } else {
           await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", but I can't boot BB" +
-            " if" +
-            " they're" +
-            " not here!" );
+            " if they're not here!" );
         }
       }
 

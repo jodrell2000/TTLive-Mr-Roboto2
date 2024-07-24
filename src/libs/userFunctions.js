@@ -1946,7 +1946,7 @@ const userFunctions = () => {
         bootUser = true;
       }
 
-      //checks to see if user is on the blacklist, if they are they are booted from the room.
+      //checks to see if user is on the blacklist, if they are, they are booted from the room.
       for ( let i = 0; i < roomDefaults.blackList.length; i++ ) {
         if ( userID === roomDefaults.blackList[ i ] ) {
           bootUser = true;
@@ -1972,7 +1972,7 @@ const userFunctions = () => {
     bootThisUser: async function ( userID, bootMessage ) {
 
       const bootPayload = `{ "userUuid": "${userID}" }`
-      const url = "http://gateway.prod.tt.fm/api/user-service/kick"
+      const url = "http://gateway.prod.tt.fm/api/user-service/kick/"
       console.group( "! bootThisUser ===============================" );
       console.log( '========================================' );
       console.log( "Booting userID:" + userID );

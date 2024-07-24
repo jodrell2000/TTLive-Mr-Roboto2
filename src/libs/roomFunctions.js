@@ -464,6 +464,7 @@ const roomFunctions = () => {
     roomName: async function () {
       const room = process.env.ROOM_UUID
       const roomData = await this.getRoomData( room )
+      console.log(JSON.stringify(roomData))
       return roomData.name
     },
     

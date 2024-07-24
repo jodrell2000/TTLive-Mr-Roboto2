@@ -2311,7 +2311,9 @@ const userFunctions = () => {
               await this.bbBootSomeone( data, bootingUserID, bootingUserID, bootMessage, chatFunctions, databaseFunctions );
             }
           } else {
-            const msSinceLastBoot = Date.now() - await this.getBBBootedTimestamp( bootingUserID );
+            const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
+            console.log(`bbbootedTimestamp:${bbbootedTimestamp}`)
+            const msSinceLastBoot = Date.now() - bbbootedTimestamp;
             console.log(`msSinceLastBoot:${msSinceLastBoot}`)
             const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
             console.log(`formattedLastBBBooted:${formattedLastBBBooted}`)

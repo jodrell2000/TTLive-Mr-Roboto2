@@ -2346,13 +2346,19 @@ const userFunctions = () => {
       return this.withinBBBootTime( await this.bbUserID(), 24 );
     },
 
-    canBBBoot: function ( userID ) {
+    canBBBoot: async function ( userID ) {
       const hours = 24 + ( Math.floor( Math.random() * 12 ) );
-      return this.withinBBBootTime( userID, hours );
+      return await this.withinBBBootTime( userID, hours );
     },
 
-    withinBBBootTime: function ( userID, hours ) {
-      return Date.now() - this.getBBBootedTimestamp( userID ) >= 3600000 * hours;
+    withinBBBootTime: async function ( userID, hours ) {
+      let bbbootedTimestamp 
+      bbbootedTimestamp = await this.getBBBootedTimestamp( userID )
+      if ( bbbootedTimestamp === 0 ) {
+        return true
+      } else {
+        return Date.now() - bbbootedTimestamp >= 3600000 * hours;
+      }
     },
 
     bbBootSomeone: async function ( data, bootedUserID, bootingUserID, bootMessage, chatFunctions, databaseFunctions ) {

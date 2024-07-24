@@ -1969,9 +1969,8 @@ const userFunctions = () => {
       return [ bootUser, bootMessage ];
     },
 
-    bootThisUser: async function ( userID, bootMessage ) {
-
-      const bootPayload = `{ "userUuid": "${userID}" }`
+    bootThisUser: async function ( userID, roomSlug, bootMessage ) {
+      const bootPayload = `{ "userUuid": "${userID}", "slug": "${roomSlug}" }`
       const url = "https://gateway.prod.tt.fm/api/room-service/roomUserRoles/kick-user-from-room"
       console.group( "! bootThisUser ===============================" );
       console.log( '========================================' );
@@ -2288,7 +2287,7 @@ const userFunctions = () => {
       return "92394d1a-76ee-47a6-b761-d6b78148f34a";
     },
 
-    bbBoot: async function ( data, chatFunctions, databaseFunctions ) {
+    bbBoot: async function ( data, chatFunctions, databaseFunctions, roomFunctions ) {
       console.group('bbBoot')
       const bootingUserID = await this.whoSentTheCommand( data );
       console.log(`bootingUserID:${bootingUserID}`)
@@ -2296,6 +2295,7 @@ const userFunctions = () => {
       console.log(`bbID:${bbID}`)
       const bbUsername = await this.getUsername( bbID )
       console.log(`bbUsername:${bbUsername}`)
+      const roomSlug = await roomFunctions.roomName()
 
       if ( bootingUserID === bbID ) {
         await chatFunctions.botSpeak( `You can't boot yourself @${bbUsername}, you ain't that flexible!` );
@@ -2307,11 +2307,11 @@ const userFunctions = () => {
           if ( await this.canBBBoot( bootingUserID ) ) {
             if ( await this.canBBBeBooted() ) {
               const bootMessage = "Sorry @${bbUsername}, you got booted by @" + await this.getUsername( bootingUserID ) + ". They win 5 RoboCoins!!!";
-              await this.bbBootSomeone( data, bbID, bootingUserID, bootMessage, chatFunctions, databaseFunctions );
+              await this.bbBootSomeone( data, bbID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
             } else {
               const bootMessage = "Sorry " + await this.getUsername( bootingUserID ) + ", you lose. @${bbUsername} was booted" +
                 " within the last 24Hrs. @${bbUsername} wins 1 RoboCoin!";
-              await this.bbBootSomeone( data, bootingUserID, bootingUserID, bootMessage, chatFunctions, databaseFunctions );
+              await this.bbBootSomeone( data, bootingUserID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
             }
           } else {
             const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
@@ -2364,7 +2364,7 @@ const userFunctions = () => {
       }
     },
 
-    bbBootSomeone: async function ( data, bootedUserID, bootingUserID, bootMessage, chatFunctions, databaseFunctions ) {
+    bbBootSomeone: async function ( data, bootedUserID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions ) {
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
 
       const performInOrder = async () => {
@@ -2380,7 +2380,7 @@ const userFunctions = () => {
         await chatFunctions.botSpeak( "Goodbye @" + await this.getUsername( bootedUserID ) );
         await sleep( 5000 )
 
-        await this.bootThisUser( bootedUserID, bootMessage )
+        await this.bootThisUser( bootedUserID, roomSlug, bootMessage )
         //chatFunctions.botSpeak( bootMessage, data );
         await sleep( 100 )
 

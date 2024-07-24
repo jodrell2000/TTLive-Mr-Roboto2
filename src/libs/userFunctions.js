@@ -1972,7 +1972,7 @@ const userFunctions = () => {
     bootThisUser: async function ( userID, bootMessage ) {
 
       const bootPayload = `{ "userUuid": "${userID}" }`
-      const url = "https://gateway.prod.tt.fm/api/user-service/users/kick"
+      const url = "https://gateway.prod.tt.fm/roomUserRoles/kick-user-from-room"
       console.group( "! bootThisUser ===============================" );
       console.log( '========================================' );
       console.log( "Booting userID:" + userID );

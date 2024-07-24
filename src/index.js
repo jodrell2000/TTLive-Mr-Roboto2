@@ -252,39 +252,41 @@ app.get( '/summary', async ( req, res ) => {
 // Bot Playlist Editor
 // ########################################################################
 
-app.get( '/', function ( req, res ) {
-  bot.playlistAll( ( playlistData ) => {
-    let html = pug.renderFile( './templates/index.pug', { playlistData: playlistData.list } );
-    res.send( html );
-  } );
-} );
+// all this needs a complete rewrite for the new site
 
-app.post( '/songstatus', async function ( req, res ) {
-  let videoStatus = await videoFunctionsInstance.checkVideoStatus( req.body.videoIDs )
-  res.send( videoStatus );
-} );
-
-app.post( '/movesong', ( req, res ) => {
-  bot.playlistReorder( Number.parseInt( req.body.indexFrom ), Number.parseInt( req.body.indexTo ) );
-  res.json( `refresh` );
-} );
-
-app.get( '/findsong', ( req, res ) => {
-  bot.searchSong( req.query.term, ( data ) => {
-    let html = pug.renderFile( './templates/search.pug', { playlistData: data.docs } );
-    res.send( html );
-  } );
-} );
-
-app.get( '/addsong', ( req, res ) => {
-  bot.playlistAdd( req.query.songid );
-  res.json( `refresh` );
-} );
-
-app.get( '/deletesong', ( req, res ) => {
-  bot.playlistRemove( Number.parseInt( req.query.songindex ) );
-  res.json( `refresh` );
-} );
+// app.get( '/', function ( req, res ) {
+//   bot.playlistAll( ( playlistData ) => {
+//     let html = pug.renderFile( './templates/index.pug', { playlistData: playlistData.list } );
+//     res.send( html );
+//   } );
+// } );
+//
+// app.post( '/songstatus', async function ( req, res ) {
+//   let videoStatus = await videoFunctionsInstance.checkVideoStatus( req.body.videoIDs )
+//   res.send( videoStatus );
+// } );
+//
+// app.post( '/movesong', ( req, res ) => {
+//   bot.playlistReorder( Number.parseInt( req.body.indexFrom ), Number.parseInt( req.body.indexTo ) );
+//   res.json( `refresh` );
+// } );
+//
+// app.get( '/findsong', ( req, res ) => {
+//   bot.searchSong( req.query.term, ( data ) => {
+//     let html = pug.renderFile( './templates/search.pug', { playlistData: data.docs } );
+//     res.send( html );
+//   } );
+// } );
+//
+// app.get( '/addsong', ( req, res ) => {
+//   bot.playlistAdd( req.query.songid );
+//   res.json( `refresh` );
+// } );
+//
+// app.get( '/deletesong', ( req, res ) => {
+//   bot.playlistRemove( Number.parseInt( req.query.songindex ) );
+//   res.json( `refresh` );
+// } );
 
 // ########################################################################
 // General functions

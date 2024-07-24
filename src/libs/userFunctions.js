@@ -2289,6 +2289,7 @@ const userFunctions = () => {
     },
 
     bbBoot: async function ( data, chatFunctions, databaseFunctions ) {
+      console.group('bbBoot')
       const bootingUserID = await this.whoSentTheCommand( data );
       const bbID = await this.bbUserID()
       const bbUsername = await this.getUsername( bbID )
@@ -2311,7 +2312,9 @@ const userFunctions = () => {
             }
           } else {
             const msSinceLastBoot = Date.now() - await this.getBBBootedTimestamp( bootingUserID );
+            console.log(`msSinceLastBoot:${msSinceLastBoot}`)
             const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
+            console.log(`formattedLastBBBooted:${formattedLastBBBooted}`)
             await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
               " BBBoot  again  yet. You last played " + formattedLastBBBooted + " ago" );
           }
@@ -2320,7 +2323,7 @@ const userFunctions = () => {
             " if they're not here!" );
         }
       }
-
+    console.groupEnd()
     },
 
     getBBBootedTimestamp: async function ( userID ) {

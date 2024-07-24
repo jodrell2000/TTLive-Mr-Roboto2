@@ -2291,8 +2291,11 @@ const userFunctions = () => {
     bbBoot: async function ( data, chatFunctions, databaseFunctions ) {
       console.group('bbBoot')
       const bootingUserID = await this.whoSentTheCommand( data );
+      console.log(`bootingUserID:${bootingUserID}`)
       const bbID = await this.bbUserID()
+      console.log(`bbID:${bbID}`)
       const bbUsername = await this.getUsername( bbID )
+      console.log(`bbUsername:${bbUsername}`)
 
       if ( bootingUserID === bbID ) {
         await chatFunctions.botSpeak( `You can't boot yourself @${bbUsername}, you ain't that flexible!` );
@@ -2301,10 +2304,10 @@ const userFunctions = () => {
         await chatFunctions.botSpeak( "Yeah, nope..." );
       } else {
         if ( await this.isBBHere() ) {
-          if ( this.canBBBoot( bootingUserID ) ) {
+          if ( await this.canBBBoot( bootingUserID ) ) {
             if ( await this.canBBBeBooted() ) {
               const bootMessage = "Sorry @${bbUsername}, you got booted by @" + await this.getUsername( bootingUserID ) + ". They win 5 RoboCoins!!!";
-              await this.bbBootSomeone( data, this.bbUserID(), bootingUserID, bootMessage, chatFunctions, databaseFunctions );
+              await this.bbBootSomeone( data, bbID, bootingUserID, bootMessage, chatFunctions, databaseFunctions );
             } else {
               const bootMessage = "Sorry " + await this.getUsername( bootingUserID ) + ", you lose. @${bbUsername} was booted" +
                 " within the last 24Hrs. @${bbUsername} wins 1 RoboCoin!";

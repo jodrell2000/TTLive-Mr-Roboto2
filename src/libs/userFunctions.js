@@ -2299,9 +2299,9 @@ const userFunctions = () => {
         // you can't use the bot to speak the boot command
         await chatFunctions.botSpeak( "Yeah, nope..." );
       } else {
-        if ( this.isBBHere() ) {
+        if ( await this.isBBHere() ) {
           if ( this.canBBBoot( bootingUserID ) ) {
-            if ( this.canBBBeBooted() ) {
+            if ( await this.canBBBeBooted() ) {
               const bootMessage = "Sorry @${bbUsername}, you got booted by @" + await this.getUsername( bootingUserID ) + ". They win 5 RoboCoins!!!";
               await this.bbBootSomeone( data, this.bbUserID(), bootingUserID, bootMessage, chatFunctions, databaseFunctions );
             } else {
@@ -2333,12 +2333,12 @@ const userFunctions = () => {
       await this.storeUserData( userID, "BBBootTimestamp", Date.now(), databaseFunctions );
     },
 
-    isBBHere: function () {
-      return this.isUserHere( this.bbUserID() );
+    isBBHere: async function () {
+      return this.isUserHere( await this.bbUserID() );
     },
 
-    canBBBeBooted: function () {
-      return this.withinBBBootTime( this.bbUserID(), 24 );
+    canBBBeBooted: async function () {
+      return this.withinBBBootTime( await this.bbUserID(), 24 );
     },
 
     canBBBoot: function ( userID ) {
@@ -2366,16 +2366,16 @@ const userFunctions = () => {
         await chatFunctions.botSpeak( "Goodbye @" + await this.getUsername( bootedUserID ) );
         await sleep( 5000 )
 
-        this.bootThisUser( bootedUserID, bootMessage )
+        await this.bootThisUser( bootedUserID, bootMessage )
         //chatFunctions.botSpeak( bootMessage, data );
         await sleep( 100 )
 
-        this.updateBBBootedTimestamp( bootedUserID, databaseFunctions );
+        await this.updateBBBootedTimestamp( bootedUserID, databaseFunctions );
         await sleep( 100 )
       }
       await performInOrder();
 
-      if ( bootedUserID === this.bbUserID() ) {
+      if ( bootedUserID === await this.bbUserID() ) {
         await this.updateRoboCoins( bootingUserID, await this.getRoboCoins( bootingUserID ) + 5, databaseFunctions )
       } else {
         await this.updateRoboCoins( this.bbUserID(), await this.getRoboCoins( this.bbUserID() ) + 1, databaseFunctions )

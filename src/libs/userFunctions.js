@@ -2295,7 +2295,7 @@ const userFunctions = () => {
       console.log(`bbID:${bbID}`)
       const bbUsername = await this.getUsername( bbID )
       console.log(`bbUsername:${bbUsername}`)
-      const roomSlug = await roomFunctions.roomName()
+      const roomSlug = await roomFunctions.roomSlug()
 
       if ( bootingUserID === bbID ) {
         await chatFunctions.botSpeak( `You can't boot yourself @${bbUsername}, you ain't that flexible!` );

@@ -464,10 +464,15 @@ const roomFunctions = () => {
     roomName: async function () {
       const room = process.env.ROOM_UUID
       const roomData = await this.getRoomData( room )
-      console.log(JSON.stringify(roomData))
       return roomData.name
     },
-    
+
+    roomSlug: async function () {
+      const room = process.env.ROOM_UUID
+      const roomData = await this.getRoomData( room )
+      return roomData.slug
+    },
+
     async clearSongLimitTimer( userFunctions, roomFunctions, chatFunctions ) {
       //this is for the song length limit
       if ( roomFunctions.songLimitTimer() !== null ) {

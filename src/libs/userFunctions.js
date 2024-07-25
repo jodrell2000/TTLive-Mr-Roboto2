@@ -1979,7 +1979,14 @@ const userFunctions = () => {
       try {
         await this.apiPost(url, bootPayload);
       } catch (error) {
-        console.error('API Post Error:', JSON.stringify(error));
+        if (error.response && error.response.data) {
+          console.error('API Post Error:');
+          console.error('Status Code:', error.response.data.statusCode);
+          console.error('Message:', error.response.data.message);
+          console.error('Error:', error.response.data.error);
+        } else {
+          console.error('Error:', error.message || error);
+        }
         throw error;
       }
       

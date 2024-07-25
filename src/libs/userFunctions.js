@@ -2321,11 +2321,11 @@ const userFunctions = () => {
         if ( await this.isBBHere() ) {
           if ( await this.canBBBoot( bootingUserID ) ) {
             if ( await this.canBBBeBooted() ) {
-              const bootMessage = "Sorry @${bbUsername}, you got booted by @" + await this.getUsername( bootingUserID ) + ". They win 5 RoboCoins!!!";
+              const bootMessage = `Sorry @${bbUsername}, you got booted by @${await this.getUsername( bootingUserID )}. They win 5 RoboCoins!!!`;
               await this.bbBootSomeone( data, bbID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
             } else {
-              const bootMessage = "Sorry " + await this.getUsername( bootingUserID ) + ", you lose. @${bbUsername} was booted" +
-                " within the last 24Hrs. @${bbUsername} wins 1 RoboCoin!";
+              const bootMessage = `Sorry ${await this.getUsername( bootingUserID )}, you lose. @${bbUsername} was" +
+              " booted within the last 24Hrs. @${bbUsername} wins 1 RoboCoin!`;
               await this.bbBootSomeone( data, bootingUserID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
             }
           } else {

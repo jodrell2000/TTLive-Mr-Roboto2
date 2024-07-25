@@ -184,7 +184,7 @@ const userFunctions = () => {
       try {
         return await axios.post(url, payload, { headers })
       } catch ( error ) {
-        console.error( `Error calling post api...error:\n${JSON.stringify(error)}\nurl:${url}\npayload:${payload}` );
+        console.error( `Error calling post api...error:\n${JSON.stringify(error,null,2)}\nurl:${url}\npayload:${JSON.stringify(payload,null,2)}` );
         throw error;
       }
     },

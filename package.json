@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon -r dotenv/config src/index.js 2> error.log",
+    "dev": "NODE_ENV=development nodemon -r dotenv/config src/index.js 2> /home/jodrell/logs/apps/mr_roboto/error.log",
     "lint": "standard",
     "lint:fix": "standard --fix",
     "start": "node src/index.js",

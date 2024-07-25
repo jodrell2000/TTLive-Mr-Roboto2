@@ -310,12 +310,14 @@ const databaseFunctions = () => {
         let videoID 
         videoID = await this.getVideoDataID( songShortId, youTubeID, appleID, spotifyID );
 
-        if ( !videoID ) {
+        if ( !videoID && songShortId ) {
           let theQuery = "INSERT INTO videoData (id, artistName, trackName, youTubeID, appleID, spotifyID) VALUES" +
             " (?, ?, ?, ?, ?, ?)";
           const values = [ songShortId, artist, song, youTubeID, appleID, spotifyID ];
           await this.runQuery( theQuery, values )
           videoID = await this.getVideoDataID( songShortId, youTubeID, appleID, spotifyID );
+        } else {
+          console.log(`No songShortID available\n${JSON.stringify(songdata, null, 2)}`)
         }
         await this.saveTrackPlayed(djID, videoID, songData.duration)
       }

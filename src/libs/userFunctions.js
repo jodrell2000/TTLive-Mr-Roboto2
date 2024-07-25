@@ -2398,7 +2398,7 @@ const userFunctions = () => {
         if ( bootedUserID === await this.bbUserID() ) {
           await this.updateRoboCoins( bootingUserID, await this.getRoboCoins( bootingUserID ) + 5, databaseFunctions )
         } else {
-          await this.updateRoboCoins( await this.bbUserID(), await this.getRoboCoins( this.bbUserID() ) + 1, databaseFunctions )
+          await this.updateRoboCoins( await this.bbUserID(), await this.getRoboCoins( await this.bbUserID() ) + 1, databaseFunctions )
         }
 
         await this.bootThisUser( bootedUserID, roomSlug, bootMessage )

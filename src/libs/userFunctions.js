@@ -184,7 +184,7 @@ const userFunctions = () => {
       try {
         return await axios.post(url, payload, { headers })
       } catch ( error ) {
-        // console.error( `Error calling post api...error:\n${JSON.stringify(error)}\nurl:${url}\npayload:${payload}` );
+        console.error( `Error calling post api...error:\n${JSON.stringify(error)}\nurl:${url}\npayload:${payload}` );
         throw error;
       }
     },
@@ -2330,16 +2330,14 @@ const userFunctions = () => {
             }
           } else {
             const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
-            console.log(`bbbootedTimestamp:${bbbootedTimestamp}`)
             const msSinceLastBoot = Date.now() - bbbootedTimestamp;
-            console.log(`msSinceLastBoot:${msSinceLastBoot}`)
             const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
-            console.log(`formattedLastBBBooted:${formattedLastBBBooted}`)
             await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
-              " BBBoot  again  yet. You last played " + formattedLastBBBooted + " ago" );
+              " BBBoot again yet. You last played " + formattedLastBBBooted + " ago" );
           }
         } else {
-          await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", but I can't boot BB" +
+          await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", but you can't boot" +
+            " BB" +
             " if they're not here!" );
         }
       }
@@ -2395,20 +2393,19 @@ const userFunctions = () => {
         await chatFunctions.botSpeak( "Goodbye @" + await this.getUsername( bootedUserID ) );
         await sleep( 5000 )
 
-        await this.bootThisUser( bootedUserID, roomSlug, bootMessage )
-        //chatFunctions.botSpeak( bootMessage, data );
-        await sleep( 100 )
-
         await this.updateBBBootedTimestamp( bootedUserID, databaseFunctions );
-        await sleep( 100 )
+
+        if ( bootedUserID === await this.bbUserID() ) {
+          await this.updateRoboCoins( bootingUserID, await this.getRoboCoins( bootingUserID ) + 5, databaseFunctions )
+        } else {
+          await this.updateRoboCoins( this.bbUserID(), await this.getRoboCoins( this.bbUserID() ) + 1, databaseFunctions )
+        }
+
+        await this.bootThisUser( bootedUserID, roomSlug, bootMessage )
+        await chatFunctions.botSpeak( bootMessage, data );
       }
       await performInOrder();
 
-      if ( bootedUserID === await this.bbUserID() ) {
-        await this.updateRoboCoins( bootingUserID, await this.getRoboCoins( bootingUserID ) + 5, databaseFunctions )
-      } else {
-        await this.updateRoboCoins( this.bbUserID(), await this.getRoboCoins( this.bbUserID() ) + 1, databaseFunctions )
-      }
     },
 
     // ========================================================

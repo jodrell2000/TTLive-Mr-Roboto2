@@ -184,8 +184,8 @@ const userFunctions = () => {
       try {
         return await axios.post(url, payload, { headers })
       } catch ( error ) {
-        console.error( `Error calling post api...error:\n${JSON.stringify(error)}\nurl:${url}\npayload:${payload}` );
-        // throw error;
+        // console.error( `Error calling post api...error:\n${JSON.stringify(error)}\nurl:${url}\npayload:${payload}` );
+        throw error;
       }
     },
 
@@ -1976,8 +1976,13 @@ const userFunctions = () => {
       console.log( '========================================' );
       console.log( "Booting userID:" + userID );
 
-      await this.apiPost( url, bootPayload )
-
+      try {
+        await this.apiPost(url, bootPayload);
+      } catch (error) {
+        console.error('API Post Error:', JSON.stringify(error));
+        throw error;
+      }
+      
       // need to figure out PMs to do this bit
       // if ( bootMessage == null ) {
       // } else {

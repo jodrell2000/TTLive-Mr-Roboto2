@@ -317,7 +317,7 @@ const databaseFunctions = () => {
           await this.runQuery( theQuery, values )
           videoID = await this.getVideoDataID( songShortId, youTubeID, appleID, spotifyID );
         } else {
-          console.log(`No songShortID available\n${JSON.stringify(songdata, null, 2)}`)
+          console.log(`No songShortID available\n${JSON.stringify(songData, null, 2)}`)
         }
         await this.saveTrackPlayed(djID, videoID, songData.duration)
       }

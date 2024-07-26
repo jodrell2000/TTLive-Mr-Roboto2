@@ -2324,8 +2324,7 @@ const userFunctions = () => {
               const bootMessage = `Sorry @${bbUsername}, you got booted by @${await this.getUsername( bootingUserID )}. They win 5 RoboCoins!!!`;
               await this.bbBootSomeone( data, bbID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
             } else {
-              const bootMessage = `Sorry ${await this.getUsername( bootingUserID )}, you lose. @${bbUsername} was" +
-              " booted within the last 24Hrs. @${bbUsername} wins 1 RoboCoin!`;
+              const bootMessage = `Sorry ${await this.getUsername( bootingUserID )}, you lose. @${bbUsername} was booted within the last 24Hrs. @${bbUsername} wins 1 RoboCoin!`;
               await this.bbBootSomeone( data, bootingUserID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
             }
           } else {
@@ -2484,11 +2483,6 @@ const userFunctions = () => {
     },
 
     processRoboCoins: async function ( userID, numCoins, changeReason, changeID, operation, databaseFunctions ) {
-      console.log(`processRoboCoins userID:${userID}`)
-      console.log(`processRoboCoins numCoins:${numCoins}`)
-      console.log(`processRoboCoins changeReason:${changeReason}`)
-      console.log(`processRoboCoins changeID:${changeID}`)
-      console.log(`processRoboCoins operation:${operation}`)
       try {
         const before = await this.getRoboCoins( userID );
         const updatedCoins = await operation( before, numCoins );

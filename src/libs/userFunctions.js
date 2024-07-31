@@ -1898,7 +1898,7 @@ const userFunctions = () => {
               }
             }
           } else {
-            await this.userJoinsRoom( roomFunctions, databaseFunctions )
+            await this.userJoinsRoom( userProfile, roomFunctions, databaseFunctions, chatFunctions )
           }
         }
       }
@@ -2028,7 +2028,7 @@ const userFunctions = () => {
       return theUsersList.findIndex( ( { id } ) => id === userID )
     },
 
-    userJoinsRoom: async function ( userProfile, roomFunctions, databaseFunctions ) {
+    userJoinsRoom: async function ( userProfile, roomFunctions, databaseFunctions, chatFunctions ) {
       const userID = userProfile.uuid
       const username = userProfile.nickname
       console.log( `userJoinsRoom: ${ username } joined` )
@@ -2059,6 +2059,10 @@ const userFunctions = () => {
       await this.updateModeratorStatus( userID, roomFunctions )
 
       await this.addUserIsHere( userID, databaseFunctions );
+
+      if ( username && !( await databaseFunctions.hasUserHadInitialRoboCoinGift( userID ) ) ) {
+        await userFunctions.giveInitialRoboCoinGift( userID, databaseFunctions, chatFunctions, roomFunctions );
+      }
     },
     
     userLeavesRoom: async function( uuid, roomFunctions, databaseFunctions ) {
@@ -2538,7 +2542,7 @@ const userFunctions = () => {
       console.error( 'RoboCoin error:', JSON.stringify( error ) );
     },
 
-    giveInitialRoboCoinGift: async function ( data, userID, databaseFunctions, chatFunctions, roomFunctions ) {
+    giveInitialRoboCoinGift: async function ( userID, databaseFunctions, chatFunctions, roomFunctions ) {
       const numCoins = 100;
       const changeReason = "Welcome gift";
       const changeID = 1;

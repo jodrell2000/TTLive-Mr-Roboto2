@@ -8,7 +8,7 @@ export default async ( currentState, payload, userFunctions, roomFunctions, song
     const nickname = userProfile?.nickname;
     if (nickname) {
       try {
-        await userFunctions.userJoinsRoom(userProfile, roomFunctions, databaseFunctions);
+        await userFunctions.userJoinsRoom(userProfile, roomFunctions, databaseFunctions, chatFunctions);
         await chatFunctions.userGreeting(uuid, nickname, roomFunctions, userFunctions, databaseFunctions);
       } catch (error) {
         console.error('Error handling user join:', error);

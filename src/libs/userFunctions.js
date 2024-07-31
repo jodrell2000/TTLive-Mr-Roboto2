@@ -2548,7 +2548,7 @@ const userFunctions = () => {
       const changeID = 1;
       await this.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctions );
       setTimeout( async () => {
-        await chatFunctions.botSpeak( "@" + await this.getUsername( userID ) + " welcome to the " + await roomFunctions.roomName() + " room. Have a gift of 100 RoboCoins!" );
+        await chatFunctions.botSpeak( `Welcome to the ${await roomFunctions.roomName()} room @${await this.getUsername( userID )}. Have a gift of 100 RoboCoins!` );
       }, 3 * 1000 );
     },
 

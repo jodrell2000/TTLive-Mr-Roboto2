@@ -157,6 +157,16 @@ const userFunctions = () => {
       return isInRoom;
     },
 
+    hasDjsElement: function ( data ) {
+      try {
+        const parsedJson = JSON.parse(data);
+        return parsedJson.hasOwnProperty('djs');
+      } catch (error) {
+        console.error('Invalid JSON input:', error);
+        return false;
+      }
+    },
+
     // ========================================================
     // API Functions
     // ========================================================

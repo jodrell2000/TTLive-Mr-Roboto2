@@ -158,8 +158,6 @@ const userFunctions = () => {
     },
 
     hasDjsElement: async function ( data ) {
-      console.log(`hasDjsElement data: ${ JSON.stringify(data.djs, null, 2) }`)
-
       try {
         if (typeof data === 'object') {
           return data.hasOwnProperty('djs');

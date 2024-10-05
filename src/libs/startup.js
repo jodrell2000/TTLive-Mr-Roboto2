@@ -2,7 +2,7 @@ import { logger } from "../utils/logging.js";
 
 export default async ( roomUUID, state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions ) => {
   logger.debug(`+++++++++++++++++++++++++ startup.js +++++++++++++++++++++++++` )
-  console.log( `startup state: ${ JSON.stringify( state.djs, null, 2) }` )
+  console.log( `startup state: ${ JSON.stringify( state, null, 2) }` )
   botFunctions.setBotStartTime()
   try {
     await roomFunctions.storeRoomData( roomUUID )
@@ -19,8 +19,6 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
     await userFunctions.resetUsersList();
     await userFunctions.rebuildUserList( state, databaseFunctions );
 
-    // console.log(JSON.stringify(`full state ${JSON.stringify(state, null, 2)}`))
-    console.log(`djs from state: ${ JSON.stringify(state.djs, null, 2) }`)
     if ( await userFunctions.hasDjsElement( state ) ) {
       await userFunctions.resetDJs( state.djs )
       console.log( `djList:${ userFunctions.djList() }` )

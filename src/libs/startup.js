@@ -1,5 +1,4 @@
 import { logger } from "../utils/logging.js";
-import prettyjson from "pug";
 
 export default async ( roomUUID, state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions ) => {
   logger.debug(`+++++++++++++++++++++++++ startup.js +++++++++++++++++++++++++` )
@@ -21,7 +20,7 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
     await userFunctions.rebuildUserList( state, databaseFunctions );
 
     console.log(JSON.stringify(`full state ${JSON.stringify(state, null, 2)}`))
-    console.log(JSON.stringify( `djs from state: ${prettyjson.render(state.djs)}` ))
+    console.log(JSON.stringify( `djs from state: ${JSON.stringify(state.djs, null, 2)}` ))
     await userFunctions.resetDJs( state.djs )
     console.log(`djList:${userFunctions.djList()}`)
     

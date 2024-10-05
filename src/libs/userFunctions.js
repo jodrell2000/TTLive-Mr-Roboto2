@@ -161,10 +161,14 @@ const userFunctions = () => {
       console.log(`hasDjsElement data: ${ JSON.stringify(data.djs, null, 2) }`)
 
       try {
-        const parsedJson = JSON.parse( data );
-        return parsedJson.hasOwnProperty('djs');
+        if (typeof data === 'object') {
+          return data.hasOwnProperty('djs');
+        } else {
+          console.error('Input is not a valid object');
+          return false;
+        }
       } catch (error) {
-        console.error('Invalid JSON input:', error);
+        console.error('Error checking for djs element:', error);
         return false;
       }
     },

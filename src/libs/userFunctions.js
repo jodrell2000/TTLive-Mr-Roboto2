@@ -157,7 +157,7 @@ const userFunctions = () => {
       return isInRoom;
     },
 
-    hasDjsElement: function ( data ) {
+    hasDjsElement: async function ( data ) {
       try {
         const parsedJson = JSON.parse(data);
         return parsedJson.hasOwnProperty('djs');

@@ -10,7 +10,10 @@ export default async ( currentState, payload, userFunctions, roomFunctions, song
         delete await userFunctions.getUsersRefreshCurrentPlayCount[ theUserID ]
       }
 
-      await userFunctions.removeDJFromList( theUserID, databaseFunctions )
+      if ( await userFunctions.hasDjsElement( currentState ) ) {
+        await userFunctions.resetDJs( currentState.djs )
+        console.log( `djList:${ userFunctions.djList() }` )
+      }
 
       // this is for /warnme
       if ( userFunctions.warnme().length !== 0 ) {

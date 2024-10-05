@@ -19,7 +19,11 @@ export default async ( currentState, payload, userFunctions, roomFunctions, song
       userFunctions.setDJCurrentPlayCount( theUserID, userFunctions.getUsersRefreshCurrentPlayCount[ theUserID ], databaseFunctions );
 
       await userFunctions.updateUserJoinedStage( theUserID, databaseFunctions );
-      await userFunctions.addDJToList( theUserID )
+      
+      if ( await userFunctions.hasDjsElement( currentState ) ) {
+        await userFunctions.resetDJs( currentState.djs )
+        console.log( `djList:${ userFunctions.djList() }` )
+      }
 
       if ( userFunctions.isUserIDInQueue( theUserID ) ) {
         userFunctions.removeUserFromQueue( theUserID, botFunctions );

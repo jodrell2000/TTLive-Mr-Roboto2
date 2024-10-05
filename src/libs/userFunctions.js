@@ -158,8 +158,10 @@ const userFunctions = () => {
     },
 
     hasDjsElement: async function ( data ) {
+      console.log(`hasDjsElement data: ${ JSON.stringify(data, null, 2) }`)
+
       try {
-        const parsedJson = JSON.parse(data);
+        const parsedJson = JSON.parse( data );
         return parsedJson.hasOwnProperty('djs');
       } catch (error) {
         console.error('Invalid JSON input:', error);

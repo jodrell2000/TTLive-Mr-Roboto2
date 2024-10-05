@@ -158,7 +158,7 @@ const userFunctions = () => {
     },
 
     hasDjsElement: async function ( data ) {
-      console.log(`hasDjsElement data: ${ JSON.stringify(data, null, 2) }`)
+      console.log(`hasDjsElement data: ${ JSON.stringify(data.djs, null, 2) }`)
 
       try {
         const parsedJson = JSON.parse( data );

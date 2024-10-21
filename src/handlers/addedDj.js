@@ -12,26 +12,27 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
         await userFunctions.removeDJ( theUserID, 'User is not allowed to DJ so was removed', socket );
         await userFunctions.incrementSpamCounter( theUserID, databaseFunctions );
         await chatFunctions.botSpeak( theMessage );
-      }
+      } else {
 
-      // sets djs current song count to zero when they enter the stage. unless they used the refresh command, in
-      // which case its set to what it was before they left the room
-      userFunctions.setDJCurrentPlayCount( theUserID, userFunctions.getUsersRefreshCurrentPlayCount[ theUserID ], databaseFunctions );
+        // sets djs current song count to zero when they enter the stage. unless they used the refresh command, in
+        // which case its set to what it was before they left the room
+        userFunctions.setDJCurrentPlayCount( theUserID, userFunctions.getUsersRefreshCurrentPlayCount[ theUserID ], databaseFunctions );
 
-      await userFunctions.updateUserJoinedStage( theUserID, databaseFunctions );
-      
-      if ( await userFunctions.hasDjsElement( currentState ) ) {
-        await userFunctions.resetDJs( currentState.djs )
-        console.log( `djList:${ userFunctions.djList() }` )
-      }
+        await userFunctions.updateUserJoinedStage( theUserID, databaseFunctions );
 
-      if ( userFunctions.isUserIDInQueue( theUserID ) ) {
-        userFunctions.removeUserFromQueue( theUserID, botFunctions );
-        userFunctions.clearDJToNotify();
-      }
+        if ( await userFunctions.hasDjsElement( currentState ) ) {
+          await userFunctions.resetDJs( currentState.djs )
+          console.log( `djList:${ userFunctions.djList() }` )
+        }
 
-      if ( await userFunctions.isUserInRefreshList( theUserID ) ) {
-        await userFunctions.removeRefreshFromUser( theUserID, databaseFunctions );
+        if ( userFunctions.isUserIDInQueue( theUserID ) ) {
+          userFunctions.removeUserFromQueue( theUserID, botFunctions );
+          userFunctions.clearDJToNotify();
+        }
+
+        if ( await userFunctions.isUserInRefreshList( theUserID ) ) {
+          await userFunctions.removeRefreshFromUser( theUserID, databaseFunctions );
+        }
       }
 
       // check to see if conditions are met for bots autodjing feature

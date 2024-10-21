@@ -1412,22 +1412,18 @@ const userFunctions = () => {
 
       for ( let banLoop = 0; banLoop < roomFunctions.tempBanList().length; banLoop++ ) {
         if ( theUserID === roomFunctions.tempBanList()[ banLoop ] ) {
-          return [ false, '@' + await this.getUsername( theUserID ) + ', you are banned from djing. Please speak to a' +
-          ' Mod' +
-          ' to find out why' ];
+          return [ false, '@' + await this.getUsername( theUserID ) + ', you are banned from djing. Please speak to a  Mod to find out why' ];
         }
       }
 
       if ( this.isUserIDStageBanned( theUserID ) ) {
         return [ false, '@' + await this.getUsername( theUserID ) + ', you are banned from djing. Please speak to a' +
-        ' Mod' +
-        ' to find out why' ];
+        ' Mod to find out why' ];
       }
 
       if ( await this.getUserSpamCount( theUserID ) >= roomDefaults.spamLimit ) {
         return [ false, '@' + await this.getUsername( theUserID ) + ', you\'ve been SPAMming too much...please want a' +
-        ' few' +
-        ' minutes before trying again' ];
+        ' few minutes before trying again' ];
       }
 
       return [ true, '' ];

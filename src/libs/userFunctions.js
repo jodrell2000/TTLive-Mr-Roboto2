@@ -1410,10 +1410,8 @@ const userFunctions = () => {
       }
       
       const theBanList = await roomFunctions.tempBanList();
-      console.log(`banListLength: ${theBanList.length}`)
       for ( let banLoop = 0; banLoop < theBanList.length; banLoop++ ) {
-        console.log(`banLoop: ${theBanList[banLoop]}`);  // Access the pre-fetched list
-        if ( theUserID === theBanList[banLoop] ) {  // Compare with theUserID
+        if ( theUserID === theBanList[banLoop] ) { 
           return [ false, '@' + await this.getUsername(theUserID) + ', you are banned from DJing. Please speak to a Mod to find out why' ];
         }
       }

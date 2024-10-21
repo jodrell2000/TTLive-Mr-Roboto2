@@ -1410,8 +1410,8 @@ const userFunctions = () => {
         ' the refresh list' ];
       }
 
-      for ( let banLoop = 0; banLoop < roomFunctions.tempBanList().length; banLoop++ ) {
-        if ( theUserID === roomFunctions.tempBanList()[ banLoop ] ) {
+      for ( let banLoop = 0; banLoop < await roomFunctions.tempBanList().length; banLoop++ ) {
+        if ( theUserID === await roomFunctions.tempBanList()[ banLoop ] ) {
           return [ false, '@' + await this.getUsername( theUserID ) + ', you are banned from djing. Please speak to a  Mod to find out why' ];
         }
       }

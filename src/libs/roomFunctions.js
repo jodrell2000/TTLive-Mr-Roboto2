@@ -10,7 +10,7 @@ import { logger } from "../utils/logging.js";
 
 let djCount = null; //the number of dj's on stage, gets reset every song
 let bannedArtistsMatcher = ''; //holds the regular expression for banned artist / song matching
-let tempBanList = ['9d8de8b8-bb83-4e00-9054-651347080e5c','909420ad-fd13-412b-af73-ac1ff08c0562']; //holds the userid of everyone who is in the command based banned from stage list
+let tempBanList = ['f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc','909420ad-fd13-412b-af73-ac1ff08c0562']; //holds the userid of everyone who is in the command based banned from stage list
 let skipVoteUsers = []; //holds the userid's of everyone who has voted for the currently playing song to be skipped, is cleared every song
 let lastdj = null; //holds the userid of the currently playing dj
 let songLimitTimer = null; //holds the timer used to remove a dj off stage if they don't skip their song in time, and their song has exceeded the max allowed song time
@@ -38,7 +38,7 @@ const roomFunctions = () => {
     djCount: () => djCount, setDJCount: function ( theCount ) { djCount = theCount; },
 
     bannedArtistsMatcher: () => bannedArtistsMatcher,
-    tempBanList: () => tempBanList,
+    tempBanList: async () => tempBanList,
     skipVoteUsers: () => skipVoteUsers,
     songLimitTimer: () => songLimitTimer,
     queueTimer: () => queueTimer,

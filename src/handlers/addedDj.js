@@ -9,7 +9,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       [ OKToDJ, theMessage ] = await userFunctions.checkOKToDJ( theUserID, roomFunctions );
 
       if ( !OKToDJ ) {
-        const theUsername = userFunctions.getUsername( theUserID )
+        const theUsername = await userFunctions.getUsername( theUserID )
         const theMessage = `@${theUsername} is not allowed to DJ so was removed. Please speak to a Mod to find out why`;
         await userFunctions.removeDJ( theUserID, theMessage, socket );
         // await userFunctions.incrementSpamCounter( theUserID, databaseFunctions );

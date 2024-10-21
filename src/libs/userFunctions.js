@@ -1408,15 +1408,16 @@ const userFunctions = () => {
         ' in' +
         ' the refresh list' ];
       }
-
-      console.log(`banListLength: ${await roomFunctions.tempBanList().length}`)
-      for ( let banLoop = 0; banLoop < await roomFunctions.tempBanList().length; banLoop++ ) {
-        console.log( `banLoop: ${await roomFunctions.tempBanList()[ banLoop ]}`)
-        if ( theUserID === await roomFunctions.tempBanList()[ banLoop ] ) {
-          return [ false, '@' + await this.getUsername( theUserID ) + ', you are banned from djing. Please speak to a  Mod to find out why' ];
+      
+      const theBanList = await roomFunctions.tempBanList();
+      console.log(`banListLength: ${theBanList.length}`)
+      for ( let banLoop = 0; banLoop < theBanList.length; banLoop++ ) {
+        console.log(`banLoop: ${theBanList[banLoop]}`);  // Access the pre-fetched list
+        if ( theUserID === theBanList[banLoop] ) {  // Compare with theUserID
+          return [ false, '@' + await this.getUsername(theUserID) + ', you are banned from DJing. Please speak to a Mod to find out why' ];
         }
       }
-
+      
       if ( this.isUserIDStageBanned( theUserID ) ) {
         return [ false, '@' + await this.getUsername( theUserID ) + ', you are banned from djing. Please speak to a' +
         ' Mod to find out why' ];

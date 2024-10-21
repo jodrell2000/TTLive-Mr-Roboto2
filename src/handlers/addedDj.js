@@ -9,8 +9,9 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       [ OKToDJ, theMessage ] = await userFunctions.checkOKToDJ( theUserID, roomFunctions );
 
       if ( !OKToDJ ) {
-        await userFunctions.removeDJ( theUserID, 'User is not allowed to DJ so was removed', socket );
-        await userFunctions.incrementSpamCounter( theUserID, databaseFunctions );
+        theMessage = 'User is not allowed to DJ so was removed';
+        await userFunctions.removeDJ( theUserID, theMessage, socket );
+        // await userFunctions.incrementSpamCounter( theUserID, databaseFunctions );
         await chatFunctions.botSpeak( theMessage );
       } else {
 

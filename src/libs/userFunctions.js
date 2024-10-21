@@ -1409,12 +1409,12 @@ const userFunctions = () => {
         ' the refresh list' ];
       }
       
-      const theBanList = await roomFunctions.tempBanList();
-      for ( let banLoop = 0; banLoop < theBanList.length; banLoop++ ) {
-        if ( theUserID === theBanList[banLoop] ) { 
-          return [ false, '@' + await this.getUsername(theUserID) + ', you are banned from DJing. Please speak to a Mod to find out why' ];
-        }
-      }
+      // const theBanList = await roomFunctions.tempBanList();
+      // for ( let banLoop = 0; banLoop < theBanList.length; banLoop++ ) {
+      //   if ( theUserID === theBanList[banLoop] ) { 
+      //     return [ false, '@' + await this.getUsername(theUserID) + ', you are banned from DJing. Please speak to a Mod to find out why' ];
+      //   }
+      // }
       
       if ( this.isUserIDStageBanned( theUserID ) ) {
         return [ false, '@' + await this.getUsername( theUserID ) + ', you are banned from djing. Please speak to a' +

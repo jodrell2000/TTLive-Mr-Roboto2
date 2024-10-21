@@ -73,7 +73,7 @@ export class Bot {
     }
   }
 
-  configureListeners( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions ) {
+  configureListeners( socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions ) {
     const self = this
     logger.debug( 'Setting up listeners' )
 
@@ -96,7 +96,7 @@ export class Bot {
 
 
       if  ( ["userJoined", "userLeft", "addedDj", "removedDj"].includes(payload.name) ) {
-        await handlers[ payload.name ]( self.state, payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
+        await handlers[ payload.name ]( self.state, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
       } else  if ( payload.name === "votedOnSong" ) {
         // console.log("Do nothing, handled by serverMessage")
       } else {

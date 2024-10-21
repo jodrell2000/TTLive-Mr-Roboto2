@@ -1,4 +1,4 @@
-export default async ( currentState, payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
+export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
   let OKToDJ;
   let theMessage;
 
@@ -9,7 +9,7 @@ export default async ( currentState, payload, userFunctions, roomFunctions, song
       [ OKToDJ, theMessage ] = await userFunctions.checkOKToDJ( theUserID, roomFunctions );
 
       if ( !OKToDJ ) {
-        await userFunctions.removeDJ( theUserID, 'User is not allowed to DJ so was removed' );
+        await userFunctions.removeDJ( theUserID, 'User is not allowed to DJ so was removed', socket );
         await userFunctions.incrementSpamCounter( theUserID, databaseFunctions );
         await chatFunctions.botSpeak( theMessage );
       }

@@ -1409,6 +1409,7 @@ const userFunctions = () => {
         ' the refresh list' ];
       }
 
+      console.log(`banListLength: ${await roomFunctions.tempBanList().length}`)
       for ( let banLoop = 0; banLoop < await roomFunctions.tempBanList().length; banLoop++ ) {
         console.log( `banLoop: ${await roomFunctions.tempBanList()[ banLoop ]}`)
         if ( theUserID === await roomFunctions.tempBanList()[ banLoop ] ) {

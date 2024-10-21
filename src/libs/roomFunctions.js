@@ -38,7 +38,9 @@ const roomFunctions = () => {
     djCount: () => djCount, setDJCount: function ( theCount ) { djCount = theCount; },
 
     bannedArtistsMatcher: () => bannedArtistsMatcher,
-    tempBanList: async () => tempBanList,
+    tempBanList: async () => {
+      return tempBanList;
+    },
     skipVoteUsers: () => skipVoteUsers,
     songLimitTimer: () => songLimitTimer,
     queueTimer: () => queueTimer,

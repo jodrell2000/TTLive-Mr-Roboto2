@@ -2534,6 +2534,11 @@ const userFunctions = () => {
         await chatFunctions.botSpeak( '@' + await this.getUsername( sendingUserID ) + ' you must give a number of coins to send, e.g. giverc 10 username' );
         throw new Error( 'Invalid number of coins' );
       }
+      if ( numCoins <= 0 ) {
+        await chatFunctions.botSpeak( '@' + await this.getUsername( sendingUserID ) + ' the number of coins must be' +
+          ' greater  than 0' );
+        throw new Error( 'Invalid number of coins' );
+      }
       return true;
     },
 
@@ -2640,7 +2645,7 @@ const userFunctions = () => {
         await this.subtractRoboCoins( sendingUserID, numCoins, changeReason + " to " + await this.getUsername( receivingUserID ), changeID, databaseFunctions );
         await this.addRoboCoins( receivingUserID, numCoins, changeReason + " from " + await this.getUsername( sendingUserID ), changeID, databaseFunctions );
 
-        await chatFunctions.botSpeak( "@" + await this.getUsername( sendingUserID ) + " gave " + numCoins + " to @" + await this.getUsername( receivingUserID ) );
+        await chatFunctions.botSpeak( "@" + await this.getUsername( sendingUserID ) + " gave RC" + numCoins + " to @" + await this.getUsername( receivingUserID ) );
         return Promise.resolve(); // Resolve the promise after successful execution
       } catch ( error ) {
         await this.handleError( error, chatFunctions, data );

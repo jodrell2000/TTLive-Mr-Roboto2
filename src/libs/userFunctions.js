@@ -2534,9 +2534,9 @@ const userFunctions = () => {
         await chatFunctions.botSpeak( '@' + await this.getUsername( sendingUserID ) + ' you must give a number of coins to send, e.g. giverc 10 username' );
         throw new Error( 'Invalid number of coins' );
       }
-      if ( numCoins < 0.1 ) {
+      if ( numCoins < 0.01 ) {
         await chatFunctions.botSpeak( '@' + await this.getUsername( sendingUserID ) + ' the number of coins must be' +
-          ' at least 0.1' );
+          ' at least 0.01' );
         throw new Error( 'Invalid number of coins' );
       }
       return true;

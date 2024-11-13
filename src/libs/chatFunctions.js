@@ -291,8 +291,8 @@ const chatFunctions = ( ) => {
           theMessage = theMessage.replace( "@username", "@" + theUsername );
           theMessage = theMessage.replace( "@roomName", await roomFunctions.roomName() );
 
-          theMessage += "\n\nPlease note: Mr. Roboto is in the middle of a MAJOR rewrite for the new site. Things" +
-            " are improving but we're not there yet. Please report any issues you notice to @jodrell";
+          // theMessage += "\n\nPlease note: Mr. Roboto is in the middle of a MAJOR rewrite for the new site. Things" +
+          //   " are improving but we're not there yet. Please report any issues you notice to @jodrell";
 
           // Delay the execution of the greeting
           setTimeout( async () => {

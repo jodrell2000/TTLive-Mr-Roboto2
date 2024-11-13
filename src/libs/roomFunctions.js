@@ -21,7 +21,9 @@ let greetInPublic = roomDefaults.greetInPublic; //choose whether greeting messag
 
 let roomName = '';
 let roomJoinMessage = 'Welcome to @roomName @username' //the message users will see when they join the room, leave it empty for the default message (only works when greet is turned on)
-let additionalJoinMessage = "Room info, rules and handy notes on Mr. Roboto can be found here: https://80s-c473bb.webflow.io/";
+let additionalJoinMessage = "Room info, rules and notes on Mr. Roboto can be found here:" +
+  " https://80s-c473bb.webflow.io/ and the current list of Robo's chat commands is here:" +
+  " http://141.147.86.68/chatDoc.html";
 let theme = false; //has a current theme been set? true or false. handled by commands
 let rulesTimerRunning = false;
 let rulesMessageOn = true;

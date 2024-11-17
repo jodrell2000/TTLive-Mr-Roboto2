@@ -591,10 +591,10 @@ const botFunctions = () => {
 
         const senderID = userFunctions.whoSentTheCommand( data );
         const senderUsername = userFunctions.getUsername( senderID );
-        import moment from 'moment';
-        
+        const currentDateTime = require( 'moment' );
+
         console.group( '! delete track ===============================' );
-        console.log( "The deletetrack command was issued by " + senderUsername + " at " + moment().format( 'DD/MM/yyyy HH:mm:ss' ) );
+        console.log( "The deletetrack command was issued by " + senderUsername + " at " + currentDateTime().format( 'DD/MM/yyyy HH:mm:ss' ) );
         console.log( "The track removed was " + songFunctions.song() + " by " + songFunctions.artist() );
         console.log( '========================================' );
         console.groupEnd();

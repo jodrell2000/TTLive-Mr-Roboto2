@@ -245,17 +245,10 @@ const roomFunctions = () => {
     },
 
     getThemeRandomizerStore: function () {
-      // import path from 'path';
-      // import { fileURLToPath } from 'url';
-      //
-      // const __filename = fileURLToPath(import.meta.url);
-      // const __dirname = path.dirname(__filename);
-      //
-      // const dataFilePath = `${__dirname}/data/${themesDataFileName}`;
-      // // const dataFilePath = `${ dirname( require.main.filename ) }/data/${ themesDataFileName }`;
-      // const store = new Storage( dataFilePath );
+      const dataFilePath = `${ dirname( require.main.filename ) }/data/${ themesDataFileName }`;
+      const store = new Storage( dataFilePath );
 
-      // return store;
+      return store;
     },
 
     randomThemeAdd: function ( data, newTheme, chatFunctions, documentationFunctions ) {

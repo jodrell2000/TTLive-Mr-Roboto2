@@ -14,7 +14,8 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
         console.error('Error handling user join:', error);
       }
     } else {
-      console.warn('User profile does not have a nickname:', JSON.stringify(payload,null,2));
+      console.warn(`This may be a Ghost...payload: ${JSON.stringify(payload,null,2)}
+      userProfile: ${JSON.stringify(await userFunctions.getUserProfileFromAPI( uuid ),null,2)}`);
     }  }
 }
 

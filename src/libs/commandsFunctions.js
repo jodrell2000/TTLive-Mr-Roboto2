@@ -1024,7 +1024,7 @@ const addMessageToChatCommand = ( data, chatFunctions, documentationFunctions ) 
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
-  const splitData = commandModule.parseCommandElements( data.text );
+  const splitData = commandModule.parseCommandElements( data.message );
   const theCommand = splitData[ 1 ];
   const theMessage = splitData[ 2 ];
 
@@ -1052,7 +1052,7 @@ const addPictureToChatCommand = ( data, chatFunctions, documentationFunctions ) 
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
-  const splitData = commandModule.parseCommandElements( data.text );
+  const splitData = commandModule.parseCommandElements( data.message );
   const theCommand = splitData[ 1 ];
   const thePicture = splitData[ 2 ];
 
@@ -1083,7 +1083,7 @@ const removeChatCommand = ( data, chatFunctions, documentationFunctions ) => {
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
-  const splitData = commandModule.parseCommandElements( data.text );
+  const splitData = commandModule.parseCommandElements( data.message );
   const theCommand = splitData[ 1 ];
 
   if ( !commandModule.isChatCommand( theCommand ) ) {
@@ -1102,7 +1102,7 @@ const removeChatCommandMessage = ( data, chatFunctions, documentationFunctions )
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
-  const splitData = commandModule.parseCommandElements( data.text );
+  const splitData = commandModule.parseCommandElements( data.message );
   const theCommand = splitData[ 1 ];
   const theMessage = splitData[ 2 ];
 
@@ -1135,7 +1135,7 @@ const removeChatCommandPicture = ( data, chatFunctions, documentationFunctions )
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
-  const splitData = commandModule.parseCommandElements( data.text );
+  const splitData = commandModule.parseCommandElements( data.message );
   const theCommand = splitData[ 1 ];
   const thePicture = splitData[ 2 ];
 

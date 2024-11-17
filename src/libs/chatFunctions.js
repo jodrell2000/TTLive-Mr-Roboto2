@@ -83,7 +83,7 @@ const chatFunctions = ( ) => {
     },
 
     textMessageTheDJ: async function ( senderID, receiverID, messageArray, data, userFunctions ) {
-      if ( this.isThereADJ( userFunctions, data ) ) {
+      if ( await this.isThereADJ( userFunctions, data ) ) {
         const randomMessage = messageArray[ Math.floor( Math.random() * messageArray.length ) ];
         const thisMessage = await this.buildUserToUserRandomMessage( userFunctions, senderID, randomMessage, receiverID );
 

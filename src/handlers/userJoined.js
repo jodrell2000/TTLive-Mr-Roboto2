@@ -15,67 +15,12 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       }
     } else {
       console.warn(`This may be a Ghost...payload: ${JSON.stringify(payload,null,2)}
-      currentState: ${JSON.stringify(await userFunctions.getUserProfileFromAPI( uuid ),null,2)}
+      currentState: ${JSON.stringify(currentState,null,2)}
       newUsers: ${JSON.stringify(await userFunctions.findNewUserUUID( currentState ),null,2)}`);
     }  }
 }
 
 // Ghost example
-// This may be a Ghost...payload: {
-//   "name": "userJoined",
-//     "statePatch": [
-//     {
-//       "op": "replace",
-//       "path": "/vibeMeter",
-//       "value": 0.14285714285714285
-//     },
-//     {
-//       "op": "add",
-//       "path": "/floorUsers/5",
-//       "value": {
-//         "uuid": "95d7a292-1d05-4fb9-aa15-45ed41411b58",
-//         "tokenRole": "guest",
-//         "canDj": true
-//       }
-//     },
-//     {
-//       "op": "add",
-//       "path": "/audienceUsers/5",
-//       "value": {
-//         "uuid": "95d7a292-1d05-4fb9-aa15-45ed41411b58",
-//         "tokenRole": "guest",
-//         "canDj": true
-//       }
-//     },
-//     {
-//       "op": "add",
-//       "path": "/allUsers/7",
-//       "value": {
-//         "uuid": "95d7a292-1d05-4fb9-aa15-45ed41411b58",
-//         "tokenRole": "guest",
-//         "canDj": true
-//       }
-//     },
-//     {
-//       "op": "add",
-//       "path": "/allUserData/95d7a292-1d05-4fb9-aa15-45ed41411b58",
-//       "value": {
-//         "userProfile": {
-//           "color": "#FFFFFF",
-//           "nickname": "ghost-9913",
-//           "uuid": "95d7a292-1d05-4fb9-aa15-45ed41411b58",
-//           "avatarId": "ghost"
-//         },
-//         "position": {
-//           "x": 19.8,
-//           "y": 22.3
-//         },
-//         "songVotes": {}
-//       }
-//     }
-//   ]
-// }
-// userProfile: undefined
 // This may be a Ghost...payload: {
 //   "name": "userJoined",
 //     "statePatch": [

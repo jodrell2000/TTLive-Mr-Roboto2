@@ -7,13 +7,13 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
 
   if ( await userFunctions.hasDjsElement( state ) ) {
     await userFunctions.resetDJs( state.djs )
-    console.log( `djList:${ userFunctions.djList() }` )
+    // console.log( `djList:${ userFunctions.djList() }` )
   }
 
   // end song
   let djID;
   if ( state.nowPlaying && state.nowPlaying.song ) {
-    console.log(JSON.stringify(state.nowPlaying.song, null, 2))
+    // console.log(JSON.stringify(state.nowPlaying.song, null, 2))
     djID = state.djs[ 0 ].uuid;
     await songFunctions.grabSongStats();
     await userFunctions.setCurrentDJID( djID, databaseFunctions );

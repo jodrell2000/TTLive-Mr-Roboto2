@@ -47,24 +47,24 @@ readData.readFile( dataFilePath,
         theCommands.forEach( ( key, index ) => {
             theMessages = jsonParsed.chatMessages[ key ].messages;
             thePictures = jsonParsed.chatMessages[ key ].pictures;
-            console.log( key );
+            // console.log( key );
             // write the command to the table
             writeData.writeFileSync( outputFile, "<tr>\n" + "<td class=\"tg-0lax\">" + key + "</td>", { flag: 'a+' } );
 
             // write the messages in an unordered list
             writeData.writeFileSync( outputFile, "<td class=\"tg-0lax\"><ul>", { flag: 'a+' } );
             theMessages.forEach( ( key, index ) => {
-                console.log( key );
+                // console.log( key );
                 writeData.writeFileSync( outputFile, "<li>" + key, { flag: 'a+' } );
             } );
             writeData.writeFileSync( outputFile, "</ul></td>", { flag: 'a+' } );
 
             // write the pictures as 100 wide images in an unordered list
-            console.log( thePictures );
+            // console.log( thePictures );
             writeData.writeFileSync( outputFile, "<td class=\"tg-0lax\">", { flag: 'a+' } );
             if ( thePictures !== undefined ) {
                 thePictures.forEach( ( key, index ) => {
-                    console.log( key );
+                    // console.log( key );
                     writeData.writeFileSync( outputFile, "<img src=\"" + key + "\" width=\"100\"><br>", { flag: 'a+' } );
                 } );
             }

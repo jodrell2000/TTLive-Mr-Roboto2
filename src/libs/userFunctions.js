@@ -245,7 +245,7 @@ const userFunctions = () => {
     },
 
     getUserProfileFromAPI: async function ( uuid ) {
-      console.log(`getUserProfileFromAPI uuid:${uuid}`)
+      // console.log(`getUserProfileFromAPI uuid:${uuid}`)
       if ( uuid !== undefined ) {
         const url = `https://gateway.prod.tt.fm/api/user-service/users/profiles?users=${ uuid }`;
         try {
@@ -347,7 +347,7 @@ const userFunctions = () => {
     },
 
     getUserIDFromUsername: async function ( theUsername ) {
-      console.log(`getUserIDFromUsername theUserList:${JSON.stringify(theUsersList,null,2)}`)
+      // console.log(`getUserIDFromUsername theUserList:${JSON.stringify(theUsersList,null,2)}`)
       for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
         if ( theUsersList[ userLoop ].username.toLowerCase() === theUsername.toLowerCase() ) {
           return theUsersList[ userLoop ].id;
@@ -357,9 +357,9 @@ const userFunctions = () => {
     },
 
     enableEscortMe: async function ( data, chatFunctions, databaseFunctions ) {
-      console.group( `enableEscortMe` )
+      // console.group( `enableEscortMe` )
       const theUserID = await this.whoSentTheCommand( data );
-      console.log( `theUserID:${ theUserID }` )
+      // console.log( `theUserID:${ theUserID }` )
       let theError = '';
       if ( await this.escortMeIsEnabled( theUserID ) ) {
         theError += ", you've already enabled Escort Me...";
@@ -375,7 +375,7 @@ const userFunctions = () => {
       } else {
         await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + theError );
       }
-      console.groupEnd()
+      // console.groupEnd()
     },
 
     disableEscortMe: async function ( data, chatFunctions, databaseFunctions ) {
@@ -453,7 +453,7 @@ const userFunctions = () => {
       if ( !isValidRegion ) {
         await chatFunctions.botSpeak( `@${ await this.getUsername( userID ) } that region is not recognized. Please use one of the 2 character ISO country codes, [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)` );
       } else {
-        console.log( "this.getUserRegion( userID ): " + this.getUserRegion( userID ) );
+        // console.log( "this.getUserRegion( userID ): " + this.getUserRegion( userID ) );
         if ( !this.getUserRegion( userID ) ) {
           this.storeUserRegion( data, userID, theRegion, chatFunctions, videoFunctions, databaseFunctions );
         } else {
@@ -523,7 +523,7 @@ const userFunctions = () => {
           regionsArray.push( this.getUserRegion( theUsersList[ userLoop ][ "id" ] ) );
         }
       }
-      console.log( "Regions array:" + regionsArray.filter( ( v, i, a ) => a.indexOf( v ) === i ) );
+      // console.log( "Regions array:" + regionsArray.filter( ( v, i, a ) => a.indexOf( v ) === i ) );
       return regionsArray.filter( ( v, i, a ) => a.indexOf( v ) === i );
     },
 
@@ -2041,7 +2041,7 @@ const userFunctions = () => {
     userJoinsRoom: async function ( userProfile, roomFunctions, databaseFunctions, chatFunctions ) {
       const userID = userProfile.uuid
       const username = userProfile.nickname
-      console.log( `userJoinsRoom: ${ username } joined` )
+      // console.log( `userJoinsRoom: ${ username } joined` )
 
       const userFromDatabase = await databaseFunctions.loadUserFromDatabase( userID )
       if ( userFromDatabase !== undefined ) {
@@ -2076,7 +2076,7 @@ const userFunctions = () => {
     },
     
     userLeavesRoom: async function( uuid, roomFunctions, databaseFunctions ) {
-      console.log(`${ uuid } left...`)
+      // console.log(`${ uuid } left...`)
     },
 
     updateUsername: async function ( userID, username, databaseFunctions ) {
@@ -2114,7 +2114,7 @@ const userFunctions = () => {
     },
 
     addUserToTheUsersList: async function ( userID, userProfile ) {
-      console.log(`addUserToTheUsersList userID:${userID}`)
+      // console.log(`addUserToTheUsersList userID:${userID}`)
       if ( !await this.isUserInUsersList( userID ) ) {
         theUsersList.push( { id: userID, username: userProfile.username } );
       }

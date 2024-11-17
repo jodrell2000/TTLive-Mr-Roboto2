@@ -353,12 +353,12 @@ const databaseFunctions = () => {
       const theQuery = "SELECT id FROM videoData WHERE id = ? OR youTubeID = ? OR appleID = ? OR spotifyID = ?" +
         " ORDER BY youTubeID DESC, appleID DESC, spotifyID DESC LIMIT 1";
       const values = [ videoID, youTubeID, appleID, spotifyID ];
-      console.log(`getVideoDataID theQuery:${theQuery}`)
-      console.log(`getVideoDataID values:${JSON.stringify(values)}`)
+      // console.log(`getVideoDataID theQuery:${theQuery}`)
+      // console.log(`getVideoDataID values:${JSON.stringify(values)}`)
 
       try {
         const result = await this.runQuery( theQuery, values );
-        console.log(`getVideoDataID result:${JSON.stringify(result, null, 2)}`)
+        // console.log(`getVideoDataID result:${JSON.stringify(result, null, 2)}`)
         if (result.length > 0) {
           return result[0]['id'];
         } else {

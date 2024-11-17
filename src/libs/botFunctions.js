@@ -175,7 +175,7 @@ const botFunctions = () => {
     addAlertRegionCommand: function ( data, args, videoFunctions, chatFunctions ) {
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
       const doInOrder = async () => {
-        console.log( "args:" + args );
+        // console.log( "args:" + args );
         videoFunctions.addAlertRegion( data, args[ 0 ], chatFunctions );
         await sleep( 1000 )
 
@@ -198,24 +198,17 @@ const botFunctions = () => {
     },
 
     stageDiveCommand: async function ( data, chatFunctions, userFunctions, messageVariable, socket ) {
-      console.group(`stageDiveCommand`)
       const userID = await userFunctions.whoSentTheCommand( data );
-      console.log(`userID:${userID}`)
       const receiverID = await userFunctions.getCurrentDJID( data );
-      console.log(`receiverID:${receiverID}`)
 
-      console.log(`isUserIDOnStage:${await userFunctions.isUserIDOnStage( userID )}`)
       if ( await userFunctions.isUserIDOnStage( userID ) ) {
         const randomMessage = messageVariable[ Math.floor( Math.random() * messageVariable.length ) ];
-        console.log(`randomMessage:${randomMessage}`)
         const thisMessage = await chatFunctions.buildUserToUserRandomMessage( userFunctions, userID, randomMessage, receiverID );
-        console.log(`thisMessage:${thisMessage}`)
         await chatFunctions.botSpeak( thisMessage );
         await userFunctions.removeDJ( userID, 'DJ used the /dive command', socket );
       } else {
         await chatFunctions.botSpeak( 'You can\'t leave the stage if you\'re not on stage...' )
       }
-      console.groupEnd()
     },
 
     refreshOnCommand: async function ( data, chatFunctions ) {
@@ -544,7 +537,7 @@ const botFunctions = () => {
     },
 
     startBotDJing: function () {
-      console.log( "Start DJing" );
+      //console.log( "Start DJing" );
       bot.addDj(); // start the Bot DJing
     },
 

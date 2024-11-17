@@ -262,7 +262,7 @@ const chatFunctions = ( ) => {
     // ========================================================
 
     userGreeting: async function ( userID, theUsername, roomFunctions, userFunctions, databaseFunctions ) {
-      console.log('user greeting')
+      //console.log('user greeting')
       if ( theUsername !== "Guest" && !userFunctions.isThisTheBot( userID ) ) {
         const customGreeting = userMessages.userGreetings.find( ( { id } ) => id === userID );
         let theMessage;

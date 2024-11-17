@@ -12,7 +12,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
       if ( await userFunctions.hasDjsElement( currentState ) ) {
         await userFunctions.resetDJs( currentState.djs )
-        console.log( `djList:${ userFunctions.djList() }` )
+        // console.log( `djList:${ userFunctions.djList() }` )
       }
 
       // this is for /warnme

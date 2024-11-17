@@ -15,100 +15,119 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       }
     } else {
       console.warn(`This may be a Ghost...payload: ${JSON.stringify(payload,null,2)}
-      userProfile: ${JSON.stringify(await userFunctions.getUserProfileFromAPI( uuid ),null,2)}`);
+      currentState: ${JSON.stringify(await userFunctions.getUserProfileFromAPI( uuid ),null,2)}
+      newUsers: ${JSON.stringify(await userFunctions.findNewUserUUID( currentState ),null,2)}`);
     }  }
 }
 
 // Ghost example
-// {
+// This may be a Ghost...payload: {
 //   "name": "userJoined",
 //     "statePatch": [
 //     {
 //       "op": "replace",
 //       "path": "/vibeMeter",
-//       "value": 0.1111111111111111
+//       "value": 0.14285714285714285
 //     },
 //     {
 //       "op": "add",
-//       "path": "/floorUsers/7",
+//       "path": "/floorUsers/5",
 //       "value": {
-//         "uuid": "7327359a-b420-412d-b8a2-db492534161e",
-//         "tokenRole": "user",
-//         "canDj": true
-//       }
-//     },
-//     {
-//       "op": "add",
-//       "path": "/audienceUsers/7",
-//       "value": {
-//         "uuid": "7327359a-b420-412d-b8a2-db492534161e",
-//         "tokenRole": "user",
-//         "canDj": true
-//       }
-//     },
-//     {
-//       "op": "replace",
-//       "path": "/allUsers/8/tokenRole",
-//       "value": "user"
-//     },
-//     {
-//       "op": "replace",
-//       "path": "/allUsers/8/uuid",
-//       "value": "7327359a-b420-412d-b8a2-db492534161e"
-//     },
-//     {
-//       "op": "add",
-//       "path": "/allUsers/9",
-//       "value": {
-//         "uuid": "cab98d10-c3e2-40ea-8045-8e34009b52b9",
+//         "uuid": "95d7a292-1d05-4fb9-aa15-45ed41411b58",
 //         "tokenRole": "guest",
 //         "canDj": true
 //       }
 //     },
 //     {
 //       "op": "add",
-//       "path": "/allUserData/7327359a-b420-412d-b8a2-db492534161e",
+//       "path": "/audienceUsers/5",
+//       "value": {
+//         "uuid": "95d7a292-1d05-4fb9-aa15-45ed41411b58",
+//         "tokenRole": "guest",
+//         "canDj": true
+//       }
+//     },
+//     {
+//       "op": "add",
+//       "path": "/allUsers/7",
+//       "value": {
+//         "uuid": "95d7a292-1d05-4fb9-aa15-45ed41411b58",
+//         "tokenRole": "guest",
+//         "canDj": true
+//       }
+//     },
+//     {
+//       "op": "add",
+//       "path": "/allUserData/95d7a292-1d05-4fb9-aa15-45ed41411b58",
 //       "value": {
 //         "userProfile": {
-//           "id": 198747,
-//           "color": null,
-//           "avatarId": "23",
-//           "badges": [],
-//           "createdAt": "2024-11-15T04:18:03.664Z",
-//           "discord": "",
-//           "nickname": "MrWest",
-//           "discordNickname": "",
-//           "firstName": "",
-//           "lastName": "",
-//           "pronoun": "",
-//           "displayPronouns": true,
-//           "songOfTheWeek": "",
-//           "song": {
-//             "id": "",
-//             "isrc": "",
-//             "genre": "",
-//             "duration": 0,
-//             "trackUrl": "",
-//             "trackName": "",
-//             "artistName": "",
-//             "musicProvider": ""
-//           },
-//           "coverPicture": "",
-//           "facebook": "",
-//           "instagram": "",
-//           "twitter": "",
-//           "snapchat": "",
-//           "tiktok": "",
-//           "priceForGig": 0,
-//           "zodiac": "",
-//           "uuid": "7327359a-b420-412d-b8a2-db492534161e"
+//           "color": "#FFFFFF",
+//           "nickname": "ghost-9913",
+//           "uuid": "95d7a292-1d05-4fb9-aa15-45ed41411b58",
+//           "avatarId": "ghost"
 //         },
 //         "position": {
-//           "x": 55,
-//           "y": 28.3
+//           "x": 19.8,
+//           "y": 22.3
 //         },
 //         "songVotes": {}
 //       }
 //     }
 //   ]
 // }
+// userProfile: undefined
+// This may be a Ghost...payload: {
+//   "name": "userJoined",
+//     "statePatch": [
+//     {
+//       "op": "replace",
+//       "path": "/vibeMeter",
+//       "value": 0.14285714285714285
+//     },
+//     {
+//       "op": "add",
+//       "path": "/floorUsers/5",
+//       "value": {
+//         "uuid": "95d7a292-1d05-4fb9-aa15-45ed41411b58",
+//         "tokenRole": "guest",
+//         "canDj": true
+//       }
+//     },
+//     {
+//       "op": "add",
+//       "path": "/audienceUsers/5",
+//       "value": {
+//         "uuid": "95d7a292-1d05-4fb9-aa15-45ed41411b58",
+//         "tokenRole": "guest",
+//         "canDj": true
+//       }
+//     },
+//     {
+//       "op": "add",
+//       "path": "/allUsers/7",
+//       "value": {
+//         "uuid": "95d7a292-1d05-4fb9-aa15-45ed41411b58",
+//         "tokenRole": "guest",
+//         "canDj": true
+//       }
+//     },
+//     {
+//       "op": "add",
+//       "path": "/allUserData/95d7a292-1d05-4fb9-aa15-45ed41411b58",
+//       "value": {
+//         "userProfile": {
+//           "color": "#FFFFFF",
+//           "nickname": "ghost-9913",
+//           "uuid": "95d7a292-1d05-4fb9-aa15-45ed41411b58",
+//           "avatarId": "ghost"
+//         },
+//         "position": {
+//           "x": 19.8,
+//           "y": 22.3
+//         },
+//         "songVotes": {}
+//       }
+//     }
+//   ]
+// }
+// userProfile: undefined

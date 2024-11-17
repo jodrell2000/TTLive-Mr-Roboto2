@@ -856,6 +856,7 @@ const commandFunctions = () => {
 
       return true;
     },
+    },
 
     parseCommandElements: function ( theMessage ) {
       console.log(`theMessage: ${theMessage}`)
@@ -994,6 +995,7 @@ const removeAlias = ( data, chatFunctions ) => {
 // #########################################################
 
 const addChatCommandWithMessage = ( data, chatFunctions, documentationFunctions ) => {
+  console.log(`data: ${JSON.stringify(data, null, 2)}`)
   const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ chatDataFileName }`;
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();

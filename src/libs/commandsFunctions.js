@@ -856,7 +856,6 @@ const commandFunctions = () => {
 
       return true;
     },
-    },
 
     parseCommandElements: function ( theMessage ) {
       console.log(`theMessage: ${theMessage}`)

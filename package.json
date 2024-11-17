@@ -1,7 +1,7 @@
 {
   "name": "Mr_Roboto",
   "version": "2.0.0",
-  "description": "A bot to interact with users in chat on tt.live",
+  "description": "A bot to interact with users in chat on hangout.fm",
   "main": "src/index.js",
   "type": "module",
   "scripts": {

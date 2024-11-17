@@ -999,7 +999,7 @@ const addChatCommandWithMessage = ( data, chatFunctions, documentationFunctions 
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
-  const splitData = commandModule.parseCommandElements( data.text );
+  const splitData = commandModule.parseCommandElements( data.message );
   const newCommand = splitData[ 1 ];
   const commandMessage = splitData[ 2 ];
 

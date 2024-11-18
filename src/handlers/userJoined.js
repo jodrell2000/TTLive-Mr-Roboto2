@@ -15,9 +15,9 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
         console.error('Error handling user join:', error);
       }
     } else {
-      console.warn(`This may be a Ghost...payload: ${JSON.stringify(payload,null,2)}
-      currentState: ${JSON.stringify(currentState,null,2)}
-      newUsers: ${JSON.stringify(await userFunctions.findNewUserUUID( currentState ),null,2)}`);
+      // console.warn(`This may be a Ghost...payload: ${JSON.stringify(payload,null,2)}
+      // currentState: ${JSON.stringify(currentState,null,2)}
+      // newUsers: ${JSON.stringify(await userFunctions.findNewUserUUID( currentState ),null,2)}`);
     }  }
 }
 //

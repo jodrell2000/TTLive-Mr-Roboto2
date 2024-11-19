@@ -264,7 +264,7 @@ const userFunctions = () => {
       const username = userProfile.nickname
       const uuid = userProfile.uuid
       let createdAt = Date.parse(userProfile.createdAt)
-      if (createdAt === NaN ) {
+      if (isNaN(createdAt) ) {
         createdAt = userFromDatabase.joinTime
       }
       console.log(`createdAt: ${createdAt}`)

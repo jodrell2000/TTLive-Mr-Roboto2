@@ -16,6 +16,7 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     // console.log(JSON.stringify(state.nowPlaying.song, null, 2))
     djID = state.djs[ 0 ].uuid;
     await songFunctions.grabSongStats();
+    console.log(`djList: ${JSON.stringify( userFunctions.djList(), null, 2 )}`);
     await userFunctions.setCurrentDJID( djID, databaseFunctions );
     const videoID = state.nowPlaying.song.songShortId
     await chatFunctions.readSongStats( videoID, songFunctions, botFunctions, databaseFunctions, userFunctions );

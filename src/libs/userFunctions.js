@@ -263,7 +263,10 @@ const userFunctions = () => {
       console.log(`Updating user from database: ${JSON.stringify(userFromDatabase, null, 2)}`);
       const username = userProfile.nickname
       const uuid = userProfile.uuid
-      const createdAt = Date.parse(userProfile.createdAt)
+      let createdAt = Date.parse(userProfile.createdAt)
+      if (createdAt === NaN ) {
+        createdAt = userFromDatabase.joinTime
+      }
       console.log(`createdAt: ${createdAt}`)
       await this.storeUserData( uuid, "username", username, databaseFunctions );
       await this.storeUserData( uuid, "joinTime", createdAt, databaseFunctions );

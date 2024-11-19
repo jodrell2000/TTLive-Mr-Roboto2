@@ -3,12 +3,12 @@ import { logger } from "../utils/logging.js";
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
   logger.debug( `=========================== userJoined.js ===========================` )
   const newUsers = await userFunctions.findNewUserUUID( currentState )
-  console.log(`newUsers: ${JSON.stringify(newUsers), null, 2}`)
+  console.log(`newUsers: ${JSON.stringify(newUsers, null, 2)}`)
 
   const userInfos = await Promise.all(
     newUsers.map( async uuid => await userFunctions.extractUserInfo( payload.statePatch, uuid ) )
   );
-  console.log(`userInfos: ${JSON.stringify(userInfos), null, 2}`)
+  console.log(`userInfos: ${JSON.stringify(userInfos, null, 2)}`)
 
   for (const userInfo of userInfos) {
     const isGhost = userInfo.avatarId === "ghost";

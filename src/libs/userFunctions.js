@@ -241,6 +241,9 @@ const userFunctions = () => {
     },
 
     userExists: async function ( userID ) {
+      console.log(`userID ${userID} exists check`)
+      console.log(`position ${this.getPositionOnUsersList( userID )}`)
+      
       return theUsersList[ this.getPositionOnUsersList( userID ) ] !== undefined;
     },
 

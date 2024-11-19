@@ -177,7 +177,7 @@ const chatFunctions = ( ) => {
     },
 
     coinflip: async function ( data ) {
-      const theUsername = data.userName
+      const theUsername = data.senderName
       let randomNumber = Math.random();
       if ( randomNumber === 0.5 ) {
         await this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...an edge?!?', true );

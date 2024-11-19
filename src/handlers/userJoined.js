@@ -12,7 +12,16 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   for (const uuid of newUsers) {
     const userProfile = await userFunctions.getUserProfileFromAPI( uuid )
     console.log(`================== new user joined: ${JSON.stringify(userProfile, null, 2)}`)
-    const nickname = userProfile?.nickname;
+    // const nickname = userProfile?.nickname;
+
+    let nickname = payload.statePatch
+      .filter(
+        patch =>
+          patch.op === "add" &&
+          patch.path === `/allUserData/${targetUuid}`
+      )
+      .map(patch => patch.value.userProfile.nickname)[0];
+    
     if (nickname) {
       try {
         await userFunctions.userJoinsRoom(userProfile, roomFunctions, databaseFunctions, chatFunctions);

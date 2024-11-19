@@ -15,6 +15,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   for ( const userInfo of userInfos ) {
     let userProfile
     if ( userInfo.avatarId === "ghost" ) {
+      console.log(`We have a Ghost`)
       //build a userInfo object for the ghost
 
     } else {

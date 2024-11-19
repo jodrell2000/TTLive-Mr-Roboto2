@@ -241,9 +241,6 @@ const userFunctions = () => {
     },
 
     userExists: async function ( userID ) {
-      console.log(`userID ${userID} exists check`)
-      console.log(`position ${this.getPositionOnUsersList( userID )}`)
-      
       return theUsersList[ this.getPositionOnUsersList( userID ) ] !== undefined;
     },
 
@@ -2171,11 +2168,13 @@ const userFunctions = () => {
 
           if ( userProfile !== undefined ) {
             if ( !await this.userExists( userID ) ) {
+              console.log(`Adding ${userID} to user list`)
               await this.addUserToTheUsersList( userID, userProfile )
             }
           }
 
           if ( userProfile !== undefined && userFromDatabase !== undefined ) {
+            console.log(`calling updateUserFromProfile for  ${userID}`)
             await this.updateUserFromProfile( userProfile, databaseFunctions )
           }
           console.log("Done")

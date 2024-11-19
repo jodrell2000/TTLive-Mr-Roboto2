@@ -7,4 +7,5 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   for ( const uuid of uuids ) {
     await userFunctions.deregisterUser( uuid, databaseFunctions )
   }
+  await userFunctions.resetDJs( currentState.djs )
 }

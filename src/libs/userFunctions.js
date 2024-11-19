@@ -1317,7 +1317,6 @@ const userFunctions = () => {
     },
 
     getCurrentDJID: async function ( ) {
-      console.log(`theUsersList: ${JSON.stringify(theUsersList, null, 2)}`);
       for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
         if ( theUsersList[ userLoop ][ 'currentDJ' ] === true ) {
           return theUsersList[ userLoop ][ 'id' ];

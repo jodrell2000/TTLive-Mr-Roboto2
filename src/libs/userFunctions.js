@@ -2156,12 +2156,11 @@ const userFunctions = () => {
           if ( data.allUsers[ i ].tokenRole !== "guest" ) {
             userProfile = await this.getUserProfileFromAPI( userID )
           } else {
-            userProfile = { uuid: data.allUsers[ i ].uuid, nickname: "Ghost", avatarId: "ghost" }
+            userProfile = { uuid: userID, nickname: "Ghost", avatarId: "ghost" }
           }
-          // console.log(`rebuildUserList userProfile:${JSON.stringify(userProfile, null, 2)}`)
 
           const userFromDatabase = await databaseFunctions.loadUserFromDatabase( userID )
-          // console.log(`rebuildUserList userFromDatabase:${JSON.stringify(userFromDatabase, null, 2)}`)
+          console.log(`userFromDatabase: ${JSON.stringify(userFromDatabase, null, 2)}`)
 
           if ( userFromDatabase !== undefined ) {
             theUsersList.push( userFromDatabase );

@@ -1182,6 +1182,8 @@ const userFunctions = () => {
     // ========================================================
 
     isUsersWelcomeTimerActive: function ( userID ) {
+      console.log(`userID: ${userID}`);
+      console.log(`theUsersList: ${JSON.stringify(theUsersList, null, 2)}`);
       return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'welcomeTimer' ] === true;
     },
 

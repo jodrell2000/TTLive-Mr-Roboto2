@@ -858,7 +858,7 @@ const commandFunctions = () => {
     },
 
     parseCommandElements: function ( theMessage ) {
-      console.log(`theMessage: ${theMessage}`)
+      //console.log(`theMessage: ${theMessage}`)
       const splitData = [];
       const regex = new RegExp( '"[^"]+"|[\\S]+', 'g' );
       theMessage.match( regex ).forEach( element => {

@@ -2152,13 +2152,12 @@ const userFunctions = () => {
 
       // console.log(`rebuildUserList data.allUsers.length:${data.allUsers.length}`)
       for ( let i = 0; i < data.allUsers.length; i++ ) {
-        console.log(`data.allUsers:${JSON.stringify(data.allUsers, null, 2)}`)
         if ( typeof data.allUsers[ i ] !== 'undefined' ) {
           userID = data.allUsers[ i ].uuid
           console.log(`rebuildUserList userID:${userID}`)
 
           const userProfile = await this.getUserProfileFromAPI( userID )
-          // console.log(`rebuildUserList userProfile:${JSON.stringify(userProfile, null, 2)}`)
+          console.log(`rebuildUserList userProfile:${JSON.stringify(userProfile, null, 2)}`)
 
           const userFromDatabase = await databaseFunctions.loadUserFromDatabase( userID )
           // console.log(`rebuildUserList userFromDatabase:${JSON.stringify(userFromDatabase, null, 2)}`)

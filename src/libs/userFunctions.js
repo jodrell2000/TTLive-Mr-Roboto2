@@ -2058,7 +2058,6 @@ const userFunctions = () => {
     userJoinsRoom: async function ( userProfile, roomFunctions, databaseFunctions, chatFunctions ) {
       const userID = userProfile.uuid
       const username = userProfile.nickname
-      console.log( `userProfile.avatarId: ${ userProfile.avatarId }` )
 
       const userFromDatabase = await databaseFunctions.loadUserFromDatabase( userID )
       if ( userFromDatabase !== undefined ) {

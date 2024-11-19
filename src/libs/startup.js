@@ -21,7 +21,6 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
 
     if ( await userFunctions.hasDjsElement( state ) ) {
       await userFunctions.resetDJs( state.djs )
-      // console.log( `djList:${ userFunctions.djList() }` )
     }
     
     if ( state.djs.length > 0 ) {

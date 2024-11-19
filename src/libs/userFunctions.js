@@ -2148,7 +2148,7 @@ const userFunctions = () => {
 
     rebuildUserList: async function ( data, databaseFunctions ) {
       let userID
-      console.log(`data:${JSON.stringify(data, null, 2)}`)
+      console.log(`ALLDATAHERE:${JSON.stringify(data, null, 2)}`)
       for ( let i = 0; i < data.allUsers.length; i++ ) {
         if ( typeof data.allUsers[ i ] !== 'undefined' ) {
           userID = data.allUsers[ i ].uuid

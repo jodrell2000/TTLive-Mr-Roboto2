@@ -6,6 +6,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   const userInfos = await Promise.all(
     newUsers.map(async uuid => await userFunctions.extractUserInfo(payload, uuid))
   );
+  console.log(`newUsers: ${JSON.stringify(newUsers, null, 2)}`)
   
   for (const uuid of newUsers) {
     const userProfile = await userFunctions.getUserProfileFromAPI( uuid )

@@ -11,7 +11,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   for ( const userInfo of userInfos ) {
     let userProfile
     if ( userInfo.avatarId === "ghost" ) {
-      userProfile = { uuid: userInfo.uuid, nickname: userInfo.nickname }
+      userProfile = { uuid: userInfo.uuid, nickname: userInfo.nickname, avatarId: userInfo.avatarId }
       await chatFunctions.botSpeak( "Who you gonna call?!?" )
       //build a userInfo object for the ghost
 

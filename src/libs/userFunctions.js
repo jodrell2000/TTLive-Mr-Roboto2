@@ -262,9 +262,6 @@ const userFunctions = () => {
       const username = userProfile.nickname
       const uuid = userProfile.uuid
       const createdAt = Date.parse(userProfile.createdAt)
-      console.log(`username: ${username}`)
-      console.log(`uuid: ${uuid}`)
-      console.log(`createdAt: ${createdAt}`)
       await this.storeUserData( uuid, "username", username, databaseFunctions );
       await this.storeUserData( uuid, "joinTime", createdAt, databaseFunctions );
     },
@@ -2179,6 +2176,7 @@ const userFunctions = () => {
           if ( userProfile !== undefined && userFromDatabase !== undefined ) {
             await this.updateUserFromProfile( userProfile, databaseFunctions )
           }
+          console.log("Done")
         }
       }
     },

@@ -201,7 +201,7 @@ const chatFunctions = ( ) => {
       }
 
       console.log(`data: ${JSON.stringify( data, null, 2 )};`)
-      const theUsername = data.sendername;
+      const theUsername = data.senderName;
       const diceCount = args[ 0 ];
       const diceType = args[ 1 ].split( "d" )[ 1 ];
 

@@ -408,6 +408,7 @@ const userFunctions = () => {
           const userProfile = patch.value.userProfile;
           if (userProfile) {
             return {
+              uuid: userProfile.uuid,
               nickname: userProfile.nickname,
               avatarId: userProfile.avatarId
             };

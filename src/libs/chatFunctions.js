@@ -279,7 +279,7 @@ const chatFunctions = ( ) => {
         }
 
         if ( !userFunctions.isUsersWelcomeTimerActive( userID ) ) {
-          userFunctions.activateUsersWelcomeTimer( userID, databaseFunctions );
+          await userFunctions.activateUsersWelcomeTimer( userID, databaseFunctions );
 
           if ( roomDefaults.queueActive === true && userFunctions.howManyDJs() === 5 ) {
             theMessage += "\nThe queue is currently active. To add yourself to the queue type /addme. To remove yourself from the queue type /removeme.";

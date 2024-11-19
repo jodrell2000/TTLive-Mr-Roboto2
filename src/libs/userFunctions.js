@@ -264,6 +264,7 @@ const userFunctions = () => {
       const username = userProfile.nickname
       const uuid = userProfile.uuid
       const createdAt = Date.parse(userProfile.createdAt)
+      console.log(`createdAt: ${createdAt}`)
       await this.storeUserData( uuid, "username", username, databaseFunctions );
       await this.storeUserData( uuid, "joinTime", createdAt, databaseFunctions );
     },

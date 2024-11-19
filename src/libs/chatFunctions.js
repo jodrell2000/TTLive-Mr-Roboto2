@@ -176,8 +176,8 @@ const chatFunctions = ( ) => {
       readInOrder().then( );
     },
 
-    coinflip: async function ( data, userFunctions ) {
-      const theUsername = userFunctions.getUsername( data.userid )
+    coinflip: async function ( data ) {
+      const theUsername = data.userName
       let randomNumber = Math.random();
       if ( randomNumber === 0.5 ) {
         await this.botSpeak( '@' + theUsername + ' I am flipping a coin. You got...an edge?!?', true );
@@ -194,7 +194,7 @@ const chatFunctions = ( ) => {
       }
     },
 
-    dice: async function ( data, args, userFunctions ) {
+    dice: async function ( data, args ) {
       if ( args.length < 2 ) {
         await this.botSpeak( `You didn't tell me how many dice to roll and how many sides they have. Check "/help dice" for more info` );
         return;

@@ -187,13 +187,13 @@ const commandFunctions = () => {
   }
   chatCommands.monkey.help = "Schock den Affen!";
 
-  chatCommands.coinflip = ( { data, userFunctions, chatFunctions } ) => {
-    chatFunctions.coinflip( data, userFunctions );
+  chatCommands.coinflip = ( { data, chatFunctions } ) => {
+    chatFunctions.coinflip( data );
   }
   chatCommands.coinflip.help = "Flip a coin and return heads or tails?";
 
-  chatCommands.dice = ( { data, args, userFunctions, chatFunctions } ) => {
-    chatFunctions.dice( data, args, userFunctions );
+  chatCommands.dice = ( { data, args, chatFunctions } ) => {
+    chatFunctions.dice( data, args );
   }
   chatCommands.dice.argumentCount = 2;
   chatCommands.dice.help = "Roll some dice";

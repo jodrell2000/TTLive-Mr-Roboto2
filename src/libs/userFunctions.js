@@ -258,8 +258,9 @@ const userFunctions = () => {
       }
     },
 
-    updateUserFromProfile: async function ( userProfile, databaseFunctions ) {
+    updateUserFromProfile: async function ( userProfile, userFromDatabase, databaseFunctions ) {
       console.log(`Updating user from profile: ${JSON.stringify(userProfile, null, 2)}`);
+      console.log(`Updating user from database: ${JSON.stringify(userFromDatabase, null, 2)}`);
       const username = userProfile.nickname
       const uuid = userProfile.uuid
       const createdAt = Date.parse(userProfile.createdAt)
@@ -2173,7 +2174,7 @@ const userFunctions = () => {
 
           if ( userProfile !== undefined && userFromDatabase !== undefined ) {
             console.log(`calling updateUserFromProfile for  ${userID}`)
-            await this.updateUserFromProfile( userProfile, databaseFunctions )
+            await this.updateUserFromProfile( userProfile, userFromDatabase, databaseFunctions )
           }
         }
       }

@@ -18,7 +18,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       .filter(
         patch =>
           patch.op === "add" &&
-          patch.path === `/allUserData/${targetUuid}`
+          patch.path === `/allUserData/${uuid}`
       )
       .map(patch => patch.value.userProfile.nickname)[0];
     

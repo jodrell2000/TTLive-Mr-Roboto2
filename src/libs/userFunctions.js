@@ -2148,13 +2148,17 @@ const userFunctions = () => {
 
     rebuildUserList: async function ( data, databaseFunctions ) {
       let userID
-      console.log(`ALLDATAHERE:${JSON.stringify(data, null, 2)}`)
       for ( let i = 0; i < data.allUsers.length; i++ ) {
         if ( typeof data.allUsers[ i ] !== 'undefined' ) {
           userID = data.allUsers[ i ].uuid
-          // console.log(`rebuildUserList userID:${userID}`)
+          console.log(`rebuildUserList userID:${userID}`)
 
-          const userProfile = await this.getUserProfileFromAPI( userID )
+          let userProfile
+          if ( data.allUsers[ i ].tokenRole !== "guest" ) {
+            userProfile = await this.getUserProfileFromAPI( userID )
+          } else {
+            userProfile = { uuid: data.allUsers[ i ].uuid, nickname: "Ghost", avatarId: "ghost" }
+          }
           // console.log(`rebuildUserList userProfile:${JSON.stringify(userProfile, null, 2)}`)
 
           const userFromDatabase = await databaseFunctions.loadUserFromDatabase( userID )

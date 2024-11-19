@@ -2087,7 +2087,7 @@ const userFunctions = () => {
 
       await this.addUserIsHere( userID, databaseFunctions );
 
-      if ( username && !( await databaseFunctions.hasUserHadInitialRoboCoinGift( userID ) ) ) {
+      if ( userProfile.avatarId!== "ghost" && username && !( await databaseFunctions.hasUserHadInitialRoboCoinGift( userID ) ) ) {
         await this.giveInitialRoboCoinGift( userID, databaseFunctions, chatFunctions, roomFunctions );
       }
     },

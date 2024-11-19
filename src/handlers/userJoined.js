@@ -3,6 +3,7 @@ import { logger } from "../utils/logging.js";
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
   logger.debug( `=========================== userJoined.js ===========================` )
   const newUsers = await userFunctions.findNewUserUUID( currentState )
+  console.log( `payload: ${JSON.stringify(payload, null, 2)}` )
   const userInfos = await Promise.all(
     newUsers.map(async uuid => await userFunctions.extractUserInfo(payload, uuid))
   );

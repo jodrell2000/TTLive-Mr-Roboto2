@@ -259,6 +259,7 @@ const userFunctions = () => {
     },
 
     updateUserFromProfile: async function ( userProfile, databaseFunctions ) {
+      console.log(`Updating user from profile: ${JSON.stringify(userProfile, null, 2)}`);
       const username = userProfile.nickname
       const uuid = userProfile.uuid
       const createdAt = Date.parse(userProfile.createdAt)
@@ -2150,7 +2151,6 @@ const userFunctions = () => {
       for ( let i = 0; i < data.allUsers.length; i++ ) {
         if ( typeof data.allUsers[ i ] !== 'undefined' ) {
           userID = data.allUsers[ i ].uuid
-          console.log(`rebuildUserList userID:${userID}`)
 
           let userProfile
           if ( data.allUsers[ i ].tokenRole !== "guest" ) {
@@ -2160,7 +2160,6 @@ const userFunctions = () => {
           }
 
           const userFromDatabase = await databaseFunctions.loadUserFromDatabase( userID )
-          console.log(`userFromDatabase: ${JSON.stringify(userFromDatabase, null, 2)}`)
 
           if ( userFromDatabase !== undefined ) {
             theUsersList.push( userFromDatabase );
@@ -2168,7 +2167,6 @@ const userFunctions = () => {
 
           if ( userProfile !== undefined ) {
             if ( !await this.userExists( userID ) ) {
-              console.log(`Adding ${userID} to user list`)
               await this.addUserToTheUsersList( userID, userProfile )
             }
           }
@@ -2177,7 +2175,6 @@ const userFunctions = () => {
             console.log(`calling updateUserFromProfile for  ${userID}`)
             await this.updateUserFromProfile( userProfile, databaseFunctions )
           }
-          console.log("Done")
         }
       }
     },

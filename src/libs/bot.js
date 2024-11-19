@@ -78,7 +78,7 @@ export class Bot {
     logger.debug( 'Setting up listeners' )
 
     this.socket.on( 'statefulMessage', async payload => {
-      logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
+      // logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
 
       try {
         payload.statePatch.forEach( patch => {
@@ -109,13 +109,13 @@ export class Bot {
     this.socket.on( "statelessMessage", ( payload ) => {
       switch ( payload.name ) {
         case "playedOneTimeAnimation":
-          logger.debug( `User ${ payload.params.userUuid } playedOneTimeAnimation` )
+          // logger.debug( `User ${ payload.params.userUuid } playedOneTimeAnimation` )
           handlers.playedOneTimeAnimation( payload, userFunctions, songFunctions, databaseFunctions )
           break;
         case "kickedFromRoom":
           break;
         default:
-          logger.debug( `statelessMessage - default -------------------------------------------` )
+          // logger.debug( `statelessMessage - default -------------------------------------------` )
           // logger.debug( `statelessMessage: ${ JSON.stringify(message) }` )
           break;
       }
@@ -140,7 +140,7 @@ export class Bot {
             // console.error( 'Current state:', JSON.stringify( self.state, null, 2 ) );
           }
 
-          logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
+          // logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
           // logger.debug( `serverMessage self.state: ${ JSON.stringify( self.state ) }` )
           // logger.debug( `-------------------------------------------` )
         }

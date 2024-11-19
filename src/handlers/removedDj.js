@@ -31,6 +31,8 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       // await botFunctions.checkAutoDJing( userFunctions );
 
       await userFunctions.removeEscortMeFromUser( theUserID, databaseFunctions );
+
+      console.log(`djList: ${JSON.stringify( userFunctions.djList(), null, 2 )}`);
     }
   }
 }

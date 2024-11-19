@@ -794,7 +794,7 @@ const commandFunctions = () => {
     parseCommands: async function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions, socket ) {
       let senderID;
       
-      logger.debug(`data: ${ JSON.stringify( data )}`)
+      // logger.debug(`data: ${ JSON.stringify( data )}`)
       senderID = data.sender;
 
       const [ command, args, moderatorOnly ] = this.getCommandAndArguments( data.message, allCommands );

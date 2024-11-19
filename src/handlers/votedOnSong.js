@@ -3,7 +3,7 @@ import botDefaults from "../defaults/botDefaults.js";
 
 export default async ( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
 
-  logger.debug( `=========================== votedOnSong.js ===========================` )
+  // logger.debug( `=========================== votedOnSong.js ===========================` )
   const statePatch = payload.message.statePatch;
 
   for ( const patch of statePatch ) {

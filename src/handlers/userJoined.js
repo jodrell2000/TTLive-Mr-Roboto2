@@ -6,6 +6,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   const userInfos = await Promise.all(
     newUsers.map( async uuid => await userFunctions.extractUserInfo( payload.statePatch, uuid ) )
   );
+  console.log(`userInfos ${JSON.stringify(userInfos), null, 2}`)
 
   for (const userInfo of userInfos) {
     const isGhost = userInfo.avatarId === "ghost";

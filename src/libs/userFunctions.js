@@ -2058,7 +2058,7 @@ const userFunctions = () => {
     userJoinsRoom: async function ( userProfile, roomFunctions, databaseFunctions, chatFunctions ) {
       const userID = userProfile.uuid
       const username = userProfile.nickname
-      // console.log( `userJoinsRoom: ${ username } joined` )
+      console.log( `userProfile.avatarId: ${ userProfile.avatarId }` )
 
       const userFromDatabase = await databaseFunctions.loadUserFromDatabase( userID )
       if ( userFromDatabase !== undefined ) {
@@ -2087,7 +2087,7 @@ const userFunctions = () => {
 
       await this.addUserIsHere( userID, databaseFunctions );
 
-      if ( userProfile.avatarId!== "ghost" && username && !( await databaseFunctions.hasUserHadInitialRoboCoinGift( userID ) ) ) {
+      if ( userProfile.avatarId !== "ghost" && username && !( await databaseFunctions.hasUserHadInitialRoboCoinGift( userID ) ) ) {
         await this.giveInitialRoboCoinGift( userID, databaseFunctions, chatFunctions, roomFunctions );
       }
     },

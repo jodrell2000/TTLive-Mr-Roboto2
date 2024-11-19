@@ -3,6 +3,10 @@ import { logger } from "../utils/logging.js";
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
   logger.debug( `=========================== userJoined.js ===========================` )
   const newUsers = await userFunctions.findNewUserUUID( currentState )
+  const userInfos = await Promise.all(
+    newUsers.map(async uuid => await userFunctions.extractUserInfo(payload, uuid))
+  );
+  
   for (const uuid of newUsers) {
     const userProfile = await userFunctions.getUserProfileFromAPI( uuid )
     console.log(`================== new user joined: ${JSON.stringify(userProfile, null, 2)}`)
@@ -20,60 +24,60 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       // newUsers: ${JSON.stringify(await userFunctions.findNewUserUUID( currentState ),null,2)}`);
     }  }
 }
-//
+
 // This may be a Ghost...payload: {
 //   "name": "userJoined",
-//     "statePatch": [
-//     {
-//       "op": "replace",
-//       "path": "/vibeMeter",
-//       "value": 0.25
+// "statePatch": [
+// {
+//   "op": "replace",
+//   "path": "/vibeMeter",
+//   "value": 0.25
+// },
+// {
+//   "op": "add",
+//   "path": "/floorUsers/6",
+//   "value": {
+//     "uuid": "380fc758-3ca0-4538-b1b7-ec69931f07e0",
+//     "tokenRole": "guest",
+//     "canDj": true
+//   }
+// },
+// {
+//   "op": "add",
+//   "path": "/audienceUsers/6",
+//   "value": {
+//     "uuid": "380fc758-3ca0-4538-b1b7-ec69931f07e0",
+//     "tokenRole": "guest",
+//     "canDj": true
+//   }
+// },
+// {
+//   "op": "add",
+//   "path": "/allUsers/8",
+//   "value": {
+//     "uuid": "380fc758-3ca0-4538-b1b7-ec69931f07e0",
+//     "tokenRole": "guest",
+//     "canDj": true
+//   }
+// },
+// {
+//   "op": "add",
+//   "path": "/allUserData/380fc758-3ca0-4538-b1b7-ec69931f07e0",
+//   "value": {
+//     "userProfile": {
+//       "color": "#FFFFFF",
+//       "nickname": "ghost-3722",
+//       "uuid": "380fc758-3ca0-4538-b1b7-ec69931f07e0",
+//       "avatarId": "ghost"
 //     },
-//     {
-//       "op": "add",
-//       "path": "/floorUsers/6",
-//       "value": {
-//         "uuid": "380fc758-3ca0-4538-b1b7-ec69931f07e0",
-//         "tokenRole": "guest",
-//         "canDj": true
-//       }
+//     "position": {
+//       "x": 6.1,
+//       "y": 54.9
 //     },
-//     {
-//       "op": "add",
-//       "path": "/audienceUsers/6",
-//       "value": {
-//         "uuid": "380fc758-3ca0-4538-b1b7-ec69931f07e0",
-//         "tokenRole": "guest",
-//         "canDj": true
-//       }
-//     },
-//     {
-//       "op": "add",
-//       "path": "/allUsers/8",
-//       "value": {
-//         "uuid": "380fc758-3ca0-4538-b1b7-ec69931f07e0",
-//         "tokenRole": "guest",
-//         "canDj": true
-//       }
-//     },
-//     {
-//       "op": "add",
-//       "path": "/allUserData/380fc758-3ca0-4538-b1b7-ec69931f07e0",
-//       "value": {
-//         "userProfile": {
-//           "color": "#FFFFFF",
-//           "nickname": "ghost-3722",
-//           "uuid": "380fc758-3ca0-4538-b1b7-ec69931f07e0",
-//           "avatarId": "ghost"
-//         },
-//         "position": {
-//           "x": 6.1,
-//           "y": 54.9
-//         },
-//         "songVotes": {}
-//       }
-//     }
-//   ]
+//     "songVotes": {}
+//   }
+// }
+// ]
 // }
 // currentState: {
 //   "allUserData": {

@@ -402,6 +402,21 @@ const userFunctions = () => {
       return data.sender;
     },
 
+    extractUserInfo: async function (statePatch, targetUuid) {
+      for (const patch of statePatch) {
+        if (patch.path === `/allUserData/${targetUuid}` && patch.op === 'add') {
+          const userProfile = patch.value.userProfile;
+          if (userProfile) {
+            return {
+              nickname: userProfile.nickname,
+              avatarId: userProfile.avatarId
+            };
+          }
+        }
+      }
+      return null;
+    },
+
     // ========================================================
 
     // ========================================================

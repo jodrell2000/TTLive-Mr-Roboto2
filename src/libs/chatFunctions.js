@@ -200,7 +200,7 @@ const chatFunctions = ( ) => {
         return;
       }
 
-      const theUsername = userFunctions.getUsername( data.userid );
+      const theUsername = await userFunctions.getUsername( data.userid );
       const diceCount = args[ 0 ];
       const diceType = args[ 1 ].split( "d" )[ 1 ];
 

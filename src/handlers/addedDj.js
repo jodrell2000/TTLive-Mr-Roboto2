@@ -35,9 +35,6 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       if ( await userFunctions.isUserInRefreshList( theUserID ) ) {
         await userFunctions.removeRefreshFromUser( theUserID, databaseFunctions );
       }
-
-      console.log(`djList: ${JSON.stringify( userFunctions.djList(), null, 2 )}`);
-
       // }
 
       // check to see if conditions are met for bots autodjing feature

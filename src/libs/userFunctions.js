@@ -1290,10 +1290,12 @@ const userFunctions = () => {
       djList = []
     },
 
-    addDJToList: function ( userID ) {
-      djList.push( userID );
+    addDJToList: function (userID) {
+      if (!djList.includes(userID)) { // Check for duplicates
+        djList.push(userID);
+      }
     },
-
+    
     removeDJFromList: async function ( userID, databaseFunctions ) {
       await this.storeUserData( userID, "currentDJ", false, databaseFunctions );
       const listPosition = djList.indexOf( userID )

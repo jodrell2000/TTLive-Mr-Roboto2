@@ -1394,8 +1394,8 @@ const userFunctions = () => {
         return { username, uuid };
       });
 
-      console.log(`djList: ${JSON.stringify(this.djList(), null, 2)}`);
-      console.log("DJ List now contains:", JSON.stringify(detailedDJList, null, 2));
+      console.log(`resetDJs - djList: ${JSON.stringify(this.djList(), null, 2)}`);
+      console.log("resetDJs - DJ List now contains:", JSON.stringify(detailedDJList, null, 2));
     },
 
     checkOKToDJ: async function ( theUserID, roomFunctions ) {

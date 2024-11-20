@@ -247,6 +247,7 @@ const roomFunctions = () => {
       const __filename = fileURLToPath(import.meta.url); // Get the current module's file path
       const __dirname = dirname(__filename);            // Get the current directory
       const dataFilePath = `${__dirname}/data/${themesDataFileName}`;
+      console.log(`dataFilePath: ${dataFilePath}`)
       const store = new Storage( dataFilePath );
 
       return store;
@@ -254,6 +255,7 @@ const roomFunctions = () => {
 
     randomThemeAdd: async function ( data, newTheme, chatFunctions, documentationFunctions ) {
       const store = await this.getThemeRandomizerStore();
+      console.log(`store: ${JSON.stringify(store, null, 2)}`);
       const timer = this.theTimer();
       let themeList = await this.getRandomThemes( store );
 

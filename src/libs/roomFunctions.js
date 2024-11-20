@@ -4,10 +4,8 @@ import { fileURLToPath } from 'url';
 
 import roomDefaults from '../defaults/roomDefaults.js'
 import musicDefaults from '../defaults/musicDefaults.js'
-import botDefaults from '../defaults/botDefaults.js'
 import chatCommandItems from '../defaults/chatCommandItems.js'
 import axios from "axios";
-import { logger } from "../utils/logging.js";
 
 let djCount = null; //the number of dj's on stage, gets reset every song
 let bannedArtistsMatcher = ''; //holds the regular expression for banned artist / song matching
@@ -254,18 +252,18 @@ const roomFunctions = () => {
       return store;
     },
 
-    randomThemeAdd: function ( data, newTheme, chatFunctions, documentationFunctions ) {
-      const store = this.getThemeRandomizerStore();
+    randomThemeAdd: async function ( data, newTheme, chatFunctions, documentationFunctions ) {
+      const store = await this.getThemeRandomizerStore();
       const timer = this.theTimer();
-      let themeList = this.getRandomThemes( store );
+      let themeList = await this.getRandomThemes( store );
 
-      if ( this.doesThemeExistInRandomizer( store, newTheme ) ) {
-        chatFunctions.botSpeak( 'That theme is already in the randomizer.' );
+      if ( await this.doesThemeExistInRandomizer( store, newTheme ) ) {
+        await chatFunctions.botSpeak( 'That theme is already in the randomizer.' );
         timer( 1000 ).then( _ => this.readRandomThemes( data, chatFunctions ) );
       } else {
         themeList.push( newTheme );
-        this.storeThemes( store, themeList );
-        chatFunctions.botSpeak( 'The theme "' + newTheme + '" has been added to the randomizer.' );
+        await this.storeThemes( store, themeList );
+        await chatFunctions.botSpeak( 'The theme "' + newTheme + '" has been added to the randomizer.' );
         timer( 1000 ).then( _ => this.readRandomThemes( data, chatFunctions ) );
       }
 
@@ -303,16 +301,15 @@ const roomFunctions = () => {
       chatFunctions.botSpeak( 'Check the room info for the full list' );
     },
 
-    getRandomThemes: function ( store ) {
-      const theThemes = store.get( 'themes' );
-      return theThemes;
+    getRandomThemes: async function ( store ) {
+      return store.get( 'themes' );
     },
 
-    storeThemes: function ( store, themeList ) {
+    storeThemes: async function ( store, themeList ) {
       store.put( "themes", themeList );
     },
 
-    doesThemeExistInRandomizer: function ( store, themeToCheck ) {
+    doesThemeExistInRandomizer: async function ( store, themeToCheck ) {
       const theThemes = store.get( 'themes' );
 
       if ( theThemes !== undefined || theThemes.length > 0 ) {

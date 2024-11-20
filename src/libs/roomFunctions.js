@@ -246,7 +246,7 @@ const roomFunctions = () => {
     getThemeRandomizerStore: function () {
       const __filename = fileURLToPath(import.meta.url); // Get the current module's file path
       const __dirname = dirname(__filename);            // Get the current directory
-      const dataFilePath = `${__dirname}/data/${themesDataFileName}`;
+      const dataFilePath = `${__dirname}/../../data/${themesDataFileName}`;
       console.log(`dataFilePath: ${dataFilePath}`)
       const store = new Storage( dataFilePath );
 

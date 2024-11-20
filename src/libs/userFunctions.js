@@ -1379,7 +1379,7 @@ const userFunctions = () => {
       return userID === currentDJ;
     },
 
-    resetDJs: async function ( data ) {
+    resetDJs: async function (data) {
       console.log(`resetDJs data: ${JSON.stringify(data, null, 2)}`);
       this.clearDJList();
 
@@ -1389,10 +1389,12 @@ const userFunctions = () => {
         }
       }
 
-      const detailedDJList = this.djList().map(async uuid => {
-        const username = await this.getUsername( uuid ); // Call getUsername for each UUID
-        return { username, uuid };
-      });
+      const detailedDJList = await Promise.all(
+        this.djList().map(async uuid => {
+          const username = await this.getUsername(uuid); // Await getUsername
+          return { username, uuid };
+        })
+      );
 
       console.log(`resetDJs - djList: ${JSON.stringify(this.djList(), null, 2)}`);
       console.log("resetDJs - DJ List now contains:", JSON.stringify(detailedDJList, null, 2));

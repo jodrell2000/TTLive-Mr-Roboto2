@@ -272,13 +272,13 @@ const userFunctions = () => {
     getUsername: async function ( userID ) {
       if ( await this.userExists( userID ) ) {
         let theUser = theUsersList.find( ( { id } ) => id === userID );
-        console.log(`getUsername userExists username: ${theUser.username}`)
+        console.log(`getUsername userExists username: ${userID} = ${theUser.username}`)
         return theUser.username;
       } else {
         const userProfile = await this.getUserProfileFromAPI( userID )
 
         if ( userProfile && userProfile.nickname ) {
-          console.log(`getUsername userProfile nickname: ${userProfile.nickname}`)
+          console.log(`getUsername userProfile nickname: ${userID} = ${userProfile.nickname}`)
           return userProfile.nickname;
         }
       }

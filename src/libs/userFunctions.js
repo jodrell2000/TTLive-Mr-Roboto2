@@ -1382,13 +1382,17 @@ const userFunctions = () => {
       this.clearDJList();
 
       for (const item of data) {
-        if (item.uuid) {
-          if ( typeof item.uuid !== 'undefined' ) {
-            this.addDJToList( item.uuid );
-          }
+        if (item.uuid && typeof item.uuid !== 'undefined') {
+          this.addDJToList(item.uuid);
         }
       }
-      console.log(`djList now contains: ${JSON.stringify( this.djList() )}`);
+
+      const detailedDJList = this.djList().map(uuid => {
+        const username = this.getUsername(uuid); // Call getUsername for each UUID
+        return { username, uuid };
+      });
+
+      console.log("DJ List now contains:", JSON.stringify(detailedDJList, null, 2));
     },
 
     checkOKToDJ: async function ( theUserID, roomFunctions ) {

@@ -1394,6 +1394,7 @@ const userFunctions = () => {
         return { username, uuid };
       });
 
+      console.log(`djList: ${JSON.stringify(this.djList(), null, 2)}`);
       console.log("DJ List now contains:", JSON.stringify(detailedDJList, null, 2));
     },
 

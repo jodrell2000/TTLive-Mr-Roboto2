@@ -1378,7 +1378,6 @@ const userFunctions = () => {
     },
 
     resetDJs: async function (data) {
-      console.log(`resetDJs data: ${JSON.stringify(data, null, 2)}`);
       this.clearDJList();
 
       for (const item of data) {

@@ -1386,6 +1386,7 @@ const userFunctions = () => {
           }
         }
       }
+      console.log(`djList now contains: ${JSON.stringify( this.djList() )}`);
     },
 
     checkOKToDJ: async function ( theUserID, roomFunctions ) {

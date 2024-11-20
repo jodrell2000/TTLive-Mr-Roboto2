@@ -1,5 +1,6 @@
 import Storage from 'node-storage';
 import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 import roomDefaults from '../defaults/roomDefaults.js'
 import musicDefaults from '../defaults/musicDefaults.js'
@@ -245,7 +246,9 @@ const roomFunctions = () => {
     },
 
     getThemeRandomizerStore: function () {
-      const dataFilePath = `${ dirname( require.main.filename ) }/data/${ themesDataFileName }`;
+      const __filename = fileURLToPath(import.meta.url); // Get the current module's file path
+      const __dirname = dirname(__filename);            // Get the current directory
+      const dataFilePath = `${__dirname}/data/${themesDataFileName}`;
       const store = new Storage( dataFilePath );
 
       return store;

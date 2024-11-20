@@ -272,18 +272,18 @@ const roomFunctions = () => {
       documentationFunctions.rebuildThemesDocumentation( themeList );
     },
 
-    randomThemeRemove: function ( data, theme, chatFunctions, documentationFunctions ) {
-      const store = this.getThemeRandomizerStore();
+    randomThemeRemove: async function ( data, theme, chatFunctions, documentationFunctions ) {
+      const store = await this.getThemeRandomizerStore();
       const timer = this.theTimer();
-      let themeList = this.getRandomThemes( store );
+      let themeList = await this.getRandomThemes( store );
 
-      if ( this.doesThemeExistInRandomizer( store, theme ) ) {
+      if ( await this.doesThemeExistInRandomizer( store, theme ) ) {
         themeList.splice( themeList.indexOf( theme ), 1 )
-        this.storeThemes( store, themeList );
-        chatFunctions.botSpeak( 'The theme "' + theme + '" has been removed from the randomizer.' );
+        await this.storeThemes( store, themeList );
+        await chatFunctions.botSpeak( 'The theme "' + theme + '" has been removed from the randomizer.' );
         timer( 1000 ).then( _ => this.readRandomThemes( data, chatFunctions ) );
       } else {
-        chatFunctions.botSpeak( 'The theme "' + theme + '" is not in the randomizer.' );
+        await chatFunctions.botSpeak( 'The theme "' + theme + '" is not in the randomizer.' );
         timer( 1000 ).then( _ => this.readRandomThemes( data, chatFunctions ) );
       }
 

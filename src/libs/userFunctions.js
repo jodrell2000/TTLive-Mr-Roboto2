@@ -1377,7 +1377,7 @@ const userFunctions = () => {
       return userID === currentDJ;
     },
 
-    resetDJs: function ( data ) {
+    resetDJs: async function ( data ) {
       console.log(`resetDJs data: ${JSON.stringify(data, null, 2)}`);
       this.clearDJList();
 
@@ -1387,8 +1387,8 @@ const userFunctions = () => {
         }
       }
 
-      const detailedDJList = this.djList().map(uuid => {
-        const username = this.getUsername(uuid); // Call getUsername for each UUID
+      const detailedDJList = this.djList().map(async uuid => {
+        const username = await this.getUsername( uuid ); // Call getUsername for each UUID
         return { username, uuid };
       });
 

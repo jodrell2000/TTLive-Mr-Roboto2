@@ -241,10 +241,10 @@ const roomFunctions = () => {
     
     pickRandomizerTriggerDJ: async function ( userFunctions, uuid = null) {
       await userFunctions.logDJQueue();
-      console.log(`How many DJs: ${userFunctions.djList().length}`)
+      console.log(`How many DJs: ${ userFunctions.djList().length }`)
 
       await this.storeCurrentDJListForRandomizer( userFunctions );
-      const currentRandomizerList = userFunctions.djRandomizerList();
+      const currentRandomizerList = await userFunctions.djRandomizerList();
       
       if ( uuid === null ) {
         console.log(`triggerDJ is: ${ currentRandomizerList[ currentRandomizerList.length - 1 ] }`)

@@ -1286,7 +1286,7 @@ const userFunctions = () => {
     // ========================================================
 
     djList: () => djList,
-    djRandomizerList: () => djRandomizerList,
+    djRandomizerList: async () => djRandomizerList,
 
     clearDJList: function () {
       djList = []

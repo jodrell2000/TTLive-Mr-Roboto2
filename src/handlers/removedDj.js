@@ -3,7 +3,11 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   for ( const patch of payload.statePatch ) {
     if ( patch.path.startsWith('/audienceUsers/') ) {
       const theUserID = patch.value.uuid;
-      console.log(`theUserID: ${theUserID}`);
+      if ( theUserID === undefined ) {
+        console.log(`payload.statePatch: ${JSON.stringify(payload.statePatch, null, 2)}`);
+      } else {
+        console.log(`theUserID: ${theUserID}`);
+      }
       await userFunctions.resetDJFlags( theUserID, databaseFunctions );
 
       //gives them one chance to get off-stage, then after that they're play limit is treated as normal

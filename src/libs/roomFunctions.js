@@ -240,8 +240,6 @@ const roomFunctions = () => {
     },
     
     checkIfWeNeedANewTriggerDJ: async function ( uuid, userFunctions ) {
-      console.log(`uuid: ${ uuid }`)
-      console.log(`userFunctions.getRandomizerTriggerDJ(): ${ await userFunctions.getRandomizerTriggerDJ() }`)
       if ( uuid === await userFunctions.getRandomizerTriggerDJ() ) {
         await this.pickRandomizerTriggerDJ( userFunctions, uuid )
       }

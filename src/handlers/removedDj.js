@@ -14,6 +14,11 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
         await userFunctions.resetDJs( currentState.djs )
         // console.log( `djList:${ JSON.stringify( currentState.djs, null, 2 ) }` )
       }
+      
+      // do we need a new triggerDJ for the randomizer?
+      if ( roomFunctions.themeRandomizerEnabled() ) {
+        await roomFunctions.checkIfWeNeedANewTriggerDJ( theUserID )
+      } 
 
       // this is for /warnme
       // if ( userFunctions.warnme().length !== 0 ) {

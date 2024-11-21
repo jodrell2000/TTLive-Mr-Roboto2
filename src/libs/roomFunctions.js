@@ -238,8 +238,14 @@ const roomFunctions = () => {
       await this.pickRandomizerTriggerDJ( userFunctions );
       await chatFunctions.botSpeak( 'The theme randomizer is now active' );
     },
+    
+    checkIfWeNeedANewTriggerDJ: async function ( uuid, userFunctions ) {
+      if ( uuid === await userFunctions.getRandomizerTriggerDJ() ) {
+        await this.pickRandomizerTriggerDJ( userFunctions, uuid )
+      }
+    },
 
-    pickRandomizerTriggerDJ: async function (userFunctions, previousTriggerUUID = null) {
+    pickRandomizerTriggerDJ: async function ( userFunctions, previousTriggerUUID = null ) {
       const djList = userFunctions.djList();
       const currentRandomizerList = await userFunctions.djRandomizerList();
 

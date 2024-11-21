@@ -54,7 +54,7 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     setTimeout( async () => {
       await botFunctions.upVote( socket )
       if ( roomFunctions.themeRandomizerEnabled() ) {
-        await roomFunctions.checkTriggerDJAndPickNewTheme( djID, state, userFunctions, chatFunctions )
+        await roomFunctions.checkTriggerDJAndPickNewTheme( djID, state, userFunctions, chatFunctions, databaseFunctions )
       }
       resolve();
     }, 30 * 1000 );

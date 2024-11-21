@@ -245,10 +245,10 @@ const roomFunctions = () => {
       }
     },
     
-    checkTriggerDJAndPickNewTheme: async function ( djID, data, userFunctions, chatFunctions ) {
+    checkTriggerDJAndPickNewTheme: async function ( djID, data, userFunctions, chatFunctions, databaseFunctions ) {
       if ( djID === await userFunctions.getRandomizerTriggerDJ() ) {
         await this.pickRandomizerTriggerDJ( userFunctions, djID )
-        await this.announceNewRandomTheme(  data, chatFunctions )
+        await this.announceNewRandomTheme(  data, chatFunctions, databaseFunctions )
       }
     },
 
@@ -367,10 +367,10 @@ const roomFunctions = () => {
       return thisTheme;
     },
 
-    announceNewRandomTheme: async function ( data, chatFunctions ) {
+    announceNewRandomTheme: async function ( data, chatFunctions, databaseFunctions ) {
       await chatFunctions.botSpeak( 'Drum roll please. Time to find out what the theme for the next round is.... ' );
       const timer = this.theTimer();
-      timer( 3000 ).then( async _ => await this.setThemeCommand( data, await this.getRandomTheme(), chatFunctions ) );
+      timer( 3000 ).then( async _ => await this.setThemeCommand( data, await this.getRandomTheme(), chatFunctions, databaseFunctions ) );
     },
 
     // ========================================================

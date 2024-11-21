@@ -245,10 +245,12 @@ const roomFunctions = () => {
     checkIfWeNeedANewTriggerDJ: async function ( uuid, userFunctions ) {
       if ( uuid === await userFunctions.getRandomizerTriggerDJ() ) {
         await this.pickRandomizerTriggerDJ( userFunctions, uuid )
+        const themeMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} will now be the last DJ for this round`
       }
     },
     
     checkTriggerDJAndPickNewTheme: async function ( djID, data, userFunctions, chatFunctions, databaseFunctions ) {
+      console.log(`checkTriggerDJAndPickNewTheme checking uuid: ${djID}`)
       if ( djID === await userFunctions.getRandomizerTriggerDJ() ) {
         await this.pickRandomizerTriggerDJ( userFunctions, djID )
         await this.announceNewRandomTheme(  data, chatFunctions, userFunctions, databaseFunctions )
@@ -376,6 +378,7 @@ const roomFunctions = () => {
       const newTheme = await this.getRandomTheme()
       const themeMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} will be the last DJ for this round`
       timer( 3000 ).then( async _ => await this.setThemeCommand( data, newTheme, chatFunctions, databaseFunctions ) );
+      timer( 1000 ).then( async _ => await this.setThemeCommand( data, themeMessage, chatFunctions, databaseFunctions ) );
     },
 
     // ========================================================

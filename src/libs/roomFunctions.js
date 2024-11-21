@@ -263,7 +263,7 @@ const roomFunctions = () => {
 
       await userFunctions.storeCurrentDJListForRandomizer();
       await userFunctions.saveTriggerDJForRandomizer(pickedUUID);
-      console.log(`triggerDJ is: ${pickedUUID}`);
+      console.log(`triggerDJ is: ${ await userFunctions.getRandomizerTriggerDJ() }`);
     },
 
     disableThemeRandomizer: async function ( data, chatFunctions, userFunctions ) {

@@ -35,69 +35,69 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   }
 }
 
-
-DJ leave stage
-removedDJ payload:{
-  "name": "removedDj",
-    "statePatch": [
-    {
-      "op": "remove",
-      "path": "/visibleDjs/2"
-    },
-    {
-      "op": "add",
-      "path": "/floorUsers/5",
-      "value": {
-        "uuid": "da447bd2-5dbb-45f7-a591-c3756a8c4a84",
-        "tokenRole": "user",
-        "canDj": true
-      }
-    },
-    {
-      "op": "remove",
-      "path": "/djs/2"
-    },
-    {
-      "op": "add",
-      "path": "/audienceUsers/5",
-      "value": {
-        "uuid": "da447bd2-5dbb-45f7-a591-c3756a8c4a84",
-        "tokenRole": "user",
-        "canDj": true
-      }
-    }
-  ]
-}
-
-DJ left room
-removedDJ payload:{
-  "name": "removedDj",
-    "statePatch": [
-    {
-      "op": "remove",
-      "path": "/visibleDjs/2"
-    },
-    {
-      "op": "add",
-      "path": "/floorUsers/5",
-      "value": {
-        "uuid": "da447bd2-5dbb-45f7-a591-c3756a8c4a84",
-        "tokenRole": "user",
-        "canDj": true
-      }
-    },
-    {
-      "op": "remove",
-      "path": "/djs/2"
-    },
-    {
-      "op": "add",
-      "path": "/audienceUsers/5",
-      "value": {
-        "uuid": "da447bd2-5dbb-45f7-a591-c3756a8c4a84",
-        "tokenRole": "user",
-        "canDj": true
-      }
-    }
-  ]
-}
+//
+// DJ leave stage
+// removedDJ payload:{
+//   "name": "removedDj",
+//     "statePatch": [
+//     {
+//       "op": "remove",
+//       "path": "/visibleDjs/2"
+//     },
+//     {
+//       "op": "add",
+//       "path": "/floorUsers/5",
+//       "value": {
+//         "uuid": "da447bd2-5dbb-45f7-a591-c3756a8c4a84",
+//         "tokenRole": "user",
+//         "canDj": true
+//       }
+//     },
+//     {
+//       "op": "remove",
+//       "path": "/djs/2"
+//     },
+//     {
+//       "op": "add",
+//       "path": "/audienceUsers/5",
+//       "value": {
+//         "uuid": "da447bd2-5dbb-45f7-a591-c3756a8c4a84",
+//         "tokenRole": "user",
+//         "canDj": true
+//       }
+//     }
+//   ]
+// }
+//
+// DJ left room
+// removedDJ payload:{
+//   "name": "removedDj",
+//     "statePatch": [
+//     {
+//       "op": "remove",
+//       "path": "/visibleDjs/2"
+//     },
+//     {
+//       "op": "add",
+//       "path": "/floorUsers/5",
+//       "value": {
+//         "uuid": "da447bd2-5dbb-45f7-a591-c3756a8c4a84",
+//         "tokenRole": "user",
+//         "canDj": true
+//       }
+//     },
+//     {
+//       "op": "remove",
+//       "path": "/djs/2"
+//     },
+//     {
+//       "op": "add",
+//       "path": "/audienceUsers/5",
+//       "value": {
+//         "uuid": "da447bd2-5dbb-45f7-a591-c3756a8c4a84",
+//         "tokenRole": "user",
+//         "canDj": true
+//       }
+//     }
+//   ]
+// }

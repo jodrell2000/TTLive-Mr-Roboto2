@@ -420,8 +420,8 @@ const commandFunctions = () => {
   }
   moderatorCommands.notheme.help = "Set a theme for the room";
 
-  moderatorCommands.randomtheme = ( { data, chatFunctions, roomFunctions } ) => {
-    roomFunctions.themeRandomizer( data, chatFunctions );
+  moderatorCommands.randomtheme = ( { data, chatFunctions, roomFunctions, userFunctions } ) => {
+    roomFunctions.themeRandomizer( data, chatFunctions, userFunctions );
   }
   moderatorCommands.randomtheme.help = "Enable/Disable the theme randomizer";
 

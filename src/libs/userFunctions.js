@@ -1385,7 +1385,10 @@ const userFunctions = () => {
           this.addDJToList(item.uuid);
         }
       }
-
+      await this.logDJQueue();
+    },
+    
+    logDJQueue: async function () {
       const detailedDJList = await Promise.all(
         this.djList().map(async uuid => {
           const username = await this.getUsername(uuid); // Await getUsername

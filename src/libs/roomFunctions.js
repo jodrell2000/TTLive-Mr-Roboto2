@@ -54,7 +54,7 @@ const roomFunctions = () => {
     },
 
     themeRandomizerEnabled: () => themeRandomizerEnabled,
-    setthemeRandomizer: function ( value ) { themeRandomizerEnabled = value; },
+    setthemeRandomizer: async function ( value ) { themeRandomizerEnabled = value; },
 
     theTimer: function () {
       const timer = ms => new Promise( res => setTimeout( res, ms ) );
@@ -225,22 +225,28 @@ const roomFunctions = () => {
       }
     },
 
-    themeRandomizer: function ( data, chatFunctions ) {
+    themeRandomizer: async function ( data, chatFunctions, userFunctions ) {
       if ( this.themeRandomizerEnabled() === false ) {
-        this.enableThemeRandomizer( data, chatFunctions );
+        await this.enableThemeRandomizer( data, chatFunctions, userFunctions );
       } else {
-        this.disableThemeRandomizer( data, chatFunctions );
+        await this.disableThemeRandomizer( data, chatFunctions );
       }
     },
 
-    enableThemeRandomizer: function ( data, chatFunctions ) {
-      this.setthemeRandomizer( true );
-      chatFunctions.botSpeak( 'The theme randomizer is now active' );
+    enableThemeRandomizer: async function ( data, chatFunctions, userFunctions ) {
+      await this.setthemeRandomizer( true );
+      await this.pickRandomizerTriggerDJ( userFunctions );
+      await chatFunctions.botSpeak( 'The theme randomizer is now active' );
+    },
+    
+    pickRandomizerTriggerDJ: async function ( userFunctions) {
+      await userFunctions.logDJQueue();
+      console.log(`How many DJs: ${userFunctions.djList().length}`)
     },
 
-    disableThemeRandomizer: function ( data, chatFunctions ) {
-      this.setthemeRandomizer( false );
-      chatFunctions.botSpeak( 'The theme randomizer is now disabled' );
+    disableThemeRandomizer: async function ( data, chatFunctions ) {
+      await this.setthemeRandomizer( false );
+      await chatFunctions.botSpeak( 'The theme randomizer is now disabled' );
     },
 
     getThemeRandomizerStore: function () {
@@ -288,7 +294,7 @@ const roomFunctions = () => {
       documentationFunctions.rebuildThemesDocumentation( themeList );
     },
 
-    readRandomThemes: function ( data, chatFunctions ) {
+    readRandomThemes: async function ( data, chatFunctions ) {
       // const store = this.getThemeRandomizerStore();
       // const theThemes = this.getRandomThemes( store );
       // let formattedThemes = "";
@@ -298,7 +304,7 @@ const roomFunctions = () => {
 
       // formattedThemes = formattedThemes.substring( 0, formattedThemes.length - 2 );
 
-      chatFunctions.botSpeak( 'Check the room info for the full list' );
+      await chatFunctions.botSpeak( 'Check the room info for the full list' );
     },
 
     getRandomThemes: async function ( store ) {
@@ -324,16 +330,16 @@ const roomFunctions = () => {
       }
     },
 
-    getRandomTheme: function () {
-      const theThemes = this.getRandomThemes( this.getThemeRandomizerStore() )
+    getRandomTheme: async function () {
+      const theThemes = await this.getRandomThemes( this.getThemeRandomizerStore() )
       const thisTheme = theThemes[ Math.ceil( Math.random() * theThemes.length ) ];
       return thisTheme;
     },
 
-    announceNewRandomThene: function ( data, chatFunctions ) {
-      chatFunctions.botSpeak( 'Drum roll please. Time to find out what the theme for the next round is.... ' );
+    announceNewRandomTheme: async function ( data, chatFunctions ) {
+      await chatFunctions.botSpeak( 'Drum roll please. Time to find out what the theme for the next round is.... ' );
       const timer = this.theTimer();
-      timer( 3000 ).then( _ => this.setThemeCommand( data, this.getRandomTheme(), chatFunctions ) );
+      timer( 3000 ).then( async _ => await this.setThemeCommand( data, await this.getRandomTheme(), chatFunctions ) );
     },
 
     // ========================================================

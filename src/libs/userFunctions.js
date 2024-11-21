@@ -15,6 +15,7 @@ let afkPeople = []; //holds the userid of everyone who has used the /afk command
 let modPM = []; //holds the userid's of everyone in the /modpm feature
 let djList = []; //holds the userid of all the dj's who are on stage currently
 let djRandomizerList = []; // holds the userid of all the dj's for the randomizer
+let randomizerTriggerDJ = ""; // the uuid of the DJ that causes teh randomizer to trigger
 let notifyThisDJ = null; // holds the ID of the DJ being told they're next in the queue
 let superDJs = []; // list of users not removed by exceeding the playcount and who don't have to queue
 
@@ -1286,18 +1287,9 @@ const userFunctions = () => {
     // ========================================================
 
     djList: () => djList,
-    djRandomizerList: async () => djRandomizerList,
 
     clearDJList: function () {
       djList = []
-    },
-
-    storeCurrentDJListForRandomizer: async function () {
-      djRandomizerList = djList;
-    },
-
-    clearDJRandomizerList: function () {
-      djRandomizerList = []
     },
 
     addDJToList: function (userID) {
@@ -1498,6 +1490,27 @@ const userFunctions = () => {
     },
 
     // ========================================================
+    
+    // ========================================================
+    // Randomizer DJ Functions
+    // ========================================================
+    
+    djRandomizerList: async () => djRandomizerList,
+
+    storeCurrentDJListForRandomizer: async function () {
+      djRandomizerList = djList;
+    },
+    
+    saveTriggerDJForRandomizer: async ( uuid ) => randomizerTriggerDJ = uuid,
+
+    getRandomizerTriggerDJ: async () => randomizerTriggerDJ,
+
+    clearRandomizerTriggerDJ: async () =>  randomizerTriggerDJ = "",
+
+    clearDJRandomizerList: function () {
+      djRandomizerList = []
+    },
+
 
     // ========================================================
     // DJ Play Limit Functions

@@ -238,23 +238,32 @@ const roomFunctions = () => {
       await this.pickRandomizerTriggerDJ( userFunctions );
       await chatFunctions.botSpeak( 'The theme randomizer is now active' );
     },
-    
-    pickRandomizerTriggerDJ: async function ( userFunctions, uuid = null) {
-      await userFunctions.logDJQueue();
-      console.log(`How many DJs: ${ userFunctions.djList().length }`)
 
-      await userFunctions.storeCurrentDJListForRandomizer( );
+    pickRandomizerTriggerDJ: async function (userFunctions, previousTriggerUUID = null) {
+      const djList = userFunctions.djList();
       const currentRandomizerList = await userFunctions.djRandomizerList();
-      
-      if ( uuid === null ) {
-        console.log(`triggerDJ is: ${ currentRandomizerList[ currentRandomizerList.length - 1 ] }`)
+
+      let pickedUUID;
+
+      // Case 1: No previous trigger or an empty randomizer list, or the previous DJ is the first in the list
+      if (previousTriggerUUID === null || currentRandomizerList.length === 0 || djList.indexOf(previousTriggerUUID) === 0) {
+        pickedUUID = djList[djList.length - 1]; // Pick last DJ
       }
-      
+      // Case 2: Previous trigger is no longer in the DJ list
+      else if (djList.indexOf(previousTriggerUUID) === -1) {
+        const previousPosition = currentRandomizerList.indexOf(previousTriggerUUID);
+        pickedUUID = (djList.length !== previousPosition) ? djList[previousPosition] : djList[0]; // Pick DJ based on position or first DJ
+      }
+
+      await userFunctions.storeCurrentDJListForRandomizer();
+      await userFunctions.saveTriggerDJForRandomizer(pickedUUID);
+      console.log(`triggerDJ is: ${pickedUUID}`);
     },
 
     disableThemeRandomizer: async function ( data, chatFunctions, userFunctions ) {
       await this.setthemeRandomizer( false );
-      userFunctions.clearDJRandomizerList();
+      await userFunctions.clearDJRandomizerList();
+      await userFunctions.clearRandomizerTriggerDJ()
       await chatFunctions.botSpeak( 'The theme randomizer is now disabled' );
     },
 

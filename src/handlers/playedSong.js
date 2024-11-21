@@ -49,6 +49,8 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
   }
   roomFunctions.setDJCount( state.djs.length ); //the number of djs on stage
   
+  await roomFunctions.pickRandomizerTriggerDJ( userFunctions );
+  
   // bot votes, after 30 seconds in case a skip is needed
   await new Promise( resolve => {
     setTimeout( async () => {

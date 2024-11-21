@@ -57,8 +57,7 @@ const roomFunctions = () => {
     setthemeRandomizer: async function ( value ) { themeRandomizerEnabled = value; },
 
     theTimer: function () {
-      const timer = ms => new Promise( res => setTimeout( res, ms ) );
-      return timer;
+      return ms => new Promise( res => setTimeout( res, ms ) );
     },
 
     // ========================================================
@@ -248,7 +247,7 @@ const roomFunctions = () => {
     checkTriggerDJAndPickNewTheme: async function ( djID, data, userFunctions, chatFunctions, databaseFunctions ) {
       if ( djID === await userFunctions.getRandomizerTriggerDJ() ) {
         await this.pickRandomizerTriggerDJ( userFunctions, djID )
-        await this.announceNewRandomTheme(  data, chatFunctions, databaseFunctions )
+        await this.announceNewRandomTheme(  data, chatFunctions, userFunctions, databaseFunctions )
       }
     },
 
@@ -284,9 +283,7 @@ const roomFunctions = () => {
       const __filename = fileURLToPath(import.meta.url); // Get the current module's file path
       const __dirname = dirname(__filename);            // Get the current directory
       const dataFilePath = `${__dirname}/../../data/${themesDataFileName}`;
-      const store = new Storage( dataFilePath );
-
-      return store;
+      return new Storage( dataFilePath );
     },
 
     randomThemeAdd: async function ( data, newTheme, chatFunctions, documentationFunctions ) {
@@ -351,11 +348,7 @@ const roomFunctions = () => {
       console.log(`theThemes: ${JSON.stringify(theThemes, null, 2)}`);
 
       if ( theThemes !== undefined || theThemes.length > 0 ) {
-        if ( theThemes.indexOf( themeToCheck ) === -1 ) {
-          return false;
-        } else {
-          return true;
-        }
+        return theThemes.indexOf( themeToCheck ) !== -1;
       } else {
         return false;
       }
@@ -363,14 +356,16 @@ const roomFunctions = () => {
 
     getRandomTheme: async function () {
       const theThemes = await this.getRandomThemes( this.getThemeRandomizerStore() )
-      const thisTheme = theThemes[ Math.ceil( Math.random() * theThemes.length ) ];
-      return thisTheme;
+      return theThemes[ Math.ceil( Math.random() * theThemes.length ) ];
     },
 
-    announceNewRandomTheme: async function ( data, chatFunctions, databaseFunctions ) {
+    announceNewRandomTheme: async function ( data, chatFunctions, userFunctions, databaseFunctions ) {
       await chatFunctions.botSpeak( 'Drum roll please. Time to find out what the theme for the next round is.... ' );
       const timer = this.theTimer();
-      timer( 3000 ).then( async _ => await this.setThemeCommand( data, await this.getRandomTheme(), chatFunctions, databaseFunctions ) );
+      const newTheme = await this.getRandomTheme()
+      const themeMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} will be the last DJ for this round`
+      timer( 3000 ).then( async _ => await this.setThemeCommand( data, newTheme, chatFunctions, databaseFunctions ) );
+      timer( 1000 ).then( async _ => await chatFunctions.botSpeak( themeMessage ) );
     },
 
     // ========================================================

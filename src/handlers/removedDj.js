@@ -4,9 +4,9 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
     if ( patch.path.startsWith('/audienceUsers/') ) {
       const theUserID = patch.value.uuid;
       if ( theUserID === undefined ) {
-        console.log(`payload.statePatch: ${JSON.stringify(payload.statePatch, null, 2)}`);
+        console.log(`removedDJ payload.statePatch: ${JSON.stringify(payload.statePatch, null, 2)}`);
       } else {
-        console.log(`theUserID: ${theUserID}`);
+        console.log(`removedDJ theUserID: ${theUserID}`);
       }
       await userFunctions.resetDJFlags( theUserID, databaseFunctions );
 
@@ -22,7 +22,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       
       // do we need a new triggerDJ for the randomizer?
       if ( roomFunctions.themeRandomizerEnabled() ) {
-        await roomFunctions.checkIfWeNeedANewTriggerDJ( theUserID, userFunctions )
+        await roomFunctions.checkIfWeNeedANewTriggerDJ( userFunctions.getCurrentDJID(), userFunctions )
       } 
 
       // this is for /warnme

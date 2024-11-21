@@ -19,8 +19,6 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
     if (!isGhost) {
       await chatFunctions.userGreeting(userInfo.uuid, userInfo.nickname, roomFunctions, userFunctions, databaseFunctions);
-    } else {
-      await chatFunctions.botSpeak("Who you gonna call?!?");
     }
   }
 }

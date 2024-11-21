@@ -236,6 +236,10 @@ const roomFunctions = () => {
       await this.setthemeRandomizer( true );
       await this.pickRandomizerTriggerDJ( userFunctions );
       await chatFunctions.botSpeak( 'The theme randomizer is now active' );
+      const triggerDJMessage = `The first theme will be picked when ${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} plays`
+      const timer = this.theTimer();
+      timer( 1000 ).then( async _ => await chatFunctions.botSpeak( triggerDJMessage ) );
+
     },
     
     checkIfWeNeedANewTriggerDJ: async function ( uuid, userFunctions ) {
@@ -358,6 +362,13 @@ const roomFunctions = () => {
       const theThemes = await this.getRandomThemes( this.getThemeRandomizerStore() )
       return theThemes[ Math.ceil( Math.random() * theThemes.length ) ];
     },
+    
+    announceTriggerDJ: async function ( userFunctions, chatFunctions ) {
+      const triggerDJMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} will be the last DJ for this round`
+      const timer = this.theTimer();
+      timer( 1000 ).then( async _ => await chatFunctions.botSpeak( triggerDJMessage ) );
+
+    },
 
     announceNewRandomTheme: async function ( data, chatFunctions, userFunctions, databaseFunctions ) {
       await chatFunctions.botSpeak( 'Drum roll please. Time to find out what the theme for the next round is.... ' );
@@ -365,7 +376,6 @@ const roomFunctions = () => {
       const newTheme = await this.getRandomTheme()
       const themeMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} will be the last DJ for this round`
       timer( 3000 ).then( async _ => await this.setThemeCommand( data, newTheme, chatFunctions, databaseFunctions ) );
-      timer( 1000 ).then( async _ => await chatFunctions.botSpeak( themeMessage ) );
     },
 
     // ========================================================

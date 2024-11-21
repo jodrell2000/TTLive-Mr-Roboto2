@@ -204,7 +204,7 @@ const roomFunctions = () => {
       theme = false;
     },
 
-    setThemeCommand: async function ( data, newTheme, chatFunctions, databaseFunctions ) {
+    setThemeCommand: async function ( data, newTheme, chatFunctions, databaseFunctions, userFunctions ) {
       this.setTheme( newTheme );
       await databaseFunctions.recordMemory( "theme", newTheme )
       await this.readTheme( data, chatFunctions, userFunctions );

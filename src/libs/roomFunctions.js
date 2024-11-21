@@ -243,17 +243,13 @@ const roomFunctions = () => {
       await userFunctions.logDJQueue();
       console.log(`How many DJs: ${ userFunctions.djList().length }`)
 
-      await this.storeCurrentDJListForRandomizer( userFunctions );
+      await userFunctions.storeCurrentDJListForRandomizer( );
       const currentRandomizerList = await userFunctions.djRandomizerList();
       
       if ( uuid === null ) {
         console.log(`triggerDJ is: ${ currentRandomizerList[ currentRandomizerList.length - 1 ] }`)
       }
       
-    },
-
-    storeCurrentDJListForRandomizer: async function ( userFunctions ) {
-      userFunctions.djRandomizerList = userFunctions.djList()
     },
 
     disableThemeRandomizer: async function ( data, chatFunctions, userFunctions ) {

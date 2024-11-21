@@ -1292,6 +1292,10 @@ const userFunctions = () => {
       djList = []
     },
 
+    storeCurrentDJListForRandomizer: async function () {
+      djRandomizerList = djList;
+    },
+
     clearDJRandomizerList: function () {
       djRandomizerList = []
     },

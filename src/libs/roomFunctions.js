@@ -229,7 +229,7 @@ const roomFunctions = () => {
       if ( this.themeRandomizerEnabled() === false ) {
         await this.enableThemeRandomizer( data, chatFunctions, userFunctions );
       } else {
-        await this.disableThemeRandomizer( data, chatFunctions );
+        await this.disableThemeRandomizer( data, chatFunctions, userFunctions );
       }
     },
 
@@ -239,13 +239,26 @@ const roomFunctions = () => {
       await chatFunctions.botSpeak( 'The theme randomizer is now active' );
     },
     
-    pickRandomizerTriggerDJ: async function ( userFunctions) {
+    pickRandomizerTriggerDJ: async function ( userFunctions, uuid = null) {
       await userFunctions.logDJQueue();
       console.log(`How many DJs: ${userFunctions.djList().length}`)
+
+      await this.storeCurrentDJListForRandomizer( userFunctions );
+      const currentRandomizerList = userFunctions.djRandomizerList();
+      
+      if ( uuid === null ) {
+        console.log(`triggerDJ is: ${ currentRandomizerList[ currentRandomizerList.length - 1 ] }`)
+      }
+      
     },
 
-    disableThemeRandomizer: async function ( data, chatFunctions ) {
+    storeCurrentDJListForRandomizer: async function ( userFunctions ) {
+      userFunctions.djRandomizerList = userFunctions.djList()
+    },
+
+    disableThemeRandomizer: async function ( data, chatFunctions, userFunctions ) {
       await this.setthemeRandomizer( false );
+      userFunctions.clearDJRandomizerList();
       await chatFunctions.botSpeak( 'The theme randomizer is now disabled' );
     },
 

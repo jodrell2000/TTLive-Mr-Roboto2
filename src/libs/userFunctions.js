@@ -14,6 +14,7 @@ let theUsersList = []; // object array of everyone in the room
 let afkPeople = []; //holds the userid of everyone who has used the /afk command
 let modPM = []; //holds the userid's of everyone in the /modpm feature
 let djList = []; //holds the userid of all the dj's who are on stage currently
+let djRandomizerList = []; // holds the userid of all the dj's for the randomizer
 let notifyThisDJ = null; // holds the ID of the DJ being told they're next in the queue
 let superDJs = []; // list of users not removed by exceeding the playcount and who don't have to queue
 
@@ -1285,9 +1286,14 @@ const userFunctions = () => {
     // ========================================================
 
     djList: () => djList,
+    djRandomizerList: () => djRandomizerList,
 
     clearDJList: function () {
       djList = []
+    },
+
+    clearDJRandomizerList: function () {
+      djRandomizerList = []
     },
 
     addDJToList: function (userID) {
@@ -1396,7 +1402,7 @@ const userFunctions = () => {
         })
       );
 
-      console.log("resetDJs - DJ List now contains:", JSON.stringify(detailedDJList, null, 2));
+      console.log("DJ List now contains:", JSON.stringify(detailedDJList, null, 2));
     },
 
     checkOKToDJ: async function ( theUserID, roomFunctions ) {

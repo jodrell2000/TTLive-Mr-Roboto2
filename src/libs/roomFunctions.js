@@ -244,6 +244,13 @@ const roomFunctions = () => {
         await this.pickRandomizerTriggerDJ( userFunctions, uuid )
       }
     },
+    
+    checkTriggerDJAndPickNewTheme: async function ( djID, data, userFunctions, chatFunctions ) {
+      if ( djID === await userFunctions.getRandomizerTriggerDJ() ) {
+        await this.pickRandomizerTriggerDJ( userFunctions, djID )
+        await this.announceNewRandomTheme(  data, chatFunctions )
+      }
+    },
 
     pickRandomizerTriggerDJ: async function ( userFunctions, previousTriggerUUID = null ) {
       const djList = userFunctions.djList();

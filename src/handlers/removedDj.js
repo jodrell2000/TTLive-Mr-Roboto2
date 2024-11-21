@@ -1,14 +1,14 @@
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
   console.log(`removedDJ payload:${JSON.stringify(payload,null,2)}`)
   for ( const patch of payload.statePatch ) {
-    if (patch.path.startsWith('/audienceUsers/') && patch.path.endsWith('/uuid')) {
-      const theUserID = patch.value;
+    if ( patch.path.startsWith('/audienceUsers/') ) {
+      const theUserID = patch.value.uuid;
       await userFunctions.resetDJFlags( theUserID, databaseFunctions );
 
       //gives them one chance to get off-stage, then after that they're play limit is treated as normal
-      if ( typeof await userFunctions.getUsersRefreshCurrentPlayCount[ theUserID ] == 'number' && await userFunctions.isUserInRefreshList( theUserID ) === false ) {
-        delete await userFunctions.getUsersRefreshCurrentPlayCount[ theUserID ]
-      }
+      // if ( typeof await userFunctions.getUsersRefreshCurrentPlayCount[ theUserID ] == 'number' && await userFunctions.isUserInRefreshList( theUserID ) === false ) {
+      //   delete await userFunctions.getUsersRefreshCurrentPlayCount[ theUserID ]
+      // }
 
       if ( await userFunctions.hasDjsElement( currentState ) ) {
         await userFunctions.resetDJs( currentState.djs )
@@ -16,16 +16,16 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       }
 
       // this is for /warnme
-      if ( userFunctions.warnme().length !== 0 ) {
-        let areTheyBeingWarned = userFunctions.warnme().indexOf( theUserID );
-        if ( areTheyBeingWarned !== -1 ) { //if they're on /warnme and they leave the stage
-          userFunctions.warnme().splice( areTheyBeingWarned, 1 );
-        }
-      }
+      // if ( userFunctions.warnme().length !== 0 ) {
+      //   let areTheyBeingWarned = userFunctions.warnme().indexOf( theUserID );
+      //   if ( areTheyBeingWarned !== -1 ) { //if they're on /warnme and they leave the stage
+      //     userFunctions.warnme().splice( areTheyBeingWarned, 1 );
+      //   }
+      // }
 
       //checks if when someone gets off the stage, if the person
       //on the left is now the next dj
-      userFunctions.warnMeCall( roomFunctions );
+      // userFunctions.warnMeCall( roomFunctions );
 
       //check to see if conditions are met for bots autodjing feature
       // await botFunctions.checkAutoDJing( userFunctions );
@@ -33,4 +33,71 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       await userFunctions.removeEscortMeFromUser( theUserID, databaseFunctions );
     }
   }
+}
+
+
+DJ leave stage
+removedDJ payload:{
+  "name": "removedDj",
+    "statePatch": [
+    {
+      "op": "remove",
+      "path": "/visibleDjs/2"
+    },
+    {
+      "op": "add",
+      "path": "/floorUsers/5",
+      "value": {
+        "uuid": "da447bd2-5dbb-45f7-a591-c3756a8c4a84",
+        "tokenRole": "user",
+        "canDj": true
+      }
+    },
+    {
+      "op": "remove",
+      "path": "/djs/2"
+    },
+    {
+      "op": "add",
+      "path": "/audienceUsers/5",
+      "value": {
+        "uuid": "da447bd2-5dbb-45f7-a591-c3756a8c4a84",
+        "tokenRole": "user",
+        "canDj": true
+      }
+    }
+  ]
+}
+
+DJ left room
+removedDJ payload:{
+  "name": "removedDj",
+    "statePatch": [
+    {
+      "op": "remove",
+      "path": "/visibleDjs/2"
+    },
+    {
+      "op": "add",
+      "path": "/floorUsers/5",
+      "value": {
+        "uuid": "da447bd2-5dbb-45f7-a591-c3756a8c4a84",
+        "tokenRole": "user",
+        "canDj": true
+      }
+    },
+    {
+      "op": "remove",
+      "path": "/djs/2"
+    },
+    {
+      "op": "add",
+      "path": "/audienceUsers/5",
+      "value": {
+        "uuid": "da447bd2-5dbb-45f7-a591-c3756a8c4a84",
+        "tokenRole": "user",
+        "canDj": true
+      }
+    }
+  ]
 }

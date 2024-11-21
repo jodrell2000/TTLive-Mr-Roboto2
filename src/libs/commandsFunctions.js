@@ -88,8 +88,8 @@ const commandFunctions = () => {
   }
   generalCommands.mystats.help = "What info does the Bot currently hold about you...handy for knowing how much time you've been wasting on here today!";
 
-  generalCommands.theme = ( { data, roomFunctions, chatFunctions } ) => {
-    roomFunctions.readTheme( data, chatFunctions );
+  generalCommands.theme = ( { data, roomFunctions, chatFunctions, userFunctions } ) => {
+    roomFunctions.readTheme( data, chatFunctions, userFunctions );
   }
   generalCommands.theme.help = "Tells you what the current teme is, if there is one";
 
@@ -410,13 +410,13 @@ const commandFunctions = () => {
   moderatorCommands.removealias.help = "Remove an alias from a command";
   moderatorCommands.removealias.sampleArguments = [ "alias", "command" ];
 
-  moderatorCommands.settheme = ( { data, args, chatFunctions, roomFunctions, databaseFunctions } ) => {
-    roomFunctions.setThemeCommand( data, reassembleArgs( args ), chatFunctions, databaseFunctions );
+  moderatorCommands.settheme = ( { data, args, chatFunctions, roomFunctions, databaseFunctions, userFunctions } ) => {
+    roomFunctions.setThemeCommand( data, reassembleArgs( args ), chatFunctions, databaseFunctions, userFunctions );
   }
   moderatorCommands.settheme.help = "Set a theme for the room";
 
-  moderatorCommands.notheme = ( { data, chatFunctions, roomFunctions, databaseFunctions } ) => {
-    roomFunctions.removeThemeCommand( data, chatFunctions, databaseFunctions );
+  moderatorCommands.notheme = ( { data, chatFunctions, roomFunctions, databaseFunctions, userFunctions } ) => {
+    roomFunctions.removeThemeCommand( data, chatFunctions, databaseFunctions, userFunctions );
   }
   moderatorCommands.notheme.help = "Set a theme for the room";
 

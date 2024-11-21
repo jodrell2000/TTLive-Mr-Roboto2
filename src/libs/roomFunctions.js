@@ -207,20 +207,23 @@ const roomFunctions = () => {
     setThemeCommand: async function ( data, newTheme, chatFunctions, databaseFunctions ) {
       this.setTheme( newTheme );
       await databaseFunctions.recordMemory( "theme", newTheme )
-      this.readTheme( data, chatFunctions );
+      await this.readTheme( data, chatFunctions, userFunctions );
     },
 
-    removeThemeCommand: async function ( data, chatFunctions, databaseFunctions ) {
+    removeThemeCommand: async function ( data, chatFunctions, databaseFunctions, userFunctions ) {
       this.clearTheme();
       await databaseFunctions.recordMemory( "theme", null )
-      this.readTheme( data, chatFunctions );
+      await this.readTheme( data, chatFunctions, userFunctions );
     },
 
-    readTheme: function ( data, chatFunctions ) {
+    readTheme: async function ( data, chatFunctions, userFunctions ) {
       if ( this.theme() === false ) {
-        chatFunctions.botSpeak( 'There is currently no theme' );
+        await chatFunctions.botSpeak( 'There is currently no theme' );
       } else {
-        chatFunctions.botSpeak( 'The Theme is ' + this.theme() );
+        await chatFunctions.botSpeak( 'The Theme is ' + this.theme() );
+        if ( this.themeRandomizerEnabled() === true ) {
+          await chatFunctions.botSpeak( `A new theme will be picked when ${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} plays` );
+        }
       }
     },
 
@@ -377,8 +380,8 @@ const roomFunctions = () => {
       const timer = this.theTimer();
       const newTheme = await this.getRandomTheme()
       const themeMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} will be the last DJ for this round`
-      timer( 3000 ).then( async _ => await this.setThemeCommand( data, newTheme, chatFunctions, databaseFunctions ) );
-      timer( 1000 ).then( async _ => await this.setThemeCommand( data, themeMessage, chatFunctions, databaseFunctions ) );
+      timer( 3000 ).then( async _ => await this.setThemeCommand( data, newTheme, chatFunctions, databaseFunctions, userFunctions ) );
+      timer( 1000 ).then( async _ => await chatFunctions.botSpeak( themeMessage ) );
     },
 
     // ========================================================

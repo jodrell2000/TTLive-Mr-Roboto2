@@ -246,10 +246,10 @@ const roomFunctions = () => {
     },
     
     checkIfWeNeedANewTriggerDJ: async function ( uuid, userFunctions, chatFunctions ) {
+      await chatFunctions.botSpeak( `${ await userFunctions.getUsername( uuid )} left, do we need a new random DJ?` )
       if ( uuid === await userFunctions.getRandomizerTriggerDJ() ) {
         await this.pickRandomizerTriggerDJ( userFunctions, uuid )
-        const themeMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} will now be the last DJ for this round`
-        await chatFunctions.botSpeak( themeMessage );
+        await chatFunctions.botSpeak( `${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} will now be the last DJ for this round` );
       }
     },
     

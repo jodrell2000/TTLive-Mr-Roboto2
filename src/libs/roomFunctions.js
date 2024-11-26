@@ -258,6 +258,9 @@ const roomFunctions = () => {
       if ( djID === await userFunctions.getRandomizerTriggerDJ() ) {
         await this.pickRandomizerTriggerDJ( userFunctions, djID )
         await this.announceNewRandomTheme(  data, chatFunctions, userFunctions, databaseFunctions )
+      } else {
+        const theMessage = `New DJ not selected. New theme will be picked when ${ await userFunctions.getRandomizerTriggerDJ() } plays`
+        await chatFunctions.botSpeak( theMessage );
       }
     },
 

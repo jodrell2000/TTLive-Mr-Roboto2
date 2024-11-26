@@ -246,6 +246,7 @@ const roomFunctions = () => {
     },
     
     checkIfWeNeedANewTriggerDJ: async function ( uuid, userFunctions, chatFunctions ) {
+      await chatFunctions.botSpeak( `The DJ who left was ${ uuid }` )
       await chatFunctions.botSpeak( `${ await userFunctions.getUsername( uuid )} left, do we need a new random DJ?` )
       if ( uuid === await userFunctions.getRandomizerTriggerDJ() ) {
         await this.pickRandomizerTriggerDJ( userFunctions, uuid )

@@ -48,14 +48,21 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     await chatFunctions.botSpeak( theMessage )
   }
   roomFunctions.setDJCount( state.djs.length ); //the number of djs on stage
-  
+
+  if ( roomFunctions.themeRandomizerEnabled() ) {
+    await userFunctions.storeCurrentDJListForRandomizer();
+    await new Promise( resolve => {
+      setTimeout( async () => {
+        await roomFunctions.checkTriggerDJAndPickNewTheme( djID, state, userFunctions, chatFunctions, databaseFunctions )
+        resolve();
+      }, 10 * 1000 );
+    } );
+  }
+
   // bot votes, after 30 seconds in case a skip is needed
   await new Promise( resolve => {
     setTimeout( async () => {
       await botFunctions.upVote( socket )
-      if ( roomFunctions.themeRandomizerEnabled() ) {
-        await roomFunctions.checkTriggerDJAndPickNewTheme( djID, state, userFunctions, chatFunctions, databaseFunctions )
-      }
       resolve();
     }, 30 * 1000 );
   } );

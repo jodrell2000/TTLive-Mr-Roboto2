@@ -245,10 +245,11 @@ const roomFunctions = () => {
 
     },
     
-    checkIfWeNeedANewTriggerDJ: async function ( uuid, userFunctions ) {
+    checkIfWeNeedANewTriggerDJ: async function ( uuid, userFunctions, chatFunctions ) {
       if ( uuid === await userFunctions.getRandomizerTriggerDJ() ) {
         await this.pickRandomizerTriggerDJ( userFunctions, uuid )
         const themeMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} will now be the last DJ for this round`
+        await chatFunctions.botSpeak( themeMessage );
       }
     },
     
@@ -268,7 +269,11 @@ const roomFunctions = () => {
 
       // Case 1: No previous trigger or an empty randomizer list, or the previous DJ is the first in the list
       if (previousTriggerUUID === null || currentRandomizerList.length === 0 || djList.indexOf(previousTriggerUUID) === 0) {
-        pickedUUID = djList[djList.length - 1]; // Pick last DJ
+        if (djList.length > 1) {
+          pickedUUID = djList[1]; // Pick next DJ
+        } else {
+          pickedUUID = djList[0]; // Pick the only DJ there is
+        }
       }
       // Case 2: Previous trigger is no longer in the DJ list
       else if (djList.indexOf(previousTriggerUUID) === -1) {

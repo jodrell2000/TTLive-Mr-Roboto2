@@ -22,7 +22,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       
       // do we need a new triggerDJ for the randomizer?
       if ( roomFunctions.themeRandomizerEnabled() ) {
-        await roomFunctions.checkIfWeNeedANewTriggerDJ( userFunctions.getCurrentDJID(), userFunctions )
+        await roomFunctions.checkIfWeNeedANewTriggerDJ( theUserID, userFunctions )
       } 
 
       // this is for /warnme

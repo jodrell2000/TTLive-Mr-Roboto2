@@ -249,8 +249,11 @@ const roomFunctions = () => {
       await chatFunctions.botSpeak( `The DJ who left was ${ uuid }` )
       await chatFunctions.botSpeak( `${ await userFunctions.getUsername( uuid )} left, do we need a new random DJ?` )
       if ( uuid === await userFunctions.getRandomizerSwitchDJ() ) {
+        await chatFunctions.botSpeak( `Yup! The DJ who left was the Switch DJ` );
         await this.pickRandomizerSwitchDJ( userFunctions, uuid )
         await chatFunctions.botSpeak( `${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} will now be the last DJ for this round` );
+      } else {
+        await chatFunctions.botSpeak( `No, the DJ who left was not the Switch DJ` );
       }
     },
     

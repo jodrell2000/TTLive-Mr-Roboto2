@@ -289,6 +289,7 @@ const roomFunctions = () => {
       }
       // Case 2: Previous switch is no longer in the DJ list
       else if (djList.indexOf(previousSwitchUUID) === -1) {
+        console.log(`Picking new Switch DJ`)
         const previousPosition = currentRandomizerList.indexOf(previousSwitchUUID);
         pickedUUID = (djList.length < previousPosition) ? djList[ djList.length - 1] : djList[previousPosition]; // Pick DJ based on
         // position of whichever DJ is in the same position on the list, or the last DJ if they were at the end

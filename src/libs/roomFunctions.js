@@ -222,7 +222,7 @@ const roomFunctions = () => {
       } else {
         await chatFunctions.botSpeak( 'The Theme is ' + this.theme() );
         if ( this.themeRandomizerEnabled() === true ) {
-          await chatFunctions.botSpeak( `A new theme will be picked when ${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} plays` );
+          await chatFunctions.botSpeak( `A new theme will be picked when ${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} plays` );
         }
       }
     },
@@ -237,63 +237,63 @@ const roomFunctions = () => {
 
     enableThemeRandomizer: async function ( data, chatFunctions, userFunctions ) {
       await this.setthemeRandomizer( true );
-      await this.pickRandomizerTriggerDJ( userFunctions );
+      await this.pickRandomizerSwitchDJ( userFunctions );
       await chatFunctions.botSpeak( 'The theme randomizer is now active' );
-      const triggerDJMessage = `The first theme will be picked when ${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} plays`
+      const SwitchDJMessage = `The first theme will be picked when ${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} plays`
       const timer = this.theTimer();
-      timer( 1000 ).then( async _ => await chatFunctions.botSpeak( triggerDJMessage ) );
+      timer( 1000 ).then( async _ => await chatFunctions.botSpeak( SwitchDJMessage ) );
 
     },
     
-    checkIfWeNeedANewTriggerDJ: async function ( uuid, userFunctions, chatFunctions ) {
+    checkIfWeNeedANewSwitchDJ: async function ( uuid, userFunctions, chatFunctions ) {
       await chatFunctions.botSpeak( `The DJ who left was ${ uuid }` )
       await chatFunctions.botSpeak( `${ await userFunctions.getUsername( uuid )} left, do we need a new random DJ?` )
-      if ( uuid === await userFunctions.getRandomizerTriggerDJ() ) {
-        await this.pickRandomizerTriggerDJ( userFunctions, uuid )
-        await chatFunctions.botSpeak( `${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} will now be the last DJ for this round` );
+      if ( uuid === await userFunctions.getRandomizerSwitchDJ() ) {
+        await this.pickRandomizerSwitchDJ( userFunctions, uuid )
+        await chatFunctions.botSpeak( `${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} will now be the last DJ for this round` );
       }
     },
     
-    checkTriggerDJAndPickNewTheme: async function ( djID, data, userFunctions, chatFunctions, databaseFunctions ) {
-      console.log(`checkTriggerDJAndPickNewTheme checking uuid: ${djID}`)
-      if ( djID === await userFunctions.getRandomizerTriggerDJ() ) {
-        await this.pickRandomizerTriggerDJ( userFunctions, djID )
+    checkSwitchDJAndPickNewTheme: async function ( djID, data, userFunctions, chatFunctions, databaseFunctions ) {
+      console.log(`checkSwitchDJAndPickNewTheme checking uuid: ${djID}`)
+      if ( djID === await userFunctions.getRandomizerSwitchDJ() ) {
+        await chatFunctions.botSpeak( `Switch DJ played, picking new theme` )
+        await this.pickRandomizerSwitchDJ( userFunctions, djID )
         await this.announceNewRandomTheme(  data, chatFunctions, userFunctions, databaseFunctions )
       } else {
-        const theMessage = `New DJ not selected. New theme will be picked when ${ await userFunctions.getRandomizerTriggerDJ() } plays`
-        await chatFunctions.botSpeak( theMessage );
+        await chatFunctions.botSpeak( `New DJ not selected. New theme will be picked when ${ await userFunctions.getRandomizerSwitchDJ() } plays` );
       }
     },
 
-    pickRandomizerTriggerDJ: async function ( userFunctions, previousTriggerUUID = null ) {
+    pickRandomizerSwitchDJ: async function ( userFunctions, previousSwitchUUID = null ) {
       const djList = userFunctions.djList();
       const currentRandomizerList = await userFunctions.djRandomizerList();
 
       let pickedUUID;
 
-      // Case 1: No previous trigger or an empty randomizer list, or the previous DJ is the first in the list
-      if (previousTriggerUUID === null || currentRandomizerList.length === 0 || djList.indexOf(previousTriggerUUID) === 0) {
+      // Case 1: No previous switch or an empty randomizer list, or the previous DJ is the first in the list
+      if (previousSwitchUUID === null || currentRandomizerList.length === 0 || djList.indexOf(previousSwitchUUID) === 0) {
         if (djList.length > 1) {
           pickedUUID = djList[1]; // Pick next DJ
         } else {
           pickedUUID = djList[0]; // Pick the only DJ there is
         }
       }
-      // Case 2: Previous trigger is no longer in the DJ list
-      else if (djList.indexOf(previousTriggerUUID) === -1) {
-        const previousPosition = currentRandomizerList.indexOf(previousTriggerUUID);
+      // Case 2: Previous switch is no longer in the DJ list
+      else if (djList.indexOf(previousSwitchUUID) === -1) {
+        const previousPosition = currentRandomizerList.indexOf(previousSwitchUUID);
         pickedUUID = (djList.length !== previousPosition) ? djList[previousPosition] : djList[0]; // Pick DJ based on position or first DJ
       }
 
       await userFunctions.storeCurrentDJListForRandomizer();
-      await userFunctions.saveTriggerDJForRandomizer(pickedUUID);
-      console.log(`triggerDJ is: ${ await userFunctions.getRandomizerTriggerDJ() }`);
+      await userFunctions.saveSwitchDJForRandomizer(pickedUUID);
+      console.log(`Switch DJ is: ${ await userFunctions.getRandomizerSwitchDJ() }`);
     },
 
     disableThemeRandomizer: async function ( data, chatFunctions, userFunctions ) {
       await this.setthemeRandomizer( false );
       await userFunctions.clearDJRandomizerList();
-      await userFunctions.clearRandomizerTriggerDJ()
+      await userFunctions.clearRandomizerSwitchDJ()
       await chatFunctions.botSpeak( 'The theme randomizer is now disabled' );
     },
 
@@ -377,10 +377,10 @@ const roomFunctions = () => {
       return theThemes[ Math.ceil( Math.random() * theThemes.length ) ];
     },
     
-    announceTriggerDJ: async function ( userFunctions, chatFunctions ) {
-      const triggerDJMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} will be the last DJ for this round`
+    announceSwitchDJ: async function ( userFunctions, chatFunctions ) {
+      const SwitchDJMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} will be the last DJ for this round`
       const timer = this.theTimer();
-      timer( 1000 ).then( async _ => await chatFunctions.botSpeak( triggerDJMessage ) );
+      timer( 1000 ).then( async _ => await chatFunctions.botSpeak( SwitchDJMessage ) );
 
     },
 
@@ -388,7 +388,7 @@ const roomFunctions = () => {
       await chatFunctions.botSpeak( 'Drum roll please. Time to find out what the theme for the next round is.... ' );
       const timer = this.theTimer();
       const newTheme = await this.getRandomTheme()
-      const themeMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerTriggerDJ() )} will be the last DJ for this round`
+      const themeMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} will be the last DJ for this round`
       timer( 3000 ).then( async _ => await this.setThemeCommand( data, newTheme, chatFunctions, databaseFunctions, userFunctions ) );
       timer( 1000 ).then( async _ => await chatFunctions.botSpeak( themeMessage ) );
     },

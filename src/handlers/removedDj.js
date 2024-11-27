@@ -20,9 +20,9 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
         // console.log( `djList:${ JSON.stringify( currentState.djs, null, 2 ) }` )
       }
       
-      // do we need a new triggerDJ for the randomizer?
+      // do we need a new SwitchDJ for the randomizer?
       if ( roomFunctions.themeRandomizerEnabled() ) {
-        await roomFunctions.checkIfWeNeedANewTriggerDJ( theUserID, userFunctions )
+        await roomFunctions.checkIfWeNeedANewSwitchDJ( theUserID, userFunctions )
       } 
 
       // this is for /warnme

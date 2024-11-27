@@ -22,7 +22,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       
       // do we need a new SwitchDJ for the randomizer?
       if ( roomFunctions.themeRandomizerEnabled() ) {
-        await roomFunctions.checkIfWeNeedANewSwitchDJ( theUserID, userFunctions )
+        await roomFunctions.checkIfWeNeedANewSwitchDJ( theUserID, userFunctions, chatFunctions )
       } 
 
       // this is for /warnme

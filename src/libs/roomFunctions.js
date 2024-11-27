@@ -270,14 +270,14 @@ const roomFunctions = () => {
       const djList = userFunctions.djList();
       const currentRandomizerList = await userFunctions.djRandomizerList();
 
-      let pickedUUID;
+      let pickedUUID = previousSwitchUUID;
       console.log(`previousSwitchUUID: ${ previousSwitchUUID }`)
       console.log(`djList: ${ JSON.stringify(djList, null, 2) }`)
       console.log(`currentRandomizerList: ${ JSON.stringify(currentRandomizerList, null, 2) }`)
       console.log(`djList.indexOf(previousSwitchUUID): ${ djList.indexOf(previousSwitchUUID) }`)
 
       // Case 1: No previous switch or an empty randomizer list, or the previous DJ is the first in the list
-      if (previousSwitchUUID === null || currentRandomizerList.length === 0 || djList.indexOf(previousSwitchUUID) === 0) {
+      if (previousSwitchUUID === null || currentRandomizerList.length === 0 ) {
         if (djList.length > 1) {
           pickedUUID = djList[1]; // Pick next DJ
         } else {
@@ -289,6 +289,7 @@ const roomFunctions = () => {
         const previousPosition = currentRandomizerList.indexOf(previousSwitchUUID);
         pickedUUID = (djList.length !== previousPosition) ? djList[previousPosition] : djList[0]; // Pick DJ based on position or first DJ
       }
+      // otherwise don't change the switch ID so that they're the last DJ in the next round again
 
       await userFunctions.storeCurrentDJListForRandomizer();
       await userFunctions.saveSwitchDJForRandomizer(pickedUUID);

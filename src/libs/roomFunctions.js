@@ -266,10 +266,15 @@ const roomFunctions = () => {
     },
 
     pickRandomizerSwitchDJ: async function ( userFunctions, previousSwitchUUID = null ) {
+      console.group(`pickRandomizerSwitchDJ`)
       const djList = userFunctions.djList();
       const currentRandomizerList = await userFunctions.djRandomizerList();
 
       let pickedUUID;
+      console.log(`previousSwitchUUID: ${ previousSwitchUUID }`)
+      console.log(`djList: ${ JSON.stringify(djList, null, 2) }`)
+      console.log(`currentRandomizerList: ${ JSON.stringify(currentRandomizerList, null, 2) }`)
+      console.log(`djList.indexOf(previousSwitchUUID): ${ djList.indexOf(previousSwitchUUID) }`)
 
       // Case 1: No previous switch or an empty randomizer list, or the previous DJ is the first in the list
       if (previousSwitchUUID === null || currentRandomizerList.length === 0 || djList.indexOf(previousSwitchUUID) === 0) {
@@ -288,6 +293,7 @@ const roomFunctions = () => {
       await userFunctions.storeCurrentDJListForRandomizer();
       await userFunctions.saveSwitchDJForRandomizer(pickedUUID);
       console.log(`Switch DJ is: ${ await userFunctions.getRandomizerSwitchDJ() }`);
+      console.groupEnd()
     },
 
     disableThemeRandomizer: async function ( data, chatFunctions, userFunctions ) {

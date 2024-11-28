@@ -5,6 +5,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   for ( const patch of payload.statePatch ) {
     if ( patch.op = "replace" && patch.path.startsWith('/audienceUsers/') ) {
       const theUserID = patch.value;
+      console.log( JSON.stringify(theUserID, null, 2));
       if ( theUserID === undefined ) {
         console.log(`No UserID found?!?`)
         console.log(`removedDJ payload.statePatch: ${JSON.stringify(payload.statePatch, null, 2)}`);

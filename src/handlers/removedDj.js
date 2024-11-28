@@ -11,6 +11,8 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
         console.log(`removedDJ payload.statePatch: ${JSON.stringify(payload.statePatch, null, 2)}`);
       } else {
         console.log(`removedDJ Found UserID: ${theUserID}`);
+        console.log( `UserID: ${JSON.stringify(theUserID, null, 2)}`);
+
         // do we need a new SwitchDJ for the randomizer?
         if ( roomFunctions.themeRandomizerEnabled() ) {
           await roomFunctions.checkIfWeNeedANewSwitchDJ( theUserID, userFunctions, chatFunctions )

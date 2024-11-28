@@ -9,7 +9,13 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
         console.log(`No UserID found?!?`)
         console.log(`removedDJ payload.statePatch: ${JSON.stringify(payload.statePatch, null, 2)}`);
       } else {
-        console.log(`removedDJ Found UserID: ${theUserID}`);
+      //   console.log(`removedDJ Found UserID: ${theUserID}`);
+        // do we need a new SwitchDJ for the randomizer?
+        if ( roomFunctions.themeRandomizerEnabled() ) {
+          await roomFunctions.checkIfWeNeedANewSwitchDJ( theUserID, userFunctions, chatFunctions )
+        }
+
+        await userFunctions.removeEscortMeFromUser( theUserID, databaseFunctions );
       }
       await userFunctions.resetDJFlags( theUserID, databaseFunctions );
 
@@ -23,10 +29,6 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
         // console.log( `djList:${ JSON.stringify( currentState.djs, null, 2 ) }` )
       }
       
-      // do we need a new SwitchDJ for the randomizer?
-      if ( roomFunctions.themeRandomizerEnabled() ) {
-        await roomFunctions.checkIfWeNeedANewSwitchDJ( theUserID, userFunctions, chatFunctions )
-      } 
 
       // this is for /warnme
       // if ( userFunctions.warnme().length !== 0 ) {
@@ -43,7 +45,6 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       //check to see if conditions are met for bots autodjing feature
       // await botFunctions.checkAutoDJing( userFunctions );
 
-      await userFunctions.removeEscortMeFromUser( theUserID, databaseFunctions );
     }
   }
 }

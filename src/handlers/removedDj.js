@@ -1,16 +1,15 @@
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
-  // console.log(`removedDJ payload:${JSON.stringify(payload,null,2)}`)
+  console.log(`=======================`);
+  console.log(`removedDJ payload: ${JSON.stringify(payload, null, 2)}`);
+  console.log(`=======================`);
   for ( const patch of payload.statePatch ) {
-    console.log(`=======================`);
-    console.log(`removedDJ payload: ${JSON.stringify(payload, null, 2)}`);
-    console.log(`=======================`);
     if ( patch.path.startsWith('/audienceUsers/') ) {
       const theUserID = patch.value.uuid;
       if ( theUserID === undefined ) {
         console.log(`No UserID found?!?`)
         console.log(`removedDJ payload.statePatch: ${JSON.stringify(payload.statePatch, null, 2)}`);
       } else {
-        console.log(`removedDJ theUserID: ${theUserID}`);
+        console.log(`removedDJ Found UserID: ${theUserID}`);
       }
       await userFunctions.resetDJFlags( theUserID, databaseFunctions );
 

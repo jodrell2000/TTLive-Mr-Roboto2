@@ -4,7 +4,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   // console.log(`=======================`);
   for ( const patch of payload.statePatch ) {
     if ( patch.op = "replace" && patch.path.startsWith('/audienceUsers/') ) {
-      const theUserID = patch.value;
+      const theUserID = patch.value.uuid;
       console.log( JSON.stringify(theUserID, null, 2));
       if ( theUserID === undefined ) {
         console.log(`No UserID found?!?`)

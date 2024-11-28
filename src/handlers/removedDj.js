@@ -2,7 +2,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   // console.log(`removedDJ payload:${JSON.stringify(payload,null,2)}`)
   for ( const patch of payload.statePatch ) {
     console.log(`=======================`);
-    console.log(`removedDJ patch: ${JSON.stringify(patch, null, 2)}`);
+    console.log(`removedDJ payload: ${JSON.stringify(payload, null, 2)}`);
     console.log(`=======================`);
     if ( patch.path.startsWith('/audienceUsers/') ) {
       const theUserID = patch.value.uuid;

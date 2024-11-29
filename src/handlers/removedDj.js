@@ -1,12 +1,14 @@
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
   let theUserID;
-  for ( const patch of payload.statePatch ) {
-    if ( [ "replace", "remove", "add" ].includes( patch.op ) && patch.path.startsWith( '/audienceUsers/' ) ) {
-      theUserID = patch.value.uuid;
-      if ( theUserID === undefined ) {
-        console.log( `undefined theUserID: patch ${ JSON.stringify( patch, null, 2 ) }` );
+  for (const patch of payload.statePatch) {
+    if (["replace", "remove", "add"].includes(patch.op) && patch.path.startsWith('/audienceUsers/')) {
+      // Check if patch.value is an object and contains uuid
+      theUserID = typeof patch.value === 'object' && patch.value !== null ? patch.value.uuid : patch.value;
+
+      if (theUserID === undefined) {
+        console.log(`undefined theUserID: patch ${JSON.stringify(patch, null, 2)}`);
       } else {
-        console.log( `UserID: ${ JSON.stringify( theUserID, null, 2 ) }` );
+        console.log(`UserID: ${JSON.stringify(theUserID, null, 2)}`);
       }
     }
   }

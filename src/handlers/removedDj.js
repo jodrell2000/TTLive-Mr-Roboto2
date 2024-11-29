@@ -1,6 +1,6 @@
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
   for ( const patch of payload.statePatch ) {
-    if ( ["replace", "remove"].includes(patch.op) && patch.path.startsWith('/audienceUsers/') ) {
+    if ( [ "replace", "remove", "add" ].includes(patch.op) && patch.path.startsWith('/audienceUsers/') ) {
       const theUserID = patch.value.uuid;
       console.log( `UserID: ${JSON.stringify(theUserID, null, 2)}`);
       if ( theUserID === undefined ) {

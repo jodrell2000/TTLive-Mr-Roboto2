@@ -1,7 +1,7 @@
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
-  // console.log(`=======================`);
-  // console.log(`removedDJ payload: ${JSON.stringify(payload, null, 2)}`);
-  // console.log(`=======================`);
+  console.log(`=========== removedDJ ============`);
+  console.log(`removedDJ payload: ${JSON.stringify(payload, null, 2)}`);
+  console.log(`=======================`);
   for ( const patch of payload.statePatch ) {
     if ( patch.op === "replace" && patch.path.startsWith( '/audienceUsers/' ) ) {
       const theUserID = patch.value.uuid;

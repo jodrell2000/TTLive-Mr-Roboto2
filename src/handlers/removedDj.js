@@ -15,7 +15,6 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   } else {
     console.log(`=======================`);
     console.log(`removedDJ Found UserID: ${theUserID}`);
-    console.log( `UserID: ${JSON.stringify(theUserID, null, 2)}`);
     console.log(`=======================`);
 
     // do we need a new SwitchDJ for the randomizer?

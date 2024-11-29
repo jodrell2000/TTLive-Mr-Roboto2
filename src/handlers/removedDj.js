@@ -1,9 +1,6 @@
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
-  console.log(`=========== removedDJ ============`);
-  console.log(`removedDJ payload: ${JSON.stringify(payload, null, 2)}`);
-  console.log(`=======================`);
   for ( const patch of payload.statePatch ) {
-    if ( patch.op === "replace" && patch.path.startsWith( '/audienceUsers/' ) ) {
+    if ( ["replace", "remove"].includes(patch.op) && patch.path.startsWith('/audienceUsers/') ) {
       const theUserID = patch.value.uuid;
       console.log( `UserID: ${JSON.stringify(theUserID, null, 2)}`);
       if ( theUserID === undefined ) {
@@ -52,6 +49,10 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       //check to see if conditions are met for bots autodjing feature
       // await botFunctions.checkAutoDJing( userFunctions );
 
+    } else {
+      console.log(`=========== removedDJ nothing found ============`);
+      console.log(`removedDJ payload: ${JSON.stringify(payload, null, 2)}`);
+      console.log(`=======================`);
     }
   }
 }

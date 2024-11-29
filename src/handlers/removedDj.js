@@ -7,11 +7,13 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       const theUserID = patch.value.uuid;
       console.log( `UserID: ${JSON.stringify(theUserID, null, 2)}`);
       if ( theUserID === undefined ) {
-        console.log(`No UserID found?!?`)
+        console.group(`removeDJs - No User Found`)
         console.log(`removedDJ payload.statePatch: ${JSON.stringify(payload.statePatch, null, 2)}`);
+        console.groupEnd()
       } else {
-        console.log(`removedDJ Found UserID: ${theUserID}`);
+        console.group(`removeDJs - User Found: ${theUserID}`)
         console.log( `UserID: ${JSON.stringify(theUserID, null, 2)}`);
+        console.groupEnd()
 
         // do we need a new SwitchDJ for the randomizer?
         if ( roomFunctions.themeRandomizerEnabled() ) {

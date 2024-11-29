@@ -1,6 +1,9 @@
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
   let theUserID;
   for (const patch of payload.statePatch) {
+    if (["replace"].includes(patch.op)) {
+      console.log(`Replace found!!!! payload: ${JSON.stringify(payload, null, 2)}`);
+    }
     if (["replace", "remove", "add"].includes(patch.op) && patch.path.startsWith('/audienceUsers/')) {
       // Check if patch.value is an object and contains uuid
       theUserID = typeof patch.value === 'object' && patch.value !== null ? patch.value.uuid : patch.value;

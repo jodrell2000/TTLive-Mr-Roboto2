@@ -27,6 +27,7 @@ const mlFunctions = () => {
 
         // Extract the text from the response
         const theResponse = response.data.candidates[0]?.content?.parts[0]?.text || 'No response text available';
+        console.log(`theResponse: ${ JSON.stringify( theResponse, null, 2) }`);
         await chatFunctions.botSpeak( theResponse )
 
       } catch (error) {

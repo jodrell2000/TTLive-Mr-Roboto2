@@ -128,6 +128,11 @@ const commandFunctions = () => {
   }
   generalCommands.info.help = "Ask the AI about this track";
 
+  generalCommands.whatyear = ( { mlFunctions, songFunctions, chatFunctions } ) => {
+    mlFunctions.whatYear( songFunctions, chatFunctions );
+  }
+  generalCommands.whatyear.help = "Ask the AI when the current track was released";
+
   generalCommands.searchspotify = ( { songFunctions, data, databaseFunctions, mlFunctions, chatFunctions } ) => {
     songFunctions.searchSpotifyCommand( data, databaseFunctions, mlFunctions, chatFunctions );
   }

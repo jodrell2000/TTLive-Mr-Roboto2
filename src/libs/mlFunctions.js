@@ -39,11 +39,18 @@ const mlFunctions = () => {
         return 'Error occurred';
       }
     },
-    
+
     songInfo: async function( songFunctions, chatFunctions ) {
       const track = songFunctions.previousTrack()
       const artist = songFunctions.previousArtist()
       const theQuestion = `In 100 words or less, tell me about the song ${ track } by ${ artist }`
+      await this.askGoogleAI( theQuestion, chatFunctions )
+    },
+
+    whatYear: async function( songFunctions, chatFunctions ) {
+      const track = songFunctions.previousTrack()
+      const artist = songFunctions.previousArtist()
+      const theQuestion = `In what year was ${ track } by ${ artist } released?`
       await this.askGoogleAI( theQuestion, chatFunctions )
     }
   }

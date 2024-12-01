@@ -28,8 +28,11 @@ const mlFunctions = () => {
 
         // Extract the text from the response
         const theResponse = response.data.candidates[0]?.content?.parts[0]?.text || 'No response text available';
-        console.log(`theResponse: ${ JSON.stringify( theResponse, null, 2) }`);
-        await chatFunctions.botSpeak( theResponse )
+        if ( theResponse !== 'No response text available' ) {
+          await chatFunctions.botSpeak( theResponse )
+        } else {
+          await chatFunctions.botSpeak( 'Nope, I got nothing...sorry' )
+        }
 
       } catch (error) {
         console.error('Error fetching content:', error.message);
@@ -41,7 +44,6 @@ const mlFunctions = () => {
       const track = songFunctions.previousTrack()
       const artist = songFunctions.previousArtist()
       const theQuestion = `In 100 words or less, tell me about the song ${ track } by ${ artist }`
-      console.log(`theQuestion: ${ theQuestion }`)
       await this.askGoogleAI( theQuestion, chatFunctions )
     }
   }

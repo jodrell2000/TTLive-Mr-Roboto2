@@ -38,8 +38,8 @@ const mlFunctions = () => {
     },
     
     songInfo: async function( songFunctions, chatFunctions ) {
-      const track = songFunctions.song()
-      const artist = songFunctions.artist()
+      const track = songFunctions.previousTrack()
+      const artist = songFunctions.previousArtist()
       const theQuestion = `In 100 words or less, tell me about the song ${ track } by ${ artist }`
       console.log(`theQuestion: ${ theQuestion }`)
       await this.askGoogleAI( theQuestion, chatFunctions )

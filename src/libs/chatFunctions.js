@@ -27,6 +27,7 @@ const chatFunctions = ( ) => {
       // } else {
       //   await this.botChat( message ).then();
       // }
+      console.log( `botSpeak` )
       await this.botChat( message ).then();
     },
 

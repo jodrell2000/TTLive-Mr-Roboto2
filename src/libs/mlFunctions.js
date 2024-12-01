@@ -1,22 +1,38 @@
-import childProcess from 'child_process'
+const axios = require('axios');
 
 const mlFunctions = () => {
   return {
-    askOllama: async function askOllama( question ) {
-      console.log(`askOllama question:${question}`)
-      // Use the Ollama CLI to ask the question
-      const ollamaCommand = 'ollama-cli';
-      const args = [ 'ask', question ];
+    askGoogleAI: async function( args, chatFunctions ) {
+      // const theQuestion = `In 100 words or less, tell me something interesting about ${ track } byt ${ artist }`;
+      const apiKey = process.env.googleAIKey;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
-      childProcess.execFile( ollamaCommand, args, ( error, stdout, stderr ) => {
-        if ( error ) {
-          console.error( `Error: ${ error }` );
-          return;
-        }
+      // Prepare the payload
+      const payload = {
+        contents: [
+          {
+            parts: [
+              {
+                text: args
+              }
+            ]
+          }
+        ]
+      };
 
-        // Print the answer
-        console.log( stdout.trim() );
-      } );
+      try {
+        const response = await axios.post(url, payload, {
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        // Extract the text from the response
+        const theResponse = response.data.candidates[0]?.content?.parts[0]?.text || 'No response text available';
+        await chatFunctions.botSpeak( theResponse )
+
+      } catch (error) {
+        console.error('Error fetching content:', error.message);
+        return 'Error occurred';
+      }
     }
   }
 }

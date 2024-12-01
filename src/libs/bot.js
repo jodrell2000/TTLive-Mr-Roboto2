@@ -78,7 +78,7 @@ export class Bot {
     logger.debug( 'Setting up listeners' )
 
     this.socket.on( 'statefulMessage', async payload => {
-      logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
+      // logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
 
       try {
         payload.statePatch.forEach( patch => {
@@ -121,7 +121,7 @@ export class Bot {
     } );
 
     this.socket.on( "serverMessage", ( payload ) => {
-      logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
+      // logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
 
       if ( ["votedOnSong", "removedDj"].includes(payload.message.name) ) {
         logger.debug(payload)

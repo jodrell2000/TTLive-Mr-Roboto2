@@ -35,6 +35,14 @@ const mlFunctions = () => {
         console.error('Error fetching content:', error.message);
         return 'Error occurred';
       }
+    },
+    
+    songInfo: async function( songFunctions, chatFunctions ) {
+      const track = songFunctions.song()
+      const artist = songFunctions.artist()
+      const theQuestion = `In 100 words or less, tell me about the song ${ track } by ${ artist }`
+      console.log(`theQuestion: ${ theQuestion }`)
+      await this.askGoogleAI( theQuestion, chatFunctions )
     }
   }
 }

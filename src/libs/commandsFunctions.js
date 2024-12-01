@@ -123,6 +123,11 @@ const commandFunctions = () => {
   }
   generalCommands.songinfo.help = "Lookup song info from the DB";
 
+  generalCommands.info = ( { mlFunctions, songFunctions, chatFunctions } ) => {
+    mlFunctions.songInfo( songFunctions, chatFunctions );
+  }
+  generalCommands.info.help = "Ask the AI about this track";
+
   generalCommands.searchspotify = ( { songFunctions, data, databaseFunctions, mlFunctions, chatFunctions } ) => {
     songFunctions.searchSpotifyCommand( data, databaseFunctions, mlFunctions, chatFunctions );
   }

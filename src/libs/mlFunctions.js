@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const mlFunctions = () => {
   return {
-    askGoogleAI: async function( args, chatFunctions ) {
+    askGoogleAI: async function( data, args, chatFunctions ) {
       // const theQuestion = `In 100 words or less, tell me something interesting about ${ track } byt ${ artist }`;
       const apiKey = process.env.googleAIKey;
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;

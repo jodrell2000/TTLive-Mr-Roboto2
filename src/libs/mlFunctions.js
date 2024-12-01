@@ -50,7 +50,7 @@ const mlFunctions = () => {
     whatYear: async function( songFunctions, chatFunctions ) {
       const track = songFunctions.previousTrack()
       const artist = songFunctions.previousArtist()
-      const theQuestion = `In what year was ${ track } by ${ artist } released?`
+      const theQuestion = `In what year was the song ${ track } by ${ artist } released?`
       await this.askGoogleAI( theQuestion, chatFunctions )
     }
   }

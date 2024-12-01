@@ -78,7 +78,7 @@ export class Bot {
     logger.debug( 'Setting up listeners' )
 
     this.socket.on( 'statefulMessage', async payload => {
-      // logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
+      logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
 
       try {
         payload.statePatch.forEach( patch => {
@@ -100,7 +100,7 @@ export class Bot {
       } else  if ( payload.name === "votedOnSong" ) {
         // console.log("Do nothing, handled by serverMessage")
       } else {
-        if ( payload.name !== "userJoined" && handlers[ payload.name ] ) {
+        if ( handlers[ payload.name ] ) {
           await handlers[ payload.name ]( self.state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, this.socket )
         }
       }
@@ -115,13 +115,14 @@ export class Bot {
         case "kickedFromRoom":
           break;
         default:
-          // logger.debug( `statelessMessage - default -------------------------------------------` )
-          // logger.debug( `statelessMessage: ${ JSON.stringify(message) }` )
+          logger.debug( `statelessMessage: ${ payload.name } -------------------------------------------` )
           break;
       }
     } );
 
     this.socket.on( "serverMessage", ( payload ) => {
+      logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
+
       if ( ["votedOnSong"].includes(payload.message.name) ) {
         handlers[ payload.message.name ]( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
       } else {

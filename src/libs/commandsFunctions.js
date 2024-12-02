@@ -481,10 +481,10 @@ const commandFunctions = () => {
   }
   moderatorCommands.single.help = "Sets DJs to play 1 tracks each";
   
-  // moderatorCommands.question = ( { args, chatFunctions, mlFunctions } ) => {
-  //   mlFunctions.askGoogleAI( reassembleArgs( args ), chatFunctions );
-  // }
-  // moderatorCommands.question.help = "Talk to Robo";
+  moderatorCommands.question = ( { args, chatFunctions, mlFunctions } ) => {
+    mlFunctions.askGoogleAI( reassembleArgs( args ), chatFunctions );
+  }
+  moderatorCommands.question.help = "Talk to Robo";
 
   // #############################################
   // Moderator Greeting commands

@@ -10,6 +10,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       if (match) {
         const theDJNumber = parseInt(match[1], 10)
         removedDJuuid = userFunctions.djList()[theDJNumber]
+        console.log(`DJ List ${JSON.stringify(userFunctions.djList(), null, 2)}`)
         console.log(`Found DJ No.${theDJNumber}`)
         console.log(`Found DJ uuid ${removedDJuuid}`)
       }

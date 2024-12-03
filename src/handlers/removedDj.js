@@ -11,8 +11,8 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       const match = operation.path.match(/\/djs\/(\d+)$/);
       if (match) {
         const theDJNumber = parseInt(match[1], 10)
-        removedDJuuid = userFunctions.djList()[theDJNumber]
-        console.log(`DJ List ${JSON.stringify(userFunctions.djList(), null, 2)}`)
+        removedDJuuid = await userFunctions.djList()[theDJNumber]
+        console.log(`DJ List now ${JSON.stringify(await userFunctions.djList(), null, 2)}`)
         console.log(`Found DJ No.${theDJNumber}`)
         console.log(`Found DJ uuid ${removedDJuuid}`)
       }
@@ -40,6 +40,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
   if ( await userFunctions.hasDjsElement( currentState ) ) {
     await userFunctions.resetDJs( currentState.djs )
+    console.log(`DJ List after reset ${JSON.stringify(await userFunctions.djList(), null, 2)}`)
   }
 }
 

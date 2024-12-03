@@ -1286,7 +1286,7 @@ const userFunctions = () => {
     // DJ Core Functions
     // ========================================================
 
-    djList: () => djList,
+    djList: async function () { return djList },
 
     clearDJList: function () {
       djList = []
@@ -1392,7 +1392,7 @@ const userFunctions = () => {
     
     logDJQueue: async function () {
       const detailedDJList = await Promise.all(
-        this.djList().map(async uuid => {
+        await this.djList().map(async uuid => {
           const username = await this.getUsername(uuid); // Await getUsername
           return { username, uuid };
         })
@@ -1436,7 +1436,7 @@ const userFunctions = () => {
         }
       }
 
-      if ( this.refreshDJCount() + this.djList().length >= roomFunctions.maxDJs() ) {
+      if ( this.refreshDJCount() + await this.djList().length >= roomFunctions.maxDJs() ) {
         return [ false, '@' + await this.getUsername( theUserID ) + ', sorry, but I\'m holding that spot for someone' +
         ' in' +
         ' the refresh list' ];
@@ -1663,11 +1663,11 @@ const userFunctions = () => {
     },
 
     djPlaysCommand: async function ( data, chatFunctions ) {
-      await chatFunctions.botSpeak( this.buildDJPlaysMessage() );
+      await chatFunctions.botSpeak( await this.buildDJPlaysMessage() );
     },
 
-    buildDJPlaysMessage: function () {
-      if ( this.djList().length === 0 ) {
+    buildDJPlaysMessage: async function () {
+      if ( await this.djList().length === 0 ) {
         return 'There are no dj\'s on stage.';
       } else {
         let theMessage = '';
@@ -1677,8 +1677,8 @@ const userFunctions = () => {
         let theCurrentPlayCount;
         let theTotalPlayCount;
 
-        for ( let djLoop = 0; djLoop < this.djList().length; djLoop++ ) {
-          theUserID = this.djList()[ djLoop ];
+        for ( let djLoop = 0; djLoop < await this.djList().length; djLoop++ ) {
+          theUserID = await this.djList()[ djLoop ];
           theUsername = this.getUsername( theUserID );
           theUserPosition = this.getPositionOnUsersList( theUserID );
           theCurrentPlayCount = theUsersList[ theUserPosition ][ 'currentPlayCount' ];

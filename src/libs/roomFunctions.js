@@ -270,7 +270,7 @@ const roomFunctions = () => {
 
     pickRandomizerSwitchDJ: async function ( userFunctions, previousSwitchUUID = null ) {
       console.group(`pickRandomizerSwitchDJ`)
-      const djList = userFunctions.djList();
+      const djList = await userFunctions.djList();
       const currentRandomizerList = await userFunctions.djRandomizerList();
 
       let pickedUUID = previousSwitchUUID;
@@ -491,9 +491,9 @@ const roomFunctions = () => {
     clearDecksForVIPs: async function ( userFunctions, authModule, socket ) {
       if ( userFunctions.vipList.length !== 0 && userFunctions.howManyDJs() !== userFunctions.vipList.length ) {
         for ( let p = 0; p < userFunctions.howManyDJs(); p++ ) {
-          let checkIfVip = userFunctions.vipList.indexOf( userFunctions.djList()[ p ] );
-          if ( checkIfVip === -1 && userFunctions.djList()[ p ] !== authModule.USERID ) {
-            await userFunctions.removeDJ( userFunctions.djList()[ p ], 'Removing non VIP DJs', socket );
+          let checkIfVip = userFunctions.vipList.indexOf( await userFunctions.djList()[ p ] );
+          if ( checkIfVip === -1 && await userFunctions.djList()[ p ] !== authModule.USERID ) {
+            await userFunctions.removeDJ( await userFunctions.djList()[ p ], 'Removing non VIP DJs', socket );
           }
         }
       }

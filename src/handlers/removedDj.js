@@ -6,16 +6,6 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
   const removedDJuuid = beforeDJList.find(uuid => !afterDJList.includes(uuid));
 
-  if ( removedDJuuid === undefined ) {
-    console.log(`=======================`);
-    console.log(`No UserID found?!?`)
-    console.log(`removedDJ payload: ${JSON.stringify(payload, null, 2)}`);
-    console.log(`=======================`);
-  } else {
-    console.log(`=======================`);
-    console.log(`removedDJ Found UserID: ${removedDJuuid}`);
-    console.log(`=======================`);
-
     // do we need a new SwitchDJ for the randomizer?
     if ( roomFunctions.themeRandomizerEnabled() ) {
       await roomFunctions.checkIfWeNeedANewSwitchDJ( removedDJuuid, userFunctions, chatFunctions )

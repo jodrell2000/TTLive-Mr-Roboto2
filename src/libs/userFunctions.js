@@ -1286,7 +1286,11 @@ const userFunctions = () => {
     // DJ Core Functions
     // ========================================================
 
-    djList: async function () { return djList },
+    djList: async () => {
+      // Simulate fetching or performing an asynchronous operation
+      return djList;
+    },
+    // djList: () => djList,
 
     clearDJList: function () {
       djList = []

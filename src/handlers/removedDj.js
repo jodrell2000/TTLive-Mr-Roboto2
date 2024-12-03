@@ -1,6 +1,7 @@
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
-  let theUserID;
-
+  
+  let removedDJuuid
+  
   // Iterate through the statePatch array
   for (const operation of payload.statePatch) {
     if (operation.op === "remove" && operation.path.startsWith("/djs/")) {
@@ -8,40 +9,35 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       const match = operation.path.match(/\/djs\/(\d+)$/);
       if (match) {
         const theDJNumber = parseInt(match[1], 10)
+        removedDJuuid = userFunctions.djList()[theDJNumber]
         console.log(`Found DJ No.${theDJNumber}`)
-        console.log(`Found DJ uuid ${userFunctions.djList()[theDJNumber]}`)
+        console.log(`Found DJ uuid ${removedDJuuid}`)
       }
     }
   }
-  
-  // for (const patch of payload.statePatch) {
-  //   if (["remove"].includes(patch.op)) {
-  //     console.log(`Remove found!!!! payload: ${JSON.stringify(payload, null, 2)}`);
-  //   }
-  // }
-  //
-  // if ( theUserID === undefined ) {
-  //   console.log(`=======================`);
-  //   console.log(`No UserID found?!?`)
-  //   console.log(`removedDJ payload: ${JSON.stringify(payload, null, 2)}`);
-  //   console.log(`=======================`);
-  // } else {
-  //   console.log(`=======================`);
-  //   console.log(`removedDJ Found UserID: ${theUserID}`);
-  //   console.log(`=======================`);
-  //
-  //   // do we need a new SwitchDJ for the randomizer?
-  //   if ( roomFunctions.themeRandomizerEnabled() ) {
-  //     await roomFunctions.checkIfWeNeedANewSwitchDJ( theUserID, userFunctions, chatFunctions )
-  //   }
-  //
-  //   await userFunctions.removeEscortMeFromUser( theUserID, databaseFunctions );
-  //   await userFunctions.resetDJFlags( theUserID, databaseFunctions );
-  // }
-  //
-  // if ( await userFunctions.hasDjsElement( currentState ) ) {
-  //   await userFunctions.resetDJs( currentState.djs )
-  // }
+
+  if ( removedDJuuid === undefined ) {
+    console.log(`=======================`);
+    console.log(`No UserID found?!?`)
+    console.log(`removedDJ payload: ${JSON.stringify(payload, null, 2)}`);
+    console.log(`=======================`);
+  } else {
+    console.log(`=======================`);
+    console.log(`removedDJ Found UserID: ${removedDJuuid}`);
+    console.log(`=======================`);
+
+    // do we need a new SwitchDJ for the randomizer?
+    if ( roomFunctions.themeRandomizerEnabled() ) {
+      await roomFunctions.checkIfWeNeedANewSwitchDJ( removedDJuuid, userFunctions, chatFunctions )
+    }
+
+    await userFunctions.removeEscortMeFromUser( removedDJuuid, databaseFunctions );
+    await userFunctions.resetDJFlags( removedDJuuid, databaseFunctions );
+  }
+
+  if ( await userFunctions.hasDjsElement( currentState ) ) {
+    await userFunctions.resetDJs( currentState.djs )
+  }
 }
 
 //gives them one chance to get off-stage, then after that they're play limit is treated as normal

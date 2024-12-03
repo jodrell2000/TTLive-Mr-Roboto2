@@ -3,6 +3,8 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   let removedDJuuid
   
   // Iterate through the statePatch array
+  console.log(`payload: ${JSON.stringify(payload.statePatch, null, 2)}`)
+  
   for (const operation of payload.statePatch) {
     if (operation.op === "remove" && operation.path.startsWith("/djs/")) {
       // Extract the integer at the end of the path

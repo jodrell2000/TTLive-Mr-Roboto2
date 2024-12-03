@@ -6,13 +6,15 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
   const removedDJuuid = beforeDJList.find(uuid => !afterDJList.includes(uuid));
 
-  // do we need a new SwitchDJ for the randomizer?
-  if ( roomFunctions.themeRandomizerEnabled() ) {
-    await roomFunctions.checkIfWeNeedANewSwitchDJ( removedDJuuid, userFunctions, chatFunctions )
-  }
+  if ( removedDJuuid !== undefined ) {
+    // do we need a new SwitchDJ for the randomizer?
+    if ( roomFunctions.themeRandomizerEnabled() ) {
+      await roomFunctions.checkIfWeNeedANewSwitchDJ( removedDJuuid, beforeDJList, userFunctions, chatFunctions )
+    }
 
-  await userFunctions.removeEscortMeFromUser( removedDJuuid, databaseFunctions );
-  await userFunctions.resetDJFlags( removedDJuuid, databaseFunctions );
+    await userFunctions.removeEscortMeFromUser( removedDJuuid, databaseFunctions );
+    await userFunctions.resetDJFlags( removedDJuuid, databaseFunctions );
+  }
 }
 
 //gives them one chance to get off-stage, then after that they're play limit is treated as normal

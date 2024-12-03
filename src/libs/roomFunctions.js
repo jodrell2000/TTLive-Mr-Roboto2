@@ -245,12 +245,12 @@ const roomFunctions = () => {
 
     },
     
-    checkIfWeNeedANewSwitchDJ: async function ( uuid, userFunctions, chatFunctions ) {
+    checkIfWeNeedANewSwitchDJ: async function ( uuid,  beforeDJleftList, userFunctions, chatFunctions ) {
       await chatFunctions.botSpeak( `The DJ who left was ${ uuid }` )
       await chatFunctions.botSpeak( `${ await userFunctions.getUsername( uuid )} left, do we need a new random DJ?` )
       if ( uuid === await userFunctions.getRandomizerSwitchDJ() ) {
         await chatFunctions.botSpeak( `Yup! The DJ who left was the Switch DJ` );
-        await this.pickRandomizerSwitchDJ( userFunctions, uuid )
+        await this.pickRandomizerSwitchDJ( userFunctions, uuid, beforeDJleftList )
         await chatFunctions.botSpeak( `${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} will now be the last DJ for this round` );
       } else {
         await chatFunctions.botSpeak( `No, the DJ who left was not the Switch DJ` );
@@ -268,7 +268,7 @@ const roomFunctions = () => {
       }
     },
 
-    pickRandomizerSwitchDJ: async function ( userFunctions, previousSwitchUUID = null ) {
+    pickRandomizerSwitchDJ: async function ( userFunctions, previousSwitchUUID = null, beforeDJleftList = [] ) {
       console.group(`pickRandomizerSwitchDJ`)
       const djList = await userFunctions.djList();
       const currentRandomizerList = await userFunctions.djRandomizerList();
@@ -290,7 +290,7 @@ const roomFunctions = () => {
       // Case 2: Previous switch is no longer in the DJ list
       else if (djList.indexOf(previousSwitchUUID) === -1) {
         console.log(`Picking new Switch DJ`)
-        const previousPosition = currentRandomizerList.indexOf(previousSwitchUUID);
+        const previousPosition = beforeDJleftList.indexOf(previousSwitchUUID);
         pickedUUID = (djList.length < previousPosition) ? djList[ djList.length - 1] : djList[previousPosition]; // Pick DJ based on
         // position of whichever DJ is in the same position on the list, or the last DJ if they were at the end
       }

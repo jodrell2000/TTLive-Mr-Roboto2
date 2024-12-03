@@ -7,8 +7,9 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       // Extract the integer at the end of the path
       const match = operation.path.match(/\/djs\/(\d+)$/);
       if (match) {
-        theUserID = parseInt(match[1], 10)
+        const theDJNumber = parseInt(match[1], 10)
         console.log(`Found DJ No.${theUserID}`)
+        console.log(`Found DJ ID ${userFunctions.djList()[theDJNumber]}`)
       }
     }
   }
@@ -33,7 +34,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   //   if ( roomFunctions.themeRandomizerEnabled() ) {
   //     await roomFunctions.checkIfWeNeedANewSwitchDJ( theUserID, userFunctions, chatFunctions )
   //   }
-  //  
+  //
   //   await userFunctions.removeEscortMeFromUser( theUserID, databaseFunctions );
   //   await userFunctions.resetDJFlags( theUserID, databaseFunctions );
   // }

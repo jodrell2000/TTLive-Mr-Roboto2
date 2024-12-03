@@ -386,6 +386,7 @@ const roomFunctions = () => {
 
     getRandomTheme: async function () {
       const theThemes = await this.getRandomThemes( this.getThemeRandomizerStore() )
+      console.log(`Themes list: ${JSON.stringify(theThemes, null, 2)}`);
       return theThemes[ Math.ceil( Math.random() * theThemes.length ) ];
     },
     

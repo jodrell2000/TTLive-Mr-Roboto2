@@ -8,8 +8,8 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       const match = operation.path.match(/\/djs\/(\d+)$/);
       if (match) {
         const theDJNumber = parseInt(match[1], 10)
-        console.log(`Found DJ No.${theUserID}`)
-        console.log(`Found DJ ID ${userFunctions.djList()[theDJNumber]}`)
+        console.log(`Found DJ No.${theDJNumber}`)
+        console.log(`Found DJ uuid ${userFunctions.djList()[theDJNumber]}`)
       }
     }
   }

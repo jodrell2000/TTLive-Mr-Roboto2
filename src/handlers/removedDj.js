@@ -1,23 +1,10 @@
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
   
-  let removedDJuuid
-  
-  // Iterate through the statePatch array
-  console.log(`payload: ${JSON.stringify(payload.statePatch, null, 2)}`)
-  
-  for (const operation of payload.statePatch) {
-    if (operation.op === "remove" && operation.path.startsWith("/djs/")) {
-      // Extract the integer at the end of the path
-      const match = operation.path.match(/\/djs\/(\d+)$/);
-      if (match) {
-        const theDJNumber = parseInt(match[1], 10)
-        removedDJuuid = await userFunctions.djList()[theDJNumber]
-        console.log(`DJ List now ${JSON.stringify(await userFunctions.djList(), null, 2)}`)
-        console.log(`Found DJ No.${theDJNumber}`)
-        console.log(`Found DJ uuid ${removedDJuuid}`)
-      }
-    }
-  }
+  const beforeDJList = await userFunctions.djList();
+  await userFunctions.resetDJs( currentState.djs )
+  const afterDJList = await userFunctions.djList();
+
+  const removedDJuuid = beforeDJList.find(uuid => !afterDJList.includes(uuid));
 
   if ( removedDJuuid === undefined ) {
     console.log(`=======================`);
@@ -36,11 +23,6 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
     await userFunctions.removeEscortMeFromUser( removedDJuuid, databaseFunctions );
     await userFunctions.resetDJFlags( removedDJuuid, databaseFunctions );
-  }
-
-  if ( await userFunctions.hasDjsElement( currentState ) ) {
-    await userFunctions.resetDJs( currentState.djs )
-    console.log(`DJ List after reset ${JSON.stringify(await userFunctions.djList(), null, 2)}`)
   }
 }
 

@@ -123,7 +123,7 @@ export class Bot {
     this.socket.on( "serverMessage", ( payload ) => {
       // logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
 
-      if ( ["votedOnSong", "removedDj"].includes(payload.message.name) ) {
+      if ( ["votedOnSong"].includes(payload.message.name) ) {
         logger.debug(payload)
         handlers[ payload.message.name ]( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
       } else {

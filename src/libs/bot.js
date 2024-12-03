@@ -124,7 +124,7 @@ export class Bot {
       // logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
 
       if ( ["votedOnSong"].includes(payload.message.name) ) {
-        logger.debug(payload)
+        // logger.debug(payload)
         handlers[ payload.message.name ]( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
       } else {
         if ( payload.message.statePatch ) {

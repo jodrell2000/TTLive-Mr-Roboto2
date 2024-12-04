@@ -297,7 +297,7 @@ const roomFunctions = () => {
         console.log(`djList.length-1: ${djList.length - 1}`)
         console.log(`djList[ djList.length - 1]: ${djList[ djList.length - 1]}`)
         console.log(`djList[previousPosition]: ${djList[previousPosition]}`)
-        pickedUUID = (djList.length < previousPosition) ? djList[ djList.length - 1] : djList[previousPosition]; // Pick DJ based on
+        pickedUUID = (previousPosition >= djList.length) ? djList[ djList.length - 1] : djList[previousPosition]; // Pick DJ based on
         // position of whichever DJ is in the same position on the list, or the last DJ if they were at the end
       }
       // otherwise don't change the switch ID so that they're the last DJ in the next round again

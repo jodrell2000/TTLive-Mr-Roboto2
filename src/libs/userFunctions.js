@@ -1391,7 +1391,7 @@ const userFunctions = () => {
           this.addDJToList(item.uuid);
         }
       }
-      await this.logDJQueue();
+      // await this.logDJQueue();
     },
     
     logDJQueue: async function () {
@@ -1402,7 +1402,6 @@ const userFunctions = () => {
           return { username, uuid };
         })
       );
-
       console.log("DJ List now contains:", JSON.stringify(detailedDJList, null, 2));
     },
 

@@ -271,13 +271,14 @@ const roomFunctions = () => {
     pickRandomizerSwitchDJ: async function ( userFunctions, previousSwitchUUID = null, beforeDJleftList = [] ) {
       console.group(`pickRandomizerSwitchDJ`)
       const djList = await userFunctions.djList();
+      console.log(`Current DJ List: ${ JSON.stringify(djList, null, 2) }`);
       const currentRandomizerList = await userFunctions.djRandomizerList();
+      console.log(`Randomizer DJ List: ${ JSON.stringify(currentRandomizerList, null, 2) }`);
 
       let pickedUUID = previousSwitchUUID;
       console.log(`previousSwitchUUID: ${ previousSwitchUUID }`)
-      console.log(`djList: ${ JSON.stringify(djList, null, 2) }`)
-      console.log(`currentRandomizerList: ${ JSON.stringify(currentRandomizerList, null, 2) }`)
-      console.log(`djList.indexOf(previousSwitchUUID): ${ djList.indexOf(previousSwitchUUID) }`)
+      console.log(`DJ Position on current list: ${ djList.indexOf(previousSwitchUUID) }`)
+      console.log(`DJ Position on randomizer list: ${ currentRandomizerList.indexOf(previousSwitchUUID) }`)
 
       // Case 1: No previous switch or an empty randomizer list
       if (previousSwitchUUID === null || currentRandomizerList.length === 0 ) {

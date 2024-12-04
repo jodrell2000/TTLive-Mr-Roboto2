@@ -292,6 +292,11 @@ const roomFunctions = () => {
       else if (djList.indexOf(previousSwitchUUID) === -1) {
         console.log(`Picking new Switch DJ`)
         const previousPosition = beforeDJleftList.indexOf(previousSwitchUUID);
+        console.log(`previousPosition: ${ previousPosition }`)
+        console.log(`djList.length: ${djList.length}`)
+        console.log(`djList.length-1: ${djList.length - 1}`)
+        console.log(`djList[ djList.length - 1]: ${djList[ djList.length - 1]}`)
+        console.log(`djList[previousPosition]: ${djList[previousPosition]}`)
         pickedUUID = (djList.length < previousPosition) ? djList[ djList.length - 1] : djList[previousPosition]; // Pick DJ based on
         // position of whichever DJ is in the same position on the list, or the last DJ if they were at the end
       }

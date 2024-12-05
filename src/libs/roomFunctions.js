@@ -222,7 +222,7 @@ const roomFunctions = () => {
       } else {
         await chatFunctions.botSpeak( 'The Theme is ' + this.theme() );
         if ( this.themeRandomizerEnabled() === true ) {
-          await chatFunctions.botSpeak( `A new theme will be picked when ${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} plays` );
+          await chatFunctions.botSpeak( `A new theme will be picked when ${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} next plays` );
         }
       }
     },
@@ -402,9 +402,8 @@ const roomFunctions = () => {
       await chatFunctions.botSpeak( 'Drum roll please. Time to find out what the theme for the next round is.... ' );
       const timer = this.theTimer();
       const newTheme = await this.getRandomTheme()
-      const themeMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} will be the last DJ for this round`
+      console.log(`${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} will be the last DJ for this round`)
       timer( 3000 ).then( async _ => await this.setThemeCommand( data, newTheme, chatFunctions, databaseFunctions, userFunctions ) );
-      timer( 1000 ).then( async _ => await chatFunctions.botSpeak( themeMessage ) );
     },
 
     // ========================================================

@@ -246,15 +246,17 @@ const roomFunctions = () => {
     },
     
     checkIfWeNeedANewSwitchDJ: async function ( uuid, userFunctions, chatFunctions ) {
-      await chatFunctions.botSpeak( `The DJ who left was ${ uuid }` )
-      await chatFunctions.botSpeak( `${ await userFunctions.getUsername( uuid )} left, do we need a new random DJ?` )
+      console.group(`checkIfWeNeedANewSwitchDJ`)
+      console.log( `The DJ who left was ${ uuid }` )
+      console.log( `${ await userFunctions.getUsername( uuid )} left, do we need a new random DJ?` )
       if ( uuid === await userFunctions.getRandomizerSwitchDJ() ) {
-        await chatFunctions.botSpeak( `Yup! The DJ who left was the Switch DJ` );
+        console.log( `Yup! The DJ who left was the Switch DJ` );
         await this.pickRandomizerSwitchDJ( userFunctions, uuid )
         await chatFunctions.botSpeak( `${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} will now be the last DJ for this round` );
       } else {
-        await chatFunctions.botSpeak( `No, the DJ who left was not the Switch DJ` );
+        console.log( `No, the DJ who left was not the Switch DJ` );
       }
+      console.groupEnd()
     },
     
     checkSwitchDJAndPickNewTheme: async function ( djID, data, userFunctions, chatFunctions, databaseFunctions ) {
@@ -392,15 +394,8 @@ const roomFunctions = () => {
 
     getRandomTheme: async function () {
       const theThemes = await this.getRandomThemes( this.getThemeRandomizerStore() )
-      console.log(`Themes list: ${JSON.stringify(theThemes, null, 2)}`);
+      // console.log(`Themes list: ${JSON.stringify(theThemes, null, 2)}`);
       return theThemes[ Math.ceil( Math.random() * theThemes.length ) ];
-    },
-    
-    announceSwitchDJ: async function ( userFunctions, chatFunctions ) {
-      const SwitchDJMessage = `${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() )} will be the last DJ for this round`
-      const timer = this.theTimer();
-      timer( 1000 ).then( async _ => await chatFunctions.botSpeak( SwitchDJMessage ) );
-
     },
 
     announceNewRandomTheme: async function ( data, chatFunctions, userFunctions, databaseFunctions ) {

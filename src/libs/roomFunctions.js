@@ -22,7 +22,7 @@ let roomName = '';
 let roomJoinMessage = 'Welcome to @roomName @username' //the message users will see when they join the room, leave it empty for the default message (only works when greet is turned on)
 let additionalJoinMessage = "Room info, rules and notes on Mr. Roboto can be found here:" +
   " https://80s-c473bb.webflow.io/ and the current list of Robo's chat commands is here:" +
-  " http://141.147.86.68/chatDoc.html";
+  " https://smufflersworld.com/chat.html";
 let theme = false; //has a current theme been set? true or false. handled by commands
 let rulesTimerRunning = false;
 let rulesMessageOn = true;
@@ -370,7 +370,7 @@ const roomFunctions = () => {
 
       // formattedThemes = formattedThemes.substring( 0, formattedThemes.length - 2 );
 
-      await chatFunctions.botSpeak( 'Check the room info for the full list' );
+      await chatFunctions.botSpeak( 'The current themes list is here: https://smufflersworld.com/themes.html' );
     },
 
     getRandomThemes: async function ( store ) {

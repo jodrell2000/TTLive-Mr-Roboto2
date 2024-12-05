@@ -383,7 +383,6 @@ const roomFunctions = () => {
 
     doesThemeExistInRandomizer: async function ( store, themeToCheck ) {
       const theThemes = store.get( 'themes' );
-      console.log(`theThemes: ${JSON.stringify(theThemes, null, 2)}`);
 
       if ( theThemes !== undefined || theThemes.length > 0 ) {
         return theThemes.indexOf( themeToCheck ) !== -1;

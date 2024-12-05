@@ -50,7 +50,7 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
   roomFunctions.setDJCount( state.djs.length ); //the number of djs on stage
 
   if ( roomFunctions.themeRandomizerEnabled() ) {
-    await chatFunctions.botSpeak( `Randomizer is active...checking` )
+    console.log( `Randomizer is active...checking` )
     await userFunctions.storeCurrentDJListForRandomizer();
     await new Promise( resolve => {
       setTimeout( async () => {

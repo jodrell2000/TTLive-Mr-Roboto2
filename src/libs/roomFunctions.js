@@ -262,11 +262,11 @@ const roomFunctions = () => {
     checkSwitchDJAndPickNewTheme: async function ( djID, data, userFunctions, chatFunctions, databaseFunctions ) {
       console.log(`checkSwitchDJAndPickNewTheme checking uuid: ${djID}`)
       if ( djID === await userFunctions.getRandomizerSwitchDJ() ) {
-        await chatFunctions.botSpeak( `Switch DJ played, picking new theme` )
+        console.log( `Switch DJ played, picking new theme` )
         await this.pickRandomizerSwitchDJ( userFunctions, djID )
         await this.announceNewRandomTheme(  data, chatFunctions, userFunctions, databaseFunctions )
       } else {
-        await chatFunctions.botSpeak( `New DJ not selected. New theme will be picked when ${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() ) } plays` );
+        console.log( `New DJ not selected. New theme will be picked when ${ await userFunctions.getUsername( await userFunctions.getRandomizerSwitchDJ() ) } plays` );
       }
     },
 

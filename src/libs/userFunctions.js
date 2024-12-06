@@ -2376,6 +2376,17 @@ const userFunctions = () => {
     bbBoot: async function ( data, chatFunctions, databaseFunctions, roomFunctions ) {
       console.group('bbBoot')
       const bootingUserID = await this.whoSentTheCommand( data );
+      
+      // store booting userID and timestamp
+      // check if they've booted in the last 24 hrs and end if they have
+      // get distinct list of users who've bbbooted in the past
+      // get list of users currently in the hangout
+      // get list of bbbooting users who are here
+      // pick user at random, excluding the booting user
+      // check the last time that user was booted...then follow the existing logic
+      // steal coins from the booted user and give to the booting user
+      // // what happens if the booted user doesn't have enough coins?
+      
       console.log(`bootingUserID:${bootingUserID}`)
       const bbID = await this.bbUserID()
       console.log(`bbID:${bbID}`)

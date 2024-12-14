@@ -9,7 +9,7 @@ import countryLookup from 'country-code-lookup';
 import axios from "axios";
 import { ActionName } from "ttfm-socket";
 import botDefaults from "../defaults/botDefaults.js";
-import { data } from "express-session/session/cookie.js";
+// import { data } from "express-session/session/cookie.js";
 
 let theUsersList = []; // object array of everyone in the room
 let afkPeople = []; //holds the userid of everyone who has used the /afk command

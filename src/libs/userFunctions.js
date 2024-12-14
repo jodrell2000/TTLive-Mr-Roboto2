@@ -2431,6 +2431,7 @@ const userFunctions = () => {
 
       const target = this.findBBBootTarget( bootingUserID, databaseFunctions );
       console.log(`Target BBBoot: ${ target }`)
+      console.log(`Target username: ${await this.getUsername( target )})
 
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
       // const doInOrder = async () => {

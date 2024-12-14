@@ -2427,7 +2427,7 @@ const userFunctions = () => {
       const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
       console.log(`bbbootedTimestamp: ${ bbbootedTimestamp }`)
 
-      const msSinceLastBoot = Date.now() - bbbootedTimestamp;
+      const msSinceLastBoot = ( Date.now() / 1000 ) - bbbootedTimestamp;
       console.log(`msSinceLastBoot: ${ msSinceLastBoot }`)
 
       const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );

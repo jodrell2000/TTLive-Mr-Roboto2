@@ -2429,7 +2429,7 @@ const userFunctions = () => {
     bbbtest: async function ( data, databaseFunctions, chatFunctions ) {
       const bootingUserID = await this.whoSentTheCommand( data );
 
-      const target = this.findBBBootTarget( bootingUserID, databaseFunctions );
+      const target = await this.findBBBootTarget( bootingUserID, databaseFunctions );
       console.log(`Target BBBoot: ${ target }`)
       console.log(`Target username: ${await this.getUsername( target )}`)
 

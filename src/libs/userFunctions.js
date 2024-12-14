@@ -2434,7 +2434,7 @@ const userFunctions = () => {
     findBBBootTarget: async function ( databaseFunctions ) {
       const targetList = await databaseFunctions.getAllBBBootTargets();
       console.log(`Possible targets: ${JSON.stringify( targetList, null, 2 )}`);
-      console.log(`All users: ${JSON.stringify( targetList, null, 2 )}`);
+      console.log(`All users: ${JSON.stringify( theUsersList, null, 2 )}`);
     },
 
     getBBBootedTimestamp: async function ( userID ) {

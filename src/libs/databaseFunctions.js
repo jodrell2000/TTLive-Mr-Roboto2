@@ -299,7 +299,8 @@ const databaseFunctions = () => {
       const values = [  ];
       try {
         const result = await this.runQuery( theQuery, values );
-        console.log(JSON.stringify( result, null, 2 ))
+        const uuids = result.map(item => item.id);
+        console.log(JSON.stringify( uuids, null, 2 ))
 
       } catch ( error ) {
         console.error( 'Error in running getAllBBBootTarget in the DB:', error.message );

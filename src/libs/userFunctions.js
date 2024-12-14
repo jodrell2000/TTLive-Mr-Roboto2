@@ -9,6 +9,7 @@ import countryLookup from 'country-code-lookup';
 import axios from "axios";
 import { ActionName } from "ttfm-socket";
 import botDefaults from "../defaults/botDefaults.js";
+import { data } from "express-session/session/cookie.js";
 
 let theUsersList = []; // object array of everyone in the room
 let afkPeople = []; //holds the userid of everyone who has used the /afk command
@@ -2425,9 +2426,15 @@ const userFunctions = () => {
     console.groupEnd()
     },
     
+    bbbtest: async function ( databaseFunctions ) {
+      const target = this.findBBBootTarget( databaseFunctions );
+      console.log(`Target BBBoot: ${ target }`)
+    },
+    
     findBBBootTarget: async function ( databaseFunctions ) {
       const targetList = await databaseFunctions.getAllBBBootTargets();
-      console.log(JSON.stringify( targetList, null, 2 ));
+      console.log(`Possible targets: ${JSON.stringify( targetList, null, 2 )}`);
+      console.log(`All users: ${JSON.stringify( targetList, null, 2 )}`);
     },
 
     getBBBootedTimestamp: async function ( userID ) {

@@ -5,6 +5,7 @@ import { commandIdentifier } from '../defaults/chatDefaults.js'
 import axios from 'axios'
 import authModule from '../libs/auth.js'
 import { ActionName } from "ttfm-socket";
+import { spawn } from 'child_process';
 
 let checkActivity = Date.now();
 let skipOn = null; //if true causes the bot to skip every song it plays, toggled on and off by commands
@@ -71,7 +72,7 @@ const botFunctions = () => {
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve( "done" ), delay ) )
 
       const shutMeDown = async () => {
-        chatFunctions.botSpeak( "I'll be back...", true );
+        await chatFunctions.botSpeak( "I'll be back...", true );
         await sleep( 100 )
         userFunctions.debugPrintTheUsersList();
         await sleep( 100 )
@@ -79,6 +80,20 @@ const botFunctions = () => {
         process.exit( 1 );
       }
       shutMeDown();
+    },
+
+    tonystark: function ( data, theMessage, userFunctions, chatFunctions ) {
+      const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve( "done" ), delay ) )
+
+      const restartMe = async () => {
+        const subprocess = spawn(process.argv[0], process.argv.slice(1), {
+          detached: true,
+          stdio: 'inherit',
+        });
+        subprocess.unref();
+        process.exit(0);
+      }
+      restartMe();
     },
 
     changeAvatar: function ( data, args, chatFunctions ) {

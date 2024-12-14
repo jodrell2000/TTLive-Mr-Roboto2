@@ -388,6 +388,13 @@ const commandFunctions = () => {
   moderatorCommands.sarahconner.help = "Shut down the Bot if it's causing problems";
   moderatorCommands.sarahconner.sampleArguments = [ "He started booting everyone!" ];
 
+  moderatorCommands.tonystark = ( { data, args, botFunctions, userFunctions, chatFunctions } ) => {
+    botFunctions.tonystark( data, reassembleArgs( args ), userFunctions, chatFunctions );
+  }
+  moderatorCommands.tonystark.argumentCount = 1;
+  moderatorCommands.tonystark.help = "Restart the Bot if it's acting a bit odd";
+  moderatorCommands.tonystark.sampleArguments = [ "Bot has lost track of the DJs!" ];
+
   moderatorCommands.removedj = ( { data, args, botFunctions, userFunctions, chatFunctions, socket } ) => {
     botFunctions.removeDJCommand( data, reassembleArgs( args ), userFunctions, chatFunctions, socket );
   }

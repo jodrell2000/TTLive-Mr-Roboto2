@@ -2411,11 +2411,7 @@ const userFunctions = () => {
               await this.bbBootSomeone( data, bootingUserID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
             }
           } else {
-            const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
-            const msSinceLastBoot = Date.now() - bbbootedTimestamp;
-            const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
-            await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
-              " BBBoot again yet. You last played " + formattedLastBBBooted + " ago" );
+            await this.cannotBBBootMessage( bootingUserID, chatFunctions )
           }
         } else {
           await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", but you can't boot" +
@@ -2426,20 +2422,31 @@ const userFunctions = () => {
     console.groupEnd()
     },
     
+    cannotBBBootMessage: async function ( bootingUserID, chatFunctions ) {
+      const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
+      const msSinceLastBoot = Date.now() - bbbootedTimestamp;
+      const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
+      await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
+        " BBBoot again yet. You last played " + formattedLastBBBooted + " ago" );
+    },
+    
     bbbtest: async function ( data, databaseFunctions, chatFunctions ) {
       const bootingUserID = await this.whoSentTheCommand( data );
+      if ( await this.canBBBoot( bootingUserID ) ) {
+        const target = await this.findBBBootTarget( bootingUserID, databaseFunctions );
+        console.log(`Target BBBoot: ${ target }`)
+        console.log(`Target username: ${await this.getUsername( target )}`)
 
-      const target = await this.findBBBootTarget( bootingUserID, databaseFunctions );
-      console.log(`Target BBBoot: ${ target }`)
-      console.log(`Target username: ${await this.getUsername( target )}`)
-
-      const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
-      const doInOrder = async () => {
-        await chatFunctions.botSpeak( `Scanning for possible targets...`)
-        await sleep( 5000 );
-        await chatFunctions.botSpeak( `Target acquired...${await this.getUsername( target )}, you're it!`)
+        const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
+        const doInOrder = async () => {
+          await chatFunctions.botSpeak( `Scanning for possible targets...`)
+          await sleep( 5000 );
+          await chatFunctions.botSpeak( `Target acquired...${await this.getUsername( target )}, you're it!`)
+        }
+        doInOrder();
+      } else {
+        await this.cannotBBBootMessage( bootingUserID, chatFunctions )
       }
-      doInOrder();
     },
     
     findBBBootTarget: async function ( uuid, databaseFunctions ) {

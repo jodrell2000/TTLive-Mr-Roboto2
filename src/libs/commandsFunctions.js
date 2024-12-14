@@ -115,10 +115,10 @@ const commandFunctions = () => {
   }
   generalCommands.bbboot.help = "BBBoot @Bukkake. If it's been more than 24hrs since the last boot, BB gets booted. If it's been less, you do! ;-)";
 
-  moderatorCommands.bbbtest = ( { data, userFunctions, databaseFunctions } ) => {
-    userFunctions.bbbtest( data, databaseFunctions );
+  moderatorCommands.bbbtest = ( { data, userFunctions, databaseFunctions, chatFunctions } ) => {
+    userFunctions.bbbtest( data, databaseFunctions, chatFunctions );
   }
-  moderatorCommands.bbbtest.help = "BBBoot @Bukkake. If it's been more than 24hrs since the last boot, BB gets booted. If it's been less, you do! ;-)";
+  moderatorCommands.bbbtest.help = "BBBoot someone. Play the game where you can win RC, but at what cost!";
 
   generalCommands.robocoin = ( { data, userFunctions, chatFunctions } ) => {
     userFunctions.readMyRoboCoin( data, chatFunctions );

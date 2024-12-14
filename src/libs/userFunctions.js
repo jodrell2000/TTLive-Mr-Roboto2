@@ -2426,11 +2426,22 @@ const userFunctions = () => {
     console.groupEnd()
     },
     
-    bbbtest: async function ( data, databaseFunctions ) {
+    bbbtest: async function ( data, databaseFunctions, chatFunctions ) {
       const bootingUserID = await this.whoSentTheCommand( data );
 
       const target = this.findBBBootTarget( bootingUserID, databaseFunctions );
       console.log(`Target BBBoot: ${ target }`)
+
+      const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
+      const doInOrder = async () => {
+        await chatFunctions.botSpeak( `Scanning for possible targets...`)
+        await sleep( 5000 );
+        await chatFunctions.botSpeak( `Target acquired...${await this.getUsername( target )}, you're it!`)
+      }
+      doInOrder();
+
+
+
     },
     
     findBBBootTarget: async function ( uuid, databaseFunctions ) {

@@ -2426,7 +2426,7 @@ const userFunctions = () => {
     },
     
     findBBBootTarget: async function ( databaseFunctions ) {
-      const targetList = databaseFunctions.getAllBBBootTargets();
+      const targetList = await databaseFunctions.getAllBBBootTargets();
       console.log(JSON.stringify( targetList, null, 2 ));
     },
 

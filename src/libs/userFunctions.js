@@ -103,6 +103,7 @@ const userFunctions = () => {
   }
 
   function formatRelativeTime( seconds ) {
+    console.log(`formatRelativeTime seconds: ${seconds}`)
     if ( isNaN( seconds ) ) {
       return false
     } else if ( seconds < 60 * 60 ) {
@@ -2424,7 +2425,7 @@ const userFunctions = () => {
     
     cannotBBBootMessage: async function ( bootingUserID, chatFunctions ) {
       const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
-      const msSinceLastBoot = Date.now() - ( bbbootedTimestamp / 1000 );
+      const msSinceLastBoot = Date.now() - bbbootedTimestamp;
       const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
       await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
         " BBBoot again yet. You last played " + formattedLastBBBooted + " ago" );

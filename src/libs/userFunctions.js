@@ -2442,6 +2442,16 @@ const userFunctions = () => {
 
       const availableTargets = targetList.filter(id => currentUsers.includes(id) && id !== uuid);
       console.log(`Available Targets: ${JSON.stringify( availableTargets, null, 2 )}`);
+
+      if (availableTargets.length === 0) {
+        console.log("No available targets.");
+        return null;
+      }
+
+      const randomIndex = Math.floor(Math.random() * availableTargets.length);
+      const randomTarget = availableTargets[randomIndex];
+      console.log(`Selected Target: ${randomTarget}`);
+      return randomTarget;
     },
 
     getBBBootedTimestamp: async function ( userID ) {

@@ -86,6 +86,8 @@ const botFunctions = () => {
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve( "done" ), delay ) )
 
       const restartMe = async () => {
+        await chatFunctions.botSpeak( "I'll just try switching it off and on again...", true );
+        this.logCommandUsage( userFunctions, 'tonystark', data, theMessage )
         const subprocess = spawn(process.argv[0], process.argv.slice(1), {
           detached: true,
           stdio: 'inherit',

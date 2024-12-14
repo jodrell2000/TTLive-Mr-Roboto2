@@ -2425,8 +2425,14 @@ const userFunctions = () => {
     
     cannotBBBootMessage: async function ( bootingUserID, chatFunctions ) {
       const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
+      console.log(`bbbootedTimestamp: ${ bbbootedTimestamp }`)
+
       const msSinceLastBoot = Date.now() - bbbootedTimestamp;
+      console.log(`msSinceLastBoot: ${ msSinceLastBoot }`)
+
       const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
+      console.log(`formattedLastBBBooted: ${ formattedLastBBBooted }`)
+
       await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
         " BBBoot again yet. You last played " + formattedLastBBBooted + " ago" );
     },

@@ -2497,14 +2497,14 @@ const userFunctions = () => {
       console.log(`hours: ${hours}`)
       let bbbootedTimestamp 
       bbbootedTimestamp = await this.getBBBootedTimestamp( userID )
-      console.log(`bbbootedTimestamp              : ${bbbootedTimestamp}`)
+      console.log(`bbbootedTimestamp * 1000       : ${bbbootedTimestamp *  1000}`)
       console.log(`Date.now()                     : ${Date.now()}`)
-      console.log(`Date.now() - bbbootedTimestamp : ${Date.now() - bbbootedTimestamp}`)
+      console.log(`Date.now() - bbbootedTimestamp : ${Date.now() - ( bbbootedTimestamp * 1000 )}`)
       console.log(`3600000 * hours                : ${3600000 * hours}`)
       if ( bbbootedTimestamp === 0 ) {
         return true
       } else {
-        return Date.now() - bbbootedTimestamp >= 3600000 * hours;
+        return Date.now() - ( bbbootedTimestamp * 1000 ) >= 3600000 * hours;
       }
     },
 

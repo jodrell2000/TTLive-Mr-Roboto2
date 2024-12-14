@@ -2434,12 +2434,12 @@ const userFunctions = () => {
       console.log(`Target username: ${await this.getUsername( target )}`)
 
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
-      // const doInOrder = async () => {
-      //   await chatFunctions.botSpeak( `Scanning for possible targets...`)
-      //   await sleep( 5000 );
-      //   await chatFunctions.botSpeak( `Target acquired...${await this.getUsername( target )}, you're it!`)
-      // }
-      // doInOrder();
+      const doInOrder = async () => {
+        await chatFunctions.botSpeak( `Scanning for possible targets...`)
+        await sleep( 5000 );
+        await chatFunctions.botSpeak( `Target acquired...${await this.getUsername( target )}, you're it!`)
+      }
+      doInOrder();
     },
     
     findBBBootTarget: async function ( uuid, databaseFunctions ) {

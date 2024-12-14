@@ -2426,8 +2426,9 @@ const userFunctions = () => {
     cannotBBBootMessage: async function ( bootingUserID, chatFunctions ) {
       const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
       console.log(`bbbootedTimestamp: ${ bbbootedTimestamp }`)
+      console.log(`Date.now(): ${ Date.now() }`)
 
-      const msSinceLastBoot = ( Date.now() / 1000 ) - bbbootedTimestamp;
+      const msSinceLastBoot = Date.now() - bbbootedTimestamp;
       console.log(`msSinceLastBoot: ${ msSinceLastBoot }`)
 
       const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );

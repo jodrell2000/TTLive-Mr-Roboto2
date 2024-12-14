@@ -2424,6 +2424,11 @@ const userFunctions = () => {
       }
     console.groupEnd()
     },
+    
+    findBBBootTarget: async function ( databaseFunctions ) {
+      const targetList = databaseFunctions.getAllBBBootTargets();
+      console.log(JSON.stringify( targetList, null, 2 ));
+    },
 
     getBBBootedTimestamp: async function ( userID ) {
       if ( await this.userExists( userID ) ) {

@@ -291,6 +291,26 @@ const databaseFunctions = () => {
     // ========================================================
 
     // ========================================================
+    // BBBoot Functions
+    // ========================================================
+
+    getAllBBBootTargets: async function () {
+      const theQuery = "select DISTINCT(id) from users where BBBootTimestamp !=0;";
+      const values = [  ];
+      try {
+        const result = await this.runQuery( theQuery, values );
+        console.log(JSON.stringify( result, null, 2 ))
+
+      } catch ( error ) {
+        console.error( 'Error in running getAllBBBootTarget in the DB:', error.message );
+        // Handle the error as needed
+        throw error; // Rethrow the error if necessary
+      }
+    },
+
+    // ========================================================
+
+    // ========================================================
     // Song Data Functions
     // ========================================================
 

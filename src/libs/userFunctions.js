@@ -2426,19 +2426,21 @@ const userFunctions = () => {
     console.groupEnd()
     },
     
-    bbbtest: async function ( databaseFunctions ) {
-      const target = this.findBBBootTarget( databaseFunctions );
+    bbbtest: async function ( data, databaseFunctions ) {
+      const bootingUserID = await this.whoSentTheCommand( data );
+
+      const target = this.findBBBootTarget( bootingUserID, databaseFunctions );
       console.log(`Target BBBoot: ${ target }`)
     },
     
-    findBBBootTarget: async function ( databaseFunctions ) {
+    findBBBootTarget: async function ( uuid, databaseFunctions ) {
       const targetList = await databaseFunctions.getAllBBBootTargets();
       console.log(`Possible targets: ${JSON.stringify( targetList, null, 2 )}`);
       
       const currentUsers = theUsersList.map(user => user.id);
       console.log(`All users: ${JSON.stringify( currentUsers, null, 2 )}`);
-      
-      const availableTargets = targetList.filter(id => currentUsers.includes(id));
+
+      const availableTargets = targetList.filter(id => currentUsers.includes(id) && id !== uuid);
       console.log(`Available Targets: ${JSON.stringify( availableTargets, null, 2 )}`);
     },
 

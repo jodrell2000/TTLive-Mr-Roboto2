@@ -2494,8 +2494,10 @@ const userFunctions = () => {
     },
 
     withinBBBootTime: async function ( userID, hours ) {
+      console.log(`hours: ${hours}`)
       let bbbootedTimestamp 
       bbbootedTimestamp = await this.getBBBootedTimestamp( userID )
+      console.log(`bbbootedTimestamp: ${bbbootedTimestamp}`)
       if ( bbbootedTimestamp === 0 ) {
         return true
       } else {

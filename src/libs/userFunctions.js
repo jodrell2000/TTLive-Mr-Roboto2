@@ -2497,10 +2497,10 @@ const userFunctions = () => {
       console.log(`hours: ${hours}`)
       let bbbootedTimestamp 
       bbbootedTimestamp = await this.getBBBootedTimestamp( userID )
-      console.log(`bbbootedTimestamp: ${bbbootedTimestamp}`)
-      console.log(`Date.now(): ${Date.now()}`)
-      console.log(`Date.now() - bbbootedTimestamp: ${Date.now() - bbbootedTimestamp}`)
-      console.log(`3600000 * hours: ${3600000 * hours}`)
+      console.log(`bbbootedTimestamp              : ${bbbootedTimestamp}`)
+      console.log(`Date.now()                     : ${Date.now()}`)
+      console.log(`Date.now() - bbbootedTimestamp : ${Date.now() - bbbootedTimestamp}`)
+      console.log(`3600000 * hours                : ${3600000 * hours}`)
       if ( bbbootedTimestamp === 0 ) {
         return true
       } else {

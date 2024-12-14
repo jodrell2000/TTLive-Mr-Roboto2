@@ -2424,7 +2424,7 @@ const userFunctions = () => {
     
     cannotBBBootMessage: async function ( bootingUserID, chatFunctions ) {
       const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
-      const msSinceLastBoot = Date.now() - bbbootedTimestamp;
+      const msSinceLastBoot = Date.now() - ( bbbootedTimestamp / 1000 );
       const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
       await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
         " BBBoot again yet. You last played " + formattedLastBBBooted + " ago" );
@@ -2494,13 +2494,8 @@ const userFunctions = () => {
     },
 
     withinBBBootTime: async function ( userID, hours ) {
-      console.log(`hours: ${hours}`)
       let bbbootedTimestamp 
       bbbootedTimestamp = await this.getBBBootedTimestamp( userID )
-      console.log(`bbbootedTimestamp * 1000       : ${bbbootedTimestamp *  1000}`)
-      console.log(`Date.now()                     : ${Date.now()}`)
-      console.log(`Date.now() - bbbootedTimestamp : ${Date.now() - ( bbbootedTimestamp * 1000 )}`)
-      console.log(`3600000 * hours                : ${3600000 * hours}`)
       if ( bbbootedTimestamp === 0 ) {
         return true
       } else {

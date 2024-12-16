@@ -51,6 +51,7 @@ const databaseFunctions = () => {
       let lastSnagged = 0;
       let region = "";
       let BBBootTimestamp = 0;
+      let BBBootedTimestamp = 0;
       let noiceCount = 0;
       let propsCount = 0;
       let RoboCoins = 0;
@@ -72,6 +73,7 @@ const databaseFunctions = () => {
       if ( userObject[ "lastSnagged" ] !== undefined ) { lastSnagged = userObject[ "lastSnagged" ] }
       if ( userObject[ "region" ] !== undefined ) { region = userObject[ "region" ] }
       if ( userObject[ "BBBootTimestamp" ] !== undefined ) { BBBootTimestamp = userObject[ "BBBootTimestamp" ] }
+      if ( userObject[ "BBBootedTimestamp" ] !== undefined ) { BBBootedTimestamp = userObject[ "BBBootedTimestamp" ] }
       if ( userObject[ "noiceCount" ] !== undefined ) { noiceCount = userObject[ "noiceCount" ] }
       if ( userObject[ "propsCount" ] !== undefined ) { propsCount = userObject[ "propsCount" ] }
       if ( userObject[ "RoboCoins" ] !== undefined ) { RoboCoins = userObject[ "RoboCoins" ] }
@@ -82,7 +84,7 @@ const databaseFunctions = () => {
       return `REPLACE
                   INTO users (id, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke,
                               currentPlayCount, totalPlayCount, joinedStage, firstIdleWarning,
-                              secondIdleWarning, spamCount, lastSnagged, region, BBBootTimestamp,
+                              secondIdleWarning, spamCount, lastSnagged, region, BBBootTimestamp, BBBootedTimestamp
                               noiceCount, propsCount, RoboCoins, here, password_hash, email)
               VALUES ("${ id }", "${ username }",
                       ${ moderator },
@@ -99,6 +101,7 @@ const databaseFunctions = () => {
                       ${ lastSnagged },
                       "${ region }",
                       ${ BBBootTimestamp },
+                      ${ BBBootedTimestamp },
                       ${ noiceCount },
                       ${ propsCount },
                       ${ RoboCoins },
@@ -120,7 +123,8 @@ const databaseFunctions = () => {
     loadUserFromDatabase: async function ( uuid ) {
       const theQuery = "SELECT id, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke, currentPlayCount," +
         " totalPlayCount, joinedStage, firstIdleWarning, secondIdleWarning, spamCount, lastSnagged, region," +
-        " BBBootTimestamp, noiceCount, propsCount, RoboCoins, here, password_hash, email FROM users where id = ?"
+        " BBBootTimestamp, BBBootedTimestamp, noiceCount, propsCount, RoboCoins, here, password_hash, email FROM" +
+        " users where id = ?"
       const theValues = [ uuid ];
       try {
         const result = await this.runQuery( theQuery, theValues );

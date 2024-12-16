@@ -84,7 +84,7 @@ const databaseFunctions = () => {
       return `REPLACE
                   INTO users (id, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke,
                               currentPlayCount, totalPlayCount, joinedStage, firstIdleWarning,
-                              secondIdleWarning, spamCount, lastSnagged, region, BBBootTimestamp, BBBootedTimestamp
+                              secondIdleWarning, spamCount, lastSnagged, region, BBBootTimestamp, BBBootedTimestamp,
                               noiceCount, propsCount, RoboCoins, here, password_hash, email)
               VALUES ("${ id }", "${ username }",
                       ${ moderator },

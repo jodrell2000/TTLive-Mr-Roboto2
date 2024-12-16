@@ -2461,12 +2461,12 @@ const userFunctions = () => {
     },
 
     canBBTargetBeBooted: async function ( uuid ) {
-      return this.withinBBBootedTime( uuid, 24 );
+      return !( await this.withinBBBootedTime( uuid, 24 ));
     },
 
     canBBBoot: async function ( userID ) {
       const hours = 24 + ( Math.floor( Math.random() * 12 ) );
-      return await this.withinBBBootTime( userID, hours );
+      return !(await this.withinBBBootTime( userID, hours ));
     },
 
     withinBBBootedTime: async function ( userID, hours ) {

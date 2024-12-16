@@ -115,8 +115,8 @@ const commandFunctions = () => {
   }
   generalCommands.bbboot.help = "BBBoot @Bukkake. If it's been more than 24hrs since the last boot, BB gets booted. If it's been less, you do! ;-)";
 
-  moderatorCommands.bbbtest = ( { data, userFunctions, databaseFunctions, chatFunctions } ) => {
-    userFunctions.bbbtest( data, databaseFunctions, chatFunctions );
+  moderatorCommands.bbbtest = ( { data, userFunctions, databaseFunctions, chatFunctions, roomFunctions } ) => {
+    userFunctions.bbbtest( data, databaseFunctions, chatFunctions, roomFunctions );
   }
   moderatorCommands.bbbtest.help = "BBBoot someone. Play the game where you can win RC, but at what cost!";
 

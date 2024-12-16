@@ -2425,38 +2425,53 @@ const userFunctions = () => {
     
     cannotBBBootMessage: async function ( bootingUserID, chatFunctions ) {
       const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
-      console.log(`bbbootedTimestamp * 1000: ${ bbbootedTimestamp * 1000 }`)
-      console.log(`Date.now(): ${ Date.now() }`)
-
       const msSinceLastBoot = Date.now() - ( bbbootedTimestamp * 1000 );
-      console.log(`msSinceLastBoot: ${ msSinceLastBoot }`)
-
       const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
-      console.log(`formattedLastBBBooted: ${ formattedLastBBBooted }`)
-
       await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
         " BBBoot again yet. You last played " + formattedLastBBBooted + " ago" );
     },
     
-    bbbtest: async function ( data, databaseFunctions, chatFunctions ) {
-      const bootingUserID = await this.whoSentTheCommand( data );
-      if ( await this.canBBBoot( bootingUserID ) ) {
-        const target = await this.findBBBootTarget( bootingUserID, databaseFunctions );
-        console.log(`Target BBBoot: ${ target }`)
-        console.log(`Target username: ${await this.getUsername( target )}`)
+    bbbtest: async function ( data, databaseFunctions, chatFunctions, roomFunctions ) {
+      const playerUuid = await this.whoSentTheCommand( data );
+      const playerName = await this.getUsername( playerUuid );
 
+      const playersRoboCoins = await this.getRoboCoins( playerUuid );
+      if ( playersRoboCoins < 1000000 ) {
+        await chatFunctions.botSpeak( `Sorry ${ playerName }, you need at least RC5 to play BBBoot`)
+        return
+      }
+
+      // check if user sending the command has at least 5 RC
+      // await the confirm before running if they do
+      // otherwise don't run anything
+      if ( await this.canBBBoot( playerUuid ) ) {
+        const targetUUID = await this.findBBBootTarget( playerUuid, databaseFunctions );
+        const targetUsername = await this.getUsername( targetUUID );
+        const roomSlug = await roomFunctions.roomSlug()
+
+        if ( await this.canBBTargetBeBooted( targetUUID ) ) {
+          const bootMessage = `Sorry @${ targetUsername }, you got booted by @${ playerName } and they've stolen 5 RoboCoins from you!`;
+          // await this.bbBootSomeone( data, targetUUID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
+        } else {
+          const bootMessage = `Sorry ${await this.getUsername( playerUuid )}, you lose. @${ targetUsername } was booted within the last 24Hrs. @${ targetUsername }. You pay them 5 RoboCoins as an apology`;
+          // await this.bbBootSomeone( data, bootingUserID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
+        }
+        
+        // exchange 5RC depending on the result
+        
         const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
         const doInOrder = async () => {
           await chatFunctions.botSpeak( `Scanning for possible targets...`)
           await sleep( 5000 );
-          await chatFunctions.botSpeak( `Target acquired...${await this.getUsername( target )}, you're it!`)
+          await chatFunctions.botSpeak( `Target acquired...${ targetUsername }, you're it!`)
         }
         doInOrder();
+        
       } else {
-        await this.cannotBBBootMessage( bootingUserID, chatFunctions )
+        await this.cannotBBBootMessage( playerUuid, chatFunctions )
       }
     },
-    
+
     findBBBootTarget: async function ( uuid, databaseFunctions ) {
       const targetList = await databaseFunctions.getAllBBBootTargets();
       console.log(`Possible targets: ${JSON.stringify( targetList, null, 2 )}`);
@@ -2494,6 +2509,10 @@ const userFunctions = () => {
 
     canBBBeBooted: async function () {
       return this.withinBBBootTime( await this.bbUserID(), 24 );
+    },
+
+    canBBTargetBeBooted: async function ( uuid ) {
+      return this.withinBBBootTime( uuid, 24 );
     },
 
     canBBBoot: async function ( userID ) {

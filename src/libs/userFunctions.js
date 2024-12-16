@@ -2442,7 +2442,7 @@ const userFunctions = () => {
 
     getBBBootedTimestamp: async function ( userID ) {
       if ( await this.userExists( userID ) ) {
-        return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'BBBootTimestamp' ];
+        return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'BBBootedTimestamp' ];
       }
     },
 
@@ -2475,9 +2475,9 @@ const userFunctions = () => {
       let bbbootedTimestamp 
       bbbootedTimestamp = await this.getBBBootedTimestamp( userID )
       if ( bbbootedTimestamp === 0 ) {
-        return true
+        return false
       } else {
-        return Date.now() - ( bbbootedTimestamp * 1000 ) >= 3600000 * hours;
+        return Date.now() - ( bbbootedTimestamp * 1000 ) <= 3600000 * hours;
       }
     },
     

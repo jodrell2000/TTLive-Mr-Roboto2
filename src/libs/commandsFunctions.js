@@ -110,15 +110,11 @@ const commandFunctions = () => {
   }
   generalCommands.deletetrack.help = "Delete whatever track Robo is currently playing";
 
-  generalCommands.bbboot = ( { data, userFunctions, chatFunctions, databaseFunctions, roomFunctions } ) => { 
-    userFunctions.bbBoot( data, chatFunctions, databaseFunctions, roomFunctions ); 
+  moderatorCommands.bbboot = ( { data, userFunctions, databaseFunctions, chatFunctions, roomFunctions } ) => {
+    userFunctions.bbboot( data, databaseFunctions, chatFunctions, roomFunctions );
   }
-  generalCommands.bbboot.help = "BBBoot @Bukkake. If it's been more than 24hrs since the last boot, BB gets booted. If it's been less, you do! ;-)";
-
-  moderatorCommands.bbbtest = ( { data, userFunctions, databaseFunctions, chatFunctions, roomFunctions } ) => {
-    userFunctions.bbbtest( data, databaseFunctions, chatFunctions, roomFunctions );
-  }
-  moderatorCommands.bbbtest.help = "BBBoot someone. Play the game where you can win RC, but at what cost!";
+  moderatorCommands.bbboot.help = "BBBoot someone. Play the game where you can win RC, but at what cost?!? Well," +
+    " RC5, that's what";
 
   generalCommands.robocoin = ( { data, userFunctions, chatFunctions } ) => {
     userFunctions.readMyRoboCoin( data, chatFunctions );

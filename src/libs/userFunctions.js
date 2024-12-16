@@ -2374,54 +2374,6 @@ const userFunctions = () => {
       // return "92394d1a-76ee-47a6-b761-d6b78148f34a"; // bb
       return "c52a4051-c810-4374-975d-ba72ea15bc11"; // realalexjones
     },
-
-    bbBoot: async function ( data, chatFunctions, databaseFunctions, roomFunctions ) {
-      console.group('bbBoot')
-      const bootingUserID = await this.whoSentTheCommand( data );
-      
-      // store booting userID and timestamp
-      // check if they've booted in the last 24 hrs and end if they have
-      // get distinct list of users who've bbbooted in the past
-      // get list of users currently in the hangout
-      // get list of bbbooting users who are here
-      // pick user at random, excluding the booting user
-      // check the last time that user was booted...then follow the existing logic
-      // steal coins from the booted user and give to the booting user
-      // // what happens if the booted user doesn't have enough coins?
-      
-      console.log(`bootingUserID:${bootingUserID}`)
-      const bbID = await this.bbUserID()
-      console.log(`bbID:${bbID}`)
-      const bbUsername = await this.getUsername( bbID )
-      console.log(`bbUsername:${bbUsername}`)
-      const roomSlug = await roomFunctions.roomSlug()
-
-      if ( bootingUserID === bbID ) {
-        await chatFunctions.botSpeak( `You can't boot yourself @${bbUsername}, you ain't that flexible!` );
-      } else if ( bootingUserID === authModule.USERID ) {
-        // you can't use the bot to speak the boot command
-        await chatFunctions.botSpeak( "Yeah, nope..." );
-      } else {
-        if ( await this.isBBHere() ) {
-          if ( await this.canBBBoot( bootingUserID ) ) {
-            if ( await this.canBBBeBooted() ) {
-              const bootMessage = `Sorry @${bbUsername}, you got booted by @${await this.getUsername( bootingUserID )}. They win 5 RoboCoins!!!`;
-              await this.bbBootSomeone( data, bbID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
-            } else {
-              const bootMessage = `Sorry ${await this.getUsername( bootingUserID )}, you lose. @${bbUsername} was booted within the last 24Hrs. @${bbUsername} wins 1 RoboCoin!`;
-              await this.bbBootSomeone( data, bootingUserID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
-            }
-          } else {
-            await this.cannotBBBootMessage( bootingUserID, chatFunctions )
-          }
-        } else {
-          await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", but you can't boot" +
-            " BB" +
-            " if they're not here!" );
-        }
-      }
-    console.groupEnd()
-    },
     
     cannotBBBootMessage: async function ( bootingUserID, chatFunctions ) {
       const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
@@ -2431,39 +2383,32 @@ const userFunctions = () => {
         " BBBoot again yet. You last played " + formattedLastBBBooted + " ago" );
     },
     
-    bbbtest: async function ( data, databaseFunctions, chatFunctions, roomFunctions ) {
-      const playerUuid = await this.whoSentTheCommand( data );
-      const playerName = await this.getUsername( playerUuid );
+    bbboot: async function ( data, databaseFunctions, chatFunctions, roomFunctions ) {
+      const playerUUID = await this.whoSentTheCommand( data );
+      const playerName = await this.getUsername( playerUUID );
 
-      const playersRoboCoins = await this.getRoboCoins( playerUuid );
+      const playersRoboCoins = await this.getRoboCoins( playerUUID );
       if ( playersRoboCoins < 5 ) {
         await chatFunctions.botSpeak( `Sorry ${ playerName }, you need at least RC5 to play BBBoot`)
         return
       }
 
-      // check if user sending the command has at least 5 RC
-      // await the confirm before running if they do
-      // otherwise don't run anything
-      if ( await this.canBBBoot( playerUuid ) ) {
-        const targetUUID = await this.findBBBootTarget( playerUuid, databaseFunctions );
+      if ( await this.canBBBoot( playerUUID ) ) {
+        const targetUUID = await this.findBBBootTarget( playerUUID, databaseFunctions );
         const targetUsername = await this.getUsername( targetUUID );
         const roomSlug = await roomFunctions.roomSlug()
-
-        if ( await this.canBBTargetBeBooted( targetUUID ) ) {
-          const bootMessage = `Sorry @${ targetUsername }, you got booted by @${ playerName } and they've stolen 5 RoboCoins from you!`;
-          // await this.bbBootSomeone( data, targetUUID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
-        } else {
-          const bootMessage = `Sorry ${await this.getUsername( playerUuid )}, you lose. @${ targetUsername } was booted within the last 24Hrs. @${ targetUsername }. You pay them 5 RoboCoins as an apology`;
-          // await this.bbBootSomeone( data, bootingUserID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions );
-        }
         
-        // exchange 5RC depending on the result
+        if ( await this.canBBTargetBeBooted( targetUUID ) ) {
+          await this.winBBBoot( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions );
+        } else {
+          await this.loseBBBoot( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions );
+        }
         
         const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
         const doInOrder = async () => {
           await chatFunctions.botSpeak( `Scanning for possible targets...`)
           await sleep( 5000 );
-          await chatFunctions.botSpeak( `Target acquired...${ targetUsername }, you're it!`)
+          await chatFunctions.botSpeak( `Target acquired...@${ targetUsername }, you're it!`)
         }
         doInOrder();
         
@@ -2500,6 +2445,10 @@ const userFunctions = () => {
     },
 
     updateBBBootedTimestamp: async function ( userID, databaseFunctions ) {
+      await this.storeUserData( userID, "BBBootedTimestamp", Date.now(), databaseFunctions );
+    },
+
+    updateBBBootTimestamp: async function ( userID, databaseFunctions ) {
       await this.storeUserData( userID, "BBBootTimestamp", Date.now(), databaseFunctions );
     },
 
@@ -2529,8 +2478,36 @@ const userFunctions = () => {
         return Date.now() - ( bbbootedTimestamp * 1000 ) >= 3600000 * hours;
       }
     },
+    
+    winBBBoot: async function ( data, playerUUID, targetUUID, bootMessage, roomSlug, chatFunctions, databaseFunctions ) {
+      const playerName = await this.getUsername( playerUUID );
+      const targetName = await this.getUsername( targetUUID );
 
-    bbBootSomeone: async function ( data, bootedUserID, bootingUserID, bootMessage, roomSlug, chatFunctions, databaseFunctions ) {
+      await this.announceBBBoot( chatFunctions )
+      await chatFunctions.botSpeak( "Goodbye @" + await this.getUsername( targetUUID ) );
+      const stolenCoins = Math.min( await this.getRoboCoins( targetUUID ), 5);
+      // await this.updateRoboCoins( targetUUID, await this.getRoboCoins( targetUUID ) - stolenCoins, databaseFunctions )
+      // await this.updateRoboCoins( playerUUID, await this.getRoboCoins( playerUUID ) + stolenCoins, databaseFunctions )
+      await chatFunctions.botSpeak( `Sorry @${ targetName }, you got booted by @${ playerName } and they've stolen RC${ stolenCoins } from you!`, data );
+      // await this.bootThisUser( targetUUID, roomSlug, bootMessage )
+      // await this.updateBBBootedTimestamp( targetUUID, databaseFunctions );
+      // await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
+    },
+    
+    loseBBBoot: async function ( data, playerUUID, targetUUID, bootMessage, roomSlug, chatFunctions, databaseFunctions ) {
+      const playerName = await this.getUsername( playerUUID );
+      const targetName = await this.getUsername( targetUUID );
+
+      await this.announceBBBoot( chatFunctions )
+      await chatFunctions.botSpeak( "Goodbye @" + await this.getUsername( playerUUID ) );
+      await chatFunctions.botSpeak( `Sorry ${ playerName }, you lose. @${ targetName } was booted within the last 24Hrs. They win RC5 from you!`, data );
+      // await this.updateRoboCoins( playerUUID, await this.getRoboCoins( playerUUID ) - 5, databaseFunctions )
+      // await this.updateRoboCoins( targetUUID, await this.getRoboCoins( targetUUID ) + 5, databaseFunctions )
+      // await this.bootThisUser( playerUUID, roomSlug, bootMessage )
+      // await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
+    },
+
+    announceBBBoot: async function ( chatFunctions ) {
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
 
       const performInOrder = async () => {
@@ -2542,23 +2519,8 @@ const userFunctions = () => {
 
         await chatFunctions.botSpeak( "Hey Hey Hey..." );
         await sleep( 2000 )
-
-        await chatFunctions.botSpeak( "Goodbye @" + await this.getUsername( bootedUserID ) );
-        await sleep( 5000 )
-
-        await this.updateBBBootedTimestamp( bootedUserID, databaseFunctions );
-
-        if ( bootedUserID === await this.bbUserID() ) {
-          await this.updateRoboCoins( bootingUserID, await this.getRoboCoins( bootingUserID ) + 5, databaseFunctions )
-        } else {
-          await this.updateRoboCoins( await this.bbUserID(), await this.getRoboCoins( await this.bbUserID() ) + 1, databaseFunctions )
-        }
-
-        await this.bootThisUser( bootedUserID, roomSlug, bootMessage )
-        await chatFunctions.botSpeak( bootMessage, data );
       }
       await performInOrder();
-
     },
 
     // ========================================================

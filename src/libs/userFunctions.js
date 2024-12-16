@@ -2377,14 +2377,6 @@ const userFunctions = () => {
       return "c52a4051-c810-4374-975d-ba72ea15bc11"; // realalexjones
     },
     
-    cannotBBBootMessage: async function ( bootingUserID, chatFunctions ) {
-      const bbbootedTimestamp = await this.getBBBootedTimestamp( bootingUserID );
-      const msSinceLastBoot = Date.now() - ( bbbootedTimestamp * 1000 );
-      const formattedLastBBBooted = formatRelativeTime( msSinceLastBoot / 1000 );
-      await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
-        " BBBoot again yet. You last played " + formattedLastBBBooted + " ago" );
-    },
-    
     bbboot: async function ( data, databaseFunctions, chatFunctions, roomFunctions ) {
       const playerUUID = await this.whoSentTheCommand( data );
       const playerName = await this.getUsername( playerUUID );
@@ -2469,6 +2461,17 @@ const userFunctions = () => {
     canBBBoot: async function ( userID ) {
       const hours = 24 + ( Math.floor( Math.random() * 12 ) );
       return !(await this.withinBBBootTime( userID, hours ));
+    },
+    
+    cannotBBBootMessage: async function ( bootingUserID, chatFunctions ) {
+      const bbbootTimestamp = await this.getBBBootTimestamp( bootingUserID );
+      const msSinceLastBoot = Date.now() - ( bbbootTimestamp * 1000 );
+      console.log(`bbbootTimestamp: ${ bbbootTimestamp }`)
+      console.log(`msSinceLastBoot: ${ msSinceLastBoot }`)
+
+      const formattedLastBBBoot = formatRelativeTime( msSinceLastBoot / 1000 );
+      await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
+        " BBBoot again yet. You last played " + formattedLastBBBoot + " ago" );
     },
 
     withinBBBootedTime: async function ( userID, hours ) {

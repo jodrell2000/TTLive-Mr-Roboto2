@@ -110,10 +110,10 @@ const commandFunctions = () => {
   }
   generalCommands.deletetrack.help = "Delete whatever track Robo is currently playing";
 
-  moderatorCommands.bbboot = ( { data, userFunctions, databaseFunctions, chatFunctions, roomFunctions } ) => {
+  generalCommands.bbboot = ( { data, userFunctions, databaseFunctions, chatFunctions, roomFunctions } ) => {
     userFunctions.bbboot( data, databaseFunctions, chatFunctions, roomFunctions );
   }
-  moderatorCommands.bbboot.help = "BBBoot someone. Play the game where you can win RC, but at what cost?!? Well," +
+  generalCommands.bbboot.help = "BBBoot someone. Play the game where you can win RC, but at what cost?!? Well," +
     " RC5, that's what";
 
   generalCommands.robocoin = ( { data, userFunctions, chatFunctions } ) => {

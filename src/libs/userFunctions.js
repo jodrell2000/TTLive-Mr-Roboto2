@@ -2482,12 +2482,12 @@ const userFunctions = () => {
     },
 
     withinBBBootTime: async function ( userID, hours ) {
-      let bbbootedTimestamp
-      bbbootedTimestamp = await this.getBBBootTimestamp( userID )
-      if ( bbbootedTimestamp === 0 ) {
+      let bbbootTimestamp
+      bbbootTimestamp = await this.getBBBootTimestamp( userID )
+      if ( bbbootTimestamp === 0 ) {
         return false
       } else {
-        return Date.now() - ( bbbootedTimestamp * 1000 ) <= 3600000 * hours;
+        return Date.now() - ( bbbootTimestamp * 1000 ) <= 3600000 * hours;
       }
     },
     

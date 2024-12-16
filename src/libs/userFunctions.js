@@ -2436,7 +2436,7 @@ const userFunctions = () => {
       const playerName = await this.getUsername( playerUuid );
 
       const playersRoboCoins = await this.getRoboCoins( playerUuid );
-      if ( playersRoboCoins < 1000000 ) {
+      if ( playersRoboCoins < 5 ) {
         await chatFunctions.botSpeak( `Sorry ${ playerName }, you need at least RC5 to play BBBoot`)
         return
       }

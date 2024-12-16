@@ -2048,6 +2048,8 @@ const userFunctions = () => {
       console.group( "! bootThisUser ===============================" );
       console.log( '========================================' );
       console.log( "Booting userID:" + userID );
+      console.log( bootMessage );
+      console.log( '========================================' );
 
       try {
         await this.apiPost(url, bootPayload);
@@ -2496,12 +2498,12 @@ const userFunctions = () => {
       await this.announceBBBoot( chatFunctions )
       await chatFunctions.botSpeak( "Goodbye @" + await this.getUsername( targetUUID ) );
       const stolenCoins = Math.min( await this.getRoboCoins( targetUUID ), 5);
-      // await this.updateRoboCoins( targetUUID, await this.getRoboCoins( targetUUID ) - stolenCoins, databaseFunctions )
-      // await this.updateRoboCoins( playerUUID, await this.getRoboCoins( playerUUID ) + stolenCoins, databaseFunctions )
+      await this.updateRoboCoins( targetUUID, await this.getRoboCoins( targetUUID ) - stolenCoins, databaseFunctions )
+      await this.updateRoboCoins( playerUUID, await this.getRoboCoins( playerUUID ) + stolenCoins, databaseFunctions )
       await chatFunctions.botSpeak( `Sorry @${ targetName }, you got booted by @${ playerName } and they've stolen RC${ stolenCoins } from you!`, data );
-      // await this.bootThisUser( targetUUID, roomSlug, bootMessage )
-      // await this.updateBBBootedTimestamp( targetUUID, databaseFunctions );
-      // await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
+      await this.bootThisUser( targetUUID, roomSlug, `@${ targetName } was a BBBoot target` )
+      await this.updateBBBootedTimestamp( targetUUID, databaseFunctions );
+      await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
     },
     
     loseBBBoot: async function ( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions ) {
@@ -2511,10 +2513,10 @@ const userFunctions = () => {
       await this.announceBBBoot( chatFunctions )
       await chatFunctions.botSpeak( "Goodbye @" + await this.getUsername( playerUUID ) );
       await chatFunctions.botSpeak( `Sorry ${ playerName }, you lose. @${ targetName } was booted within the last 24Hrs. They win RC5 from you!`, data );
-      // await this.updateRoboCoins( playerUUID, await this.getRoboCoins( playerUUID ) - 5, databaseFunctions )
-      // await this.updateRoboCoins( targetUUID, await this.getRoboCoins( targetUUID ) + 5, databaseFunctions )
-      // await this.bootThisUser( playerUUID, roomSlug, bootMessage )
-      // await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
+      await this.updateRoboCoins( playerUUID, await this.getRoboCoins( playerUUID ) - 5, databaseFunctions )
+      await this.updateRoboCoins( targetUUID, await this.getRoboCoins( targetUUID ) + 5, databaseFunctions )
+      await this.bootThisUser( playerUUID, roomSlug, `@${ playerName } lost playing BBBoot` )
+      await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
     },
 
     announceBBBoot: async function ( chatFunctions ) {

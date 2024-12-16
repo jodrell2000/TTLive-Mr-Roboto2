@@ -2398,17 +2398,19 @@ const userFunctions = () => {
         const targetUsername = await this.getUsername( targetUUID );
         const roomSlug = await roomFunctions.roomSlug()
         
-        if ( await this.canBBTargetBeBooted( targetUUID ) ) {
-          await this.winBBBoot( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions );
-        } else {
-          await this.loseBBBoot( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions );
-        }
-        
         const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
         const doInOrder = async () => {
           await chatFunctions.botSpeak( `Scanning for possible targets...`)
           await sleep( 5000 );
           await chatFunctions.botSpeak( `Target acquired...@${ targetUsername }, you're it!`)
+          await sleep( 5000 );
+
+          if ( await this.canBBTargetBeBooted( targetUUID ) ) {
+            await this.winBBBoot( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions );
+          } else {
+            await this.loseBBBoot( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions );
+          }
+
         }
         doInOrder();
         

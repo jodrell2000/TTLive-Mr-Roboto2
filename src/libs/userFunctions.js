@@ -2479,7 +2479,7 @@ const userFunctions = () => {
       }
     },
     
-    winBBBoot: async function ( data, playerUUID, targetUUID, bootMessage, roomSlug, chatFunctions, databaseFunctions ) {
+    winBBBoot: async function ( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions ) {
       const playerName = await this.getUsername( playerUUID );
       const targetName = await this.getUsername( targetUUID );
 
@@ -2494,7 +2494,7 @@ const userFunctions = () => {
       // await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
     },
     
-    loseBBBoot: async function ( data, playerUUID, targetUUID, bootMessage, roomSlug, chatFunctions, databaseFunctions ) {
+    loseBBBoot: async function ( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions ) {
       const playerName = await this.getUsername( playerUUID );
       const targetName = await this.getUsername( targetUUID );
 

@@ -2415,7 +2415,7 @@ const userFunctions = () => {
         doInOrder();
         
       } else {
-        await this.cannotBBBootMessage( playerUuid, chatFunctions )
+        await this.cannotBBBootMessage( playerUUID, chatFunctions )
       }
     },
 
@@ -2446,6 +2446,12 @@ const userFunctions = () => {
       }
     },
 
+    getBBBootTimestamp: async function ( userID ) {
+      if ( await this.userExists( userID ) ) {
+        return theUsersList[ this.getPositionOnUsersList( userID ) ][ 'BBBootTimestamp' ];
+      }
+    },
+
     updateBBBootedTimestamp: async function ( userID, databaseFunctions ) {
       await this.storeUserData( userID, "BBBootedTimestamp", Date.now(), databaseFunctions );
     },
@@ -2454,16 +2460,8 @@ const userFunctions = () => {
       await this.storeUserData( userID, "BBBootTimestamp", Date.now(), databaseFunctions );
     },
 
-    isBBHere: async function () {
-      return this.isUserHere( await this.bbUserID() );
-    },
-
-    canBBBeBooted: async function () {
-      return this.withinBBBootTime( await this.bbUserID(), 24 );
-    },
-
     canBBTargetBeBooted: async function ( uuid ) {
-      return this.withinBBBootTime( uuid, 24 );
+      return this.withinBBBootedTime( uuid, 24 );
     },
 
     canBBBoot: async function ( userID ) {
@@ -2471,9 +2469,19 @@ const userFunctions = () => {
       return await this.withinBBBootTime( userID, hours );
     },
 
-    withinBBBootTime: async function ( userID, hours ) {
-      let bbbootedTimestamp 
+    withinBBBootedTime: async function ( userID, hours ) {
+      let bbbootedTimestamp
       bbbootedTimestamp = await this.getBBBootedTimestamp( userID )
+      if ( bbbootedTimestamp === 0 ) {
+        return false
+      } else {
+        return Date.now() - ( bbbootedTimestamp * 1000 ) <= 3600000 * hours;
+      }
+    },
+
+    withinBBBootTime: async function ( userID, hours ) {
+      let bbbootedTimestamp
+      bbbootedTimestamp = await this.getBBBootTimestamp( userID )
       if ( bbbootedTimestamp === 0 ) {
         return false
       } else {

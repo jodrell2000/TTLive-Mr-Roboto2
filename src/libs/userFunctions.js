@@ -2490,7 +2490,7 @@ const userFunctions = () => {
       if ( bbbootTimestamp === 0 ) {
         return false
       } else {
-        return Date.now() - ( bbbootTimestamp * 1000 ) <= 3600000 * hours;
+        return Date.now() - bbbootTimestamp <= 3600000 * hours;
       }
     },
     

@@ -41,7 +41,7 @@ const songFunctions = () => {
       this.song = thisSong.trackName;
       this.genre = thisSong.genre;
       this.artist = thisSong.artistName;
-      this.songID = thisSong.songID;
+      this.songID = thisSong.songShortId;
     },
 
 

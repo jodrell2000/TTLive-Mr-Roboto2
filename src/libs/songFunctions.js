@@ -315,7 +315,8 @@ const songFunctions = () => {
     // ========================================================
 
     songInfoCommand: async function ( data, databaseFunctions, chatFunctions ) {
-      console.log(`this.ytid(): ${JSON.stringify( this.ytid(), null, 2)}`);
+      this.getSongTags( data, databaseFunctions, chatFunctions );
+      console.log(`this.getSongTags: ${JSON.stringify( this.getSongTags( data, databaseFunctions, chatFunctions ), null, 2)}`);
       // if ( await databaseFunctions.checkVideoDataExists( this.ytid() ) ) {
       //   await databaseFunctions.getSongInfoData( this.ytid() )
       //     .then( ( songInfo ) => {

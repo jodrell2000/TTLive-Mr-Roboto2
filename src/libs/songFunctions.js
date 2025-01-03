@@ -315,14 +315,15 @@ const songFunctions = () => {
     // ========================================================
 
     songInfoCommand: async function ( data, databaseFunctions, chatFunctions ) {
-      if ( await databaseFunctions.checkVideoDataExists( this.ytid() ) ) {
-        await databaseFunctions.getSongInfoData( this.ytid() )
-          .then( ( songInfo ) => {
-            chatFunctions.botSpeak( "The song " + songInfo.trackName + " by " + songInfo.artistName + " has been played " + songInfo.playCount + " times by " + songInfo.djCount + " different DJs, and was first played on " + songInfo.firstPlay );
-          } )
-      } else {
-        chatFunctions.botSpeak( "I can't find a confirmed listing for this track" );
-      }
+      console.log(`this.ytid(): ${JSON.stringify( this.ytid(), null, 2)}`);
+      // if ( await databaseFunctions.checkVideoDataExists( this.ytid() ) ) {
+      //   await databaseFunctions.getSongInfoData( this.ytid() )
+      //     .then( ( songInfo ) => {
+      //       chatFunctions.botSpeak( "The song " + songInfo.trackName + " by " + songInfo.artistName + " has been played " + songInfo.playCount + " times by " + songInfo.djCount + " different DJs, and was first played on " + songInfo.firstPlay );
+      //     } )
+      // } else {
+      //   chatFunctions.botSpeak( "I can't find a confirmed listing for this track" );
+      // }
     },
 
     searchSpotifyCommand( data, databaseFunctions, mlFunctions, chatFunctions ) {

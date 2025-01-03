@@ -520,11 +520,11 @@ const databaseFunctions = () => {
         .catch( ( ex ) => { console.error( "Something went wrong getting the track played time: " + ex ); } );
     },
 
-    getSongInfoData: async function ( ytid ) {
+    getSongInfoData: async function ( songID ) {
       let songInfo = {};
 
       const nameQuery = "SELECT COALESCE(artistDisplayName, artistName) AS artistName, COALESCE(trackDisplayName, trackName) AS trackName FROM videoData WHERE id=?";
-      const nameValues = [ ytid ];
+      const nameValues = [ songID ];
 
       const whenQuery = "SELECT DATE_FORMAT(MIN(tp.whenPlayed), '%W %D %M %Y') as firstPlay, COUNT(tp.id) AS playCount, COUNT(DISTINCT(djID)) AS djCount " +
         "FROM videoData vd JOIN tracksPlayed tp ON tp.videoData_id=vd.id " +

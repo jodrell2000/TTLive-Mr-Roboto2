@@ -13,6 +13,9 @@ let getSong = null; // info for the currently playing song, so default to null
 let dj = null; // info for the currently playing song, so default to null
 let songID = null; // short song ID
 let ytid = null; // youTube ID of the video, used to check the regions
+let youTubeID = null; // youTube ID of the video, used to check the regions
+let appleID = null; // youTube ID of the video, used to check the regions
+let spotifyID = null; // youTube ID of the video, used to check the regions
 
 let snagSong = false; //if true causes the bot to add every song that plays to its queue
 
@@ -37,6 +40,9 @@ const songFunctions = () => {
     getSong: () => getSong,
     dj: () => dj,
     ytid: () => ytid,
+    youTubeID: () => youTubeID,
+    appleID: () => appleID,
+    spotifyID: () => spotifyID,
     
     setSongTags: async function ( thisSong ) {
       console.log(`data: ${JSON.stringify(thisSong, null, 2)}`);
@@ -44,9 +50,9 @@ const songFunctions = () => {
       this.genre = thisSong.genre;
       this.artist = thisSong.artistName;
       this.songID = thisSong.songShortId;
-      this.youTubeID = thisSong.songShortId;
-      this.appleID = thisSong.songShortId;
-      this.spotifyID = thisSong.songShortId;
+      this.youTubeID = thisSong.musicProviders.youtube;
+      this.appleID = thisSong.musicProviders.apple;
+      this.spotifyID = thisSong.musicProviders.spotify;
     },
 
     getSongTagsFromState: async function ( state ) {
@@ -328,14 +334,17 @@ const songFunctions = () => {
 
     songInfoCommand: async function ( data, databaseFunctions, chatFunctions ) {
       console.log(`this.songID: ${JSON.stringify( this.songID, null, 2)}`);
-      // if ( await databaseFunctions.getVideoDataID( this.songID, this.youTubeID, this.appleID, this.spotifyID ) ) {
-      //   await databaseFunctions.getSongInfoData( this.ytid() )
-      //     .then( ( songInfo ) => {
-      //       chatFunctions.botSpeak( "The song " + songInfo.trackName + " by " + songInfo.artistName + " has been played " + songInfo.playCount + " times by " + songInfo.djCount + " different DJs, and was first played on " + songInfo.firstPlay );
-      //     } )
-      // } else {
-      //   chatFunctions.botSpeak( "I can't find a confirmed listing for this track" );
-      // }
+      
+      const trackID = await databaseFunctions.getVideoDataID( this.songID, this.youTubeID, this.appleID, this.spotifyID )
+      if ( trackID ) {
+        await databaseFunctions.getSongInfoData( trackID )
+          .then( async ( songInfo ) => {
+            await chatFunctions.botSpeak( "The song " + songInfo.trackName + " by " + songInfo.artistName + " has" +
+              " been played " + songInfo.playCount + " times by " + songInfo.djCount + " different DJs, and was first played on " + songInfo.firstPlay );
+          } )
+      } else {
+        await chatFunctions.botSpeak( "I can't find a confirmed listing for this track" );
+      }
     },
 
     searchSpotifyCommand( data, databaseFunctions, mlFunctions, chatFunctions ) {

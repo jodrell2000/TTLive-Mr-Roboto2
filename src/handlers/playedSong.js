@@ -42,6 +42,7 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     }
 
     await userFunctions.setPreviousDJID( djID );
+    await songFunctions.setSongTags( state.nowPlaying.song )
     songFunctions.setPreviousTrack( state.nowPlaying.song.trackName )
     songFunctions.setPreviousArtist( state.nowPlaying.song.artistName )
     const theMessage = 'Now playing ' + state.nowPlaying.song.trackName + ' by ' + state.nowPlaying.song.artistName

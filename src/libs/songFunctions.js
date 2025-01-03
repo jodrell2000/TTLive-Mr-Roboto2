@@ -311,6 +311,7 @@ const songFunctions = () => {
     songID: async () => await songID,
 
     songInfoCommand: async function ( data, databaseFunctions, chatFunctions ) {
+      console.log('this:', this); // Logs the value of `this`
       console.log(`this.songID: ${JSON.stringify( await this.songID(), null, 2)}`);
       // if ( await databaseFunctions.checkVideoDataExists( this.ytid() ) ) {
       //   await databaseFunctions.getSongInfoData( this.ytid() )

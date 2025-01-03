@@ -520,33 +520,44 @@ const databaseFunctions = () => {
         .catch( ( ex ) => { console.error( "Something went wrong getting the track played time: " + ex ); } );
     },
 
-    getSongInfoData: async function ( songID ) {
+    getSongInfoData: async function (songID) {
       let songInfo = {};
 
       const nameQuery = "SELECT COALESCE(artistDisplayName, artistName) AS artistName, COALESCE(trackDisplayName, trackName) AS trackName FROM videoData WHERE id=?";
-      const nameValues = [ songID ];
+      const nameValues = [songID];
 
       const whenQuery = "SELECT DATE_FORMAT(MIN(tp.whenPlayed), '%W %D %M %Y') as firstPlay, COUNT(tp.id) AS playCount, COUNT(DISTINCT(djID)) AS djCount " +
         "FROM videoData vd JOIN tracksPlayed tp ON tp.videoData_id=vd.id " +
         "WHERE COALESCE(artistDisplayName, artistName) = ? AND COALESCE(trackDisplayName, trackName) = ?;";
 
-      return this.runQuery( nameQuery, nameValues )
-        .then( ( results ) => {
-          songInfo.artistName = results[ 0 ].artistName;
-          songInfo.trackName = results[ 0 ].trackName;
-          const whenValues = [ songInfo.artistName, songInfo.trackName ];
-          return this.runQuery( whenQuery, whenValues )
-            .then( ( results ) => {
-              songInfo.firstPlay = results[ 0 ].firstPlay;
-              songInfo.playCount = results[ 0 ].playCount;
-              songInfo.djCount = results[ 0 ].djCount;
-              return songInfo;
-            } );
-        } )
-        .catch( ( error ) => {
-          console.error( 'Error:', error );
+      const firstDJQuery = "SELECT u.username FROM users u " +
+        "JOIN tracksPlayed tp ON u.id=tp.djID " +
+        "JOIN videoData vd ON tp.videoData_id=vd.id " +
+        "WHERE COALESCE(artistDisplayName, artistName) = ? AND COALESCE(trackDisplayName, trackName) = ? " +
+        "ORDER BY tp.whenPlayed ASC LIMIT 1";
+
+      return this.runQuery(nameQuery, nameValues)
+        .then((results) => {
+          songInfo.artistName = results[0].artistName;
+          songInfo.trackName = results[0].trackName;
+          const whenValues = [songInfo.artistName, songInfo.trackName];
+          return this.runQuery(whenQuery, whenValues);
+        })
+        .then((results) => {
+          songInfo.firstPlay = results[0].firstPlay;
+          songInfo.playCount = results[0].playCount;
+          songInfo.djCount = results[0].djCount;
+          const whenValues = [songInfo.artistName, songInfo.trackName];
+          return this.runQuery(firstDJQuery, whenValues);
+        })
+        .then((results) => {
+          songInfo.username = results[0]?.username || null; // Handle case where no result is returned
+          return songInfo;
+        })
+        .catch((error) => {
+          console.error('Error:', error);
           throw error;
-        } );
+        });
     },
 
     // ========================================================

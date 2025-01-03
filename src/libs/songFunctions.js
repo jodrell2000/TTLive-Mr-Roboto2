@@ -308,11 +308,11 @@ const songFunctions = () => {
     // Song Info Functions
     // ========================================================
 
-    songID: async () => await songID,
+    songID: () => songID,
 
     songInfoCommand: async function ( data, databaseFunctions, chatFunctions ) {
       console.log('this:', this); // Logs the value of `this`
-      console.log(`this.songID: ${JSON.stringify( await this.songID(), null, 2)}`);
+      console.log(`this.songID: ${JSON.stringify( this.songID(), null, 2)}`);
       // if ( await databaseFunctions.checkVideoDataExists( this.ytid() ) ) {
       //   await databaseFunctions.getSongInfoData( this.ytid() )
       //     .then( ( songInfo ) => {

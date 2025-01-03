@@ -11,7 +11,7 @@ let previousArtist = null; // info for the currently playing song, so default to
 let previousDJID = null;
 let getSong = null; // info for the currently playing song, so default to null
 let dj = null; // info for the currently playing song, so default to null
-let ytid = null; // youTube ID of the video, used to check the regions
+let songID = null; // youTube ID of the video, used to check the regions
 
 let snagSong = false; //if true causes the bot to add every song that plays to its queue
 
@@ -35,30 +35,14 @@ const songFunctions = () => {
     artist: () => artist,
     getSong: () => getSong,
     dj: () => dj,
-    ytid: () => ytid,
-
-
-    getSongTags: async function ( thisSong ) {
-      console.log(`data: ${JSON.stringify(data, null, 2)}`);
-      previousArtist = artist;
-      previousSong = song;
-
-      song = thisSong.trackName;
-      album = thisSong.albumId;
-      genre = thisSong.genre;
-      artist = thisSong.artistName;
-      dj = current_song.djs[0].uuid;
-      ytid = thisSong.musicProviders;
-    },
-
-
+    songID: () => songID,
+    
     setSongTags: async function ( thisSong ) {
       console.log(`data: ${JSON.stringify(thisSong, null, 2)}`);
-      // this.song = thisSong.trackName;
-      // this.album = thisSong.albumId;
-      // this.genre = thisSong.genre;
-      // this.artist = thisSong.artistName;
-      // this.ytid = thisSong.musicProviders;
+      this.song = thisSong.trackName;
+      this.genre = thisSong.genre;
+      this.artist = thisSong.artistName;
+      this.songID = thisSong.songID;
     },
 
 
@@ -326,8 +310,7 @@ const songFunctions = () => {
     // ========================================================
 
     songInfoCommand: async function ( data, databaseFunctions, chatFunctions ) {
-      await this.getSongTags( data, databaseFunctions, chatFunctions );
-      console.log(`this.getSongTags: ${JSON.stringify( await this.getSongTags( data, databaseFunctions, chatFunctions ), null, 2)}`);
+      console.log(`this.songID: ${JSON.stringify( this.songID(), null, 2)}`);
       // if ( await databaseFunctions.checkVideoDataExists( this.ytid() ) ) {
       //   await databaseFunctions.getSongInfoData( this.ytid() )
       //     .then( ( songInfo ) => {

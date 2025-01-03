@@ -37,6 +37,31 @@ const songFunctions = () => {
     dj: () => dj,
     ytid: () => ytid,
 
+
+    getSongTags: async function ( thisSong ) {
+      console.log(`data: ${JSON.stringify(data, null, 2)}`);
+      previousArtist = artist;
+      previousSong = song;
+
+      song = thisSong.trackName;
+      album = thisSong.albumId;
+      genre = thisSong.genre;
+      artist = thisSong.artistName;
+      dj = current_song.djs[0].uuid;
+      ytid = thisSong.musicProviders;
+    },
+
+
+    setSongTags: async function ( thisSong ) {
+      console.log(`data: ${JSON.stringify(thisSong, null, 2)}`);
+      // this.song = thisSong.trackName;
+      // this.album = thisSong.albumId;
+      // this.genre = thisSong.genre;
+      // this.artist = thisSong.artistName;
+      // this.ytid = thisSong.musicProviders;
+    },
+
+
     upVotes: () => upVotes.length,
     downVotes: () => downVotes.length,
     voteCountSkip: () => voteCountSkip,
@@ -205,19 +230,6 @@ const songFunctions = () => {
     },
 
     // ========================================================
-
-    getSongTags: async function ( data ) {
-      console.log(`data: ${JSON.stringify(data, null, 2)}`);
-      previousArtist = artist;
-      previousSong = song;
-
-      song = current_song.nowPlaying.song.trackName;
-      album = current_song.nowPlaying.song.albumId;
-      genre = current_song.nowPlaying.song.genre;
-      artist = current_song.nowPlaying.song.artistName;
-      dj = current_song.djs[0].uuid;
-      ytid = current_song.nowPlaying.song.musicProviders;
-    },
 
     recordUpVotes: async function(uuid) {
       if (!upVotes.includes(uuid)) {

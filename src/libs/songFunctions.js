@@ -45,7 +45,6 @@ const songFunctions = () => {
     spotifyID: () => spotifyID,
     
     setSongTags: async function ( thisSong ) {
-      console.log(`data: ${JSON.stringify(thisSong, null, 2)}`);
       this.song = thisSong.trackName;
       this.genre = thisSong.genre;
       this.artist = thisSong.artistName;

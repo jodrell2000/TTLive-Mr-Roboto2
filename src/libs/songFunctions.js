@@ -35,7 +35,7 @@ const songFunctions = () => {
     artist: () => artist,
     getSong: () => getSong,
     dj: () => dj,
-    songID: () => songID,
+    songID: async () => await songID,
     
     setSongTags: async function ( thisSong ) {
       console.log(`data: ${JSON.stringify(thisSong, null, 2)}`);

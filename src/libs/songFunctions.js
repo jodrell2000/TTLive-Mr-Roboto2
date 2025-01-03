@@ -11,7 +11,8 @@ let previousArtist = null; // info for the currently playing song, so default to
 let previousDJID = null;
 let getSong = null; // info for the currently playing song, so default to null
 let dj = null; // info for the currently playing song, so default to null
-let songID = null; // youTube ID of the video, used to check the regions
+let songID = null; // short song ID
+let ytid = null; // youTube ID of the video, used to check the regions
 
 let snagSong = false; //if true causes the bot to add every song that plays to its queue
 
@@ -35,6 +36,7 @@ const songFunctions = () => {
     artist: () => artist,
     getSong: () => getSong,
     dj: () => dj,
+    ytid: () => ytid,
     
     setSongTags: async function ( thisSong ) {
       console.log(`data: ${JSON.stringify(thisSong, null, 2)}`);
@@ -42,9 +44,23 @@ const songFunctions = () => {
       this.genre = thisSong.genre;
       this.artist = thisSong.artistName;
       this.songID = thisSong.songShortId;
+      this.youTubeID = thisSong.songShortId;
+      this.appleID = thisSong.songShortId;
+      this.spotifyID = thisSong.songShortId;
     },
 
+    getSongTagsFromState: async function ( state ) {
+      previousArtist = artist;
+      previousSong = song;
 
+      song = state.nowPlaying.song.trackName;
+      album = state.nowPlaying.song.albumId;
+      genre = state.nowPlaying.song.genre;
+      artist = state.nowPlaying.song.artistName;
+      dj = state.djs[0].uuid;
+      ytid = state.nowPlaying.song.musicProviders;
+    },
+    
     upVotes: () => upVotes.length,
     downVotes: () => downVotes.length,
     voteCountSkip: () => voteCountSkip,
@@ -311,9 +327,8 @@ const songFunctions = () => {
     songID: () => songID,
 
     songInfoCommand: async function ( data, databaseFunctions, chatFunctions ) {
-      console.log('this:', this); // Logs the value of `this`
       console.log(`this.songID: ${JSON.stringify( this.songID, null, 2)}`);
-      // if ( await databaseFunctions.checkVideoDataExists( this.ytid() ) ) {
+      // if ( await databaseFunctions.getVideoDataID( this.songID, this.youTubeID, this.appleID, this.spotifyID ) ) {
       //   await databaseFunctions.getSongInfoData( this.ytid() )
       //     .then( ( songInfo ) => {
       //       chatFunctions.botSpeak( "The song " + songInfo.trackName + " by " + songInfo.artistName + " has been played " + songInfo.playCount + " times by " + songInfo.djCount + " different DJs, and was first played on " + songInfo.firstPlay );

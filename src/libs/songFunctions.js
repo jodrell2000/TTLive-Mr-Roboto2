@@ -332,8 +332,6 @@ const songFunctions = () => {
     songID: () => songID,
 
     songInfoCommand: async function ( data, databaseFunctions, chatFunctions ) {
-      console.log(`this.songID: ${JSON.stringify( this.songID, null, 2)}`);
-      
       const trackID = await databaseFunctions.getVideoDataID( this.songID, this.youTubeID, this.appleID, this.spotifyID )
       if ( trackID ) {
         await databaseFunctions.getSongInfoData( trackID )

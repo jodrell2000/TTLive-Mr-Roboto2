@@ -112,9 +112,7 @@ const songFunctions = () => {
     },
 
     announceSongLengthLimit: function ( data, chatFunctions ) {
-      let theMessage = "";
-
-      theMessage = "The song length limit is now";
+      let theMessage = "The song length limit is now";
       if ( musicDefaults.songLengthLimitOn ) {
         theMessage += " active, and the length limit is " + musicDefaults.songLengthLimit + " minutes";
       } else {

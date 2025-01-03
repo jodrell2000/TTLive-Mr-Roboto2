@@ -208,7 +208,8 @@ const songFunctions = () => {
 
     // ========================================================
 
-    getSongTags: async function ( current_song ) {
+    getSongTags: async function ( data ) {
+      console.log(`data: ${JSON.stringify(data, null, 2)}`);
       previousArtist = artist;
       previousSong = song;
 

@@ -208,7 +208,7 @@ const songFunctions = () => {
 
     // ========================================================
 
-    getSongTags: function ( current_song ) {
+    getSongTags: async function ( current_song ) {
       previousArtist = artist;
       previousSong = song;
 
@@ -315,8 +315,8 @@ const songFunctions = () => {
     // ========================================================
 
     songInfoCommand: async function ( data, databaseFunctions, chatFunctions ) {
-      this.getSongTags( data, databaseFunctions, chatFunctions );
-      console.log(`this.getSongTags: ${JSON.stringify( this.getSongTags( data, databaseFunctions, chatFunctions ), null, 2)}`);
+      await this.getSongTags( data, databaseFunctions, chatFunctions );
+      console.log(`this.getSongTags: ${JSON.stringify( await this.getSongTags( data, databaseFunctions, chatFunctions ), null, 2)}`);
       // if ( await databaseFunctions.checkVideoDataExists( this.ytid() ) ) {
       //   await databaseFunctions.getSongInfoData( this.ytid() )
       //     .then( ( songInfo ) => {

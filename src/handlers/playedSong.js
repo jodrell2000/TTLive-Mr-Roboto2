@@ -37,7 +37,7 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     await botFunctions.clearAllTimers( userFunctions, roomFunctions, songFunctions, chatFunctions, socket );
 
     if ( state.nowPlaying.song ) {
-      songFunctions.getSongTags( state )
+      await songFunctions.getSongTags( state )
       await databaseFunctions.saveTrackData( djID, state.nowPlaying.song );
     }
 

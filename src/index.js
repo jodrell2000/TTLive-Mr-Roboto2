@@ -83,6 +83,7 @@ app.get( '/listunverified', async ( req, res ) => {
     const sortParam = req.body.sort || req.query.sort || '';
     const whereParam = req.body.where || req.query.where || '';
     const searchParam = req.body.searchTerm || req.query.searchTerm || '';
+    const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || '';
     const dbSearchArgs = req.query || req.body;
 
     const songList = await databaseFunctionsInstance.getUnverifiedSongList( dbSearchArgs );
@@ -100,7 +101,8 @@ app.get( '/listunverified', async ( req, res ) => {
       searchTerm: searchParam,
       dbStats,
       djStats,
-      availableRoboCoins
+      availableRoboCoins,
+      unverifiedonly: unverifiedParam
     } );
     res.send( html );
   } catch ( error ) {

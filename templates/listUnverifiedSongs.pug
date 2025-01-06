@@ -73,7 +73,7 @@ html(lang="en")
                                     input(type='radio' name='sort' value='track' checked=sort === 'track')
                                     | By Track
                                 label
-                                    input(type='checkbox' name='unverifiedonly' value='true' checked=unverifiedonly)
+                                    input(type='checkbox' name='unverifiedonly' value='true' checked=unverifiedonly === 'true')
                                     | Unverified Only
                                     input(type='hidden' name='where' value="track")
                                 if ( searchTerm )
@@ -94,7 +94,7 @@ html(lang="en")
                                     input(type='radio' name='sort' value='track' checked=sort === 'track')
                                     | By Track
                                 label
-                                    input(type='checkbox' name='unverifiedonly' value='true' checked=unverifiedonly)
+                                    input(type='checkbox' name='unverifiedonly' value='true' checked=unverifiedonly === 'true')
                                     | Unverified Only
                                     input(type='hidden' name='where' value="artist")
                                 if ( searchTerm )

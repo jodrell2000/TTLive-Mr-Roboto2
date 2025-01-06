@@ -683,11 +683,11 @@ const databaseFunctions = () => {
 
       switch ( args.where ) {
         case 'track':
-          whereClause = 'v.trackName LIKE ? OR v.trackDisplayName LIKE ?';
+          whereClause = '(v.trackName LIKE ? OR v.trackDisplayName LIKE ?)';
           values.push( `%${ args.searchTerm }%`, `%${ args.searchTerm }%` );
           break;
         case 'artist':
-          whereClause = 'v.artistName LIKE ? OR v.artistDisplayName LIKE ?';
+          whereClause = '(v.artistName LIKE ? OR v.artistDisplayName LIKE ?)';
           values.push( `%${ args.searchTerm }%`, `%${ args.searchTerm }%` );
           break;
         default:

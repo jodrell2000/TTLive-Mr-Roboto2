@@ -86,10 +86,6 @@ app.get( '/listunverified', async ( req, res ) => {
     const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || '';
     const dbSearchArgs = req.query || req.body;
 
-    console.log(`body: ${JSON.stringify(req.body, null, 2)}`);
-    console.log(`query: ${JSON.stringify(req.query, null, 2)}`);
-    console.log(`unverifiedParam: ${unverifiedParam}`)
-
     const songList = await databaseFunctionsInstance.getUnverifiedSongList( dbSearchArgs );
     const dbStats = await databaseFunctionsInstance.getVerifiedStats();
     const djStatsObject = await databaseFunctionsInstance.getVerificationDJStats();

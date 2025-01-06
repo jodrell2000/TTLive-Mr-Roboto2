@@ -693,6 +693,11 @@ const databaseFunctions = () => {
         default:
           whereClause = 'v.artistDisplayName IS NULL OR v.trackDisplayName IS NULL';
       }
+      
+      switch ( args.unverifiedonly ) {
+        case 'true':
+          whereClause = whereClause + ' AND (v.artistDisplayName IS NULL OR v.trackDisplayName IS NULL)';
+      }
 
       const selectQuery = `
           SELECT tp.videoData_id,

@@ -146,6 +146,7 @@ html(lang="en")
                         input(type='hidden' name='sort' value=sort)
                         input(type='hidden' name='searchTerm' value=searchTerm)
                         input(type='hidden' name='videoData_id' value=song.videoData_id)
+                        input(type='hidden' name='unverifiedonly' value=unverifiedonly)
                         button(type='submit') Reset
                 else
                     form(action='/updateArtistDisplayName' method='POST')
@@ -154,6 +155,7 @@ html(lang="en")
                         input(type='hidden' name='sort' value=sort)
                         input(type='hidden' name='searchTerm' value=searchTerm)
                         input(type='hidden' name='videoData_id' value=song.videoData_id)
+                        input(type='hidden' name='unverifiedonly' value=unverifiedonly)
                         button(type='submit') Update Artist
 
             td
@@ -167,6 +169,7 @@ html(lang="en")
                         input(type='hidden' name='sort' value=sort)
                         input(type='hidden' name='searchTerm' value=searchTerm)
                         input(type='hidden' name='videoData_id' value=song.videoData_id)
+                        input(type='hidden' name='unverifiedonly' value=unverifiedonly)
                         button(type='submit') Reset
                 else
                     form(action='/updateTrackDisplayName' method='POST')
@@ -175,6 +178,7 @@ html(lang="en")
                         input(type='hidden' name='sort' value=sort)
                         input(type='hidden' name='searchTerm' value=searchTerm)
                         input(type='hidden' name='videoData_id' value=song.videoData_id)
+                        input(type='hidden' name='unverifiedonly' value=unverifiedonly)
                         button(type='submit') Update Track Name
             td
                 a(href=`https://www.google.com/search?q=${ encodeURIComponent( song.artistName ) }%20${ encodeURIComponent( song.trackName ) }`, target="_blank") Search

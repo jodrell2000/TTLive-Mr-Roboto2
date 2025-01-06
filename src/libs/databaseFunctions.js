@@ -709,6 +709,9 @@ const databaseFunctions = () => {
                     ${ orderByClause }
           LIMIT 100`;
 
+      console.log(`selectQuery: ${selectQuery}`)
+      console.log(`values: ${JSON.stringify(values, null, 2)}`);
+
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {
           return result;

@@ -39,7 +39,7 @@ repeatedTasks
   .every( 100 )
 
 // web pages 'n' stuff!
-import express from 'express';
+import express, { query } from 'express';
 const app = express();
 import path from 'path'
 import pug from 'pug'
@@ -85,6 +85,10 @@ app.get( '/listunverified', async ( req, res ) => {
     const searchParam = req.body.searchTerm || req.query.searchTerm || '';
     const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || '';
     const dbSearchArgs = req.query || req.body;
+
+    console.log(`body: ${JSON.stringify(req.body, null, 2)}`);
+    console.log(`query: ${JSON.stringify(req.query, null, 2)}`);
+    console.log(`unverifiedParam: ${unverifiedParam}`)
 
     const songList = await databaseFunctionsInstance.getUnverifiedSongList( dbSearchArgs );
     const dbStats = await databaseFunctionsInstance.getVerifiedStats();

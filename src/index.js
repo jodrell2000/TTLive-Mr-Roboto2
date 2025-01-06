@@ -124,6 +124,7 @@ app.post( '/updateArtistDisplayName', async ( req, res ) => {
     const sortParam = req.body.sort || req.query.sort || '';
     const whereParam = req.body.where || req.query.where || '';
     const searchParam = req.body.searchTerm || req.query.searchTerm || '';
+    const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || '';
 
     await databaseFunctionsInstance.updateArtistDisplayName( videoData_id, artistDisplayName );
 
@@ -133,7 +134,7 @@ app.post( '/updateArtistDisplayName', async ( req, res ) => {
     const changeID = 5;
     await userFunctionsInstance.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctionsInstance );
 
-    const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam } );
+    const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam, unverifiedonly: unverifiedParam } );
     const redirectUrl = '/listunverified?' + queryParams.toString();
     res.redirect( redirectUrl );
   } catch ( error ) {
@@ -149,6 +150,7 @@ app.post( '/updateTrackDisplayName', async ( req, res ) => {
     const sortParam = req.body.sort || req.query.sort || '';
     const whereParam = req.body.where || req.query.where || '';
     const searchParam = req.body.searchTerm || req.query.searchTerm || '';
+    const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || '';
 
     await databaseFunctionsInstance.updateTrackDisplayName( videoData_id, trackDisplayName );
 
@@ -160,7 +162,7 @@ app.post( '/updateTrackDisplayName', async ( req, res ) => {
     // console.log(`updateTrackDisplayName userID:${userID}`)
     await userFunctionsInstance.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctionsInstance );
 
-    const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam } );
+    const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam, unverifiedonly: unverifiedParam } );
     const redirectUrl = '/listunverified?' + queryParams.toString();
     res.redirect( redirectUrl );
   } catch ( error ) {

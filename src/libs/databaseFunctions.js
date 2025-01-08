@@ -669,16 +669,16 @@ const databaseFunctions = () => {
         case 'artist':
           orderByClause = 'GROUP BY tp.videoData_id ORDER BY COALESCE(v.artistDisplayName, v.artistName) ASC,' +
             ' v.artistName ASC,' +
-            ' COALESCE(v.trackDisplayName, v.trackName) ASC, v.trackName ASC';
+            ' COALESCE(v.trackDisplayName, v.trackName) ASC, v.trackName ASC, tp.videoData_id ASC';
           break;
         case 'track':
           orderByClause = 'GROUP BY tp.videoData_id ORDER BY COALESCE(v.trackDisplayName, v.trackName) ASC,' +
             ' v.trackName ASC,' +
-            ' COALESCE(v.artistDisplayName, v.artistName) ASC, v.artistName ASC';
+            ' COALESCE(v.artistDisplayName, v.artistName) ASC, v.artistName ASC, tp.videoData_id ASC';
           break;
         default:
           orderByClause = 'GROUP BY tp.videoData_id ORDER BY MAX(tp.whenPlayed) DESC, v.artistName ASC, v.trackName' +
-            ' ASC';
+            ' ASC, tp.videoData_id ASC';
       }
 
       switch ( args.where ) {

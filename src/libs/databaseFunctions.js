@@ -209,6 +209,7 @@ const databaseFunctions = () => {
     },
 
     retrieveHashedPassword: async function ( username ) {
+      console.log(`retrieveHashedPassword username ${ username }`);
       const theQuery = "SELECT password_hash FROM users WHERE username = ?";
       const theValues = [ username ];
 

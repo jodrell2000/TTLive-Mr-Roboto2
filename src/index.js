@@ -359,6 +359,7 @@ app.get( '/login', ( req, res ) => {
 
 app.post( '/login', async ( req, res ) => {
   const { username, password } = req.body;
+  console.log(`Login...username:${username} password:${password}`)
   if ( await authentication( username, password ) ) {
     req.session.user = username;
     const redirectTo = req.session.originalUrl || '/listunverified';
@@ -373,6 +374,7 @@ async function authentication( username, password ) {
   
   try {
     const hashedPassword = await databaseFunctionsInstance.retrieveHashedPassword( encodeURIComponent(username) );
+    console.log(`authentication hashedPassword:${hashedPassword}`); 
     if ( !hashedPassword ) {
       return false; // User not found
     }

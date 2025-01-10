@@ -658,7 +658,6 @@ const databaseFunctions = () => {
     },
 
     getUnverifiedSongList( args ) {
-      console.log( `args: ${ JSON.stringify( args, null, 2 ) }` );
       let orderByClause = '';
       let whereClause = '';
       const values = [];

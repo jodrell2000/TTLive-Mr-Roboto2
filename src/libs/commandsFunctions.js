@@ -110,11 +110,11 @@ const commandFunctions = () => {
   }
   generalCommands.deletetrack.help = "Delete whatever track Robo is currently playing";
 
-  generalCommands.bbboot = ( { data, userFunctions, databaseFunctions, chatFunctions, roomFunctions } ) => {
-    userFunctions.bbboot( data, databaseFunctions, chatFunctions, roomFunctions );
-  }
-  generalCommands.bbboot.help = "BBBoot someone. Play the game where you can win RC, but at what cost?!? Well," +
-    " RC5, that's what";
+  // generalCommands.bbboot = ( { data, userFunctions, databaseFunctions, chatFunctions, roomFunctions } ) => {
+  //   userFunctions.bbboot( data, databaseFunctions, chatFunctions, roomFunctions );
+  // }
+  // generalCommands.bbboot.help = "BBBoot someone. Play the game where you can win RC, but at what cost?!? Well," +
+  //   " RC5, that's what";
 
   generalCommands.robocoin = ( { data, userFunctions, chatFunctions } ) => {
     userFunctions.readMyRoboCoin( data, chatFunctions );

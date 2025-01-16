@@ -11,7 +11,7 @@ const playlistFunctions = ( ) => {
       };
 
       try {
-        console.log( `crates` + await axios.get(url, { headers }) );
+        console.log( `crates` + JSON.stringify( await axios.get(url, { headers }) ) );
 
       } catch ( error ) {
         console.error( `Error calling post api...error:\n${JSON.stringify(error,null,2)}\nurl:${url}\npayload:${JSON.stringify(payload,null,2)}` );

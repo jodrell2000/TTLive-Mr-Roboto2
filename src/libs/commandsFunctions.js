@@ -770,7 +770,6 @@ const commandFunctions = () => {
   return {
 
     wasThisACommand: async function ( text ) {
-      console.log(`test: ${text}`)
       if ( typeof text !== 'string' ) {
         return false;
       }
@@ -831,6 +830,7 @@ const commandFunctions = () => {
       
       // logger.debug(`data: ${ JSON.stringify( data )}`)
       senderID = data.sender;
+      console.log(`data.message: ${data.message}`)
 
       const [ command, args, moderatorOnly ] = this.getCommandAndArguments( data.message, allCommands );
       if ( moderatorOnly && !await userFunctions.isUserModerator( senderID, roomFunctions ) ) {

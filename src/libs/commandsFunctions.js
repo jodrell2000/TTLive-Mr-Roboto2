@@ -644,10 +644,11 @@ const commandFunctions = () => {
   // Moderator Only Dynamic Chat commands
   // #############################################
 
-  playlistCommands.getPlaylists = ( { data, playlistFunctions, chatFunctions } ) => {
+  playlistCommands.getplaylists = ( { data, playlistFunctions, chatFunctions } ) => {
     playlistFunctions.getPlaylists( data, chatFunctions );
   }
-  playlistCommands.getPlaylists.help = "Remove a message from a dynamic chat command. The message must match exactly and be surrounded by double quotes";
+  playlistCommands.getplaylists.help = "Remove a message from a dynamic chat command. The message must match exactly" +
+    " and be surrounded by double quotes";
 
   // #############################
   // end of commands

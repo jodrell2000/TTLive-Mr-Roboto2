@@ -652,8 +652,8 @@ const commandFunctions = () => {
   playlistCommands.createplaylist = ( { data, args, playlistFunctions, chatFunctions } ) => {
     playlistFunctions.createPlaylist( data, args[ 0 ], chatFunctions );
   }
-  moderatorChatCommands.createplaylist.argumentCount = 1;
-  moderatorChatCommands.createplaylist.sampleArguments = [ "wibble" ];
+  playlistCommands.createplaylist.argumentCount = 1;
+  playlistCommands.createplaylist.sampleArguments = [ "wibble" ];
   playlistCommands.createplaylist.help = "Create a new playlist...for testing";
 
   // #############################

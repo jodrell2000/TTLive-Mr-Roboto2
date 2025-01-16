@@ -770,6 +770,7 @@ const commandFunctions = () => {
   return {
 
     wasThisACommand: async function ( text ) {
+      console.log(`test: ${text}`)
       if ( typeof text !== 'string' ) {
         return false;
       }

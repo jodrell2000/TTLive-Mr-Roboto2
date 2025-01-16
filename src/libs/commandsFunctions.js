@@ -647,8 +647,14 @@ const commandFunctions = () => {
   playlistCommands.getplaylists = ( { data, playlistFunctions, chatFunctions } ) => {
     playlistFunctions.getPlaylists( data, chatFunctions );
   }
-  playlistCommands.getplaylists.help = "Remove a message from a dynamic chat command. The message must match exactly" +
-    " and be surrounded by double quotes";
+  playlistCommands.getplaylists.help = "List the Bots playlists";
+
+  playlistCommands.createplaylist = ( { data, args, playlistFunctions, chatFunctions } ) => {
+    playlistFunctions.createPlaylist( data, args[ 0 ], chatFunctions );
+  }
+  moderatorChatCommands.createplaylist.argumentCount = 1;
+  moderatorChatCommands.createplaylist.sampleArguments = [ "wibble" ];
+  playlistCommands.createplaylist.help = "Create a new playlist...for testing";
 
   // #############################
   // end of commands

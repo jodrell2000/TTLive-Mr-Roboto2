@@ -4,7 +4,6 @@ import chatCommandItems from '../defaults/chatCommandItems.js'
 import Storage from 'node-storage';
 import { dirname } from 'path';
 import { logger } from "../utils/logging.js";
-import playlistFunctions from "./playlistFunctions.js";
 
 const generalCommands = {};
 const userCommands = {};
@@ -709,11 +708,15 @@ const commandFunctions = () => {
       case "userCommands":
         theMessage = "The User Commands are " + buildListFromObject( Object.keys( userCommands ) );
         break;
+      case "playlistCommands":
+        theMessage = "The Playlist Commands are " + buildListFromObject( Object.keys( playlistCommands ) );
+        break;
       case "queueCommands":
         theMessage = "The User Commands are " + buildListFromObject( Object.keys( allQueueCommands ) );
         break;
       default:
-        theMessage = 'Top level command groups are: generalCommands, chatCommands, queueCommands, botCommands, userCommands, modCommands, modChatCommands, modWelcomeCommands, modQueueCommands. Please use ' + commandIdentifier + 'list [commandGroup] for the individual commands';
+        theMessage = 'Top level command groups are: generalCommands, chatCommands, queueCommands, botCommands,' +
+          ' userCommands, playlistCommands, modCommands, modChatCommands, modWelcomeCommands, modQueueCommands. Please use ' + commandIdentifier + 'list [commandGroup] for the individual commands';
         break;
     }
 
@@ -822,7 +825,6 @@ const commandFunctions = () => {
       }
     },
 
-    // parseCommands: function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions ) {
     parseCommands: async function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions, playlistFunctions, socket ) {
       let senderID;
       
@@ -850,7 +852,6 @@ const commandFunctions = () => {
           mlFunctions,
           playlistFunctions,
           socket
-          // mlFunctions,
         } );
       } else {
         await chatFunctions.botSpeak( "Sorry, that's not a command I recognise. Try " + commandIdentifier + "list to" +

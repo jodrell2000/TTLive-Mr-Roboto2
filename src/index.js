@@ -37,7 +37,7 @@ await roomBot.connect( roomFunctionsInstance, userFunctionsInstance, chatFunctio
 roomBot.configureListeners( roomBot.socket, commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance )
 const repeatedTasks = new Chain()
 repeatedTasks
-  .add( () => roomBot.processNewMessages( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance, playlistFunctions ) )
+  .add( () => roomBot.processNewMessages( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance, playlistFunctionsInstance ) )
   .every( 100 )
 
 // web pages 'n' stuff!

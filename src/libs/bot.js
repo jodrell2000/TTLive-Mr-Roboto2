@@ -5,6 +5,7 @@ import { joinChat, getMessages } from './cometchat.js'
 import { logger } from '../utils/logging.js'
 import handlers from '../handlers/index.js'
 import startup from '../libs/startup.js'
+import playlistFunctions from "./playlistFunctions.js";
 
 export class Bot {
   constructor( slug ) {
@@ -38,7 +39,7 @@ export class Bot {
 
   // ========================================================
 
-  async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions ) {
+  async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     //console.log(`processNewMessages theUsersList length:${ userFunctions.theUsersList().length}`)
     const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp )
     if ( response?.data ) {
@@ -54,7 +55,7 @@ export class Bot {
             message: customMessage,
             sender,
             senderName: messages[ message ]?.data?.customData?.userName
-          }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, this.socket )
+          }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions, this.socket )
         }
       }
     }
@@ -73,7 +74,7 @@ export class Bot {
     }
   }
 
-  configureListeners( socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions ) {
+  configureListeners( socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     const self = this
     logger.debug( 'Setting up listeners' )
 

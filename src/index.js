@@ -12,6 +12,7 @@ import databaseFunctions from './libs/databaseFunctions.js'
 import dateFunctions from './libs/dateFunctions.js'
 import botFunctions from './libs/botFunctions.js'
 import mlFunctions from './libs/mlFunctions.js'
+import playlistFunctions from './libs/playlistFunctions.js'
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
@@ -29,13 +30,14 @@ const databaseFunctionsInstance = databaseFunctions()
 const dateFunctionsInstance = dateFunctions()
 const botFunctionsInstance = botFunctions()
 const mlFunctionsInstance = mlFunctions()
+const playlistFunctionsInstance = playlistFunctions()
 
 const roomBot = new Bot( process.env.JOIN_ROOM )
 await roomBot.connect( roomFunctionsInstance, userFunctionsInstance, chatFunctionsInstance, songFunctionsInstance, botFunctionsInstance, databaseFunctionsInstance )
 roomBot.configureListeners( roomBot.socket, commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance )
 const repeatedTasks = new Chain()
 repeatedTasks
-  .add( () => roomBot.processNewMessages( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance ) )
+  .add( () => roomBot.processNewMessages( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance, playlistFunctions ) )
   .every( 100 )
 
 // web pages 'n' stuff!

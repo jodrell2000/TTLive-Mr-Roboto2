@@ -4,6 +4,7 @@ import chatCommandItems from '../defaults/chatCommandItems.js'
 import Storage from 'node-storage';
 import { dirname } from 'path';
 import { logger } from "../utils/logging.js";
+import playlistFunctions from "./playlistFunctions.js";
 
 const generalCommands = {};
 const userCommands = {};
@@ -14,6 +15,7 @@ const moderatorQueueCommands = {};
 const moderatorWelcomeCommands = {};
 const moderatorChatCommands = {};
 const moderatorCommands = {};
+const playlistCommands = {};
 
 const aliasDataFileName = process.env.ALIASDATA;
 const chatDataFileName = process.env.CHATDATA;
@@ -639,15 +641,25 @@ const commandFunctions = () => {
   moderatorChatCommands.removechatcommandpicture.help = "Remove a picture from a dynamic chat command. The URL must match exactly and be surrounded by double quotes";
   moderatorChatCommands.removechatcommandpicture.sampleArguments = [ "command", "http://url.link/image.gif" ];
 
+  // #############################################
+  // Moderator Only Dynamic Chat commands
+  // #############################################
+
+  playlistCommands.getPlaylists = ( { data, playlistFunctions, chatFunctions } ) => {
+    playlistFunctions.getPlaylists( data, chatFunctions );
+  }
+  playlistCommands.getPlaylists.help = "Remove a message from a dynamic chat command. The message must match exactly and be surrounded by double quotes";
+
   // #############################
-  // end of fully checked commands
+  // end of commands
   // #############################
 
   const allModeratorCommands = {
     ...moderatorCommands,
     ...moderatorWelcomeCommands,
     ...moderatorQueueCommands,
-    ...moderatorChatCommands
+    ...moderatorChatCommands,
+    ...playlistFunctions
   }
 
   const allQueueCommands = {
@@ -811,7 +823,7 @@ const commandFunctions = () => {
     },
 
     // parseCommands: function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions ) {
-    parseCommands: async function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions, socket ) {
+    parseCommands: async function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions, playlistFunctions, socket ) {
       let senderID;
       
       // logger.debug(`data: ${ JSON.stringify( data )}`)
@@ -836,6 +848,7 @@ const commandFunctions = () => {
           databaseFunctions,
           dateFunctions,
           mlFunctions,
+          playlistFunctions,
           socket
           // mlFunctions,
         } );

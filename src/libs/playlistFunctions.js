@@ -14,7 +14,7 @@ const playlistFunctions = ( ) => {
         const { data } = await axios.get(url, { headers });
         console.log(JSON.stringify(data, null, 2));
       } catch (error) {
-        console.error( `Error calling post api...error:\n${JSON.stringify(error,null,2)}\nurl:${url}\npayload:${JSON.stringify(payload,null,2)}` );
+        console.error( `Error calling get api...error:\n${JSON.stringify(error,null,2)}\nurl:${url}` );
         throw error;
       }
     },

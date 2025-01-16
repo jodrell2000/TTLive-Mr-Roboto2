@@ -4,11 +4,6 @@ const playlistFunctions = ( ) => {
   return {
 
     getPlaylists: async function ( data, chatFunctions ) {
-      const payload = {
-        "limit": 0,
-        "offset": 0
-      };
-
       const url = "https://playlists.prod.tt.fm/crate/user"
       const headers = {
         'accept': 'application/json',
@@ -16,7 +11,7 @@ const playlistFunctions = ( ) => {
       };
 
       try {
-        console.log( `crates` + await axios.post(url, payload, { headers }) );
+        console.log( `crates` + await axios.get(url, { headers }) );
 
       } catch ( error ) {
         console.error( `Error calling post api...error:\n${JSON.stringify(error,null,2)}\nurl:${url}\npayload:${JSON.stringify(payload,null,2)}` );

@@ -659,7 +659,7 @@ const commandFunctions = () => {
     ...moderatorWelcomeCommands,
     ...moderatorQueueCommands,
     ...moderatorChatCommands,
-    ...playlistFunctions
+    ...playlistCommands
   }
 
   const allQueueCommands = {

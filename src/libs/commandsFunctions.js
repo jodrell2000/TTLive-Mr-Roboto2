@@ -787,19 +787,14 @@ const commandFunctions = () => {
     },
 
     getCommandAndArguments: function ( text, allCommands ) {
-      console.log(`text: ${text}`)
-
       const [ sentCommand, ...args ] = text.split( " " );
       let dynamic = false;
 
       let theCommand = sentCommand.substring( 1, sentCommand.length )
       theCommand = theCommand.toLowerCase();
-      console.log(`theCommand: ${theCommand}`)
 
       // Check if command exists
       let commandObj = allCommands[ theCommand ];
-      console.log(`commandObj: ${ JSON.stringify(commandObj, null, 2) }`);
-
 
       // If the command doesn't exist, check aliases and switch the sent alias for the returned command
       if ( !commandObj ) {

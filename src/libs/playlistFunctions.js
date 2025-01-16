@@ -11,8 +11,10 @@ const playlistFunctions = ( ) => {
       };
 
       try {
-        const { data } = await axios.get(url, { headers });
-        console.log(JSON.stringify(data, null, 2));
+        const { data: responseData } = await axios.get(url, { headers });
+        const crateNames = responseData.crates.map(crate => crate.crateName);
+        await chatFunctions.botSpeak( `Playlists are ${ crateNames}` )
+
       } catch (error) {
         console.error( `Error calling get api...error:\n${JSON.stringify(error,null,2)}\nurl:${url}` );
         throw error;

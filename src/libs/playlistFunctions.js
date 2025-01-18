@@ -102,6 +102,7 @@ const playlistFunctions = ( ) => {
     addTrackToPlaylist: async function( data, songFunctions, chatFunctions ) {
       const crateUuid = "17a477bf-df68-428d-9660-de5ae9137d25"
       const songId = songFunctions.songID
+      console.log( `songFunctions.songID: ${ songId }`)
       
       const url = `https://playlists.prod.tt.fm/crate/${ crateUuid }/songs`
       const payload = {

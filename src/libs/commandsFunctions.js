@@ -652,8 +652,8 @@ const commandFunctions = () => {
   playlistCommands.doesplaylistexist = ( { data, args, playlistFunctions, chatFunctions } ) => {
     playlistFunctions.doesPlaylistExist( data, args, chatFunctions );
   }
-  playlistCommands.createplaylist.argumentCount = 1;
-  playlistCommands.createplaylist.sampleArguments = [ "wibble" ];
+  playlistCommands.doesplaylistexist.argumentCount = 1;
+  playlistCommands.doesplaylistexist.sampleArguments = [ "wibble" ];
   playlistCommands.doesplaylistexist.help = "List the Bots playlists";
 
   playlistCommands.createplaylist = ( { data, args, playlistFunctions, chatFunctions } ) => {

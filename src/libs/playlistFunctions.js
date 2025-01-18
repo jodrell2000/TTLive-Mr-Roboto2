@@ -35,8 +35,6 @@ const playlistFunctions = ( ) => {
     
     getPlaylistNames: async function ( ) {
       const playlistData = await this.getPlaylistData()
-      console.log( `playlistData: ${playlistData}` );
-
       const playlistNames = playlistData.crates.map(crate => crate.crateName);
       console.log( `playlistNames: ${playlistNames}` );
       return playlistNames;
@@ -65,9 +63,9 @@ const playlistFunctions = ( ) => {
       }
     },
     
-    deletePlaylist: async function( playlistName, chatFunctions ) {
-      if ( await this.doesplaylistexist( thePlaylistName, chatFunctions ) ) {
-        const playlistUuid = this.getPlaylistUuid( playlistName )
+    deletePlaylist: async function( thePlaylistName, chatFunctions ) {
+      if ( await this.doesPlaylistExist( thePlaylistName, chatFunctions ) ) {
+        const playlistUuid = this.getPlaylistUuid( thePlaylistName )
         const url = `https://playlists.prod.tt.fm/crate/${ playlistUuid }`;
         await axios.delete(url, { headers });
         await chatFunctions.botSpeak( `Playlist deleted` )

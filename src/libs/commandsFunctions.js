@@ -670,6 +670,11 @@ const commandFunctions = () => {
   playlistCommands.deleteplaylist.sampleArguments = [ "wibble" ];
   playlistCommands.deleteplaylist.help = "Delete a playlist...for testing";
 
+  playlistCommands.addtracktoplaylist = ( { data, playlistFunctions, chatFunctions } ) => {
+    playlistFunctions.addTrackToPlaylist( data, chatFunctions );
+  }
+  playlistCommands.addtracktoplaylist.help = "List the Bots playlists";
+
   // #############################
   // end of commands
   // #############################

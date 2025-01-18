@@ -99,8 +99,8 @@ const playlistFunctions = ( ) => {
 
     },
 
-    addTrackToPlaylist: async function( playlistName ) {
-
+    addTrackToPlaylist: async function( data, chatFunctions ) {
+      console.log(`data: ${JSON.stringify(data, null, 2)}`);
     },
 
     deleteTrackFromPlaylist: async function( playlistName ) {

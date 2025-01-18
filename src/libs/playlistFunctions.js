@@ -13,19 +13,19 @@ const playlistFunctions = ( ) => {
     // ========================================================
 
     listPlaylists: async function ( data, chatFunctions ) {
-      await chatFunctions.botSpeak( `Playlists are ${ await this.getPlaylists() }` )
+      await chatFunctions.botSpeak( `Playlists are ${ await this.getPlaylistNames() }` )
     },
     
     // ========================================================
     // Playlist Management Functions
     // ========================================================
 
-    getPlaylists: async function ( ) {
+    getPlaylistData: async function ( ) {
       const url = `https://playlists.prod.tt.fm/crate/user?limit=0&offset=0`;
       try {
         const { data: responseData } = await axios.get(url, { headers });
         console.log(`responseData: ${JSON.stringify(responseData, null, 2)}`);
-        return  responseData.crates.map(crate => crate.crateName);
+        return responseData;
 
       } catch (error) {
         console.error( `Error calling get api...error:\n${JSON.stringify(error,null,2)}\nurl:${url}` );
@@ -33,16 +33,27 @@ const playlistFunctions = ( ) => {
       }
     },
     
-    doesPlaylistExist: async function( playlistName, chatFunctions ) {
+    getPlaylistNames: async function ( ) {
+      const playlistData = this.getPlaylistData()
+        return  playlistData.crates.map(crate => crate.crateName);
+    },
+    
+    getPlaylistUuid: async function ( playlistName ) {
+      const playlistData = await this.getPlaylistData()
+      return playlistData.crates.find(crate => crate.crateName === playlistName)?.crateUuid;
+    },
+    
+    doesPlaylistExist: async function( thePlaylistName, chatFunctions ) {
       try {
-        const playlists = await this.getPlaylists();
-        console.log(`playlists: ${JSON.stringify(playlists, null, 2)}`);
-        if ( playlists.includes(playlistName) ) {
+        const playlistData = await this.getPlaylistData();
+        const playlistNames = playlistData.crates.map(crate => crate.crateName);
+        console.log(`playlists: ${JSON.stringify(playlistNames, null, 2)}`);
+        if ( playlistNames.includes(thePlaylistName) ) {
           await chatFunctions.botSpeak( `Playlist exists` )
         } else {
           await chatFunctions.botSpeak( `Playlist not found` )
         }
-        return playlists.includes(playlistName);
+        return playlistNames.includes(thePlaylistName);
 
       } catch (error) {
         console.error(`Error checking if playlist exists: ${error.message}`);
@@ -51,7 +62,14 @@ const playlistFunctions = ( ) => {
     },
     
     deletePlaylist: async function( playlistName, chatFunctions ) {
-      
+      if ( await this.doesplaylistexist( thePlaylistName, chatFunctions ) ) {
+        const playlistUuid = this.getPlaylistUuid( playlistName )
+        const url = `https://playlists.prod.tt.fm/crate/${ playlistUuid }`;
+        await axios.delete(url, { headers });
+        await chatFunctions.botSpeak( `Playlist deleted` )
+      } else {
+        await chatFunctions.botSpeak( `Playlist doesn't exist` )
+      }
     },
 
     createPlaylist: async function ( data, playlistName, chatFunctions ) {

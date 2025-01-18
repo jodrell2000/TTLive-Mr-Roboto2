@@ -654,7 +654,7 @@ const commandFunctions = () => {
   }
   playlistCommands.doesplaylistexist.argumentCount = 1;
   playlistCommands.doesplaylistexist.sampleArguments = [ "wibble" ];
-  playlistCommands.doesplaylistexist.help = "List the Bots playlists";
+  playlistCommands.doesplaylistexist.help = "Check if a playlist exists";
 
   playlistCommands.createplaylist = ( { data, args, playlistFunctions, chatFunctions } ) => {
     playlistFunctions.createPlaylist( data, args[ 0 ], chatFunctions );
@@ -662,6 +662,13 @@ const commandFunctions = () => {
   playlistCommands.createplaylist.argumentCount = 1;
   playlistCommands.createplaylist.sampleArguments = [ "wibble" ];
   playlistCommands.createplaylist.help = "Create a new playlist...for testing";
+
+  playlistCommands.deleteplaylist = ( { data, args, playlistFunctions, chatFunctions } ) => {
+    playlistFunctions.deletePlaylist( data, args[ 0 ], chatFunctions );
+  }
+  playlistCommands.deleteplaylist.argumentCount = 1;
+  playlistCommands.deleteplaylist.sampleArguments = [ "wibble" ];
+  playlistCommands.deleteplaylist.help = "Delete a playlist...for testing";
 
   // #############################
   // end of commands

@@ -24,6 +24,7 @@ const playlistFunctions = ( ) => {
       const url = `https://playlists.prod.tt.fm/crate/user?limit=0&offset=0`;
       try {
         const { data: responseData } = await axios.get(url, { headers });
+        console.log(`responseData: ${JSON.stringify(responseData, null, 2)}`);
         return  responseData.crates.map(crate => crate.crateName);
 
       } catch (error) {
@@ -36,19 +37,20 @@ const playlistFunctions = ( ) => {
       try {
         const playlists = await this.getPlaylists();
         console.log(`playlists: ${JSON.stringify(playlists, null, 2)}`);
-        // return playlists.includes(playlistName);
         if ( playlists.includes(playlistName) ) {
-          await chatFunctions.botSpeak( `Yes` )
+          await chatFunctions.botSpeak( `Playlist exists` )
         } else {
-          await chatFunctions.botSpeak( `No` )
+          await chatFunctions.botSpeak( `Playlist not found` )
         }
+        return playlists.includes(playlistName);
+
       } catch (error) {
         console.error(`Error checking if playlist exists: ${error.message}`);
         throw error;
       }
     },
     
-    deletePlaylist: async function( playlistName ) {
+    deletePlaylist: async function( playlistName, chatFunctions ) {
       
     },
 

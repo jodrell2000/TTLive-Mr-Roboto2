@@ -74,7 +74,7 @@ const playlistFunctions = ( ) => {
       }
     },
 
-    createPlaylist: async function ( data, playlistName, chatFunctions ) {
+    createPlaylist: async function ( playlistName, chatFunctions ) {
       const url = "https://playlists.prod.tt.fm/crate"
       const payload = {
         "crateName": playlistName,

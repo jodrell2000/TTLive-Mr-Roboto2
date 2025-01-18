@@ -65,7 +65,7 @@ const playlistFunctions = ( ) => {
     
     deletePlaylist: async function( thePlaylistName, chatFunctions ) {
       if ( await this.doesPlaylistExist( thePlaylistName, chatFunctions ) ) {
-        const playlistUuid = this.getPlaylistUuid( thePlaylistName )
+        const playlistUuid = await this.getPlaylistUuid( thePlaylistName )
         const url = `https://playlists.prod.tt.fm/crate/${ playlistUuid }`;
         await axios.delete(url, { headers });
         await chatFunctions.botSpeak( `Playlist deleted` )

@@ -644,10 +644,17 @@ const commandFunctions = () => {
   // Moderator Only Dynamic Chat commands
   // #############################################
 
-  playlistCommands.getplaylists = ( { data, playlistFunctions, chatFunctions } ) => {
-    playlistFunctions.getPlaylists( data, chatFunctions );
+  playlistCommands.listplaylists = ( { data, playlistFunctions, chatFunctions } ) => {
+    playlistFunctions.listPlaylists( data, chatFunctions );
   }
-  playlistCommands.getplaylists.help = "List the Bots playlists";
+  playlistCommands.listplaylists.help = "List the Bots playlists";
+
+  playlistCommands.doesplaylistexist = ( { data, args, playlistFunctions, chatFunctions } ) => {
+    playlistFunctions.doesPlaylistExist( data, args, chatFunctions );
+  }
+  playlistCommands.createplaylist.argumentCount = 1;
+  playlistCommands.createplaylist.sampleArguments = [ "wibble" ];
+  playlistCommands.doesplaylistexist.help = "List the Bots playlists";
 
   playlistCommands.createplaylist = ( { data, args, playlistFunctions, chatFunctions } ) => {
     playlistFunctions.createPlaylist( data, args[ 0 ], chatFunctions );

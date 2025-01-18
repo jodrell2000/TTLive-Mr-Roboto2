@@ -99,8 +99,20 @@ const playlistFunctions = ( ) => {
 
     },
 
-    addTrackToPlaylist: async function( data, chatFunctions ) {
-      console.log(`data: ${JSON.stringify(data, null, 2)}`);
+    addTrackToPlaylist: async function( data, songFunctions, chatFunctions ) {
+      const crateUuid = "17a477bf-df68-428d-9660-de5ae9137d25"
+      const songId = songFunctions.songID
+      
+      const url = `https://playlists.prod.tt.fm/crate/${ crateUuid }/songs`
+      const payload = {
+        songs: [
+          {
+            songId: songId
+          }
+        ],
+        append: true
+      };
+      await axios.post(url, payload, { headers })
     },
 
     deleteTrackFromPlaylist: async function( playlistName ) {

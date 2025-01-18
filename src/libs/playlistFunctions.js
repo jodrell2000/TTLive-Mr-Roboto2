@@ -32,10 +32,20 @@ const playlistFunctions = ( ) => {
       }
     },
     
-    doesPlaylistExist: async function( playlistName ) {
-      const playlists = await this.getPlaylists();
-      console.log(`playlists: ${JSON.stringify(playlists, null, 2)}`);
-      
+    doesPlaylistExist: async function( playlistName, chatFunctions ) {
+      try {
+        const playlists = await this.getPlaylists();
+        console.log(`playlists: ${JSON.stringify(playlists, null, 2)}`);
+        // return playlists.includes(playlistName);
+        if ( playlists.includes(playlistName) ) {
+          await chatFunctions.botSpeak( `Yes` )
+        } else {
+          await chatFunctions.botSpeak( `No` )
+        }
+      } catch (error) {
+        console.error(`Error checking if playlist exists: ${error.message}`);
+        throw error;
+      }
     },
     
     deletePlaylist: async function( playlistName ) {

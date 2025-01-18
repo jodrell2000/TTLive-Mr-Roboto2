@@ -35,7 +35,9 @@ const playlistFunctions = ( ) => {
     
     getPlaylistNames: async function ( ) {
       const playlistData = this.getPlaylistData()
-        return  playlistData.crates.map(crate => crate.crateName);
+      const playlistNames = playlistData.crates.map(crate => crate.crateName);
+      console.log( `playlistNames: ${playlistNames}` );
+      return playlistNames;
     },
     
     getPlaylistUuid: async function ( playlistName ) {

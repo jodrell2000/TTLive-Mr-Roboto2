@@ -29,7 +29,7 @@ const mlFunctions = () => {
         // Extract the text from the response
         const theResponse = response.data.candidates[0]?.content?.parts[0]?.text || 'No response text available';
         if ( theResponse !== 'No response text available' ) {
-          await chatFunctions.botSpeak( theResponse )
+          return theResponse;
         } else {
           await chatFunctions.botSpeak( 'Nope, I got nothing...sorry' )
         }
@@ -44,16 +44,35 @@ const mlFunctions = () => {
       const track = songFunctions.previousTrack()
       const artist = songFunctions.previousArtist()
       const theQuestion = `In 100 words or less, tell me about the song ${ track } by ${ artist }`
-      await this.askGoogleAI( theQuestion, chatFunctions )
+      const theResponse = await this.askGoogleAI( theQuestion, chatFunctions )
+      await chatFunctions.botSpeak( theResponse )
     },
 
     whatYear: async function( songFunctions, chatFunctions ) {
       const track = songFunctions.previousTrack()
       const artist = songFunctions.previousArtist()
       const theQuestion = `In what year was the song ${ track } by ${ artist } released?`
-      await this.askGoogleAI( theQuestion, chatFunctions )
-    }
+      const theResponse = await this.askGoogleAI( theQuestion, chatFunctions )
+      await chatFunctions.botSpeak( theResponse )
+    },
+
+
+    whatDecade: async function( songFunctions, chatFunctions ) {
+      const track = songFunctions.previousTrack()
+      const artist = songFunctions.previousArtist()
+      const theQuestion = `Using only two digits, in what decade was the original version of ${ track } by ${ artist } released?`
+      return await this.askGoogleAI( theQuestion, chatFunctions )
+    },
+
+    coverOrOriginal: async function( songFunctions, chatFunctions ) {
+      const track = songFunctions.previousTrack()
+      const artist = songFunctions.previousArtist()
+      const theQuestion = `Answering with one word, either cover or original, is ${ track } by ${ artist } a cover or an original song?`
+      return await this.askGoogleAI( theQuestion, chatFunctions )
+    },
+    
   }
 }
 
 export default mlFunctions;
+

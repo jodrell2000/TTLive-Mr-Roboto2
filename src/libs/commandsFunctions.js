@@ -14,6 +14,7 @@ const moderatorQueueCommands = {};
 const moderatorWelcomeCommands = {};
 const moderatorChatCommands = {};
 const moderatorCommands = {};
+const playlistCommands = {};
 
 const aliasDataFileName = process.env.ALIASDATA;
 const chatDataFileName = process.env.CHATDATA;
@@ -110,10 +111,11 @@ const commandFunctions = () => {
   }
   generalCommands.deletetrack.help = "Delete whatever track Robo is currently playing";
 
-  generalCommands.bbboot = ( { data, userFunctions, chatFunctions, databaseFunctions, roomFunctions } ) => { 
-    userFunctions.bbBoot( data, chatFunctions, databaseFunctions, roomFunctions ); 
-  }
-  generalCommands.bbboot.help = "BBBoot @Bukkake. If it's been more than 24hrs since the last boot, BB gets booted. If it's been less, you do! ;-)";
+  // generalCommands.bbboot = ( { data, userFunctions, databaseFunctions, chatFunctions, roomFunctions } ) => {
+  //   userFunctions.bbboot( data, databaseFunctions, chatFunctions, roomFunctions );
+  // }
+  // generalCommands.bbboot.help = "BBBoot someone. Play the game where you can win RC, but at what cost?!? Well," +
+  //   " RC5, that's what";
 
   generalCommands.robocoin = ( { data, userFunctions, chatFunctions } ) => {
     userFunctions.readMyRoboCoin( data, chatFunctions );
@@ -638,15 +640,51 @@ const commandFunctions = () => {
   moderatorChatCommands.removechatcommandpicture.help = "Remove a picture from a dynamic chat command. The URL must match exactly and be surrounded by double quotes";
   moderatorChatCommands.removechatcommandpicture.sampleArguments = [ "command", "http://url.link/image.gif" ];
 
+  // #############################################
+  // Moderator Only Dynamic Chat commands
+  // #############################################
+
+  playlistCommands.listplaylists = ( { data, playlistFunctions, chatFunctions } ) => {
+    playlistFunctions.listPlaylists( data, chatFunctions );
+  }
+  playlistCommands.listplaylists.help = "List the Bots playlists";
+
+  playlistCommands.doesplaylistexist = ( { args, playlistFunctions, chatFunctions } ) => {
+    playlistFunctions.doesPlaylistExist( args[ 0 ], chatFunctions );
+  }
+  playlistCommands.doesplaylistexist.argumentCount = 1;
+  playlistCommands.doesplaylistexist.sampleArguments = [ "wibble" ];
+  playlistCommands.doesplaylistexist.help = "Check if a playlist exists";
+
+  playlistCommands.createplaylist = ( { data, args, playlistFunctions, chatFunctions } ) => {
+    playlistFunctions.createPlaylist( args[ 0 ], chatFunctions );
+  }
+  playlistCommands.createplaylist.argumentCount = 1;
+  playlistCommands.createplaylist.sampleArguments = [ "wibble" ];
+  playlistCommands.createplaylist.help = "Create a new playlist...for testing";
+
+  playlistCommands.deleteplaylist = ( { data, args, playlistFunctions, chatFunctions } ) => {
+    playlistFunctions.deletePlaylist( args[ 0 ], chatFunctions );
+  }
+  playlistCommands.deleteplaylist.argumentCount = 1;
+  playlistCommands.deleteplaylist.sampleArguments = [ "wibble" ];
+  playlistCommands.deleteplaylist.help = "Delete a playlist...for testing";
+
+  playlistCommands.addtracktoplaylist = ( { data, playlistFunctions, songFunctions, chatFunctions } ) => {
+    playlistFunctions.addTrackToPlaylist( data, songFunctions, chatFunctions );
+  }
+  playlistCommands.addtracktoplaylist.help = "List the Bots playlists";
+
   // #############################
-  // end of fully checked commands
+  // end of commands
   // #############################
 
   const allModeratorCommands = {
     ...moderatorCommands,
     ...moderatorWelcomeCommands,
     ...moderatorQueueCommands,
-    ...moderatorChatCommands
+    ...moderatorChatCommands,
+    ...playlistCommands
   }
 
   const allQueueCommands = {
@@ -696,11 +734,15 @@ const commandFunctions = () => {
       case "userCommands":
         theMessage = "The User Commands are " + buildListFromObject( Object.keys( userCommands ) );
         break;
+      case "playlistCommands":
+        theMessage = "The Playlist Commands are " + buildListFromObject( Object.keys( playlistCommands ) );
+        break;
       case "queueCommands":
         theMessage = "The User Commands are " + buildListFromObject( Object.keys( allQueueCommands ) );
         break;
       default:
-        theMessage = 'Top level command groups are: generalCommands, chatCommands, queueCommands, botCommands, userCommands, modCommands, modChatCommands, modWelcomeCommands, modQueueCommands. Please use ' + commandIdentifier + 'list [commandGroup] for the individual commands';
+        theMessage = 'Top level command groups are: generalCommands, chatCommands, queueCommands, botCommands,' +
+          ' userCommands, playlistCommands, modCommands, modChatCommands, modWelcomeCommands, modQueueCommands. Please use ' + commandIdentifier + 'list [commandGroup] for the individual commands';
         break;
     }
 
@@ -809,8 +851,7 @@ const commandFunctions = () => {
       }
     },
 
-    // parseCommands: function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions ) {
-    parseCommands: async function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions, socket ) {
+    parseCommands: async function ( data, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions, playlistFunctions, socket ) {
       let senderID;
       
       // logger.debug(`data: ${ JSON.stringify( data )}`)
@@ -835,8 +876,8 @@ const commandFunctions = () => {
           databaseFunctions,
           dateFunctions,
           mlFunctions,
+          playlistFunctions,
           socket
-          // mlFunctions,
         } );
       } else {
         await chatFunctions.botSpeak( "Sorry, that's not a command I recognise. Try " + commandIdentifier + "list to" +

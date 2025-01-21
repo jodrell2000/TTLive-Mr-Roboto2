@@ -12,6 +12,7 @@ import databaseFunctions from './libs/databaseFunctions.js'
 import dateFunctions from './libs/dateFunctions.js'
 import botFunctions from './libs/botFunctions.js'
 import mlFunctions from './libs/mlFunctions.js'
+import playlistFunctions from './libs/playlistFunctions.js'
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
@@ -29,17 +30,18 @@ const databaseFunctionsInstance = databaseFunctions()
 const dateFunctionsInstance = dateFunctions()
 const botFunctionsInstance = botFunctions()
 const mlFunctionsInstance = mlFunctions()
+const playlistFunctionsInstance = playlistFunctions()
 
 const roomBot = new Bot( process.env.JOIN_ROOM )
 await roomBot.connect( roomFunctionsInstance, userFunctionsInstance, chatFunctionsInstance, songFunctionsInstance, botFunctionsInstance, databaseFunctionsInstance )
 roomBot.configureListeners( roomBot.socket, commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance )
 const repeatedTasks = new Chain()
 repeatedTasks
-  .add( () => roomBot.processNewMessages( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance ) )
+  .add( () => roomBot.processNewMessages( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance, playlistFunctionsInstance ) )
   .every( 100 )
 
 // web pages 'n' stuff!
-import express from 'express';
+import express, { query } from 'express';
 const app = express();
 import path from 'path'
 import pug from 'pug'
@@ -83,6 +85,7 @@ app.get( '/listunverified', async ( req, res ) => {
     const sortParam = req.body.sort || req.query.sort || '';
     const whereParam = req.body.where || req.query.where || '';
     const searchParam = req.body.searchTerm || req.query.searchTerm || '';
+    const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || '';
     const dbSearchArgs = req.query || req.body;
 
     const songList = await databaseFunctionsInstance.getUnverifiedSongList( dbSearchArgs );
@@ -100,7 +103,8 @@ app.get( '/listunverified', async ( req, res ) => {
       searchTerm: searchParam,
       dbStats,
       djStats,
-      availableRoboCoins
+      availableRoboCoins,
+      unverifiedonly: unverifiedParam
     } );
     res.send( html );
   } catch ( error ) {
@@ -118,6 +122,7 @@ app.post( '/updateArtistDisplayName', async ( req, res ) => {
     const sortParam = req.body.sort || req.query.sort || '';
     const whereParam = req.body.where || req.query.where || '';
     const searchParam = req.body.searchTerm || req.query.searchTerm || '';
+    const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || '';
 
     await databaseFunctionsInstance.updateArtistDisplayName( videoData_id, artistDisplayName );
 
@@ -127,7 +132,7 @@ app.post( '/updateArtistDisplayName', async ( req, res ) => {
     const changeID = 5;
     await userFunctionsInstance.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctionsInstance );
 
-    const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam } );
+    const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam, unverifiedonly: unverifiedParam } );
     const redirectUrl = '/listunverified?' + queryParams.toString();
     res.redirect( redirectUrl );
   } catch ( error ) {
@@ -143,6 +148,7 @@ app.post( '/updateTrackDisplayName', async ( req, res ) => {
     const sortParam = req.body.sort || req.query.sort || '';
     const whereParam = req.body.where || req.query.where || '';
     const searchParam = req.body.searchTerm || req.query.searchTerm || '';
+    const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || '';
 
     await databaseFunctionsInstance.updateTrackDisplayName( videoData_id, trackDisplayName );
 
@@ -154,7 +160,7 @@ app.post( '/updateTrackDisplayName', async ( req, res ) => {
     // console.log(`updateTrackDisplayName userID:${userID}`)
     await userFunctionsInstance.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctionsInstance );
 
-    const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam } );
+    const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam, unverifiedonly: unverifiedParam } );
     const redirectUrl = '/listunverified?' + queryParams.toString();
     res.redirect( redirectUrl );
   } catch ( error ) {

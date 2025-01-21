@@ -72,30 +72,36 @@ html(lang="en")
                                 label
                                     input(type='radio' name='sort' value='track' checked=sort === 'track')
                                     | By Track
-                                input(type='hidden' name='where' value="track")
+                                label
+                                    input(type='checkbox' name='unverifiedonly' value='true' checked=unverifiedonly === 'true')
+                                    | Unverified Only
+                                    input(type='hidden' name='where' value="track")
                                 if ( searchTerm )
                                     input(type='text' name='searchTerm' value=searchTerm)
                                 else
                                     input(type='text' name='searchTerm')
                                 button(type='submit') Search by Track
                         tr
-                            td
-                                form(action='/listunverified' method='GET')
-                                    label
-                                        input(type='radio' name='sort' value='time' checked=sort === 'time')
-                                        | By Recent
-                                    label
-                                        input(type='radio' name='sort' value='artist' checked=sort === 'artist')
-                                        | By Artist
-                                    label
-                                        input(type='radio' name='sort' value='track' checked=sort === 'track')
-                                        | By Track
+                        td
+                            form(action='/listunverified' method='GET')
+                                label
+                                    input(type='radio' name='sort' value='time' checked=sort === 'time')
+                                    | By Recent
+                                label
+                                    input(type='radio' name='sort' value='artist' checked=sort === 'artist')
+                                    | By Artist
+                                label
+                                    input(type='radio' name='sort' value='track' checked=sort === 'track')
+                                    | By Track
+                                label
+                                    input(type='checkbox' name='unverifiedonly' value='true' checked=unverifiedonly === 'true')
+                                    | Unverified Only
                                     input(type='hidden' name='where' value="artist")
-                                    if ( searchTerm )
-                                        input(type='text' name='searchTerm' value=searchTerm)
-                                    else
-                                        input(type='text' name='searchTerm')
-                                    button(type='submit') Search by Artist
+                                if ( searchTerm )
+                                    input(type='text' name='searchTerm' value=searchTerm)
+                                else
+                                    input(type='text' name='searchTerm')
+                                button(type='submit') Search by Artist
             td(style="vertical-align: top;")
                 strong Top contributors
                 if djStats
@@ -140,6 +146,7 @@ html(lang="en")
                         input(type='hidden' name='sort' value=sort)
                         input(type='hidden' name='searchTerm' value=searchTerm)
                         input(type='hidden' name='videoData_id' value=song.videoData_id)
+                        input(type='hidden' name='unverifiedonly' value=unverifiedonly)
                         button(type='submit') Reset
                 else
                     form(action='/updateArtistDisplayName' method='POST')
@@ -148,6 +155,7 @@ html(lang="en")
                         input(type='hidden' name='sort' value=sort)
                         input(type='hidden' name='searchTerm' value=searchTerm)
                         input(type='hidden' name='videoData_id' value=song.videoData_id)
+                        input(type='hidden' name='unverifiedonly' value=unverifiedonly)
                         button(type='submit') Update Artist
 
             td
@@ -161,6 +169,7 @@ html(lang="en")
                         input(type='hidden' name='sort' value=sort)
                         input(type='hidden' name='searchTerm' value=searchTerm)
                         input(type='hidden' name='videoData_id' value=song.videoData_id)
+                        input(type='hidden' name='unverifiedonly' value=unverifiedonly)
                         button(type='submit') Reset
                 else
                     form(action='/updateTrackDisplayName' method='POST')
@@ -169,6 +178,7 @@ html(lang="en")
                         input(type='hidden' name='sort' value=sort)
                         input(type='hidden' name='searchTerm' value=searchTerm)
                         input(type='hidden' name='videoData_id' value=song.videoData_id)
+                        input(type='hidden' name='unverifiedonly' value=unverifiedonly)
                         button(type='submit') Update Track Name
             td
                 a(href=`https://www.google.com/search?q=${ encodeURIComponent( song.artistName ) }%20${ encodeURIComponent( song.trackName ) }`, target="_blank") Search

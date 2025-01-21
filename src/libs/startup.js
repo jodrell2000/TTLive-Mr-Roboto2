@@ -12,6 +12,7 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
     
     await chatFunctions.botChat("System online...")
     if ( state.nowPlaying.song ) {
+      await songFunctions.setSongTags( state.nowPlaying.song )
       songFunctions.setPreviousTrack( state.nowPlaying.song.trackName )
       songFunctions.setPreviousArtist( state.nowPlaying.song.artistName )
     }

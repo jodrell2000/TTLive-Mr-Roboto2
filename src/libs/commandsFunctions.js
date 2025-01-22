@@ -947,7 +947,7 @@ const listAlias = ( data, chatFunctions ) => {
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
-  const strippedCommand = data.text.slice( 1 ).toLowerCase().split( " " );
+  const strippedCommand = data.message.slice( 1 ).toLowerCase().split( " " );
   const passedArgument = strippedCommand[ 1 ];
   const alias = commandModule.checkForAlias( passedArgument );
 
@@ -984,7 +984,7 @@ const addAlias = ( data, chatFunctions ) => {
   const commandModule = commandFunctions();
   
   console.log(`data: ${JSON.stringify( data )}`);
-  const strippedCommand = data.text.slice( 1 ).toLowerCase().split( " " );
+  const strippedCommand = data.message.slice( 1 ).toLowerCase().split( " " );
   const newAlias = strippedCommand[ 1 ];
   const currentAlias = commandModule.checkForAlias( newAlias );
 
@@ -1028,7 +1028,7 @@ const removeAlias = ( data, chatFunctions ) => {
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
 
-  const strippedCommand = data.text.slice( 1 ).toLowerCase().split( " " );
+  const strippedCommand = data.message.slice( 1 ).toLowerCase().split( " " );
 
   const aliasBeingRemoved = strippedCommand[ 1 ];
   const rootCommand = commandModule.checkForAlias( `${ strippedCommand[ 1 ] }` );

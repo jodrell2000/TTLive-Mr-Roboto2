@@ -941,7 +941,8 @@ const addAlias = ( data, chatFunctions ) => {
   const dataFilePath = `${ dirname( import.meta.url.replace( 'file://', '' ) ) }/../../data/${ aliasDataFileName }`;
   const store = new Storage( dataFilePath );
   const commandModule = commandFunctions();
-
+  
+  console.log(`data.text: ${JSON.stringify( data.text )}`);
   const strippedCommand = data.text.slice( 1 ).toLowerCase().split( " " );
   const newAlias = strippedCommand[ 1 ];
   const currentAlias = commandModule.checkForAlias( newAlias );

@@ -2481,7 +2481,7 @@ const userFunctions = () => {
       const formattedBbbootedDate = bbbootedDate.toLocaleString();
 
       await chatFunctions.botSpeak(`${await this.getUsername( userID )} was last BBBooted ${formattedBbbootedDate}`)
-      await chatFunctions.botSpeak(`Which was ${(Date.now() - bbbootedDate) / ( 1000 * 60 * 60 )} ago`)
+      await chatFunctions.botSpeak(`Which was ${(Date.now() - bbbootedDate) / ( 1000 * 60 * 60 )} hours ago`)
 
       if ( bbbootedTimestamp === 0 ) {
         return false
@@ -2495,7 +2495,7 @@ const userFunctions = () => {
       const bbbootDate =  new Date(bbbootTimestamp);
       const formattedBbbootDate = bbbootDate.toLocaleString();
       await chatFunctions.botSpeak(`${await this.getUsername( userID )} last BBBooted ${formattedBbbootDate}`)
-      await chatFunctions.botSpeak(`Which was ${(Date.now() - bbbootDate) / ( 1000 * 60 * 60 )} ago`)
+      await chatFunctions.botSpeak(`Which was ${(Date.now() - bbbootDate) / ( 1000 * 60 * 60 )} hours ago`)
 
       if ( bbbootTimestamp === 0 ) {
         return false

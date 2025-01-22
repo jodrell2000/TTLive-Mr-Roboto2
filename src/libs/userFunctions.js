@@ -2387,7 +2387,7 @@ const userFunctions = () => {
         return
       }
 
-      if ( await this.canBBBoot( playerUUID ) ) {
+      if ( await this.canBBBoot( playerUUID, chatFunctions ) ) {
         const targetUUID = await this.findBBBootTarget( playerUUID, databaseFunctions );
         const targetUsername = await this.getUsername( targetUUID );
         const roomSlug = await roomFunctions.roomSlug()
@@ -2399,7 +2399,7 @@ const userFunctions = () => {
           await chatFunctions.botSpeak( `Target acquired...@${ targetUsername }, you're it!`)
           await sleep( 5000 );
 
-          if ( await this.canBBTargetBeBooted( targetUUID ) ) {
+          if ( await this.canBBTargetBeBooted( targetUUID, chatFunctions ) ) {
             await this.winBBBoot( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions );
           } else {
             await this.loseBBBoot( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions );
@@ -2454,13 +2454,13 @@ const userFunctions = () => {
       await this.storeUserData( userID, "BBBootTimestamp", Date.now(), databaseFunctions );
     },
 
-    canBBTargetBeBooted: async function ( uuid ) {
-      return !( await this.withinBBBootedTime( uuid, 24 ));
+    canBBTargetBeBooted: async function ( uuid, chatFunctions ) {
+      return !( await this.withinBBBootedTime( uuid, 24, chatFunctions ));
     },
 
-    canBBBoot: async function ( userID ) {
+    canBBBoot: async function ( userID, chatFunctions ) {
       const hours = 24 + ( Math.floor( Math.random() * 12 ) );
-      return !(await this.withinBBBootTime( userID, hours ));
+      return !(await this.withinBBBootTime( userID, hours, chatFunctions ));
     },
     
     cannotBBBootMessage: async function ( bootingUserID, chatFunctions ) {
@@ -2474,9 +2474,12 @@ const userFunctions = () => {
         " BBBoot again yet. You last played " + formattedLastBBBoot + " ago" );
     },
 
-    withinBBBootedTime: async function ( userID, hours ) {
+    withinBBBootedTime: async function ( userID, hours, chatFunctions ) {
       let bbbootedTimestamp
       bbbootedTimestamp = await this.getBBBootedTimestamp( userID )
+      await chatFunctions.botSpeak(`${await this.getUsername( userID )} was last BBBooted ${bbbootedTimestamp}`)
+      await chatFunctions.botSpeak(`Which was ${Date.now() - ( bbbootedTimestamp * 1000 )} ago`)
+
       if ( bbbootedTimestamp === 0 ) {
         return false
       } else {
@@ -2484,9 +2487,12 @@ const userFunctions = () => {
       }
     },
 
-    withinBBBootTime: async function ( userID, hours ) {
-      let bbbootTimestamp
+    withinBBBootTime: async function ( userID, hours, chatFunctions ) {
+      let bbbootTimestamp;
       bbbootTimestamp = await this.getBBBootTimestamp( userID )
+      await chatFunctions.botSpeak(`${await this.getUsername( userID )} last BBBooted ${bbbootTimestamp}`)
+      await chatFunctions.botSpeak(`Which was ${Date.now() - bbbootTimestamp} ago`)
+
       if ( bbbootTimestamp === 0 ) {
         return false
       } else {
@@ -2501,12 +2507,15 @@ const userFunctions = () => {
       await this.announceBBBoot( chatFunctions )
       await chatFunctions.botSpeak( "Goodbye @" + await this.getUsername( targetUUID ) );
       const stolenCoins = Math.min( await this.getRoboCoins( targetUUID ), 5);
-      await this.updateRoboCoins( targetUUID, await this.getRoboCoins( targetUUID ) - stolenCoins, databaseFunctions )
-      await this.updateRoboCoins( playerUUID, await this.getRoboCoins( playerUUID ) + stolenCoins, databaseFunctions )
+      // await this.updateRoboCoins( targetUUID, await this.getRoboCoins( targetUUID ) - stolenCoins, databaseFunctions )
+      // await this.updateRoboCoins( playerUUID, await this.getRoboCoins( playerUUID ) + stolenCoins, databaseFunctions )
       await chatFunctions.botSpeak( `Sorry @${ targetName }, you got booted by @${ playerName } and they've stolen RC${ stolenCoins } from you!`, data );
-      await this.bootThisUser( targetUUID, roomSlug, `@${ targetName } was a BBBoot target` )
-      await this.updateBBBootedTimestamp( targetUUID, databaseFunctions );
-      await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
+      await chatFunctions.botSpeak(`${targetName} would have ${await this.getRoboCoins( targetUUID ) - stolenCoins}`)
+      await chatFunctions.botSpeak(`${playerName} would have ${await this.getRoboCoins( playerUUID ) + stolenCoins}`)
+
+      // await this.bootThisUser( targetUUID, roomSlug, `@${ targetName } was a BBBoot target` )
+      // await this.updateBBBootedTimestamp( targetUUID, databaseFunctions );
+      // await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
     },
     
     loseBBBoot: async function ( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions ) {
@@ -2516,10 +2525,13 @@ const userFunctions = () => {
       await this.announceBBBoot( chatFunctions )
       await chatFunctions.botSpeak( "Goodbye @" + await this.getUsername( playerUUID ) );
       await chatFunctions.botSpeak( `Sorry ${ playerName }, you lose. @${ targetName } was booted within the last 24Hrs. They win RC5 from you!`, data );
-      await this.updateRoboCoins( playerUUID, await this.getRoboCoins( playerUUID ) - 5, databaseFunctions )
-      await this.updateRoboCoins( targetUUID, await this.getRoboCoins( targetUUID ) + 5, databaseFunctions )
-      await this.bootThisUser( playerUUID, roomSlug, `@${ playerName } lost playing BBBoot` )
-      await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
+      // await this.updateRoboCoins( playerUUID, await this.getRoboCoins( playerUUID ) - 5, databaseFunctions )
+      // await this.updateRoboCoins( targetUUID, await this.getRoboCoins( targetUUID ) + 5, databaseFunctions )
+      await chatFunctions.botSpeak(`${targetName} would have ${await this.getRoboCoins( targetUUID ) + 5}`)
+      await chatFunctions.botSpeak(`${playerName} would have ${await this.getRoboCoins( playerUUID ) - 5}`)
+
+      // await this.bootThisUser( playerUUID, roomSlug, `@${ playerName } lost playing BBBoot` )
+      // await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
     },
 
     announceBBBoot: async function ( chatFunctions ) {

@@ -2518,8 +2518,8 @@ const userFunctions = () => {
       await chatFunctions.botSpeak(`${playerName} would have ${await this.getRoboCoins( playerUUID ) + stolenCoins}`)
 
       // await this.bootThisUser( targetUUID, roomSlug, `@${ targetName } was a BBBoot target` )
-      // await this.updateBBBootedTimestamp( targetUUID, databaseFunctions );
-      // await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
+      await this.updateBBBootedTimestamp( targetUUID, databaseFunctions );
+      await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
     },
     
     loseBBBoot: async function ( data, playerUUID, targetUUID, roomSlug, chatFunctions, databaseFunctions ) {
@@ -2535,7 +2535,7 @@ const userFunctions = () => {
       await chatFunctions.botSpeak(`${playerName} would have ${await this.getRoboCoins( playerUUID ) - 5}`)
 
       // await this.bootThisUser( playerUUID, roomSlug, `@${ playerName } lost playing BBBoot` )
-      // await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
+      await this.updateBBBootTimestamp( playerUUID, databaseFunctions );
     },
 
     announceBBBoot: async function ( chatFunctions ) {

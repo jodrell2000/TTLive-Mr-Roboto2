@@ -2486,7 +2486,7 @@ const userFunctions = () => {
       if ( bbbootedTimestamp === 0 ) {
         return false
       } else {
-        return Date.now() - ( bbbootedTimestamp * 1000 ) <= 3600000 * hours;
+        return (Date.now() - bbbootedDate) / ( 1000 * 60 * 60 ) <= hours;
       }
     },
 
@@ -2500,7 +2500,7 @@ const userFunctions = () => {
       if ( bbbootTimestamp === 0 ) {
         return false
       } else {
-        return Date.now() - bbbootTimestamp <= 3600000 * hours;
+        return (Date.now() - bbbootDate) / ( 1000 * 60 * 60 ) <= hours;
       }
     },
     

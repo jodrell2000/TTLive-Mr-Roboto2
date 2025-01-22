@@ -2477,8 +2477,11 @@ const userFunctions = () => {
     withinBBBootedTime: async function ( userID, hours, chatFunctions ) {
       let bbbootedTimestamp
       bbbootedTimestamp = await this.getBBBootedTimestamp( userID )
-      await chatFunctions.botSpeak(`${await this.getUsername( userID )} was last BBBooted ${bbbootedTimestamp}`)
-      await chatFunctions.botSpeak(`Which was ${Date.now() - ( bbbootedTimestamp * 1000 )} ago`)
+      const bbbootedDate =  new Date(bbbootedTimestamp);
+      const formattedBbbootedDate = bbbootedDate.toLocaleString();
+
+      await chatFunctions.botSpeak(`${await this.getUsername( userID )} was last BBBooted ${formattedBbbootedDate}`)
+      await chatFunctions.botSpeak(`Which was ${(Date.now() - bbbootedDate) / ( 1000 * 60 * 60 )} ago`)
 
       if ( bbbootedTimestamp === 0 ) {
         return false
@@ -2488,10 +2491,11 @@ const userFunctions = () => {
     },
 
     withinBBBootTime: async function ( userID, hours, chatFunctions ) {
-      let bbbootTimestamp;
-      bbbootTimestamp = await this.getBBBootTimestamp( userID )
-      await chatFunctions.botSpeak(`${await this.getUsername( userID )} last BBBooted ${bbbootTimestamp}`)
-      await chatFunctions.botSpeak(`Which was ${Date.now() - bbbootTimestamp} ago`)
+      const bbbootTimestamp = await this.getBBBootTimestamp( userID )
+      const bbbootDate =  new Date(bbbootTimestamp);
+      const formattedBbbootDate = bbbootDate.toLocaleString();
+      await chatFunctions.botSpeak(`${await this.getUsername( userID )} last BBBooted ${formattedBbbootDate}`)
+      await chatFunctions.botSpeak(`Which was ${(Date.now() - bbbootDate) / ( 1000 * 60 * 60 )} ago`)
 
       if ( bbbootTimestamp === 0 ) {
         return false

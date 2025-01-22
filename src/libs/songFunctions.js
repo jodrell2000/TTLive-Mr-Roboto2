@@ -11,7 +11,11 @@ let previousArtist = null; // info for the currently playing song, so default to
 let previousDJID = null;
 let getSong = null; // info for the currently playing song, so default to null
 let dj = null; // info for the currently playing song, so default to null
+let songID = null; // short song ID
 let ytid = null; // youTube ID of the video, used to check the regions
+let youTubeID = null; // youTube ID of the video, used to check the regions
+let appleID = null; // youTube ID of the video, used to check the regions
+let spotifyID = null; // youTube ID of the video, used to check the regions
 
 let snagSong = false; //if true causes the bot to add every song that plays to its queue
 
@@ -36,7 +40,32 @@ const songFunctions = () => {
     getSong: () => getSong,
     dj: () => dj,
     ytid: () => ytid,
+    youTubeID: () => youTubeID,
+    appleID: () => appleID,
+    spotifyID: () => spotifyID,
+    
+    setSongTags: async function ( thisSong ) {
+      this.song = thisSong.trackName;
+      this.genre = thisSong.genre;
+      this.artist = thisSong.artistName;
+      this.songID = thisSong.songShortId;
+      this.youTubeID = thisSong.musicProviders.youtube;
+      this.appleID = thisSong.musicProviders.apple;
+      this.spotifyID = thisSong.musicProviders.spotify;
+    },
 
+    getSongTagsFromState: async function ( state ) {
+      previousArtist = artist;
+      previousSong = song;
+
+      song = state.nowPlaying.song.trackName;
+      album = state.nowPlaying.song.albumId;
+      genre = state.nowPlaying.song.genre;
+      artist = state.nowPlaying.song.artistName;
+      dj = state.djs[0].uuid;
+      ytid = state.nowPlaying.song.musicProviders;
+    },
+    
     upVotes: () => upVotes.length,
     downVotes: () => downVotes.length,
     voteCountSkip: () => voteCountSkip,
@@ -112,9 +141,7 @@ const songFunctions = () => {
     },
 
     announceSongLengthLimit: function ( data, chatFunctions ) {
-      let theMessage = "";
-
-      theMessage = "The song length limit is now";
+      let theMessage = "The song length limit is now";
       if ( musicDefaults.songLengthLimitOn ) {
         theMessage += " active, and the length limit is " + musicDefaults.songLengthLimit + " minutes";
       } else {
@@ -207,18 +234,6 @@ const songFunctions = () => {
     },
 
     // ========================================================
-
-    getSongTags: function ( current_song ) {
-      previousArtist = artist;
-      previousSong = song;
-
-      song = current_song.nowPlaying.song.trackName;
-      album = current_song.nowPlaying.song.albumId;
-      genre = current_song.nowPlaying.song.genre;
-      artist = current_song.nowPlaying.song.artistName;
-      dj = current_song.djs[0].uuid;
-      ytid = current_song.nowPlaying.song.musicProviders;
-    },
 
     recordUpVotes: async function(uuid) {
       if (!upVotes.includes(uuid)) {
@@ -314,14 +329,17 @@ const songFunctions = () => {
     // Song Info Functions
     // ========================================================
 
+    songID: () => songID,
+
     songInfoCommand: async function ( data, databaseFunctions, chatFunctions ) {
-      if ( await databaseFunctions.checkVideoDataExists( this.ytid() ) ) {
-        await databaseFunctions.getSongInfoData( this.ytid() )
-          .then( ( songInfo ) => {
-            chatFunctions.botSpeak( "The song " + songInfo.trackName + " by " + songInfo.artistName + " has been played " + songInfo.playCount + " times by " + songInfo.djCount + " different DJs, and was first played on " + songInfo.firstPlay );
+      const trackID = await databaseFunctions.getVideoDataID( this.songID, this.youTubeID, this.appleID, this.spotifyID )
+      if ( trackID ) {
+        await databaseFunctions.getSongInfoData( trackID )
+          .then( async ( songInfo ) => {
+            await chatFunctions.botSpeak( `The song ${ songInfo.trackName } by ${ songInfo.artistName } was first played by @${ songInfo.username }. It has been played ${ songInfo.playCount } times by ${ songInfo.djCount } different DJs, and was first played on ${ songInfo.firstPlay }` );
           } )
       } else {
-        chatFunctions.botSpeak( "I can't find a confirmed listing for this track" );
+        await chatFunctions.botSpeak( "I can't find a confirmed listing for this track" );
       }
     },
 

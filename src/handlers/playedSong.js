@@ -37,11 +37,12 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     await botFunctions.clearAllTimers( userFunctions, roomFunctions, songFunctions, chatFunctions, socket );
 
     if ( state.nowPlaying.song ) {
-      songFunctions.getSongTags( state )
+      await songFunctions.getSongTagsFromState( state )
       await databaseFunctions.saveTrackData( djID, state.nowPlaying.song );
     }
 
     await userFunctions.setPreviousDJID( djID );
+    await songFunctions.setSongTags( state.nowPlaying.song )
     songFunctions.setPreviousTrack( state.nowPlaying.song.trackName )
     songFunctions.setPreviousArtist( state.nowPlaying.song.artistName )
     const theMessage = 'Now playing ' + state.nowPlaying.song.trackName + ' by ' + state.nowPlaying.song.artistName

@@ -68,7 +68,7 @@ const botFunctions = () => {
     // Bot Command Functions
     // ========================================================
 
-    sarahConner: function ( data, theMessage, userFunctions, chatFunctions ) {
+    sarahConner: async function ( data, theMessage, userFunctions, chatFunctions ) {
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve( "done" ), delay ) )
 
       const shutMeDown = async () => {
@@ -76,18 +76,18 @@ const botFunctions = () => {
         await sleep( 100 )
         userFunctions.debugPrintTheUsersList();
         await sleep( 100 )
-        this.logCommandUsage( userFunctions, 'sarahConner', data, theMessage )
+        await this.logCommandUsage( userFunctions, 'sarahConner', data, theMessage )
         process.exit( 1 );
       }
-      shutMeDown();
+      await shutMeDown();
     },
 
-    tonystark: function ( data, theMessage, userFunctions, chatFunctions ) {
+    tonystark: async function ( data, theMessage, userFunctions, chatFunctions ) {
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve( "done" ), delay ) )
 
       const restartMe = async () => {
         await chatFunctions.botSpeak( "I'll just try switching it off and on again...", true );
-        this.logCommandUsage( userFunctions, 'tonystark', data, theMessage )
+        await this.logCommandUsage( userFunctions, 'tonystark', data, theMessage )
         const subprocess = spawn(process.argv[0], process.argv.slice(1), {
           detached: true,
           stdio: 'inherit',
@@ -95,7 +95,7 @@ const botFunctions = () => {
         subprocess.unref();
         process.exit(0);
       }
-      restartMe();
+      await restartMe();
     },
 
     changeAvatar: function ( data, args, chatFunctions ) {
@@ -244,9 +244,9 @@ const botFunctions = () => {
       }
     },
 
-    logCommandUsage: function ( userFunctions, command, data, theMessage ) {
+    logCommandUsage: async function ( userFunctions, command, data, theMessage ) {
       console.group( command );
-      console.info( 'The ' + command + ' command was issued by @' + userFunctions.getUsername( userFunctions.whoSentTheCommand( data ) ) + ' at ' + Date() );
+      console.info( 'The ' + command + ' command was issued by @' + await userFunctions.getUsername( await userFunctions.whoSentTheCommand( data ) ) + ' at ' + Date() );
       console.info( theMessage );
       console.groupEnd();
     },
@@ -259,7 +259,7 @@ const botFunctions = () => {
         theMessage = '@' + djName + ', ' + theMessage;
 
         await chatFunctions.botSpeak( theMessage, true );
-        this.logCommandUsage( userFunctions, 'removeDJ', data, theMessage )
+        await this.logCommandUsage( userFunctions, 'removeDJ', data, theMessage )
       }
       await userFunctions.removeDJ( djID, 'The removeDJ command had been issued: ' + theMessage, socket );
     },
@@ -268,11 +268,11 @@ const botFunctions = () => {
       const djID = await userFunctions.getCurrentDJID( data );
 
       if ( theMessage !== '' ) {
-        theMessage = '@' + userFunctions.getUsername( djID ) + ', ' + theMessage
-        chatFunctions.botSpeak( theMessage, true );
-        this.logCommandUsage( userFunctions, 'informDJ', data, theMessage )
+        theMessage = '@' + await userFunctions.getUsername( djID ) + ', ' + theMessage
+        await chatFunctions.botSpeak( theMessage, true );
+        await this.logCommandUsage( userFunctions, 'informDJ', data, theMessage )
       } else {
-        chatFunctions.botSpeak( 'You didn\'t ask me to send the DJ any message?!?' );
+        await chatFunctions.botSpeak( 'You didn\'t ask me to send the DJ any message?!?' );
       }
     },
 

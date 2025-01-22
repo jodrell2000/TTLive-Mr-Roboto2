@@ -51,6 +51,7 @@ const databaseFunctions = () => {
       let lastSnagged = 0;
       let region = "";
       let BBBootTimestamp = 0;
+      let BBBootedTimestamp = 0;
       let noiceCount = 0;
       let propsCount = 0;
       let RoboCoins = 0;
@@ -72,6 +73,7 @@ const databaseFunctions = () => {
       if ( userObject[ "lastSnagged" ] !== undefined ) { lastSnagged = userObject[ "lastSnagged" ] }
       if ( userObject[ "region" ] !== undefined ) { region = userObject[ "region" ] }
       if ( userObject[ "BBBootTimestamp" ] !== undefined ) { BBBootTimestamp = userObject[ "BBBootTimestamp" ] }
+      if ( userObject[ "BBBootedTimestamp" ] !== undefined ) { BBBootedTimestamp = userObject[ "BBBootedTimestamp" ] }
       if ( userObject[ "noiceCount" ] !== undefined ) { noiceCount = userObject[ "noiceCount" ] }
       if ( userObject[ "propsCount" ] !== undefined ) { propsCount = userObject[ "propsCount" ] }
       if ( userObject[ "RoboCoins" ] !== undefined ) { RoboCoins = userObject[ "RoboCoins" ] }
@@ -82,7 +84,7 @@ const databaseFunctions = () => {
       return `REPLACE
                   INTO users (id, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke,
                               currentPlayCount, totalPlayCount, joinedStage, firstIdleWarning,
-                              secondIdleWarning, spamCount, lastSnagged, region, BBBootTimestamp,
+                              secondIdleWarning, spamCount, lastSnagged, region, BBBootTimestamp, BBBootedTimestamp,
                               noiceCount, propsCount, RoboCoins, here, password_hash, email)
               VALUES ("${ id }", "${ username }",
                       ${ moderator },
@@ -99,6 +101,7 @@ const databaseFunctions = () => {
                       ${ lastSnagged },
                       "${ region }",
                       ${ BBBootTimestamp },
+                      ${ BBBootedTimestamp },
                       ${ noiceCount },
                       ${ propsCount },
                       ${ RoboCoins },
@@ -120,7 +123,8 @@ const databaseFunctions = () => {
     loadUserFromDatabase: async function ( uuid ) {
       const theQuery = "SELECT id, username, moderator, joinTime, currentDJ, lastVoted, lastSpoke, currentPlayCount," +
         " totalPlayCount, joinedStage, firstIdleWarning, secondIdleWarning, spamCount, lastSnagged, region," +
-        " BBBootTimestamp, noiceCount, propsCount, RoboCoins, here, password_hash, email FROM users where id = ?"
+        " BBBootTimestamp, BBBootedTimestamp, noiceCount, propsCount, RoboCoins, here, password_hash, email FROM" +
+        " users where id = ?"
       const theValues = [ uuid ];
       try {
         const result = await this.runQuery( theQuery, theValues );
@@ -283,6 +287,25 @@ const databaseFunctions = () => {
         return giftedValue > 0;
       } catch ( error ) {
         console.error( 'Error in checking hasUserHadInitialRoboCoinGift in the DB:', error.message );
+        // Handle the error as needed
+        throw error; // Rethrow the error if necessary
+      }
+    },
+
+    // ========================================================
+
+    // ========================================================
+    // BBBoot Functions
+    // ========================================================
+
+    getAllBBBootTargets: async function () {
+      const theQuery = "select DISTINCT(id) from users where BBBootTimestamp !=0;";
+      const values = [  ];
+      try {
+        const result = await this.runQuery( theQuery, values );
+        return result.map(item => item.id);
+      } catch ( error ) {
+        console.error( 'Error in running getAllBBBootTarget in the DB:', error.message );
         // Handle the error as needed
         throw error; // Rethrow the error if necessary
       }
@@ -497,33 +520,44 @@ const databaseFunctions = () => {
         .catch( ( ex ) => { console.error( "Something went wrong getting the track played time: " + ex ); } );
     },
 
-    getSongInfoData: async function ( ytid ) {
+    getSongInfoData: async function (songID) {
       let songInfo = {};
 
       const nameQuery = "SELECT COALESCE(artistDisplayName, artistName) AS artistName, COALESCE(trackDisplayName, trackName) AS trackName FROM videoData WHERE id=?";
-      const nameValues = [ ytid ];
+      const nameValues = [songID];
 
       const whenQuery = "SELECT DATE_FORMAT(MIN(tp.whenPlayed), '%W %D %M %Y') as firstPlay, COUNT(tp.id) AS playCount, COUNT(DISTINCT(djID)) AS djCount " +
         "FROM videoData vd JOIN tracksPlayed tp ON tp.videoData_id=vd.id " +
         "WHERE COALESCE(artistDisplayName, artistName) = ? AND COALESCE(trackDisplayName, trackName) = ?;";
 
-      return this.runQuery( nameQuery, nameValues )
-        .then( ( results ) => {
-          songInfo.artistName = results[ 0 ].artistName;
-          songInfo.trackName = results[ 0 ].trackName;
-          const whenValues = [ songInfo.artistName, songInfo.trackName ];
-          return this.runQuery( whenQuery, whenValues )
-            .then( ( results ) => {
-              songInfo.firstPlay = results[ 0 ].firstPlay;
-              songInfo.playCount = results[ 0 ].playCount;
-              songInfo.djCount = results[ 0 ].djCount;
-              return songInfo;
-            } );
-        } )
-        .catch( ( error ) => {
-          console.error( 'Error:', error );
+      const firstDJQuery = "SELECT u.username FROM users u " +
+        "JOIN tracksPlayed tp ON u.id=tp.djID " +
+        "JOIN videoData vd ON tp.videoData_id=vd.id " +
+        "WHERE COALESCE(artistDisplayName, artistName) = ? AND COALESCE(trackDisplayName, trackName) = ? " +
+        "ORDER BY tp.whenPlayed ASC LIMIT 1";
+
+      return this.runQuery(nameQuery, nameValues)
+        .then((results) => {
+          songInfo.artistName = results[0].artistName;
+          songInfo.trackName = results[0].trackName;
+          const whenValues = [songInfo.artistName, songInfo.trackName];
+          return this.runQuery(whenQuery, whenValues);
+        })
+        .then((results) => {
+          songInfo.firstPlay = results[0].firstPlay;
+          songInfo.playCount = results[0].playCount;
+          songInfo.djCount = results[0].djCount;
+          const whenValues = [songInfo.artistName, songInfo.trackName];
+          return this.runQuery(firstDJQuery, whenValues);
+        })
+        .then((results) => {
+          songInfo.username = results[0]?.username || null; // Handle case where no result is returned
+          return songInfo;
+        })
+        .catch((error) => {
+          console.error('Error:', error);
           throw error;
-        } );
+        });
     },
 
     // ========================================================
@@ -634,29 +668,34 @@ const databaseFunctions = () => {
         case 'artist':
           orderByClause = 'GROUP BY tp.videoData_id ORDER BY COALESCE(v.artistDisplayName, v.artistName) ASC,' +
             ' v.artistName ASC,' +
-            ' COALESCE(v.trackDisplayName, v.trackName) ASC, v.trackName ASC';
+            ' COALESCE(v.trackDisplayName, v.trackName) ASC, v.trackName ASC, tp.videoData_id ASC';
           break;
         case 'track':
           orderByClause = 'GROUP BY tp.videoData_id ORDER BY COALESCE(v.trackDisplayName, v.trackName) ASC,' +
             ' v.trackName ASC,' +
-            ' COALESCE(v.artistDisplayName, v.artistName) ASC, v.artistName ASC';
+            ' COALESCE(v.artistDisplayName, v.artistName) ASC, v.artistName ASC, tp.videoData_id ASC';
           break;
         default:
           orderByClause = 'GROUP BY tp.videoData_id ORDER BY MAX(tp.whenPlayed) DESC, v.artistName ASC, v.trackName' +
-            ' ASC';
+            ' ASC, tp.videoData_id ASC';
       }
 
       switch ( args.where ) {
         case 'track':
-          whereClause = 'v.trackName LIKE ? OR v.trackDisplayName LIKE ?';
+          whereClause = '(v.trackName LIKE ? OR v.trackDisplayName LIKE ?)';
           values.push( `%${ args.searchTerm }%`, `%${ args.searchTerm }%` );
           break;
         case 'artist':
-          whereClause = 'v.artistName LIKE ? OR v.artistDisplayName LIKE ?';
+          whereClause = '(v.artistName LIKE ? OR v.artistDisplayName LIKE ?)';
           values.push( `%${ args.searchTerm }%`, `%${ args.searchTerm }%` );
           break;
         default:
           whereClause = 'v.artistDisplayName IS NULL OR v.trackDisplayName IS NULL';
+      }
+      
+      switch ( args.unverifiedonly ) {
+        case 'true':
+          whereClause = whereClause + ' AND (v.artistDisplayName IS NULL OR v.trackDisplayName IS NULL)';
       }
 
       const selectQuery = `

@@ -107,7 +107,7 @@ export const getUserMessages = async ( userId, fromTimestamp = startTimeStamp ) 
   const messageLimit = 50
   const paths = [
     'v3.0',
-    'groups',
+    'users',
     userId,
     'messages'
   ]

@@ -38,7 +38,6 @@ roomBot.configureListeners( roomBot.socket, commandFunctionsInstance, userFuncti
 const repeatedTasks = new Chain()
 repeatedTasks
   .add( () => roomBot.processNewMessages( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance, playlistFunctionsInstance ) )
-  .every( 100 )
   .add( () => roomBot.processUserMessages( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance, playlistFunctionsInstance ) )
   .every( 100 )
 

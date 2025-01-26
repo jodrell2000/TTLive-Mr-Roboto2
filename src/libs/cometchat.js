@@ -122,6 +122,5 @@ export const getUserMessages = async ( userId, fromTimestamp = startTimeStamp ) 
     [ 'affix', 'append' ]
   ]
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
-  console.log(`getUserMessages url: ${url}`)
   return await makeRequest( url, { headers } )
 }

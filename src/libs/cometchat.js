@@ -103,11 +103,11 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
 }
 
 export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeStamp ) => {
-  userFunctions.theUsersList().forEach(user => {
-    if (user.id) {
-      console.log( "User ID: " + user.id)
-    }
-  })
+  // userFunctions.theUsersList().forEach(user => {
+  //   if (user.id) {
+  //     console.log( "User ID: " + user.id)
+  //   }
+  // })
   // headers.appid = process.env.CHAT_API_KEY
   // const messageLimit = 50
   // const paths = [

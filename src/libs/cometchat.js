@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { buildUrl, makeRequest } from '../utils/networking.js'
-import { CometChat } from "@cometchat/chat-sdk-javascript";
+// import { CometChat } from "@cometchat/chat-sdk-javascript";
 
 const startTimeStamp = Math.floor( Date.now() / 1000 )
 
@@ -131,19 +131,19 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
   return await makeRequest( url, { headers } )
 }
 
-let listenerID = process.env.CHAT_USER_ID;
-
-CometChat.addMessageListener(
-  listenerID,
-  new CometChat.MessageListener({
-    onTextMessageReceived: (textMessage) => {
-      console.log("Text message received successfully", textMessage);
-    },
-    onMediaMessageReceived: (mediaMessage) => {
-      console.log("Media message received successfully", mediaMessage);
-    },
-    onCustomMessageReceived: (customMessage) => {
-      console.log("Custom message received successfully", customMessage);
-    },
-  })
-);
+// let listenerID = process.env.CHAT_USER_ID;
+//
+// CometChat.addMessageListener(
+//   listenerID,
+//   new CometChat.MessageListener({
+//     onTextMessageReceived: (textMessage) => {
+//       console.log("Text message received successfully", textMessage);
+//     },
+//     onMediaMessageReceived: (mediaMessage) => {
+//       console.log("Media message received successfully", mediaMessage);
+//     },
+//     onCustomMessageReceived: (customMessage) => {
+//       console.log("Custom message received successfully", customMessage);
+//     },
+//   })
+// );

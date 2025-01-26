@@ -41,7 +41,7 @@ export class Bot {
 
   async processUserMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     // console.log(`processNewMessages playlistFunctions:${ JSON.stringify(playlistFunctions, null, 2) }`)
-    const response = await getUserMessages( this.lastMessageIDs?.fromTimestamp )
+    const response = await getUserMessages( "f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc", this.lastMessageIDs?.fromTimestamp )
     if ( response?.data ) {
       const messages = response.data
       console.log( `user messages: ${JSON.stringify(messages, null, 2)}` );

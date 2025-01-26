@@ -112,15 +112,15 @@ export const getUserMessages = async ( userId, fromTimestamp = startTimeStamp ) 
     'messages'
   ]
   const searchParams = [
-    [ 'receiverType', 'user'],
-    [ 'per_page', messageLimit ],
-    [ 'hideMessagesFromBlockedUsers', 0 ],
-    [ 'unread', 0 ],
+    [ 'receiverType', 'user']
+    // [ 'per_page', messageLimit ],
+    // [ 'hideMessagesFromBlockedUsers', 0 ],
+    // [ 'unread', 0 ],
     // [ 'types', 'ChatMessage' ],
-    [ 'withTags', 0 ],
-    [ 'hideDeleted', 0 ],
-    [ 'sentAt', fromTimestamp ],
-    [ 'affix', 'append' ]
+    // [ 'withTags', 0 ],
+    // [ 'hideDeleted', 0 ],
+    // [ 'sentAt', fromTimestamp ],
+    // [ 'affix', 'append' ]
   ]
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
   console.log(`getUserMessages url: ${url}`)

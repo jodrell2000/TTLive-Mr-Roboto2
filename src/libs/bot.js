@@ -1,7 +1,8 @@
 import { ServerMessageName, SocketClient, StatefulServerMessageName, StatelessServerMessageName } from 'ttfm-socket'
 import fastJson from 'fast-json-patch'
 
-import { joinChat, getMessages, getUserMessages } from './cometchat.js'
+// import { joinChat, getMessages, getUserMessages } from './cometchat.js'
+import { joinChat, getMessages } from './cometchat.js'
 import { logger } from '../utils/logging.js'
 import handlers from '../handlers/index.js'
 import startup from '../libs/startup.js'
@@ -39,27 +40,27 @@ export class Bot {
 
   // ========================================================
 
-  async processUserMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
-    const response = await getUserMessages( userFunctions, this.lastMessageIDs?.fromTimestamp )
-    // console.log( `response: ${JSON.stringify(response, null, 2)}` );
-    if ( response?.data ) {
-      const messages = response.data
-      if ( messages?.length ) {
-        for ( const message in messages ) {
-          this.lastMessageIDs.fromTimestamp = messages[ message ].sentAt + 1
-          const customMessage = messages[ message ]?.data?.customData?.message ?? ''
-          if ( !customMessage ) return
-          const sender = messages[ message ]?.sender ?? ''
-          if ( [ process.env.CHAT_USER_ID, process.env.CHAT_REPLY_ID ].includes( sender ) ) return
-          handlers.message( {
-            message: customMessage,
-            sender,
-            senderName: messages[ message ]?.data?.customData?.userName
-          }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions, this.socket )
-        }
-      }
-    }
-  }
+  // async processUserMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
+  //   const response = await getUserMessages( userFunctions, this.lastMessageIDs?.fromTimestamp )
+  //   // console.log( `response: ${JSON.stringify(response, null, 2)}` );
+  //   if ( response?.data ) {
+  //     const messages = response.data
+  //     if ( messages?.length ) {
+  //       for ( const message in messages ) {
+  //         this.lastMessageIDs.fromTimestamp = messages[ message ].sentAt + 1
+  //         const customMessage = messages[ message ]?.data?.customData?.message ?? ''
+  //         if ( !customMessage ) return
+  //         const sender = messages[ message ]?.sender ?? ''
+  //         if ( [ process.env.CHAT_USER_ID, process.env.CHAT_REPLY_ID ].includes( sender ) ) return
+  //         handlers.message( {
+  //           message: customMessage,
+  //           sender,
+  //           senderName: messages[ message ]?.data?.customData?.userName
+  //         }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions, this.socket )
+  //       }
+  //     }
+  //   }
+  // }
 
   async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp )

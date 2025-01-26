@@ -37,7 +37,7 @@ export class Bot {
     await startup( process.env.ROOM_UUID, this.state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions )
   }
 
-  ========================================================
+  // ========================================================
 
   async processUserMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     const response = await getUserMessages( userFunctions, this.lastMessageIDs?.fromTimestamp )

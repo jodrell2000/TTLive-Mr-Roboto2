@@ -108,7 +108,8 @@ export const getUserMessages = async ( roomId, fromTimestamp = startTimeStamp ) 
   const paths = [
     'v3.0',
     'groups',
-    roomId
+    roomId,
+    'members'
   ]
   const searchParams = [
     // [ 'receiverType', 'user']

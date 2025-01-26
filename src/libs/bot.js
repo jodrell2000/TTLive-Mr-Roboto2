@@ -40,7 +40,8 @@ export class Bot {
   // ========================================================
 
   async processUserMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
-    const response = await getUserMessages( "f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc", this.lastMessageIDs?.fromTimestamp )
+    // const response = await getUserMessages( "f813b9cc-28c4-4ec6-a9eb-2cdfacbcafbc", this.lastMessageIDs?.fromTimestamp )
+    const response = await getUserMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp )
     console.log( `response: ${JSON.stringify(response, null, 2)}` );
     if ( response?.data ) {
       const messages = response.data

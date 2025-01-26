@@ -102,17 +102,16 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
   return await makeRequest( url, { headers } )
 }
 
-export const getUserMessages = async ( userId, fromTimestamp = startTimeStamp ) => {
+export const getUserMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
   headers.appid = process.env.CHAT_API_KEY
   const messageLimit = 50
   const paths = [
     'v3.0',
-    // 'users',
-    // userId,
-    'messages'
+    'users',
+    roomId
   ]
   const searchParams = [
-    [ 'receiverType', 'user']
+    // [ 'receiverType', 'user']
     // [ 'per_page', messageLimit ],
     // [ 'hideMessagesFromBlockedUsers', 0 ],
     // [ 'unread', 0 ],

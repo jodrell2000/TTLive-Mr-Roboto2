@@ -107,9 +107,9 @@ export const getUserMessages = async ( userId, fromTimestamp = startTimeStamp ) 
   const messageLimit = 50
   const paths = [
     'v3.0',
-    'users',
-    userId,
-    'messages'
+    // 'users',
+    // userId,
+    'messages?receiverType=user'
   ]
   const searchParams = [
     [ 'per_page', messageLimit ],

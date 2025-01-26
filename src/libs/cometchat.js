@@ -101,3 +101,26 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
   return await makeRequest( url, { headers } )
 }
+
+export const getUserMessages = async ( userId, fromTimestamp = startTimeStamp ) => {
+  headers.appid = process.env.CHAT_API_KEY
+  const messageLimit = 50
+  const paths = [
+    'v3.0',
+    'groups',
+    userId,
+    'messages'
+  ]
+  const searchParams = [
+    [ 'per_page', messageLimit ],
+    [ 'hideMessagesFromBlockedUsers', 0 ],
+    [ 'unread', 0 ],
+    [ 'types', 'ChatMessage' ],
+    [ 'withTags', 0 ],
+    [ 'hideDeleted', 0 ],
+    [ 'sentAt', fromTimestamp ],
+    [ 'affix', 'append' ]
+  ]
+  const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
+  return await makeRequest( url, { headers } )
+}

@@ -116,7 +116,7 @@ export const getUserMessages = async ( userId, fromTimestamp = startTimeStamp ) 
     [ 'per_page', messageLimit ],
     [ 'hideMessagesFromBlockedUsers', 0 ],
     [ 'unread', 0 ],
-    [ 'types', 'ChatMessage' ],
+    // [ 'types', 'ChatMessage' ],
     [ 'withTags', 0 ],
     [ 'hideDeleted', 0 ],
     [ 'sentAt', fromTimestamp ],

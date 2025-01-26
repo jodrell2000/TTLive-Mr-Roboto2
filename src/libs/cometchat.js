@@ -112,7 +112,7 @@ export const getUserMessages = async ( userId, fromTimestamp = startTimeStamp ) 
     'messages'
   ]
   const searchParams = [
-    [ 'receiverType', 'user']
+    [ 'receiverType', 'user'],
     [ 'per_page', messageLimit ],
     [ 'hideMessagesFromBlockedUsers', 0 ],
     [ 'unread', 0 ],

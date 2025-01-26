@@ -107,7 +107,7 @@ export const getUserMessages = async ( roomId, fromTimestamp = startTimeStamp ) 
   const messageLimit = 50
   const paths = [
     'v3.0',
-    'users',
+    'groups',
     roomId
   ]
   const searchParams = [

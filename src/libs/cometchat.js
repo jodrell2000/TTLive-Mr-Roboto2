@@ -102,7 +102,7 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
   return await makeRequest( url, { headers } )
 }
 
-export const getUserMessages = async ( userId, fromTimestamp = startTimeStamp ) => {
+export const getUserMessages = async ( fromTimestamp = startTimeStamp ) => {
   headers.appid = process.env.CHAT_API_KEY
   const messageLimit = 50
   const paths = [
@@ -122,5 +122,6 @@ export const getUserMessages = async ( userId, fromTimestamp = startTimeStamp ) 
     [ 'affix', 'append' ]
   ]
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
+  console.log(`getUserMessages url: ${url}`)
   return await makeRequest( url, { headers } )
 }

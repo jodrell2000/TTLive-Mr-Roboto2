@@ -44,6 +44,7 @@ export class Bot {
     const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp )
     if ( response?.data ) {
       const messages = response.data
+      console.log( `messages: ${JSON.stringify(messages, null, 2)}` );
       if ( messages?.length ) {
         for ( const message in messages ) {
           this.lastMessageIDs.fromTimestamp = messages[ message ].sentAt + 1

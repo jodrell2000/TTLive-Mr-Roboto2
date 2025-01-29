@@ -71,7 +71,17 @@ const chatFunctions = ( ) => {
 
     suggestFollow: async function( mlFunctions, songFunctions ) {
       console.log(`artist:${songFunctions.artist}, song:${songFunctions.song}`);
-      const replyJSON = await mlFunctions.suggestFollow( songFunctions.artist, songFunctions.song );
+      let replyJSON = await mlFunctions.suggestFollow( songFunctions.artist, songFunctions.song );
+
+      if (typeof replyJSON === "string") {
+        try {
+          replyJSON = JSON.parse(replyJSON);
+        } catch (error) {
+          console.error("Failed to parse replyJSON:", error);
+          return;
+        }
+      }
+      
       console.log(JSON.stringify(replyJSON, null, 2));
       await this.botSpeak( `How about playing ${ replyJSON.song } by ${ replyJSON.artist }.`);
     },

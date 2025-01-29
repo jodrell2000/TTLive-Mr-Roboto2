@@ -70,9 +70,9 @@ const chatFunctions = ( ) => {
     // ========================================================
 
     suggestFollow: async function( mlFunctions, songFunctions ) {
-      const playingArtist = songFunctions.artist
-      const playingTrack = songFunctions.artist
-      const replyJSON = await mlFunctions.suggestFollow( playingArtist, playingTrack );
+      console.log(`artist:${songFunctions.artist}, song:${songFunctions.song}`);
+      const replyJSON = await mlFunctions.suggestFollow( songFunctions.artist, songFunctions.song );
+      console.log(JSON.stringify(replyJSON, null, 2));
       await this.botSpeak( `How about playing ${ replyJSON.song } by ${ replyJSON.artist }.`);
     },
 

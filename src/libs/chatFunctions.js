@@ -69,6 +69,13 @@ const chatFunctions = ( ) => {
     // Misc chat functions
     // ========================================================
 
+    suggestFollow: async function( mlFunctions, songFunctions, chatFunctions ) {
+      const playingArtist = songFunctions.artist()
+      const playingTrack = songFunctions.artist()
+      const replyJSON = await mlFunctions.suggestFollow( playingArtist, playingTrack );
+      await this.botSpeak( `How about playing ${ replyJSON.song } by ${ replyJSON.artist }.`);
+    },
+
     isThereADJ: async function ( userFunctions, data ) {
       const receiverID = await userFunctions.getCurrentDJID( data );
       const senderID = await userFunctions.whoSentTheCommand( data );

@@ -675,6 +675,11 @@ const commandFunctions = () => {
   }
   playlistCommands.addtracktoplaylist.help = "List the Bots playlists";
 
+  playlistCommands.suggestfollow = ( { mlFunctions, songFunctions } ) => {
+    chatFunctions.suggestFollow( mlFunctions, songFunctions );
+  }
+  playlistCommands.suggestfollow.help = "Have Robo suggest a track to play after this one";
+
   // #############################
   // end of commands
   // #############################

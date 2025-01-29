@@ -70,7 +70,11 @@ const mlFunctions = () => {
       const theQuestion = `Answering with one word, either cover or original, is ${ track } by ${ artist } a cover or an original song?`
       return await this.askGoogleAI( theQuestion, chatFunctions )
     },
-    
+
+    suggestFollow: async function( playingArtist, playingTrack ) {
+      const theQuestion = `If I were DJing, tell me one song to follow "${ playingTrack }", by "${ playingArtist }". Return your answer as JSON with two elements called artist and song. If you can't find anything return the JSON with two null values`
+      return await this.askGoogleAI( theQuestion )
+    },
   }
 }
 

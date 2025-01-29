@@ -88,8 +88,7 @@ const chatFunctions = ( ) => {
         }
       }
 
-      // await this.botSpeak( `How about playing ${ replyJSON.song } by ${ replyJSON.artist }.`);
-      console.log( `How about playing ${ replyJSON.song } by ${ replyJSON.artist }.`);
+      await this.botSpeak( `How about playing ${ replyJSON.song } by ${ replyJSON.artist }.`);
     },
 
     isThereADJ: async function ( userFunctions, data ) {

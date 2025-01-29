@@ -72,7 +72,7 @@ const mlFunctions = () => {
     },
 
     suggestFollow: async function( playingArtist, playingTrack ) {
-      const theQuestion = `If I were DJing, tell me one song to follow "${ playingTrack }", by "${ playingArtist }". Return your answer as JSON with two elements called artist and song. You must return an answer even if it's just another track in the same genre from the same year.`
+      const theQuestion = `If I were DJing, tell me one song to follow "${ playingTrack }", by "${ playingArtist }". Return your answer as JSON with two elements called artist and song. You must not return another track by the same artist. You must return an answer even if it's just another track in the same genre from the same year.`
       return await this.askGoogleAI( theQuestion )
     },
   }

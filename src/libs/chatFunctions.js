@@ -73,6 +73,8 @@ const chatFunctions = ( ) => {
       console.log(`artist:${songFunctions.artist}, song:${songFunctions.song}`);
       let replyJSON = await mlFunctions.suggestFollow( songFunctions.artist, songFunctions.song );
 
+      console.log(replyJSON);
+
       if (typeof replyJSON === "string") {
         try {
           replyJSON = JSON.parse(replyJSON);
@@ -81,9 +83,9 @@ const chatFunctions = ( ) => {
           return;
         }
       }
-      
-      console.log(JSON.stringify(replyJSON, null, 2));
-      await this.botSpeak( `How about playing ${ replyJSON.song } by ${ replyJSON.artist }.`);
+
+      // await this.botSpeak( `How about playing ${ replyJSON.song } by ${ replyJSON.artist }.`);
+      console.log( `How about playing ${ replyJSON.song } by ${ replyJSON.artist }.`);
     },
 
     isThereADJ: async function ( userFunctions, data ) {

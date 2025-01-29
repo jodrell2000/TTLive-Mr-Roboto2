@@ -69,7 +69,7 @@ const chatFunctions = ( ) => {
     // Misc chat functions
     // ========================================================
 
-    suggestFollow: async function( mlFunctions, songFunctions, chatFunctions ) {
+    suggestFollow: async function( mlFunctions, songFunctions ) {
       const playingArtist = songFunctions.artist()
       const playingTrack = songFunctions.artist()
       const replyJSON = await mlFunctions.suggestFollow( playingArtist, playingTrack );

@@ -77,6 +77,10 @@ const chatFunctions = ( ) => {
 
       if (typeof replyJSON === "string") {
         try {
+          // Remove Markdown-style backticks if present
+          replyJSON = replyJSON.replace(/```json|```/g, "").trim();
+
+          // Parse cleaned JSON
           replyJSON = JSON.parse(replyJSON);
         } catch (error) {
           console.error("Failed to parse replyJSON:", error);

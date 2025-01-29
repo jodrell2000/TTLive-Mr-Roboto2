@@ -70,11 +70,8 @@ const chatFunctions = ( ) => {
     // ========================================================
 
     suggestFollow: async function( mlFunctions, songFunctions ) {
-      console.log(`artist:${songFunctions.artist}, song:${songFunctions.song}`);
       let replyJSON = await mlFunctions.suggestFollow( songFunctions.artist, songFunctions.song );
-
-      console.log(replyJSON);
-
+      
       if (typeof replyJSON === "string") {
         try {
           // Remove Markdown-style backticks if present

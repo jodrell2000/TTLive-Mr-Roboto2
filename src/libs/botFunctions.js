@@ -61,7 +61,29 @@ const botFunctions = () => {
         await roomFunctions.setTheme( theTheme )
       }
     },
-    
+
+    // ========================================================
+
+    // ========================================================
+    // DJing Functions
+    // ========================================================
+
+    djUp: async function( socket ) {
+      await socket.action( ActionName.addDj, {
+        roomUuid: botDefaults.roomUuid,
+        tokenRole: process.env.TTL_USER_TOKEN,
+        userUuid: botDefaults.botUuid
+      } );
+    },
+
+    djDown: async function( socket ) {
+      await socket.action( ActionName.removeDj, {
+        roomUuid: botDefaults.roomUuid,
+        userUuid: botDefaults.botUuid,
+        djUuid: botDefaults.botUuid
+      } );
+    },
+
     // ========================================================
 
     // ========================================================

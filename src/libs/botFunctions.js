@@ -76,7 +76,8 @@ const botFunctions = () => {
       };
 
       try {
-        const theQueue = await axios.get( url, { headers } );
+        const response = await axios.get( url, { headers } );
+        const theQueue = response.data
         console.log( `queue: ${ theQueue }` );
         console.log( `queue JSON: ${ JSON.stringify( theQueue, null, 2) }` );
       } catch ( error ) {
@@ -129,8 +130,6 @@ const botFunctions = () => {
     },
 
     tonystark: async function ( data, theMessage, userFunctions, chatFunctions ) {
-      const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve( "done" ), delay ) )
-
       const restartMe = async () => {
         await chatFunctions.botSpeak( "I'll just try switching it off and on again...", true );
         await this.logCommandUsage( userFunctions, 'tonystark', data, theMessage )
@@ -639,11 +638,7 @@ const botFunctions = () => {
     },
 
     isBotCurrentDJ: function ( userFunctions ) {
-      if ( userFunctions.getCurrentDJID() === authModule.USERID ) {
-        return true;
-      } else {
-        return false;
-      }
+      return userFunctions.getCurrentDJID() === authModule.USERID;
     },
 
     deleteCurrentTrackFromBotPlaylist: function ( data, userFunctions, chatFunctions, songFunctions ) {
@@ -667,7 +662,7 @@ const botFunctions = () => {
       }
     },
 
-    clearAllTimers: async function ( userFunctions, roomFunctions, songFunctions, chatFunctions, socket ) {
+    clearAllTimers: async function ( userFunctions, roomFunctions, songFunctions, chatFunctions ) {
       await userFunctions.clearInformTimer( roomFunctions, chatFunctions );
       await roomFunctions.clearSongLimitTimer( userFunctions, roomFunctions, chatFunctions );
       songFunctions.clearWatchDogTimer();

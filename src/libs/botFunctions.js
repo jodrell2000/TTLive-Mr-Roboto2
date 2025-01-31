@@ -80,6 +80,7 @@ const botFunctions = () => {
         const theQueue = response.data
         console.log( `queue: ${ theQueue }` );
         console.log( `queue JSON: ${ JSON.stringify( theQueue, null, 2) }` );
+        return theQueue[0];
       } catch ( error ) {
         console.error( `Error calling get api...error:${error}\nurl:${url}` );
         throw error;
@@ -87,7 +88,8 @@ const botFunctions = () => {
     },
 
     djUp: async function( socket ) {
-      await this.getFirstSongInQueue()
+      const firstSong = await this.getFirstSongInQueue()
+      console.log( `firstSong: ${ JSON.stringify(firstSong, null, 2) }` );
       await socket.action( ActionName.addDj, {
         roomUuid: botDefaults.roomUuid,
         tokenRole: process.env.TTL_USER_TOKEN,
@@ -96,7 +98,7 @@ const botFunctions = () => {
 
       await socket.action( ActionName.updateNextSong, {
         roomUuid: botDefaults.roomUuid,
-        song: "d7df45a9-fed8-491c-b8b3-8cc9c45c2e3e",
+        song: firstSong,
         userUuid: botDefaults.botUuid
       } );
     },
@@ -680,7 +682,7 @@ const botFunctions = () => {
 
       songFunctions.startSongWatchdog( data, userFunctions, socket );
 
-      //this removes the user from the stage if their song is over the length limit and the don't skip
+      //this removes the user from the stage if their song is over the length limit and they don't skip
       let theTimeout = 60;
       if ( ( length / theTimeout ) >= musicDefaults.songLengthLimit ) {
         if ( theDJID === authModule.USERID || masterIndex === -1 ) //if dj is the bot or not a master

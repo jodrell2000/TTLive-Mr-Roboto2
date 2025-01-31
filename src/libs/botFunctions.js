@@ -76,7 +76,9 @@ const botFunctions = () => {
       } );
 
       await socket.action( ActionName.updateNextSong, {
-        song: "d7df45a9-fed8-491c-b8b3-8cc9c45c2e3e"
+        roomUuid: botDefaults.roomUuid,
+        song: "d7df45a9-fed8-491c-b8b3-8cc9c45c2e3e",
+        userUuid: botDefaults.botUuid
       } );
     },
 

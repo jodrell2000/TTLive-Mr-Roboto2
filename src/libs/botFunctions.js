@@ -74,6 +74,10 @@ const botFunctions = () => {
         tokenRole: process.env.TTL_USER_TOKEN,
         userUuid: botDefaults.botUuid
       } );
+
+      await socket.action( ActionName.updateNextSong, {
+        song: "d7df45a9-fed8-491c-b8b3-8cc9c45c2e3e"
+      } );
     },
 
     djDown: async function( socket ) {

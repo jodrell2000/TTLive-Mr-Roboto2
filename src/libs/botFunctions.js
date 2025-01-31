@@ -77,7 +77,7 @@ const botFunctions = () => {
 
       await socket.action( ActionName.updateNextSong, {
         roomUuid: botDefaults.roomUuid,
-        song: "d7df45a9-fed8-491c-b8b3-8cc9c45c2e3e",
+        song: null,
         userUuid: botDefaults.botUuid
       } );
     },

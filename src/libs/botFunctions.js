@@ -67,8 +67,24 @@ const botFunctions = () => {
     // ========================================================
     // DJing Functions
     // ========================================================
+    
+    getFirstSongInQueue: async function () {
+      const url = "https://playlists.prod.tt.fm/crate/special/queue/songs"
+      const headers = {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${ process.env.TTL_USER_TOKEN }`
+      };
+
+      try {
+        console.log( `queue: ${JSON.stringify( await axios.get( url, { headers } ), null, 2 ) }` );
+      } catch ( error ) {
+        console.error( `Error calling get api...error:${error}\nurl:${url}` );
+        throw error;
+      }
+    },
 
     djUp: async function( socket ) {
+      await this.getFirstSongInQueue()
       await socket.action( ActionName.addDj, {
         roomUuid: botDefaults.roomUuid,
         tokenRole: process.env.TTL_USER_TOKEN,
@@ -77,7 +93,7 @@ const botFunctions = () => {
 
       await socket.action( ActionName.updateNextSong, {
         roomUuid: botDefaults.roomUuid,
-        song: null,
+        song: "d7df45a9-fed8-491c-b8b3-8cc9c45c2e3e",
         userUuid: botDefaults.botUuid
       } );
     },

@@ -76,7 +76,7 @@ const botFunctions = () => {
       };
 
       try {
-        console.log( `queue: ${JSON.stringify( await axios.get( url, { headers } ), null, 2 ) }` );
+        console.log( `queue: ${ await axios.get( url, { headers } ) }` );
       } catch ( error ) {
         console.error( `Error calling get api...error:${error}\nurl:${url}` );
         throw error;

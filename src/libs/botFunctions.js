@@ -558,9 +558,9 @@ const botFunctions = () => {
       checkActivity = Date.now(); //update when someone says something
     },
 
-    isBotOnStage: function ( userFunctions ) {
+    isBotOnStage: async function ( userFunctions ) {
       console.log(`isBotOnStage check`)
-      const status = userFunctions.isUserIDOnStage( authModule.USERID )
+      const status = await userFunctions.isUserIDOnStage( authModule.USERID )
       console.log(`isBotOnStage status: ${status}`)
       return status;
     },

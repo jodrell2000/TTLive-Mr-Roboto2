@@ -559,7 +559,10 @@ const botFunctions = () => {
     },
 
     isBotOnStage: function ( userFunctions ) {
-      return userFunctions.isUserIDOnStage( authModule.USERID );
+      console.log(`isBotOnStage check`)
+      const status = userFunctions.isUserIDOnStage( authModule.USERID )
+      console.log(`isBotOnStage status: ${status}`)
+      return status;
     },
     
     shouldTheBotDJ: function ( userFunctions ) {
@@ -581,15 +584,18 @@ const botFunctions = () => {
     },
     
     checkAutoDJing: async function ( userFunctions, socket ) {
+      console.group(`checkAutoDJing`)
+      console.log(`Checking...`)
       if ( autoDjingTimer != null ) {
         clearTimeout( autoDjingTimer );
         autoDjingTimer = null;
       }
 
       if ( this.autoDJEnabled() === true ) {
+        console.log(`autoDJEnabled...`)
 
         autoDjingTimer = setTimeout(async () => {
-          if ( !this.isBotOnStage(userFunctions) ) {
+          if ( ! await this.isBotOnStage(userFunctions) ) {
             if ( this.shouldTheBotDJ(userFunctions) ) {
               await this.djUp( socket );
             }
@@ -600,6 +606,7 @@ const botFunctions = () => {
           }
         }, 1000 * 10);
       }
+      console.groupEnd()
     },
 
     isSongInBotPlaylist: function ( thisSong ) {

@@ -273,11 +273,6 @@ const commandFunctions = () => {
   }
   moderatorCommands.randomiseplaylist.help = "Shuffle Robos playlist";
 
-  moderatorCommands.autodj = () => {
-    bot.addDj();
-  }
-  moderatorCommands.autodj.help = "Starts the Bot DJing";
-
   moderatorCommands.lengthlimit = ( { data, args, songFunctions, chatFunctions } ) => {
     songFunctions.switchLengthLimit( data, args, chatFunctions )
   }

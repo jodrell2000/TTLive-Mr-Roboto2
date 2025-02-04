@@ -19,7 +19,7 @@ let returnToRoom = true; //used to toggle on and off the bot reconnecting to its
 let wserrorTimeout = null; //this is for the setTimeout in ws error
 let autoDjingTimer = null; //governs the timer for the bot's auto djing
 let readSongStats = roomDefaults.SONGSTATS;
-let autoDJEnabled = botDefaults.autoDJEnabled; //autodjing(on by default)
+let autoDJEnabled = botDefaults.autoDJEnabled; //autodjing(off by default)
 let whenToGetOnStage = botDefaults.whenToGetOnStage; //when this many or less people djing the bot will get on stage(only if autodjing is enabled)
 let whenToGetOffStage = botDefaults.whenToGetOffStage;
 let checkVideoRegions = musicDefaults.alertIfRegionBlocked;
@@ -210,7 +210,7 @@ const botFunctions = () => {
       const doInOrder = async () => {
         await this.reportUptime( data, userFunctions, chatFunctions );
         await sleep( 100 );
-        this.reportAutoDJStatus( data, chatFunctions );
+        await this.reportAutoDJStatus( data, chatFunctions );
         await sleep( 100 );
         this.reportSongStats( data, chatFunctions );
         await sleep( 100 );
@@ -409,78 +409,79 @@ const botFunctions = () => {
     },
 
     checkVideoRegions: () => checkVideoRegions,
-    enablecheckVideoRegions: function ( data, videoFunctions, chatFunctions ) {
+    enablecheckVideoRegions: async function ( data, videoFunctions, chatFunctions ) {
       checkVideoRegions = true;
-      this.reportRegionCheckStatus( data, videoFunctions, chatFunctions );
+      await this.reportRegionCheckStatus( data, videoFunctions, chatFunctions );
     },
-    disablecheckVideoRegions: function ( data, videoFunctions, chatFunctions ) {
+    disablecheckVideoRegions: async function ( data, videoFunctions, chatFunctions ) {
       checkVideoRegions = false;
-      this.reportRegionCheckStatus( data, videoFunctions, chatFunctions );
+      await this.reportRegionCheckStatus( data, videoFunctions, chatFunctions );
     },
 
-    reportRegionCheckStatus: function ( data, videoFunctions, chatFunctions ) {
+    reportRegionCheckStatus: async function ( data, videoFunctions, chatFunctions ) {
       if ( this.checkVideoRegions() ) {
         videoFunctions.listAlertRegions( data, chatFunctions );
       } else {
-        chatFunctions.botSpeak( 'Video Region checking is disabled' );
+        await chatFunctions.botSpeak( 'Video Region checking is disabled' );
       }
     },
 
     refreshingEnabled: () => refreshingEnabled,
-    enableRefreshing: function ( data, chatFunctions ) {
+    enableRefreshing: async function ( data, chatFunctions ) {
       refreshingEnabled = true;
-      this.reportRefreshStatus( data, chatFunctions );
+      await this.reportRefreshStatus( data, chatFunctions );
     },
-    disableRefreshing: function ( data, chatFunctions ) {
+    disableRefreshing: async function ( data, chatFunctions ) {
       refreshingEnabled = false;
-      this.reportRefreshStatus( data, chatFunctions );
+      await this.reportRefreshStatus( data, chatFunctions );
     },
 
-    reportRefreshStatus: function ( data, chatFunctions ) {
+    reportRefreshStatus: async function ( data, chatFunctions ) {
       if ( this.refreshingEnabled() ) {
-        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is enabled' );
+        await chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is enabled' );
       } else {
-        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is disabled' );
+        await chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is disabled' );
       }
     },
 
     autoDJEnabled: () => autoDJEnabled,
-    enableAutoDJ: function ( data, chatFunctions ) {
+    enableAutoDJ: async function ( data, chatFunctions ) {
       autoDJEnabled = true;
-      this.reportAutoDJStatus( data, chatFunctions );
+      await this.reportAutoDJStatus( data, chatFunctions );
     },
-    disableAutoDJ: function ( data, chatFunctions ) {
+    disableAutoDJ: async function ( data, chatFunctions ) {
       autoDJEnabled = false;
-      this.reportAutoDJStatus( data, chatFunctions );
+      await this.reportAutoDJStatus( data, chatFunctions );
     },
 
     whenToGetOnStage: () => whenToGetOnStage,
-    setWhenToGetOnStage: function ( data, args, chatFunctions ) {
+    setWhenToGetOnStage: async function ( data, args, chatFunctions ) {
       const numberOfDJs = args[ 0 ];
       if ( isNaN( numberOfDJs ) ) {
-        chatFunctions.botSpeak( 'Don\'t be silly. I can\'t set the auto-DJing start value to ' + numberOfDJs );
+        await chatFunctions.botSpeak( 'Don\'t be silly. I can\'t set the auto-DJing start value to ' + numberOfDJs );
       } else {
         whenToGetOnStage = numberOfDJs;
-        this.reportAutoDJStatus( data, chatFunctions )
+        await this.reportAutoDJStatus( data, chatFunctions )
       }
     },
 
     whenToGetOffStage: () => whenToGetOffStage,
-    setWhenToGetOffStage: function ( data, args, chatFunctions ) {
+    setWhenToGetOffStage: async function ( data, args, chatFunctions ) {
       const numberOfDJs = args[ 0 ];
       if ( isNaN( numberOfDJs ) ) {
-        chatFunctions.botSpeak( 'Don\'t be silly. I can\'t set the auto-DJing stop value to ' + numberOfDJs );
+        await chatFunctions.botSpeak( 'Don\'t be silly. I can\'t set the auto-DJing stop value to ' + numberOfDJs );
       } else {
         whenToGetOffStage = numberOfDJs;
-        this.reportAutoDJStatus( data, chatFunctions )
+        await this.reportAutoDJStatus( data, chatFunctions )
       }
     },
 
-    reportAutoDJStatus: function ( data, chatFunctions ) {
+    reportAutoDJStatus: async function ( data, chatFunctions ) {
       if ( this.autoDJEnabled() ) {
-        chatFunctions.botSpeak( 'Auto-DJing is enabled and will start at ' + this.whenToGetOnStage() + ' and stop at ' + this.whenToGetOffStage() );
+        await chatFunctions.botSpeak( 'Auto-DJing is enabled and will start at ' + this.whenToGetOnStage() + ' and' +
+          ' stop at ' + this.whenToGetOffStage() );
       } else {
-        chatFunctions.botSpeak( 'Auto DJing is disabled' )
+        await chatFunctions.botSpeak( 'Auto DJing is disabled' )
       }
     },
 
@@ -560,7 +561,7 @@ const botFunctions = () => {
     isBotOnStage: function ( userFunctions ) {
       return userFunctions.isUserIDOnStage( authModule.USERID );
     },
-
+    
     shouldTheBotDJ: function ( userFunctions ) {
       return userFunctions.howManyDJs() >= 1 && // is there at least one DJ on stage
         userFunctions.howManyDJs() <= this.whenToGetOnStage() && // are there fewer than the limit of DJs on stage
@@ -569,11 +570,20 @@ const botFunctions = () => {
         userFunctions.refreshDJCount() === 0; // is there someone currently using the refresh command
     },
 
-    shouldStopBotDJing: async function ( userFunctions ) {
-      return userFunctions.howManyDJs() >= this.whenToGetOffStage() && // are there enough DJs onstage
-        await userFunctions.getCurrentDJID() !== authModule.USERID; // check the Bot isn't currently DJing
+    startBotDJing: function () {
+      //console.log( "Start DJing" );
+      bot.addDj(); // start the Bot DJing
     },
 
+    shouldStopBotDJing: async function ( userFunctions ) {
+      return userFunctions.howManyDJs() >= this.whenToGetOffStage() && // are there enough DJs onstage
+        ( await userFunctions.getCurrentDJID() ) !== authModule.USERID; // check the Bot isn't currently DJing
+    },
+
+    removeBotFromStage: function () {
+      bot.remDj( authModule.USERID ); // remove the Bot from stage
+    },
+    
     checkAutoDJing: async function ( userFunctions ) {
       if ( autoDjingTimer != null ) {
         clearTimeout( autoDjingTimer );
@@ -582,27 +592,18 @@ const botFunctions = () => {
 
       if ( this.autoDJEnabled() === true ) {
 
-        autoDjingTimer = setTimeout( async function () {
-          if ( !this.isBotOnStage( userFunctions ) ) { //if the bot is not already on stage
-            if ( this.shouldTheBotDJ( userFunctions ) ) {
+        autoDjingTimer = setTimeout(async () => {
+          if ( !this.isBotOnStage(userFunctions) ) {
+            if ( this.shouldTheBotDJ(userFunctions) ) {
               this.startBotDJing();
             }
-          } else { //else it is on stage
-            if ( await this.shouldStopBotDJing( userFunctions ) ) {
-              this.removeBotFromStage(); // remove the Bot from stage
+          } else {
+            if ( await this.shouldStopBotDJing(userFunctions) ) {
+              this.removeBotFromStage();
             }
           }
-        }.bind( this ), 1000 * 10 ); //delay for 10 seconds
+        }, 1000 * 10);
       }
-    },
-
-    removeBotFromStage: function () {
-      bot.remDj( authModule.USERID ); // remove the Bot from stage
-    },
-
-    startBotDJing: function () {
-      //console.log( "Start DJing" );
-      bot.addDj(); // start the Bot DJing
     },
 
     isSongInBotPlaylist: function ( thisSong ) {

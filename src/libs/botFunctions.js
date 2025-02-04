@@ -579,12 +579,8 @@ const botFunctions = () => {
       return userFunctions.howManyDJs() >= this.whenToGetOffStage() && // are there enough DJs onstage
         ( await userFunctions.getCurrentDJID() ) !== authModule.USERID; // check the Bot isn't currently DJing
     },
-
-    removeBotFromStage: function () {
-      bot.remDj( authModule.USERID ); // remove the Bot from stage
-    },
     
-    checkAutoDJing: async function ( userFunctions ) {
+    checkAutoDJing: async function ( userFunctions, socket ) {
       if ( autoDjingTimer != null ) {
         clearTimeout( autoDjingTimer );
         autoDjingTimer = null;
@@ -595,11 +591,11 @@ const botFunctions = () => {
         autoDjingTimer = setTimeout(async () => {
           if ( !this.isBotOnStage(userFunctions) ) {
             if ( this.shouldTheBotDJ(userFunctions) ) {
-              this.startBotDJing();
+              await this.djUp( socket );
             }
           } else {
             if ( await this.shouldStopBotDJing(userFunctions) ) {
-              this.removeBotFromStage();
+              await this.djDown( socket );
             }
           }
         }, 1000 * 10);

@@ -3,7 +3,7 @@ import { ActionName } from "ttfm-socket";
 import roomDefaults from "../defaults/roomDefaults.js";
 import playlistFunctions from "../libs/playlistFunctions.js";
 
-export default async ( state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, socket, mlFunctions ) => {
+export default async ( state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, socket, mlFunctions, playlistFunctions ) => {
   // logger.debug( `================== playedSong ====================` )
 
   if ( await userFunctions.hasDjsElement( state ) ) {

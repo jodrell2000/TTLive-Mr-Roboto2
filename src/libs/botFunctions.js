@@ -89,7 +89,7 @@ const botFunctions = () => {
 
     djUp: async function( socket ) {
       const firstSong = await this.getFirstSongInQueue()
-      console.log( `firstSong: ${ JSON.stringify(firstSong, null, 2) }` );
+      // console.log( `firstSong: ${ JSON.stringify(firstSong, null, 2) }` );
       await socket.action( ActionName.addDj, {
         roomUuid: botDefaults.roomUuid,
         tokenRole: process.env.TTL_USER_TOKEN,
@@ -616,6 +616,7 @@ const botFunctions = () => {
 
     prepareToSpin: async function ( userFunctions, socket ) {
       const djList = userFunctions.djList()
+      console.log( `djList: ${  JSON.stringify( djList, null, 2 ) }` );
       console.log(`Bot position is: ${ djList.indexOf(authModule.USERID) }`)
     },
     

@@ -624,7 +624,7 @@ const botFunctions = () => {
         const theTrack = songFunctions.song
         console.log( `theArtist: ${theArtist}`);
         console.log( `theTrack: ${theTrack}`);
-        const nextTrack = mlFunctions.suggestFollow( theArtist, theTrack )
+        const nextTrack = await mlFunctions.suggestFollow( theArtist, theTrack )
         console.log( `nextTrack: ${ JSON.stringify( nextTrack, null, 2 ) }` );
       }
       console.groupEnd()

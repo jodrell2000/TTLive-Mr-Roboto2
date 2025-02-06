@@ -627,8 +627,8 @@ const botFunctions = () => {
         const nextTrack = await mlFunctions.suggestFollow( theArtist, theTrack )
         console.log( `nextTrack: ${ JSON.stringify( nextTrack, null, 2 ) }` );
         
-        const nextTrackData = await playlistFunctions.findTracks( theArtist, theTrack )
-        console.log(`nextTrackData: ${ JSON.stringify( nextTrackData, null, 2 ) }`)
+        // const nextTrackData = await playlistFunctions.findTracks( theArtist, theTrack )
+        // console.log(`nextTrackData: ${ JSON.stringify( nextTrackData, null, 2 ) }`)
       }
       console.groupEnd()
     },

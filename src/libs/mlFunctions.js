@@ -29,7 +29,7 @@ const mlFunctions = () => {
 
         // Extract the text from the response
         const theResponse = response.data.candidates[0]?.content?.parts[0]?.text || 'No response text available';
-        if ( theResponse !== 'No response text available' ) {
+        if ( theResponse !== 'No response text available' | 'Error occurred' ) {
           console.log(`theResponse: ${ JSON.stringify(theResponse, null, 2) }`);
           console.groupEnd()
           return theResponse;

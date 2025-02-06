@@ -401,16 +401,16 @@ const commandFunctions = () => {
     botFunctions.informDJCommand( data, reassembleArgs( args ), userFunctions, chatFunctions );
   }
   moderatorCommands.informdj.help = "Have the Bot send the current DJ a message";
-
-  moderatorCommands.awesome = ( { botFunctions } ) => {
-    botFunctions.awesomeCommand();
-  }
-  moderatorCommands.awesome.help = "Have the Bot upvote";
-
-  moderatorCommands.lame = ( { botFunctions } ) => {
-    botFunctions.lameCommand();
-  }
-  moderatorCommands.lame.help = "Have the Bot downvote";
+  //
+  // moderatorCommands.awesome = ( { botFunctions } ) => {
+  //   botFunctions.awesomeCommand();
+  // }
+  // moderatorCommands.awesome.help = "Have the Bot upvote";
+  //
+  // moderatorCommands.lame = ( { botFunctions } ) => {
+  //   botFunctions.lameCommand();
+  // }
+  // moderatorCommands.lame.help = "Have the Bot downvote";
 
   moderatorCommands.alias = ( { data, chatFunctions } ) => {
     addAlias( data, chatFunctions );

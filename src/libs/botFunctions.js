@@ -624,7 +624,7 @@ const botFunctions = () => {
         const theTrack = songFunctions.song
         console.log( `theArtist: ${theArtist}`);
         console.log( `theTrack: ${theTrack}`);
-        const nextTrack = await this.getTrackToAdd( theArtist, theTrack )
+        const nextTrack = await this.getTrackToAdd( theArtist, theTrack, mlFunctions )
         console.log( `nextTrack: ${ JSON.stringify( nextTrack, null, 2 ) }` );
         
         // const nextTrackData = await playlistFunctions.findTracks( theArtist, theTrack )

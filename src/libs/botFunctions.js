@@ -611,7 +611,7 @@ const botFunctions = () => {
         return;
       }
 
-      await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, socket );
+      await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions );
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions ) {

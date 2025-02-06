@@ -622,18 +622,20 @@ const botFunctions = () => {
       // if ( botPosition === 1 ) {
         const theArtist = songFunctions.artist
         const theTrack = songFunctions.song
-        console.log( `theArtist: ${theArtist}`);
-        console.log( `theTrack: ${theTrack}`);
         let nextTrack = await this.getTrackToAdd( theArtist, theTrack, mlFunctions )
         nextTrack = nextTrack.replace(/```json|```/g, "").trim();
         nextTrack = JSON.parse(nextTrack);
-
-      console.log( `nextTrack: ${ JSON.stringify( nextTrack, null, 2 ) }` );
-      console.log( `nextTrack.artist: ${ nextTrack.artist }` );
-      console.log( `nextTrack.song: ${ nextTrack.song }` );
         
         const nextTrackData = await playlistFunctions.findTracks( nextTrack.artist, nextTrack.song )
         console.log(`nextTrackData: ${ JSON.stringify( nextTrackData, null, 2 ) }`)
+
+        const matchingSong = nextTrackData.songs.find(song => song.artistName === theArtist);
+  
+        if (matchingSong) {
+          console.log("First matching song found:", JSON.stringify(matchingSong, null, 2 ) );
+        } else {
+          console.log("No matching song found.");
+        }
       // }
       console.groupEnd()
     },

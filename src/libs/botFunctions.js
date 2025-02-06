@@ -584,7 +584,7 @@ const botFunctions = () => {
         ( await userFunctions.getCurrentDJID() ) !== authModule.USERID; // check the Bot isn't currently DJing
     },
     
-    checkAutoDJing: async function ( userFunctions, songFunctions, mlFunctions, socket ) {
+    checkAutoDJing: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket ) {
       if ( autoDjingTimer != null ) {
         clearTimeout( autoDjingTimer );
         autoDjingTimer = null;
@@ -592,17 +592,17 @@ const botFunctions = () => {
 
       if ( this.autoDJEnabled() === true ) {
         autoDjingTimer = setTimeout(async () => {
-          await this.getOnOrOffStage( userFunctions, songFunctions, mlFunctions, socket );
+          await this.getOnOrOffStage( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket );
         }, 1000 * 10);
       }
     },
 
-    getOnOrOffStage: async function ( userFunctions, songFunctions, mlFunctions, socket ) {
+    getOnOrOffStage: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket ) {
       const botOnStage = await this.isBotOnStage(userFunctions);
 
       if (!botOnStage && this.shouldTheBotDJ(userFunctions)) {
         await this.djUp(socket);
-        await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, socket );
+        await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions );
         return;
       }
 
@@ -614,7 +614,7 @@ const botFunctions = () => {
       await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, socket );
     },
 
-    prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, socket ) {
+    prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions ) {
       console.group(`prepareToSpin`)
       const DJs = await userFunctions.djList()
       const botPosition = DJs.indexOf(authModule.USERID)
@@ -626,6 +626,9 @@ const botFunctions = () => {
         console.log( `theTrack: ${theTrack}`);
         const nextTrack = await mlFunctions.suggestFollow( theArtist, theTrack )
         console.log( `nextTrack: ${ JSON.stringify( nextTrack, null, 2 ) }` );
+        
+        const nextTrackData = await playlistFunctions.findTracks( theArtist, theTrack )
+        console.log(`nextTrackData: ${ JSON.stringify( nextTrackData, null, 2 ) }`)
       }
       console.groupEnd()
     },

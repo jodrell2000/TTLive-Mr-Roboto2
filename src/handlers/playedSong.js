@@ -1,6 +1,7 @@
 import { logger } from "../utils/logging.js";
 import { ActionName } from "ttfm-socket";
 import roomDefaults from "../defaults/roomDefaults.js";
+import playlistFunctions from "../libs/playlistFunctions.js";
 
 export default async ( state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, socket, mlFunctions ) => {
   // logger.debug( `================== playedSong ====================` )
@@ -63,7 +64,7 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
   
   // check if Bot should start to DJ
   // and if it's their turn, pick a track to play
-  await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, socket )
+  await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket )
 
   // bot votes, after 30 seconds in case a skip is needed
   await new Promise( resolve => {

@@ -1,4 +1,4 @@
-export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions ) => {
+export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) => {
   let OKToDJ;
   let theMessage;
 
@@ -37,7 +37,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
       // check if Bot should start to DJ
       // and if it's their turn, pick a track to play
-      await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, socket )
+      await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket )
 
       // }
 

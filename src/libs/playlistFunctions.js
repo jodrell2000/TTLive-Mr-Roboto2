@@ -121,7 +121,7 @@ const playlistFunctions = ( ) => {
     },
 
     // ========================================================
-    // Playlist Queue Functions
+    // Queue Functions
     // ========================================================
 
     clearQueue: async function( playlistName ) {
@@ -135,6 +135,18 @@ const playlistFunctions = ( ) => {
     randomiseQueue: async function(  ) {
       
     },
+    
+    // ========================================================
+    // Search Functions
+    // ========================================================
+
+    findTracks: async function ( artistName, trackName ) {
+      const searchString = `${ artistName } ${ trackName }`
+      const url = `https://playlists.prod.tt.fm/search?q=${ encodeURIComponent(searchString) }`
+      const { data: responseData } = await axios.get( url, { headers })
+      console.log( JSON.stringify(responseData, null, 2 ) )
+      return responseData;
+    }
   }
 }
 

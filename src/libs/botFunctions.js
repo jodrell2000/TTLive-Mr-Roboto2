@@ -621,6 +621,8 @@ const botFunctions = () => {
       if ( botPosition === 1 ) {
         const theArtist = songFunctions.artist
         const theTrack = songFunctions.song
+        console.log( `theArtist: ${theArtist}`);
+        console.log( `theTrack: ${theTrack}`);
         const nextTrack = mlFunctions.suggestFollow( theArtist, theTrack )
         console.log( `nextTrack: ${ JSON.stringify( nextTrack, null, 2 ) }` );
       }

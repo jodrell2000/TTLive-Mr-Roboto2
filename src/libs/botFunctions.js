@@ -189,9 +189,9 @@ const botFunctions = () => {
       }
     },
 
-    autoDJCommand: async function ( data, chatFunctions ) {
+    autoDJCommand: async function ( data, chatFunctions, userFunctions, socket ) {
       if ( this.autoDJEnabled() ) {
-        await this.disableAutoDJ( data, chatFunctions );
+        await this.disableAutoDJ( data, chatFunctions, userFunctions, socket );
       } else {
         await this.enableAutoDJ( data, chatFunctions );
       }
@@ -449,8 +449,11 @@ const botFunctions = () => {
       autoDJEnabled = true;
       await this.reportAutoDJStatus( data, chatFunctions );
     },
-    disableAutoDJ: async function ( data, chatFunctions ) {
+    disableAutoDJ: async function ( data, chatFunctions, userFunctions, socket ) {
       autoDJEnabled = false;
+      if (! await this.isBotOnStage( userFunctions)) {
+        await this.djDown( socket )
+      }
       await this.reportAutoDJStatus( data, chatFunctions );
     },
 

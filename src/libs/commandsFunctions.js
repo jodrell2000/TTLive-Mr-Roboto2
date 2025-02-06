@@ -304,8 +304,8 @@ const commandFunctions = () => {
   }
   moderatorCommands.songstats.help = "Switch the readout of the song stats on or off";
 
-  moderatorCommands.autodj = ( { data, botFunctions, chatFunctions } ) => {
-    botFunctions.autoDJCommand( data, chatFunctions )
+  moderatorCommands.autodj = ( { data, botFunctions, chatFunctions, userFunctions, socket } ) => {
+    botFunctions.autoDJCommand( data, chatFunctions, userFunctions, socket )
   }
   moderatorCommands.autodj.help = "Enables or Disables the auto DJing function";
 

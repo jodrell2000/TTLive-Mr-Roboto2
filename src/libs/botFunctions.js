@@ -451,7 +451,7 @@ const botFunctions = () => {
     },
     disableAutoDJ: async function ( data, chatFunctions, userFunctions, socket ) {
       autoDJEnabled = false;
-      if (! await this.isBotOnStage( userFunctions)) {
+      if ( await this.isBotOnStage( userFunctions)) {
         await this.djDown( socket )
       }
       await this.reportAutoDJStatus( data, chatFunctions );

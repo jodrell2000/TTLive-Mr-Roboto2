@@ -1,4 +1,4 @@
-export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
+export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions ) => {
   
   const beforeDJList = await userFunctions.djList();
   await userFunctions.resetDJs( currentState.djs )
@@ -18,7 +18,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
   // check if Bot should start to DJ
   // and if it's their turn, pick a track to play
-  await botFunctions.checkAutoDJing( userFunctions, socket )
+  await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, socket )
 
 }
 

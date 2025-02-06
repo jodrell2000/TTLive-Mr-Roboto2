@@ -580,11 +580,11 @@ const botFunctions = () => {
     },
 
     shouldStopBotDJing: async function ( userFunctions ) {
-      return userFunctions.howManyDJs() >= this.whenToGetOffStage() && // are there enough DJs onstage
+      return userFunctions.howManyDJs() > this.whenToGetOffStage() && // are there enough DJs onstage
         ( await userFunctions.getCurrentDJID() ) !== authModule.USERID; // check the Bot isn't currently DJing
     },
     
-    checkAutoDJing: async function ( userFunctions, socket ) {
+    checkAutoDJing: async function ( userFunctions, songFunctions, mlFunctions, socket ) {
       if ( autoDjingTimer != null ) {
         clearTimeout( autoDjingTimer );
         autoDjingTimer = null;
@@ -592,17 +592,17 @@ const botFunctions = () => {
 
       if ( this.autoDJEnabled() === true ) {
         autoDjingTimer = setTimeout(async () => {
-          await this.getOnOrOffStage( userFunctions, socket );
+          await this.getOnOrOffStage( userFunctions, songFunctions, mlFunctions, socket );
         }, 1000 * 10);
       }
     },
 
-    getOnOrOffStage: async function ( userFunctions, socket ) {
+    getOnOrOffStage: async function ( userFunctions, songFunctions, mlFunctions, socket ) {
       const botOnStage = await this.isBotOnStage(userFunctions);
 
       if (!botOnStage && this.shouldTheBotDJ(userFunctions)) {
         await this.djUp(socket);
-        await this.prepareToSpin( userFunctions, socket );
+        await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, socket );
         return;
       }
 
@@ -611,13 +611,19 @@ const botFunctions = () => {
         return;
       }
 
-      await this.prepareToSpin( userFunctions, socket );
+      await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, socket );
     },
 
-    prepareToSpin: async function ( userFunctions, socket ) {
+    prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, socket ) {
       const DJs = await userFunctions.djList()
-      console.log( `DJs: ${  JSON.stringify( DJs, null, 2 ) }` );
-      console.log(`Bot position is: ${ DJs.indexOf(authModule.USERID) }`)
+      const botPosition = DJs.indexOf(authModule.USERID)
+      
+      if ( botPosition === 1 ) {
+        const theArtist = songFunctions.artist
+        const theTrack = songFunctions.song
+        const nextTrack = mlFunctions.suggestFollow( theArtist, theTrack )
+        console.log( `nextTrack: ${ JSON.stringify( nextTrack, null, 2 ) }` );
+      }
     },
     
     isSongInBotPlaylist: function ( thisSong ) {

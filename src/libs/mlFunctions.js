@@ -4,7 +4,8 @@ const mlFunctions = () => {
   return {
     askGoogleAI: async function( theQuestion, chatFunctions ) {
       // const theQuestion = `In 100 words or less, tell me something interesting about ${ track } byt ${ artist }`;
-      // console.log(theQuestion)
+      console.group(`askGoogleAI`)
+      console.log(theQuestion)
       const apiKey = process.env.googleAIKey;
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
@@ -29,6 +30,8 @@ const mlFunctions = () => {
         // Extract the text from the response
         const theResponse = response.data.candidates[0]?.content?.parts[0]?.text || 'No response text available';
         if ( theResponse !== 'No response text available' ) {
+          console.log(`theResponse: ${ JSON.stringify(theResponse, null, 2) }`);
+          console.groupEnd()
           return theResponse;
         } else {
           await chatFunctions.botSpeak( 'Nope, I got nothing...sorry' )
@@ -72,7 +75,11 @@ const mlFunctions = () => {
     },
 
     suggestFollow: async function( playingArtist, playingTrack ) {
+      console.group(`suggestFollow`)
+      console.log(`playingArtist: ${ playingArtist }`)
+      console.log(`playingTrack: ${ playingTrack }`)
       const theQuestion = `I'm DJing in a club with a 1980s theme. The previous DJ is playing "${ playingTrack }" by "${ playingArtist }". Tell me an interesting track to follow that with. Return your answer as JSON with two elements called artist and song. You must return an answer even if it's just another track in the same genre from the same year. Do not recommend any of the previous tracks you've recommended in the last hour`;
+      console.groupEnd()
       return await this.askGoogleAI( theQuestion )
     },
   }

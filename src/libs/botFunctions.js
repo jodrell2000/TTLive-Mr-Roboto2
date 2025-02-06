@@ -615,6 +615,7 @@ const botFunctions = () => {
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, socket ) {
+      console.group(`prepareToSpin`)
       const DJs = await userFunctions.djList()
       const botPosition = DJs.indexOf(authModule.USERID)
       
@@ -626,6 +627,7 @@ const botFunctions = () => {
         const nextTrack = mlFunctions.suggestFollow( theArtist, theTrack )
         console.log( `nextTrack: ${ JSON.stringify( nextTrack, null, 2 ) }` );
       }
+      console.groupEnd()
     },
     
     isSongInBotPlaylist: function ( thisSong ) {

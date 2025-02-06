@@ -624,13 +624,35 @@ const botFunctions = () => {
         const theTrack = songFunctions.song
         console.log( `theArtist: ${theArtist}`);
         console.log( `theTrack: ${theTrack}`);
-        const nextTrack = await mlFunctions.suggestFollow( theArtist, theTrack )
+        const nextTrack = await this.getTrackToAdd( theArtist, theTrack )
         console.log( `nextTrack: ${ JSON.stringify( nextTrack, null, 2 ) }` );
         
         // const nextTrackData = await playlistFunctions.findTracks( theArtist, theTrack )
         // console.log(`nextTrackData: ${ JSON.stringify( nextTrackData, null, 2 ) }`)
       // }
       console.groupEnd()
+    },
+    
+    getTrackToAdd: async function ( theArtist, theTrack, mlFunctions ) {
+      let attempts = 0;
+      let nextTrack = "Error occurred";
+
+      while (attempts < 3 && nextTrack === "Error occurred") {
+        if (attempts > 0) {
+          console.log(`Retrying in 5 seconds... (Attempt ${attempts + 1}/3)`);
+          await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+        }
+
+        try {
+          nextTrack = await mlFunctions.suggestFollow(theArtist, theTrack);
+        } catch (error) {
+          console.error("Error in suggestFollow:", error.message);
+          nextTrack = "Error occurred"; // Ensure it stays "Error occurred" if there's a failure
+        }
+        attempts++;
+      }
+      
+      return nextTrack
     },
     
     isSongInBotPlaylist: function ( thisSong ) {

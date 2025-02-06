@@ -78,8 +78,8 @@ const botFunctions = () => {
       try {
         const response = await axios.get( url, { headers } );
         const theQueue = response.data
-        // console.log( `queue: ${ theQueue }` );
-        // console.log( `queue JSON: ${ JSON.stringify( theQueue, null, 2) }` );
+        console.log( `queue: ${ theQueue }` );
+        console.log( `queue JSON: ${ JSON.stringify( theQueue, null, 2) }` );
         return theQueue.songs[0];
       } catch ( error ) {
         console.error( `Error calling get api...error:${error}\nurl:${url}` );
@@ -633,7 +633,7 @@ const botFunctions = () => {
         
       if (matchingSong) {
         await playlistFunctions.addSongToQueue( matchingSong )
-        console.log("First matching song found:", JSON.stringify(matchingSong, null, 2 ) );
+        //console.log("First matching song found:", JSON.stringify(matchingSong, null, 2 ) );
 
         const firstSong = await this.getFirstSongInQueue()
         await socket.action( ActionName.updateNextSong, {

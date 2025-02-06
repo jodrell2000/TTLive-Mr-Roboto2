@@ -619,7 +619,7 @@ const botFunctions = () => {
       const DJs = await userFunctions.djList()
       const botPosition = DJs.indexOf(authModule.USERID)
       
-      // if ( botPosition === 1 ) {
+      if ( botPosition === 1 ) {
         const theArtist = songFunctions.artist
         const theTrack = songFunctions.song
         let nextTrack = await this.getTrackToAdd( theArtist, theTrack, mlFunctions )
@@ -631,21 +631,21 @@ const botFunctions = () => {
         const nextTrackData = await playlistFunctions.findTracks( nextArtist, nextSong )
         const matchingSong = nextTrackData.songs.find(song => song.artistName.toLowerCase() === nextArtist.toLowerCase() );
         
-      if (matchingSong) {
-        await playlistFunctions.addSongToQueue( matchingSong )
-        //console.log("First matching song found:", JSON.stringify(matchingSong, null, 2 ) );
-
-        const firstSong = await this.getFirstSongInQueue()
-        await socket.action( ActionName.updateNextSong, {
-          roomUuid: botDefaults.roomUuid,
-          song: firstSong,
-          userUuid: botDefaults.botUuid
-        } );
-
-      } else {
-          console.log("No matching song found.");
-        }
-      // }
+        if (matchingSong) {
+          await playlistFunctions.addSongToQueue( matchingSong )
+          //console.log("First matching song found:", JSON.stringify(matchingSong, null, 2 ) );
+  
+          const firstSong = await this.getFirstSongInQueue()
+          await socket.action( ActionName.updateNextSong, {
+            roomUuid: botDefaults.roomUuid,
+            song: firstSong,
+            userUuid: botDefaults.botUuid
+          } );
+  
+        } else {
+            console.log("No matching song found.");
+          }
+      }
       console.groupEnd()
     },
     

@@ -161,7 +161,7 @@ const playlistFunctions = ( ) => {
             "explicit": songData.explicit
           }
         ],
-        "append": true
+        "append": false
       }
 
       await axios.post(url, payload, { headers })

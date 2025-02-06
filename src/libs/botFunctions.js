@@ -602,7 +602,7 @@ const botFunctions = () => {
 
       if (!botOnStage && this.shouldTheBotDJ(userFunctions)) {
         await this.djUp(socket);
-        await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions );
+        await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket );
         return;
       }
 
@@ -611,10 +611,10 @@ const botFunctions = () => {
         return;
       }
 
-      await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions );
+      await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket );
     },
 
-    prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions ) {
+    prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket ) {
       console.group(`prepareToSpin`)
       const DJs = await userFunctions.djList()
       const botPosition = DJs.indexOf(authModule.USERID)
@@ -629,14 +629,20 @@ const botFunctions = () => {
         const nextArtist = nextTrack.artist
         const nextSong = nextTrack.song
         const nextTrackData = await playlistFunctions.findTracks( nextArtist, nextSong )
-        console.log(`nextArtist: ${nextArtist}`)
-        console.log(`nextTrackData: ${ JSON.stringify( nextTrackData, null, 2 ) }`)
-
-      const matchingSong = nextTrackData.songs.find(song => song.artistName.toLowerCase() === nextArtist.toLowerCase() );
+        const matchingSong = nextTrackData.songs.find(song => song.artistName.toLowerCase() === nextArtist.toLowerCase() );
         
       if (matchingSong) {
-          console.log("First matching song found:", JSON.stringify(matchingSong, null, 2 ) );
-        } else {
+        await playlistFunctions.addSongToQueue( matchingSong )
+        console.log("First matching song found:", JSON.stringify(matchingSong, null, 2 ) );
+
+        const firstSong = await this.getFirstSongInQueue()
+        await socket.action( ActionName.updateNextSong, {
+          roomUuid: botDefaults.roomUuid,
+          song: firstSong,
+          userUuid: botDefaults.botUuid
+        } );
+
+      } else {
           console.log("No matching song found.");
         }
       // }

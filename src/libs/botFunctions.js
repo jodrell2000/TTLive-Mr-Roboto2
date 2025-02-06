@@ -562,20 +562,11 @@ const botFunctions = () => {
     },
 
     isBotOnStage: async function ( userFunctions ) {
-      console.log(`isBotOnStage check`)
       const status = await userFunctions.isUserIDOnStage( authModule.USERID )
-      console.log(`isBotOnStage status: ${status}`)
       return status;
     },
     
     shouldTheBotDJ: function ( userFunctions ) {
-      console.group(`shouldTheBotDJ`)
-      console.log(`userFunctions.howManyDJs(): ${userFunctions.howManyDJs()}`)
-      console.log(`userFunctions.whenToGetOnStage(): ${this.whenToGetOnStage()}`)
-      console.log(`userFunctions.queueList().length: ${userFunctions.queueList().length}`)
-      console.log(`userFunctions.vipList.length: ${userFunctions.vipList.length}`)
-      console.log(`userFunctions.refreshDJCount(): ${userFunctions.refreshDJCount()}`)
-      console.groupEnd()
       return userFunctions.howManyDJs() >= 1 && // is there at least one DJ on stage
         userFunctions.howManyDJs() >= this.whenToGetOnStage() && // are there fewer than the limit of DJs on stage
         userFunctions.queueList().length === 0 && // is the queue empty
@@ -594,31 +585,39 @@ const botFunctions = () => {
     },
     
     checkAutoDJing: async function ( userFunctions, socket ) {
-      console.group(`checkAutoDJing`)
-      console.log(`Checking...`)
       if ( autoDjingTimer != null ) {
         clearTimeout( autoDjingTimer );
         autoDjingTimer = null;
       }
 
       if ( this.autoDJEnabled() === true ) {
-        console.log(`autoDJEnabled...`)
-
         autoDjingTimer = setTimeout(async () => {
-          if ( ! await this.isBotOnStage(userFunctions) ) {
-            if ( this.shouldTheBotDJ(userFunctions) ) {
-              await this.djUp( socket );
-            }
-          } else {
-            if ( await this.shouldStopBotDJing(userFunctions) ) {
-              await this.djDown( socket );
-            }
-          }
+          await this.getOnOrOffStage( userFunctions, socket );
         }, 1000 * 10);
       }
-      console.groupEnd()
     },
 
+    getOnOrOffStage: async function ( userFunctions, socket ) {
+      const botOnStage = await this.isBotOnStage(userFunctions);
+
+      if (!botOnStage && this.shouldTheBotDJ(userFunctions)) {
+        await this.djUp(socket);
+        await this.prepareToSpin( userFunctions, socket );
+        return;
+      }
+
+      if (botOnStage && await this.shouldStopBotDJing(userFunctions)) {
+        await this.djDown(socket);
+        return;
+      }
+
+      await this.prepareToSpin( userFunctions, socket );
+    },
+
+    prepareToSpin: async function ( userFunctions, socket ) {
+      console.log(`Bot position is: ${userFunctions.djList.indexOf(authModule.USERID)}`)
+    },
+    
     isSongInBotPlaylist: function ( thisSong ) {
       let foundSong = false;
       for ( let listLoop = 0; listLoop < botDefaults.botPlaylist.length; listLoop++ ) {

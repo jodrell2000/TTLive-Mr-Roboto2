@@ -632,7 +632,7 @@ const botFunctions = () => {
         console.log(`nextArtist: ${nextArtist}`)
         console.log(`nextTrackData: ${ JSON.stringify( nextTrackData, null, 2 ) }`)
 
-      const matchingSong = nextTrackData.songs.find(song => song.artistName.toLowerCase() === theArtist.toLowerCase() );
+      const matchingSong = nextTrackData.songs.find(song => song.artistName.toLowerCase() === nextArtist.toLowerCase() );
         
       if (matchingSong) {
           console.log("First matching song found:", JSON.stringify(matchingSong, null, 2 ) );

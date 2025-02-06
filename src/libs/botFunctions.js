@@ -626,7 +626,9 @@ const botFunctions = () => {
         nextTrack = nextTrack.replace(/```json|```/g, "").trim();
         nextTrack = JSON.parse(nextTrack);
         
-        const nextTrackData = await playlistFunctions.findTracks( nextTrack.artist, nextTrack.song )
+        const nextArtist = nextTrack.artist
+        const nextSong = nextTrack.song
+        const nextTrackData = await playlistFunctions.findTracks( nextArtist, nextSong )
         console.log(`nextTrackData: ${ JSON.stringify( nextTrackData, null, 2 ) }`)
 
         const matchingSong = nextTrackData.songs.find(song => song.artistName === theArtist);

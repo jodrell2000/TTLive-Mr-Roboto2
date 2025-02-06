@@ -140,13 +140,31 @@ const playlistFunctions = ( ) => {
     // Search Functions
     // ========================================================
 
-    findTracks: async function ( artistName, trackName ) {
-      const searchString = `${ artistName } ${ trackName }`
-      const url = `https://playlists.prod.tt.fm/search?q=${ encodeURIComponent(searchString) }`
-      console.log( `url: ${ url }` );
-      const { data: responseData } = await axios.get( url, { headers })
-      console.log( JSON.stringify(responseData, null, 2 ) )
-      return responseData;
+    findTracks: async function (artistName, trackName) {
+      try {
+        const searchString = `${artistName} ${trackName}`;
+        const url = `https://playlists.prod.tt.fm/search?q=${encodeURIComponent(searchString)}`;
+
+        console.log(`url: ${url}`);
+
+        const { data: responseData } = await axios.get(url, { headers });
+
+        console.log(JSON.stringify(responseData, null, 2));
+        return responseData;
+
+      } catch (error) {
+        console.error("Error in findTracks:", error.message);
+
+        // Optionally log more details for debugging
+        if (error.response) {
+          console.error("Response data:", error.response.data);
+          console.error("Status code:", error.response.status);
+        } else if (error.request) {
+          console.error("No response received:", error.request);
+        }
+
+        return null; // Return null to indicate failure
+      }
     }
   }
 }

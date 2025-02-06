@@ -626,6 +626,7 @@ const botFunctions = () => {
         console.log( `theTrack: ${theTrack}`);
         let nextTrack = await this.getTrackToAdd( theArtist, theTrack, mlFunctions )
         nextTrack = nextTrack.replace(/```json|```/g, "").trim();
+        nextTrack = JSON.parse(nextTrack);
 
       console.log( `nextTrack: ${ JSON.stringify( nextTrack, null, 2 ) }` );
       console.log( `nextTrack.artist: ${ nextTrack.artist }` );

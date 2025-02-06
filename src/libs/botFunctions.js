@@ -615,9 +615,9 @@ const botFunctions = () => {
     },
 
     prepareToSpin: async function ( userFunctions, socket ) {
-      const djList = userFunctions.djList()
-      console.log( `djList: ${  JSON.stringify( djList, null, 2 ) }` );
-      console.log(`Bot position is: ${ djList.indexOf(authModule.USERID) }`)
+      const DJs = await userFunctions.djList()
+      console.log( `DJs: ${  JSON.stringify( DJs, null, 2 ) }` );
+      console.log(`Bot position is: ${ DJs.indexOf(authModule.USERID) }`)
     },
     
     isSongInBotPlaylist: function ( thisSong ) {

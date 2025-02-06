@@ -1289,10 +1289,8 @@ const userFunctions = () => {
     // ========================================================
 
     djList: async () => {
-      // Simulate fetching or performing an asynchronous operation
       return djList;
     },
-    // djList: () => djList,
 
     clearDJList: function () {
       djList = []

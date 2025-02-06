@@ -24,7 +24,6 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
       if ( await userFunctions.hasDjsElement( currentState ) ) {
         await userFunctions.resetDJs( currentState.djs )
-        // console.log( `djList:${ userFunctions.djList() }` )
       }
 
       if ( userFunctions.isUserIDInQueue( theUserID ) ) {
@@ -38,6 +37,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
       // check if Bot should start to DJ
       // and if it's their turn, pick a track to play
+      console.log( `djList:${ await userFunctions.djList() }` )
       await botFunctions.checkAutoDJing( userFunctions, socket )
 
       // }

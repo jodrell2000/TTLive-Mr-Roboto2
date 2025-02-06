@@ -143,6 +143,7 @@ const playlistFunctions = ( ) => {
     findTracks: async function ( artistName, trackName ) {
       const searchString = `${ artistName } ${ trackName }`
       const url = `https://playlists.prod.tt.fm/search?q=${ encodeURIComponent(searchString) }`
+      console.log( `url: ${ url }` );
       const { data: responseData } = await axios.get( url, { headers })
       console.log( JSON.stringify(responseData, null, 2 ) )
       return responseData;

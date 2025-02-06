@@ -148,8 +148,6 @@ const playlistFunctions = ( ) => {
         console.log(`url: ${url}`);
 
         const { data: responseData } = await axios.get(url, { headers });
-
-        console.log(JSON.stringify(responseData, null, 2));
         return responseData;
 
       } catch (error) {

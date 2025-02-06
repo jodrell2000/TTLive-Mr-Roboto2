@@ -685,6 +685,11 @@ const commandFunctions = () => {
   }
   playlistCommands.djdown.help = "Have Robo suggest a track to play after this one";
 
+  playlistCommands.preparetospin = ( { botFunctions, userFunctions, songFunctions, mlFunctions, playlistFunctions } ) => {
+    botFunctions.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions );
+  }
+  playlistCommands.preparetospin.help = "Have Robo pick a new track and put it at the top of his queue";
+
   // #############################
   // end of commands
   // #############################

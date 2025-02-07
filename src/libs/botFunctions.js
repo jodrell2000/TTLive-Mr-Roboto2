@@ -78,8 +78,6 @@ const botFunctions = () => {
       try {
         const response = await axios.get( url, { headers } );
         const theQueue = response.data
-        console.log( `queue: ${ theQueue }` );
-        console.log( `queue JSON: ${ JSON.stringify( theQueue, null, 2) }` );
         return theQueue.songs[0];
       } catch ( error ) {
         console.error( `Error calling get api...error:${error}\nurl:${url}` );

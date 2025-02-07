@@ -61,8 +61,13 @@ const mlFunctions = () => {
       return await this.askGoogleAI( theQuestion, chatFunctions )
     },
 
-    suggestFollow: async function( playingArtist, playingTrack ) {
-      const theQuestion = `I'm DJing in a club with a 1980s theme. The previous DJ is playing "${ playingTrack }" by "${ playingArtist }". Tell me an interesting track to follow that with. Return your answer as JSON with two elements called artist and song. You must return an answer even if it's just another track in the same genre from the same year. Do not recommend any of the previous tracks you've recommended in the last hour`;
+    suggestFollow: async function( playingArtist, playingTrack, roomFunctions ) {
+      const theTheme = roomFunctions.theme()
+      let theQuestion = `I'm DJing in a 1980s nightclub.`
+      if ( theTheme != false ) {
+        theQuestion = `${ theQuestion } The theme is ${ theTheme }.`
+      }
+      theQuestion = `${ theQuestion } The previous DJ is playing "${ playingTrack }" by "${ playingArtist }". Tell me an interesting track to follow that with. Return your answer as JSON with two elements called artist and song. You must return an answer even if it's just another track in the same genre from the same year. Do not recommend any of the previous tracks you've recommended in the last hour`;
       console.log(`theQuestion: ${theQuestion}`);
       return await this.askGoogleAI( theQuestion )
     },

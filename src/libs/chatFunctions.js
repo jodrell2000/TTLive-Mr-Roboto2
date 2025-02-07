@@ -69,8 +69,8 @@ const chatFunctions = ( ) => {
     // Misc chat functions
     // ========================================================
 
-    suggestFollow: async function( mlFunctions, songFunctions ) {
-      let replyJSON = await mlFunctions.suggestFollow( songFunctions.artist, songFunctions.song );
+    suggestFollow: async function( mlFunctions, songFunctions, roomFunctions ) {
+      let replyJSON = await mlFunctions.suggestFollow( songFunctions.artist, songFunctions.song, roomFunctions );
       
       if (typeof replyJSON === "string") {
         try {

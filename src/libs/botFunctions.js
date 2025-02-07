@@ -582,7 +582,7 @@ const botFunctions = () => {
         ( await userFunctions.getCurrentDJID() ) !== authModule.USERID; // check the Bot isn't currently DJing
     },
     
-    checkAutoDJing: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket ) {
+    checkAutoDJing: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions ) {
       if ( autoDjingTimer != null ) {
         clearTimeout( autoDjingTimer );
         autoDjingTimer = null;
@@ -590,17 +590,17 @@ const botFunctions = () => {
 
       if ( this.autoDJEnabled() === true ) {
         autoDjingTimer = setTimeout(async () => {
-          await this.getOnOrOffStage( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket );
+          await this.getOnOrOffStage( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions );
         }, 1000 * 10);
       }
     },
 
-    getOnOrOffStage: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket ) {
+    getOnOrOffStage: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions ) {
       const botOnStage = await this.isBotOnStage(userFunctions);
 
       if (!botOnStage && this.shouldTheBotDJ(userFunctions)) {
         await this.djUp(socket);
-        await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket );
+        await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions );
         return;
       }
 
@@ -612,7 +612,7 @@ const botFunctions = () => {
       await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket );
     },
 
-    prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket ) {
+    prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions ) {
       console.group(`prepareToSpin`)
       const DJs = await userFunctions.djList()
       const botPosition = DJs.indexOf(authModule.USERID)
@@ -620,7 +620,7 @@ const botFunctions = () => {
       if ( botPosition === 1 ) {
         const theArtist = songFunctions.artist
         const theTrack = songFunctions.song
-        let nextTrack = await this.getTrackToAdd( theArtist, theTrack, mlFunctions )
+        let nextTrack = await this.getTrackToAdd( theArtist, theTrack, mlFunctions, roomFunctions )
         nextTrack = nextTrack.replace(/```json|```/g, "").trim();
         nextTrack = JSON.parse(nextTrack);
         
@@ -647,7 +647,7 @@ const botFunctions = () => {
       console.groupEnd()
     },
     
-    getTrackToAdd: async function ( theArtist, theTrack, mlFunctions ) {
+    getTrackToAdd: async function ( theArtist, theTrack, mlFunctions, roomFunctions ) {
       let attempts = 0;
       let nextTrack = "Error occurred";
 
@@ -658,7 +658,7 @@ const botFunctions = () => {
         }
 
         try {
-          nextTrack = await mlFunctions.suggestFollow(theArtist, theTrack);
+          nextTrack = await mlFunctions.suggestFollow(theArtist, theTrack, roomFunctions);
         } catch (error) {
           console.error("Error in suggestFollow:", error.message);
           nextTrack = "Error occurred"; // Ensure it stays "Error occurred" if there's a failure

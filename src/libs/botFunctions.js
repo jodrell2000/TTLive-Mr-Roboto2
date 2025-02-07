@@ -609,7 +609,7 @@ const botFunctions = () => {
         return;
       }
 
-      await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket );
+      await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions );
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions ) {

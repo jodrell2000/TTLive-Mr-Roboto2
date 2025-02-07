@@ -12,6 +12,11 @@ const room = process.env.ROOM_UUID;
 
 const chatFunctions = ( ) => {
   return {
+
+    data: async function ( data ) {
+      console.log(`data: ${JSON.stringify(data, null, 2)}`);
+    },
+
     botSpeak: async function ( message, publicChat, recipient ) {
       // let pmCommand;
 

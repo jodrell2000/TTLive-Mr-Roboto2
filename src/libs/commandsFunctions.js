@@ -690,6 +690,11 @@ const commandFunctions = () => {
   }
   playlistCommands.preparetospin.help = "Have Robo pick a new track and put it at the top of his queue";
 
+  playlistCommands.data = ( { botFunctions, userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions } ) => {
+    chatFunctions.data( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions );
+  }
+  playlistCommands.data.help = "Log the current room data";
+
   // #############################
   // end of commands
   // #############################

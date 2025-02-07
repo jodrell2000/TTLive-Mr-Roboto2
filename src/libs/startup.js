@@ -2,7 +2,7 @@ import { logger } from "../utils/logging.js";
 
 export default async ( roomUUID, state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions ) => {
   // logger.debug(`+++++++++++++++++++++++++ startup.js +++++++++++++++++++++++++` )
-  // console.log( `startup state: ${ JSON.stringify( state, null, 2) }` )
+  console.log( `startup state: ${ JSON.stringify( state, null, 2) }` )
   botFunctions.setBotStartTime()
   try {
     await roomFunctions.storeRoomData( roomUUID )

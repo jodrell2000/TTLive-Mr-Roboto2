@@ -617,7 +617,7 @@ const botFunctions = () => {
       const DJs = await userFunctions.djList()
       const botPosition = DJs.indexOf(authModule.USERID)
       
-      if ( botPosition <= 1 ) {
+      if ( botPosition <= 10 ) {
         const theArtist = songFunctions.artist
         const theTrack = songFunctions.song
         let nextTrack = await this.getTrackToAdd( theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions )

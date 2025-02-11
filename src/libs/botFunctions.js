@@ -659,7 +659,7 @@ const botFunctions = () => {
         }
 
         try {
-          nextTrack = await mlFunctions.suggestFollow(theArtist, theTrack, roomFunctions);
+          nextTrack = await mlFunctions.suggestFollow(theArtist, theTrack, roomFunctions, previousPlays);
         } catch (error) {
           console.error("Error in suggestFollow:", error.message);
           nextTrack = "Error occurred"; // Ensure it stays "Error occurred" if there's a failure

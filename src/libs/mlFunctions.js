@@ -63,11 +63,18 @@ const mlFunctions = () => {
 
     suggestFollow: async function( playingArtist, playingTrack, roomFunctions, previousPlays = null ) {
       const theTheme = roomFunctions.theme()
-      let theQuestion = `I'm DJing in a 1980s nightclub.`
+      let theQuestion = `I'm DJing as part of a group.`
+      
       if ( theTheme != false ) {
-        theQuestion = `${ theQuestion } The theme is ${ theTheme }.`
+        theQuestion += ` The theme is ${ theTheme }.`
       }
-      theQuestion = `${ theQuestion } The previous DJ is playing "${ playingTrack }" by "${ playingArtist }". Tell me an interesting track to follow that with. Return your answer as JSON with two elements called artist and song. You must return an answer even if it's just another track in the same genre from the same year. Do not recommend any of the previous tracks you've recommended in the last hour`;
+
+      if (previousPlays.length > 0) {
+        const previousTracks = previousPlays.map(play => `"${play.track}" by "${play.artist}"`).join(", ");
+        theQuestion += ` The previous ${previousPlays.length} plays were ${previousTracks}.`;
+      }
+
+      theQuestion += ` Tell me an interesting track to play next. Return your answer as JSON with two elements called artist and song. You must return an answer even if it's just another track in the same genre from the same year. Do not recommend any of the previous tracks you've recommended in the last hour`;
       console.log(`theQuestion: ${theQuestion}`);
       return await this.askGoogleAI( theQuestion )
     },

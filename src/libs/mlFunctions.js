@@ -61,7 +61,7 @@ const mlFunctions = () => {
       return await this.askGoogleAI( theQuestion, chatFunctions )
     },
 
-    suggestFollow: async function( playingArtist, playingTrack, roomFunctions ) {
+    suggestFollow: async function( playingArtist, playingTrack, roomFunctions, previousPlays = null ) {
       const theTheme = roomFunctions.theme()
       let theQuestion = `I'm DJing in a 1980s nightclub.`
       if ( theTheme != false ) {

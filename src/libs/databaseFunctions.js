@@ -566,7 +566,7 @@ const databaseFunctions = () => {
                           "COALESCE(v.trackDisplayName, v.trackName)   AS track " + 
                           "FROM videoData v " +
                           "JOIN tracksPlayed tp ON tp.videoData_id=v.id " +
-                          "ORDER BY tp.whenPlayed DESC LIMIT 5;";
+                          "ORDER BY tp.whenPlayed DESC LIMIT 10;";
       const values = [  ];
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {

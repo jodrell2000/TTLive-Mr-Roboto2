@@ -570,7 +570,6 @@ const databaseFunctions = () => {
       const values = [  ];
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {
-          console.log(`getPreviousPlays result: ${JSON.stringify(result, null, 2)}`);
           if ( result.length !== 0 ) {
             return result;
           }

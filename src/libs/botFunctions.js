@@ -647,13 +647,12 @@ const botFunctions = () => {
     },
     
     getTrackToAdd: async function ( theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions ) {
-      console.log(`prepareToSpin`)
+      console.log(`getTrackToAdd`)
 
       let attempts = 0;
       let nextTrack = "Error occurred";
 
       const previousPlays = await databaseFunctions.getPreviousPlays()
-      console.log(`previousPlays: ${ JSON.stringify(previousPlays, null, 2) }`);
 
       while (attempts < 3 && nextTrack === "Error occurred") {
         if (attempts > 0) {

@@ -64,7 +64,7 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
   
   // check if Bot should start to DJ
   // and if it's their turn, pick a track to play
-  await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions )
+  await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions )
 
   // bot votes, after 30 seconds in case a skip is needed
   await new Promise( resolve => {

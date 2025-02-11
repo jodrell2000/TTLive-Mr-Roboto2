@@ -649,6 +649,9 @@ const botFunctions = () => {
       let attempts = 0;
       let nextTrack = "Error occurred";
 
+      const previousPlays = await databaseFunctions.getPreviousPlays()
+      console.log(`previousPlays: ${ JSON.stringify(previousPlays, null, 2) }`);
+
       while (attempts < 3 && nextTrack === "Error occurred") {
         if (attempts > 0) {
           console.log(`Retrying in 5 seconds... (Attempt ${attempts + 1}/3)`);
@@ -656,8 +659,6 @@ const botFunctions = () => {
         }
 
         try {
-          const previousPlays = await databaseFunctions.getPreviousPlays()
-          console.log(`previousPlays: ${ JSON.stringify(previousPlays, null, 2) }`);
           nextTrack = await mlFunctions.suggestFollow(theArtist, theTrack, roomFunctions);
         } catch (error) {
           console.error("Error in suggestFollow:", error.message);

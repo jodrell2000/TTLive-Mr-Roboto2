@@ -647,6 +647,8 @@ const botFunctions = () => {
     },
     
     getTrackToAdd: async function ( theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions ) {
+      console.log(`prepareToSpin`)
+
       let attempts = 0;
       let nextTrack = "Error occurred";
 

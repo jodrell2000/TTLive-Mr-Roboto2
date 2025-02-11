@@ -656,7 +656,7 @@ const botFunctions = () => {
         }
 
         try {
-          const previousPlays = databaseFunctions.getPreviousPlays()
+          const previousPlays = await databaseFunctions.getPreviousPlays()
           console.log(`previousPlays: ${ JSON.stringify(previousPlays, null, 2) }`);
           nextTrack = await mlFunctions.suggestFollow(theArtist, theTrack, roomFunctions);
         } catch (error) {

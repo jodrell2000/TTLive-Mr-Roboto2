@@ -647,7 +647,7 @@ const botFunctions = () => {
     },
 
     getTrackToAdd: async function (theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions) {
-      console.log(`getTrackToAdd`);
+      console.group(`getTrackToAdd`);
 
       let attempts = 0;
       let nextTrack = "Error occurred";
@@ -663,7 +663,7 @@ const botFunctions = () => {
 
         try {
           nextTrack = await mlFunctions.suggestFollow(theArtist, theTrack, roomFunctions, previousPlays);
-
+          console.log(`nextTrack: ${ JSON.stringify(nextTrack, null, 2) }`);
           if (!nextTrack || !nextTrack.artist || !nextTrack.song) {
             console.error("Invalid track received, retrying...");
             nextTrack = "Error occurred";
@@ -674,6 +674,7 @@ const botFunctions = () => {
           const isDuplicate = playHistory.some(
             (track) => track.artist === nextTrack.artist && track.song === nextTrack.song
           );
+          console.log(`isDuplicate: ${ JSON.stringify(isDuplicate, null, 2) }`);
 
           if (isDuplicate) {
             console.log(`Track "${nextTrack.song}" by "${nextTrack.artist}" was recently played. Picking another...`);

@@ -706,7 +706,10 @@ const botFunctions = () => {
 
     isDuplicateTrack: async function (track, databaseFunctions) {
       console.group(`isDuplicateTrack`);
-      if (!track || !track.artist || !track.song) return false;
+      if (!track || !track.artist || !track.song) {
+        console.groupEnd();
+        return false;
+      }
 
       const playHistory = await databaseFunctions.getPlayHistory(6); // Get last 6 hours of play history
       const isDuplicate = playHistory.some(

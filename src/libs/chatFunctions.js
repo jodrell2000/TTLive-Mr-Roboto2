@@ -70,8 +70,9 @@ const chatFunctions = ( ) => {
     // Misc chat functions
     // ========================================================
 
-    suggestFollow: async function( mlFunctions, songFunctions, roomFunctions ) {
-      let replyJSON = await mlFunctions.suggestFollow( songFunctions.artist, songFunctions.song, roomFunctions );
+    suggestFollow: async function( mlFunctions, songFunctions, roomFunctions, databaseFunctions ) {
+      const previousPlays = await databaseFunctions.getPreviousPlays()
+      let replyJSON = await mlFunctions.suggestFollow( songFunctions.artist, songFunctions.song, roomFunctions, previousPlays );
       
       if (typeof replyJSON === "string") {
         try {

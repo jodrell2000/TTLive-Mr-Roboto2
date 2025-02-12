@@ -69,7 +69,7 @@ const mlFunctions = () => {
         theQuestion += ` The theme is ${ theTheme }.`
       }
 
-      if (previousPlays.length > 0) {
+      if ( Array.isArray(previousPlays) && previousPlays.length > 0 ) {
         const previousTracks = previousPlays.map(play => `"${play.track}" by "${play.artist}"`).join(", ");
         theQuestion += ` The previous ${previousPlays.length} plays were ${previousTracks}.`;
       }

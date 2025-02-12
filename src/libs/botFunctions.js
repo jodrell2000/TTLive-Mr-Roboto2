@@ -661,6 +661,7 @@ const botFunctions = () => {
         }
 
         try {
+          console.log(`previousPlays: ${JSON.stringify(previousPlays, null, 2)}`);
           nextTrack = await this.getNextTrack(mlFunctions, theArtist, theTrack, roomFunctions, previousPlays);
 
           if (await this.isDuplicateTrack(nextTrack, databaseFunctions)) {

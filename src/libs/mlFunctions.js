@@ -74,7 +74,7 @@ const mlFunctions = () => {
         theQuestion += ` The previous ${previousPlays.length} plays were ${previousTracks}.`;
       }
 
-      theQuestion += ` Tell me an interesting track to play next. Return your answer as JSON with two elements called artist and song. You must return an answer even if it's just another track in the same genre from the same year. Do not return any tracks you already recommended today`;
+      theQuestion += ` Tell me an interesting track to play next. Return your answer as JSON with two elements called artist and song. You must return an answer`;
       console.log(`theQuestion: ${theQuestion}`);
       return await this.askGoogleAI( theQuestion )
     },

@@ -559,16 +559,34 @@ const databaseFunctions = () => {
           throw error;
         });
     },
-    
+
     getPreviousPlays: async function () {
       const selectQuery = "SELECT " +
-                          "COALESCE(v.artistDisplayName, v.artistName) AS artist, " +
-                          "COALESCE(v.trackDisplayName, v.trackName)   AS track " + 
-                          "FROM videoData v " +
-                          "JOIN tracksPlayed tp ON tp.videoData_id=v.id " +
-                          "WHERE tp.playedLength > 30 " +
-                          "ORDER BY tp.whenPlayed DESC LIMIT 10;";
+        "COALESCE(v.artistDisplayName, v.artistName) AS artist, " +
+        "COALESCE(v.trackDisplayName, v.trackName)   AS track " +
+        "FROM videoData v " +
+        "JOIN tracksPlayed tp ON tp.videoData_id=v.id " +
+        "WHERE tp.playedLength > 30 " +
+        "ORDER BY tp.whenPlayed DESC LIMIT 10;";
       const values = [  ];
+      return this.runQuery( selectQuery, values )
+        .then( ( result ) => {
+          if ( result.length !== 0 ) {
+            return result;
+          }
+        } )
+        .catch( ( ex ) => { console.error( "Something went wrong the previous plays: " + ex ); } );
+    },
+
+    getPlayHistory: async function ( hours ) {
+      const selectQuery = "SELECT " +
+        "COALESCE(v.artistDisplayName, v.artistName) AS artist, " +
+        "COALESCE(v.trackDisplayName, v.trackName)   AS track " +
+        "FROM videoData v " +
+        "JOIN tracksPlayed tp ON tp.videoData_id=v.id " +
+        "WHERE tp.whenPlayed > DATE_SUB(NOW(), INTERVAL ? HOURS)" +
+        "ORDER BY tp.whenPlayed DESC LIMIT 10;";
+      const values = [ hours ];
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {
           if ( result.length !== 0 ) {

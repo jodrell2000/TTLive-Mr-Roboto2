@@ -645,14 +645,15 @@ const botFunctions = () => {
           }
       }
     },
-    
-    getTrackToAdd: async function ( theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions ) {
-      console.log(`getTrackToAdd`)
+
+    getTrackToAdd: async function (theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions) {
+      console.log(`getTrackToAdd`);
 
       let attempts = 0;
       let nextTrack = "Error occurred";
 
-      const previousPlays = await databaseFunctions.getPreviousPlays()
+      const previousPlays = await databaseFunctions.getPreviousPlays();
+      const playHistory = await databaseFunctions.getPlayHistory(6); // Get last 6 hours of play history
 
       while (attempts < 3 && nextTrack === "Error occurred") {
         if (attempts > 0) {
@@ -662,14 +663,32 @@ const botFunctions = () => {
 
         try {
           nextTrack = await mlFunctions.suggestFollow(theArtist, theTrack, roomFunctions, previousPlays);
+
+          if (!nextTrack || !nextTrack.artist || !nextTrack.song) {
+            console.error("Invalid track received, retrying...");
+            nextTrack = "Error occurred";
+            continue;
+          }
+
+          // Check if nextTrack exists in playHistory
+          const isDuplicate = playHistory.some(
+            (track) => track.artist === nextTrack.artist && track.song === nextTrack.song
+          );
+
+          if (isDuplicate) {
+            console.log(`Track "${nextTrack.song}" by "${nextTrack.artist}" was recently played. Picking another...`);
+            previousPlays.push(nextTrack); // Add to previousPlays to avoid re-picking it
+            nextTrack = "Error occurred"; // Reset nextTrack to trigger another attempt
+          }
         } catch (error) {
           console.error("Error in suggestFollow:", error.message);
-          nextTrack = "Error occurred"; // Ensure it stays "Error occurred" if there's a failure
+          nextTrack = "Error occurred"; // Ensure retry logic triggers
         }
+
         attempts++;
       }
-      
-      return nextTrack
+
+      return nextTrack; // Returns a valid track or "Error occurred" after 3 attempts
     },
     
     isSongInBotPlaylist: function ( thisSong ) {

@@ -621,8 +621,6 @@ const botFunctions = () => {
         const theArtist = songFunctions.artist
         const theTrack = songFunctions.song
         let nextTrack = await this.getTrackToAdd( theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions )
-        nextTrack = nextTrack.replace(/```json|```/g, "").trim();
-        nextTrack = JSON.parse(nextTrack);
         
         const nextArtist = nextTrack.artist
         const nextSong = nextTrack.song

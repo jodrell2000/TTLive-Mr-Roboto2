@@ -662,9 +662,16 @@ const botFunctions = () => {
         }
 
         try {
-          nextTrack = await mlFunctions.suggestFollow(theArtist, theTrack, roomFunctions, previousPlays);
-          // nextTrack = nextTrack.replace(/```json|```/g, "").trim();
-          nextTrack = JSON.parse(nextTrack);
+          nextTrack = await mlFunctions.suggestFollow( theArtist, theTrack, roomFunctions, previousPlays );
+          if ( typeof nextTrack === "string" ) {
+            try {
+              nextTrack = nextTrack.replace( /```json|```/g, "" ).trim();
+              nextTrack = JSON.parse( nextTrack );
+            } catch ( error ) {
+              console.error( "Failed to parse replyJSON:", error );
+              return;
+            }
+          }
 
           console.log(`nextTrack: ${ JSON.stringify(nextTrack, null, 2) }`);
           if (!nextTrack || !nextTrack.artist || !nextTrack.song) {

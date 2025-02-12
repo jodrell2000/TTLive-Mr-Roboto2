@@ -584,7 +584,7 @@ const databaseFunctions = () => {
         "COALESCE(v.trackDisplayName, v.trackName)   AS track " +
         "FROM videoData v " +
         "JOIN tracksPlayed tp ON tp.videoData_id=v.id " +
-        "WHERE tp.whenPlayed > DATE_SUB(NOW(), INTERVAL ? HOURS)" +
+        "WHERE tp.whenPlayed > DATE_SUB(NOW(), INTERVAL ? HOUR)" +
         "ORDER BY tp.whenPlayed DESC LIMIT 10;";
       const values = [ hours ];
       return this.runQuery( selectQuery, values )

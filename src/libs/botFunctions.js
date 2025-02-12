@@ -663,7 +663,7 @@ const botFunctions = () => {
 
         try {
           nextTrack = await mlFunctions.suggestFollow(theArtist, theTrack, roomFunctions, previousPlays);
-          nextTrack = nextTrack.replace(/```json|```/g, "").trim();
+          // nextTrack = nextTrack.replace(/```json|```/g, "").trim();
           nextTrack = JSON.parse(nextTrack);
 
           console.log(`nextTrack: ${ JSON.stringify(nextTrack, null, 2) }`);

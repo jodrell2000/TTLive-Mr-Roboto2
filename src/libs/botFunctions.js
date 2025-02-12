@@ -566,7 +566,7 @@ const botFunctions = () => {
     
     shouldTheBotDJ: function ( userFunctions ) {
       return userFunctions.howManyDJs() >= 1 && // is there at least one DJ on stage
-        userFunctions.howManyDJs() >= this.whenToGetOnStage() && // are there fewer than the limit of DJs on stage
+        userFunctions.howManyDJs() >= this.whenToGetOffStage() && // are there fewer than the limit of DJs on stage
         userFunctions.queueList().length === 0 && // is the queue empty
         userFunctions.vipList.length === 0 && // there no VIPs
         userFunctions.refreshDJCount() === 0; // is there someone currently using the refresh command

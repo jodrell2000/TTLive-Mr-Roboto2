@@ -67,10 +67,13 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
   await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions )
 
   // bot votes, after 30 seconds in case a skip is needed
-  await new Promise( resolve => {
-    setTimeout( async () => {
-      await botFunctions.upVote( socket )
-      resolve();
-    }, 30 * 1000 );
-  } );
+  const botOnStage = await botFunctions.isBotOnStage(userFunctions);
+  if ( !botOnStage ) {
+    await new Promise( resolve => {
+      setTimeout( async () => {
+        await botFunctions.upVote( socket )
+        resolve();
+      }, 30 * 1000 );
+    } );
+  }
 }

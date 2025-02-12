@@ -682,25 +682,34 @@ const botFunctions = () => {
     },
 
     getNextTrack: async function (mlFunctions, artist, track, roomFunctions, previousPlays) {
-      console.group(`getNextTrack`);
       let nextTrack = await mlFunctions.suggestFollow(artist, track, roomFunctions, previousPlays);
 
       if (typeof nextTrack === "string") {
         try {
-          nextTrack = nextTrack.replace(/```json|```/g, "").trim();
+          nextTrack = nextTrack.trim(); // Trim any leading/trailing spaces
+
+          // Ensure it only replaces JSON markers if they exist
+          if (nextTrack.startsWith("```json") || nextTrack.startsWith("```")) {
+            nextTrack = nextTrack.replace(/```json|```/g, "").trim();
+          }
+
           nextTrack = JSON.parse(nextTrack);
         } catch (error) {
-          console.error("Failed to parse replyJSON:", error);
-          throw new Error("Invalid track data");
+          console.error("Failed to parse replyJSON:", error, "Raw response:", nextTrack);
+          throw new Error("Invalid track data received");
         }
+      } else if (typeof nextTrack === "object" && nextTrack !== null) {
+        console.log("nextTrack is already an object, skipping parsing.");
+      } else {
+        console.error("Unexpected nextTrack type:", typeof nextTrack, nextTrack);
+        throw new Error("Unexpected track data type");
       }
 
-      if (!nextTrack || !nextTrack.artist || !nextTrack.song) {
+      if (!nextTrack || typeof nextTrack !== "object" || !nextTrack.artist || !nextTrack.song) {
         throw new Error("Invalid track received");
       }
 
       console.log(`nextTrack: ${JSON.stringify(nextTrack, null, 2)}`);
-      console.groupEnd();
       return nextTrack;
     },
 

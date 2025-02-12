@@ -664,7 +664,10 @@ const botFunctions = () => {
 
           if (await this.isDuplicateTrack(nextTrack, databaseFunctions)) {
             console.log(`Track "${nextTrack.song}" by "${nextTrack.artist}" was recently played. Picking another...`);
+            console.log(`nextTrack is a Duplicate: ${JSON.stringify(nextTrack, null, 2)}`);
             previousPlays.push(nextTrack);
+            console.log(`previousPlays track added: ${JSON.stringify(previousPlays, null, 2)}`);
+
             nextTrack = "Error occurred"; // Reset to force retry
           }
         } catch (error) {

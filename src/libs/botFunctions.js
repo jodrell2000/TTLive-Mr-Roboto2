@@ -653,7 +653,6 @@ const botFunctions = () => {
       let nextTrack = "Error occurred";
 
       const previousPlays = await databaseFunctions.getPreviousPlays();
-      const playHistory = await databaseFunctions.getPlayHistory(6); // Get last 6 hours of play history
 
       while (attempts < 3 && nextTrack === "Error occurred") {
         if (attempts > 0) {
@@ -662,34 +661,12 @@ const botFunctions = () => {
         }
 
         try {
-          nextTrack = await mlFunctions.suggestFollow( theArtist, theTrack, roomFunctions, previousPlays );
-          if ( typeof nextTrack === "string" ) {
-            try {
-              nextTrack = nextTrack.replace( /```json|```/g, "" ).trim();
-              nextTrack = JSON.parse( nextTrack );
-            } catch ( error ) {
-              console.error( "Failed to parse replyJSON:", error );
-              return;
-            }
-          }
+          nextTrack = await this.getNextTrack(mlFunctions, theArtist, theTrack, roomFunctions, previousPlays);
 
-          console.log(`nextTrack: ${ JSON.stringify(nextTrack, null, 2) }`);
-          if (!nextTrack || !nextTrack.artist || !nextTrack.song) {
-            console.error("Invalid track received, retrying...");
-            nextTrack = "Error occurred";
-            continue;
-          }
-
-          // Check if nextTrack exists in playHistory
-          const isDuplicate = playHistory.some(
-            (track) => track.artist === nextTrack.artist && track.song === nextTrack.song
-          );
-          console.log(`isDuplicate: ${ JSON.stringify(isDuplicate, null, 2) }`);
-
-          if (isDuplicate) {
+          if (await this.isDuplicateTrack(nextTrack, databaseFunctions)) {
             console.log(`Track "${nextTrack.song}" by "${nextTrack.artist}" was recently played. Picking another...`);
-            previousPlays.push(nextTrack); // Add to previousPlays to avoid re-picking it
-            nextTrack = "Error occurred"; // Reset nextTrack to trigger another attempt
+            previousPlays.push(nextTrack);
+            nextTrack = "Error occurred"; // Reset to force retry
           }
         } catch (error) {
           console.error("Error in suggestFollow:", error.message);
@@ -699,8 +676,45 @@ const botFunctions = () => {
         attempts++;
       }
 
-      console.groupEnd()
+      console.groupEnd();
       return nextTrack; // Returns a valid track or "Error occurred" after 3 attempts
+    },
+
+    getNextTrack: async function (mlFunctions, artist, track, roomFunctions, previousPlays) {
+      console.group(`getNextTrack`);
+      let nextTrack = await mlFunctions.suggestFollow(artist, track, roomFunctions, previousPlays);
+
+      if (typeof nextTrack === "string") {
+        try {
+          nextTrack = nextTrack.replace(/```json|```/g, "").trim();
+          nextTrack = JSON.parse(nextTrack);
+        } catch (error) {
+          console.error("Failed to parse replyJSON:", error);
+          throw new Error("Invalid track data");
+        }
+      }
+
+      if (!nextTrack || !nextTrack.artist || !nextTrack.song) {
+        throw new Error("Invalid track received");
+      }
+
+      console.log(`nextTrack: ${JSON.stringify(nextTrack, null, 2)}`);
+      console.groupEnd();
+      return nextTrack;
+    },
+
+    isDuplicateTrack: async function (track, databaseFunctions) {
+      console.group(`isDuplicateTrack`);
+      if (!track || !track.artist || !track.song) return false;
+
+      const playHistory = await databaseFunctions.getPlayHistory(6); // Get last 6 hours of play history
+      const isDuplicate = playHistory.some(
+        (historyTrack) => historyTrack.artist === track.artist && historyTrack.song === track.song
+      );
+
+      console.log(`isDuplicate: ${JSON.stringify(isDuplicate, null, 2)}`);
+      console.groupEnd();
+      return isDuplicate;
     },
     
     isSongInBotPlaylist: function ( thisSong ) {

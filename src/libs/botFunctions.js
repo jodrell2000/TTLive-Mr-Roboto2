@@ -613,7 +613,6 @@ const botFunctions = () => {
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
-      console.log(`prepareToSpin`)
       const DJs = await userFunctions.djList()
       const botPosition = DJs.indexOf(authModule.USERID)
       

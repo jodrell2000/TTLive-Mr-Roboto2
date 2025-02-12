@@ -663,6 +663,9 @@ const botFunctions = () => {
 
         try {
           nextTrack = await mlFunctions.suggestFollow(theArtist, theTrack, roomFunctions, previousPlays);
+          nextTrack = nextTrack.replace(/```json|```/g, "").trim();
+          nextTrack = JSON.parse(nextTrack);
+
           console.log(`nextTrack: ${ JSON.stringify(nextTrack, null, 2) }`);
           if (!nextTrack || !nextTrack.artist || !nextTrack.song) {
             console.error("Invalid track received, retrying...");
@@ -689,6 +692,7 @@ const botFunctions = () => {
         attempts++;
       }
 
+      console.groupEnd()
       return nextTrack; // Returns a valid track or "Error occurred" after 3 attempts
     },
     

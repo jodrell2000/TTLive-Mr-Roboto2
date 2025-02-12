@@ -62,6 +62,8 @@ const mlFunctions = () => {
     },
 
     suggestFollow: async function( playingArtist, playingTrack, roomFunctions, previousPlays = null ) {
+      console.group(`suggestFollow`);
+
       const theTheme = roomFunctions.theme()
       let theQuestion = `I'm DJing as part of a group.`
       
@@ -76,6 +78,7 @@ const mlFunctions = () => {
 
       theQuestion += ` Tell me an interesting track to play next. Return your answer as JSON with two elements called artist and song. You must return an answer`;
       console.log(`theQuestion: ${theQuestion}`);
+      console.groupEnd()
       return await this.askGoogleAI( theQuestion )
     },
   }

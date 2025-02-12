@@ -659,12 +659,13 @@ const botFunctions = () => {
         }
 
         try {
-          console.log(`previousPlays: ${JSON.stringify(previousPlays, null, 2)}`);
           nextTrack = await this.getNextTrack(mlFunctions, theArtist, theTrack, roomFunctions, previousPlays);
-
+          console.log(`nextTrack returned is: ${JSON.stringify(nextTrack, null, 2)}`);
+          
           if (await this.isDuplicateTrack(nextTrack, databaseFunctions)) {
             console.log(`Track "${nextTrack.song}" by "${nextTrack.artist}" was recently played. Picking another...`);
-            console.log(`nextTrack is a Duplicate: ${JSON.stringify(nextTrack, null, 2)}`);
+            console.log(`nextTrack is a Duplicate`);
+
             previousPlays.push(nextTrack);
             console.log(`previousPlays track added: ${JSON.stringify(previousPlays, null, 2)}`);
 

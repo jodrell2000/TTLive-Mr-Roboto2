@@ -103,7 +103,6 @@ const userFunctions = () => {
   }
 
   function formatRelativeTime( seconds ) {
-    console.log(`formatRelativeTime seconds: ${seconds}`)
     if ( isNaN( seconds ) ) {
       return false
     } else if ( seconds < 60 * 60 ) {

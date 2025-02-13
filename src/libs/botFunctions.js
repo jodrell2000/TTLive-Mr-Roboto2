@@ -560,8 +560,7 @@ const botFunctions = () => {
     },
 
     isBotOnStage: async function ( userFunctions ) {
-      const status = await userFunctions.isUserIDOnStage( authModule.USERID )
-      return status;
+      return await userFunctions.isUserIDOnStage( authModule.USERID )
     },
     
     shouldTheBotDJ: function ( userFunctions ) {
@@ -639,7 +638,7 @@ const botFunctions = () => {
   
         } else {
             console.log("No matching song found.");
-          }
+        }
       }
     },
 
@@ -721,7 +720,7 @@ const botFunctions = () => {
         return false;
       }
 
-      const playHistory = await databaseFunctions.getPlayHistory(6); // Get last 6 hours of play history
+      const playHistory = await databaseFunctions.getPlayHistory(8); // Get last 6 hours of play history
       const isDuplicate = playHistory.some(
         (historyTrack) => historyTrack.artist === track.artist && historyTrack.track === track.song
       );

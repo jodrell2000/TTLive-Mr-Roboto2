@@ -1,5 +1,6 @@
 import pool from '../libs/dbConnectionPool.js'
 import { logger } from "../utils/logging.js";
+import authModule from "./auth.js";
 
 const databaseFunctions = () => {
 
@@ -566,9 +567,10 @@ const databaseFunctions = () => {
         "COALESCE(v.trackDisplayName, v.trackName)   AS track " +
         "FROM videoData v " +
         "JOIN tracksPlayed tp ON tp.videoData_id=v.id " +
-        "WHERE tp.playedLength > 30 " +
+        "WHERE tp.playedLength > 30 AND " +
+        "tp.djID != ? " +
         "ORDER BY tp.whenPlayed DESC LIMIT 10;";
-      const values = [  ];
+      const values = [ authModule.USERID ];
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {
           if ( result.length !== 0 ) {

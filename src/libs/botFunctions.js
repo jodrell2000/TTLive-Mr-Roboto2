@@ -613,13 +613,12 @@ const botFunctions = () => {
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
       console.group("prepareToSpin");
-
-      await this.previousPlaysManager.initialize(databaseFunctions);
-
       const DJs = await userFunctions.djList();
       const botPosition = DJs.indexOf(authModule.USERID);
 
       if (botPosition === 1 || DJs.length === 1) {
+        await this.previousPlaysManager.initialize(databaseFunctions);
+
         const theArtist = songFunctions.artist;
         const theTrack = songFunctions.song;
         let nextTrack;

@@ -686,7 +686,9 @@ const botFunctions = () => {
             console.log(`Track "${nextTrack.song}" by "${nextTrack.artist}" was recently played. Picking another...`);
             await this.previousPlaysManager.addTrack(nextTrack);
             nextTrack = null; // Trigger another retry
+            continue;
           }
+          return nextTrack;
         } catch (error) {
           console.error("Error in suggestFollow:", error.message);
           nextTrack = null;
@@ -727,8 +729,7 @@ const botFunctions = () => {
       if (!nextTrack || typeof nextTrack !== "object" || !nextTrack.artist || !nextTrack.song) {
         throw new Error("Invalid track received");
       }
-
-      console.log(`nextTrack: ${JSON.stringify(nextTrack, null, 2)}`);
+      
       return nextTrack;
     },
 
@@ -754,7 +755,7 @@ const botFunctions = () => {
 
       async initialize(databaseFunctions) {
         this.previousPlays = await databaseFunctions.getPreviousPlays();
-        console.log(`Loaded previousPlays: ${JSON.stringify(this.previousPlays, null, 2)}`);
+        console.log(`Loaded previousPlays: ${JSON.stringify(this.previousPlays)}`);
       },
 
       async addTrack(track) {

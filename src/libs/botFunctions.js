@@ -741,7 +741,7 @@ const botFunctions = () => {
       }
 
       const isDuplicate = await databaseFunctions.findInPlayHistory(track.artist, track.song, 8); // Get last 8
-      console.log(`isDuplicate: ${JSON.stringify(isDuplicate, null, 2)}`);
+      console.log(`isDuplicate: ${ Boolean(isDuplicate) }`);
       console.groupEnd();
 
       return Boolean(isDuplicate);

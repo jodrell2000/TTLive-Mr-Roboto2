@@ -756,12 +756,14 @@ const botFunctions = () => {
       async initialize(databaseFunctions) {
         this.previousPlays = await databaseFunctions.getPreviousPlays();
         console.log(`Loaded previousPlays: ${JSON.stringify(this.previousPlays)}`);
+        console.log(`previousPlays count now: ${this.previousPlays.length}`)
       },
 
       async addTrack(track) {
         if (track && track.artist && track.song) {
           this.previousPlays.push(track);
           console.log(`Added to previousPlays: ${JSON.stringify(track, null, 2)}`);
+          console.log(`previousPlays count now: ${this.previousPlays.length}`)
         }
       },
 

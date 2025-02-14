@@ -612,76 +612,95 @@ const botFunctions = () => {
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
-      const DJs = await userFunctions.djList()
-      const botPosition = DJs.indexOf(authModule.USERID)
-      
-      if ( botPosition === 1 || userFunctions.djList().length === 1 ) {
-        const theArtist = songFunctions.artist
-        const theTrack = songFunctions.song
-        let nextTrack = await this.getTrackToAdd( theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions )
-        
-        const nextArtist = nextTrack.artist
-        const nextSong = nextTrack.song
-        const nextTrackData = await playlistFunctions.findTracks( nextArtist, nextSong )
-        const matchingSong = nextTrackData.songs.find(song => song.artistName.toLowerCase() === nextArtist.toLowerCase() );
-        
+      console.group("prepareToSpin");
+
+      await this.previousPlaysManager.initialize(databaseFunctions);
+
+      const DJs = await userFunctions.djList();
+      const botPosition = DJs.indexOf(authModule.USERID);
+
+      if (botPosition === 1 || DJs.length === 1) {
+        const theArtist = songFunctions.artist;
+        const theTrack = songFunctions.song;
+        let nextTrack;
+        let matchingSong = null;
+
+        while (!matchingSong) {
+          nextTrack = await this.getTrackToAdd(theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions);
+          if (!nextTrack) {
+            console.error("getTrackToAdd returned no track.");
+            break;
+          }
+
+          const nextArtist = nextTrack.artist;
+          const nextSong = nextTrack.song;
+          const nextTrackData = await playlistFunctions.findTracks(nextArtist, nextSong);
+
+          matchingSong = nextTrackData.songs.find(song => song.artistName.toLowerCase() === nextArtist.toLowerCase());
+
+          if (!matchingSong) {
+            console.log(`No matching song found for "${nextSong}" by "${nextArtist}". Retrying...`);
+            await this.previousPlaysManager.addTrack(nextTrack);  // Prevent re-picking this track
+          }
+        }
+
         if (matchingSong) {
-          await playlistFunctions.addSongToQueue( matchingSong )
-          //console.log("First matching song found:", JSON.stringify(matchingSong, null, 2 ) );
-  
-          const firstSong = await this.getFirstSongInQueue()
-          await socket.action( ActionName.updateNextSong, {
+          await playlistFunctions.addSongToQueue(matchingSong);
+          console.log("Song added to queue:", JSON.stringify(matchingSong, null, 2));
+
+          const firstSong = await this.getFirstSongInQueue();
+          await socket.action(ActionName.updateNextSong, {
             roomUuid: botDefaults.roomUuid,
             song: firstSong,
             userUuid: botDefaults.botUuid
-          } );
-  
-        } else {
-            console.log("No matching song found.");
+          });
         }
       }
+
+      console.groupEnd();
     },
 
     getTrackToAdd: async function (theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions) {
-      console.group(`getTrackToAdd`);
+      console.group("getTrackToAdd");
 
       let attempts = 0;
-      let nextTrack = "Error occurred";
+      let nextTrack = null;
 
-      const previousPlays = await databaseFunctions.getPreviousPlays();
-
-      while (attempts < 3 && nextTrack === "Error occurred") {
+      while (attempts < 3) {
         if (attempts > 0) {
           console.log(`Retrying in 5 seconds... (Attempt ${attempts + 1}/3)`);
-          await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+          await new Promise(resolve => setTimeout(resolve, 5000));
         }
 
         try {
-          nextTrack = await this.getNextTrack(mlFunctions, theArtist, theTrack, roomFunctions, previousPlays);
+          nextTrack = await this.getNextTrack( mlFunctions, theArtist, theTrack, roomFunctions );
           console.log(`nextTrack returned is: ${JSON.stringify(nextTrack, null, 2)}`);
-          
+
+          if (!nextTrack || !nextTrack.artist || !nextTrack.song) {
+            console.error("Invalid track received, retrying...");
+            nextTrack = null;
+            continue;
+          }
+
           if (await this.isDuplicateTrack(nextTrack, databaseFunctions)) {
             console.log(`Track "${nextTrack.song}" by "${nextTrack.artist}" was recently played. Picking another...`);
-            console.log(`nextTrack is a Duplicate`);
-
-            previousPlays.push(nextTrack);
-            console.log(`previousPlays track added: ${JSON.stringify(previousPlays, null, 2)}`);
-
-            nextTrack = "Error occurred"; // Reset to force retry
+            await this.previousPlaysManager.addTrack(nextTrack);
+            nextTrack = null; // Trigger another retry
           }
         } catch (error) {
           console.error("Error in suggestFollow:", error.message);
-          nextTrack = "Error occurred"; // Ensure retry logic triggers
+          nextTrack = null;
         }
 
         attempts++;
       }
 
       console.groupEnd();
-      return nextTrack; // Returns a valid track or "Error occurred" after 3 attempts
+      return nextTrack;
     },
-
-    getNextTrack: async function (mlFunctions, artist, track, roomFunctions, previousPlays) {
+    
+    getNextTrack: async function (mlFunctions, artist, track, roomFunctions) {
+      const previousPlays = await this.previousPlaysManager.getPreviousPlays()
       let nextTrack = await mlFunctions.suggestFollow(artist, track, roomFunctions, previousPlays);
 
       if (typeof nextTrack === "string") {
@@ -720,7 +739,7 @@ const botFunctions = () => {
         return false;
       }
 
-      const playHistory = await databaseFunctions.getPlayHistory(8); // Get last 6 hours of play history
+      const playHistory = await databaseFunctions.getPlayHistory(8); // Get last 8 hours of play history
       const isDuplicate = playHistory.some(
         (historyTrack) => historyTrack.artist === track.artist && historyTrack.track === track.song
       );
@@ -728,6 +747,26 @@ const botFunctions = () => {
       console.log(`isDuplicate: ${JSON.stringify(isDuplicate, null, 2)}`);
       console.groupEnd();
       return isDuplicate;
+    },
+
+    previousPlaysManager: {
+      previousPlays: [],
+
+      async initialize(databaseFunctions) {
+        this.previousPlays = await databaseFunctions.getPreviousPlays();
+        console.log(`Loaded previousPlays: ${JSON.stringify(this.previousPlays, null, 2)}`);
+      },
+
+      async addTrack(track) {
+        if (track && track.artist && track.song) {
+          this.previousPlays.push(track);
+          console.log(`Added to previousPlays: ${JSON.stringify(track, null, 2)}`);
+        }
+      },
+
+      async getPreviousPlays() {
+        return this.previousPlays;
+      }
     },
     
     isSongInBotPlaylist: function ( thisSong ) {

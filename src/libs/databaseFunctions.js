@@ -564,7 +564,7 @@ const databaseFunctions = () => {
     getPreviousPlays: async function () {
       const selectQuery = "SELECT " +
         "COALESCE(v.artistDisplayName, v.artistName) AS artist, " +
-        "COALESCE(v.trackDisplayName, v.trackName)   AS track " +
+        "COALESCE(v.trackDisplayName, v.trackName)   AS song " +
         "FROM videoData v " +
         "JOIN tracksPlayed tp ON tp.videoData_id=v.id " +
         "WHERE tp.playedLength > 30 AND " +
@@ -583,7 +583,7 @@ const databaseFunctions = () => {
     getPlayHistory: async function ( hours ) {
       const selectQuery = "SELECT " +
         "COALESCE(v.artistDisplayName, v.artistName) AS artist, " +
-        "COALESCE(v.trackDisplayName, v.trackName)   AS track " +
+        "COALESCE(v.trackDisplayName, v.trackName)   AS song " +
         "FROM videoData v " +
         "JOIN tracksPlayed tp ON tp.videoData_id=v.id " +
         "WHERE tp.whenPlayed > DATE_SUB(NOW(), INTERVAL ? HOUR)" +

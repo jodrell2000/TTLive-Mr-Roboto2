@@ -742,7 +742,7 @@ const botFunctions = () => {
 
       const playHistory = await databaseFunctions.getPlayHistory(8); // Get last 8 hours of play history
       const isDuplicate = playHistory.some(
-        (historyTrack) => historyTrack.artist === track.artist && historyTrack.track === track.song
+        (historyTrack) => historyTrack.artist.toLowerCase() === track.artist.toLowerCase() && historyTrack.song.toLowerCase() === track.song.toLowerCase()
       );
 
       console.log(`isDuplicate: ${JSON.stringify(isDuplicate, null, 2)}`);

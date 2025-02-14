@@ -587,8 +587,8 @@ const databaseFunctions = () => {
         "FROM videoData v " +
         "JOIN tracksPlayed tp ON tp.videoData_id=v.id " +
         "WHERE tp.whenPlayed > DATE_SUB(NOW(), INTERVAL ? HOUR) AND " +
-        "( v.artistDisplayName = ? OR v.artistName = ? )AND " +
-        "( v.trackDisplayName = ? OR v.trackName = ? ) = ?;";
+        "( v.artistDisplayName = ? OR v.artistName = ? ) AND " +
+        "( v.trackDisplayName = ? OR v.trackName = ? );";
       const values = [ hours, artist, artist, song, song ];
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {

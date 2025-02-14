@@ -580,15 +580,17 @@ const databaseFunctions = () => {
         .catch( ( ex ) => { console.error( "Something went wrong the previous plays: " + ex ); } );
     },
 
-    getPlayHistory: async function ( hours ) {
+    findInPlayHistory: async function ( artist, song, hours ) {
       const selectQuery = "SELECT " +
         "COALESCE(v.artistDisplayName, v.artistName) AS artist, " +
         "COALESCE(v.trackDisplayName, v.trackName)   AS song " +
         "FROM videoData v " +
         "JOIN tracksPlayed tp ON tp.videoData_id=v.id " +
-        "WHERE tp.whenPlayed > DATE_SUB(NOW(), INTERVAL ? HOUR)" +
+        "WHERE tp.whenPlayed > DATE_SUB(NOW(), INTERVAL ? HOUR) AND " +
+        "(v.artistDisplayName = ? OR v.artistName = ?)AND " +
+        "(v.trackDisplayName, v.trackName) = ? AND " +
         "ORDER BY tp.whenPlayed DESC LIMIT 10;";
-      const values = [ hours ];
+      const values = [ artist, song, hours ];
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {
           if ( result.length !== 0 ) {

@@ -740,14 +740,11 @@ const botFunctions = () => {
         return false;
       }
 
-      const playHistory = await databaseFunctions.getPlayHistory(8); // Get last 8 hours of play history
-      const isDuplicate = playHistory.some(
-        (historyTrack) => historyTrack.artist.toLowerCase() === track.artist.toLowerCase() && historyTrack.song.toLowerCase() === track.song.toLowerCase()
-      );
-
+      const isDuplicate = await databaseFunctions.findInPlayHistory(track.artist, track.song, 8); // Get last 8
       console.log(`isDuplicate: ${JSON.stringify(isDuplicate, null, 2)}`);
       console.groupEnd();
-      return isDuplicate;
+
+      return Boolean(isDuplicate);
     },
 
     previousPlaysManager: {

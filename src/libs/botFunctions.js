@@ -640,6 +640,20 @@ const botFunctions = () => {
           if (!matchingSong) {
             console.log(`No matching song found for "${nextSong}" by "${nextArtist}". Retrying...`);
             await this.previousPlaysManager.addTrack(nextTrack);  // Prevent re-picking this track
+            continue; // Retry the loop
+          }
+
+          // Check if track is a duplicate
+          const trackToCheck = {
+            artist: matchingSong.artistName,
+            song: matchingSong.trackName
+          };
+          const isDuplicate = await this.isDuplicateTrack(trackToCheck, databaseFunctions);
+
+          if (isDuplicate) {
+            console.log(`Skipping "${trackToCheck.song}" by "${trackToCheck.artist}" as it was recently played.`);
+            await this.previousPlaysManager.addTrack(trackToCheck); // Prevent choosing again
+            matchingSong = null; // Reset to trigger another loop iteration
           }
         }
 
@@ -658,6 +672,7 @@ const botFunctions = () => {
 
       console.groupEnd();
     },
+
 
     getTrackToAdd: async function (theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions) {
       console.group("getTrackToAdd");

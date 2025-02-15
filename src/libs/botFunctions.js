@@ -687,6 +687,7 @@ const botFunctions = () => {
             nextTrack = null; // Trigger another retry
             continue;
           }
+          console.groupEnd();
           return nextTrack;
         } catch (error) {
           console.error("Error in suggestFollow:", error.message);

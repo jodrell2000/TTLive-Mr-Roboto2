@@ -1,6 +1,6 @@
 import { logger } from "../utils/logging.js";
   
-export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
+export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions ) => {
   // logger.debug( `=========================== userJoined.js ===========================` )
   const newUsers = await userFunctions.findNewUserUUID( currentState )
 

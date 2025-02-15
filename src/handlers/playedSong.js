@@ -1,8 +1,10 @@
 import { logger } from "../utils/logging.js";
 import { ActionName } from "ttfm-socket";
 import roomDefaults from "../defaults/roomDefaults.js";
+import playlistFunctions from "../libs/playlistFunctions.js";
+import authModule from "../libs/auth.js";
 
-export default async ( state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, socket ) => {
+export default async ( state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, socket, mlFunctions, playlistFunctions ) => {
   // logger.debug( `================== playedSong ====================` )
 
   if ( await userFunctions.hasDjsElement( state ) ) {
@@ -60,12 +62,20 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
       }, 10 * 1000 );
     } );
   }
+  
+  // check if Bot should start to DJ
+  // and if it's their turn, pick a track to play
+  await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions )
 
   // bot votes, after 30 seconds in case a skip is needed
-  await new Promise( resolve => {
-    setTimeout( async () => {
-      await botFunctions.upVote( socket )
-      resolve();
-    }, 30 * 1000 );
-  } );
+  const DJs = await userFunctions.djList()
+  const botPosition = DJs.indexOf(authModule.USERID)
+  if ( botPosition !== 0 ) {
+    await new Promise( resolve => {
+      setTimeout( async () => {
+        await botFunctions.upVote( socket )
+        resolve();
+      }, 30 * 1000 );
+    } );
+  }
 }

@@ -121,8 +121,51 @@ const playlistFunctions = ( ) => {
     },
 
     // ========================================================
-    // Playlist Queue Functions
+    // Queue Functions
     // ========================================================
+
+  //   First matching song found: {
+  //   "artistName": "Bon Jovi",
+  //     "trackName": "You Give Love A Bad Name",
+  //     "genre": null,
+  //     "duration": 223,
+  //     "thumbnails": {
+  //     "sevenDigital": "http://artwork-cdn.7static.com/static/img/sleeveart/00/083/669/0008366908_800.jpg"
+  //   },
+  //   "musicProviders": {
+  //     "sevenDigital": "76753480"
+  //   },
+  //   "isrc": "USPR39402224",
+  //     "playbackToken": null,
+  //     "explicit": false
+  // }
+
+  
+    addSongToQueue: async function( songData ) {
+      const providerKey = Object.keys(songData.musicProviders)[0]; // "sevenDigital"
+      const providerID = songData.musicProviders[providerKey]; // "76753480"
+
+      const url = `https://playlists.prod.tt.fm/crate/special/queue/songs`
+
+      const payload = {
+        songs: [
+          {
+            "musicProvider": providerKey,
+            "songId": providerID,
+            "artistName": songData.artistName,
+            "trackName": songData.trackName,
+            "duration": songData.duration,
+            "isrc": songData.isrc,
+            "genre": songData.genre,
+            "playbackToken": songData.playbackToken,
+            "explicit": songData.explicit
+          }
+        ],
+        "append": false
+      }
+
+      await axios.post(url, payload, { headers })
+    },
 
     clearQueue: async function( playlistName ) {
       
@@ -135,6 +178,35 @@ const playlistFunctions = ( ) => {
     randomiseQueue: async function(  ) {
       
     },
+    
+    // ========================================================
+    // Search Functions
+    // ========================================================
+
+    findTracks: async function (artistName, trackName) {
+      try {
+        const searchString = `${artistName} ${trackName}`;
+        const url = `https://playlists.prod.tt.fm/search?q=${encodeURIComponent(searchString)}`;
+
+        console.log(`url: ${url}`);
+
+        const { data: responseData } = await axios.get(url, { headers });
+        return responseData;
+
+      } catch (error) {
+        console.error("Error in findTracks:", error.message);
+
+        // Optionally log more details for debugging
+        if (error.response) {
+          console.error("Response data:", error.response.data);
+          console.error("Status code:", error.response.status);
+        } else if (error.request) {
+          console.error("No response received:", error.request);
+        }
+
+        return null; // Return null to indicate failure
+      }
+    }
   }
 }
 

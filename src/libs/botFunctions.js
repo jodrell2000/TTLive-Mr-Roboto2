@@ -19,7 +19,7 @@ let returnToRoom = true; //used to toggle on and off the bot reconnecting to its
 let wserrorTimeout = null; //this is for the setTimeout in ws error
 let autoDjingTimer = null; //governs the timer for the bot's auto djing
 let readSongStats = roomDefaults.SONGSTATS;
-let autoDJEnabled = botDefaults.autoDJEnabled; //autodjing(on by default)
+let autoDJEnabled = botDefaults.autoDJEnabled; //autodjing(off by default)
 let whenToGetOnStage = botDefaults.whenToGetOnStage; //when this many or less people djing the bot will get on stage(only if autodjing is enabled)
 let whenToGetOffStage = botDefaults.whenToGetOffStage;
 let checkVideoRegions = musicDefaults.alertIfRegionBlocked;
@@ -61,7 +61,54 @@ const botFunctions = () => {
         await roomFunctions.setTheme( theTheme )
       }
     },
+
+    // ========================================================
+
+    // ========================================================
+    // DJing Functions
+    // ========================================================
     
+    getFirstSongInQueue: async function () {
+      const url = "https://playlists.prod.tt.fm/crate/special/queue/songs"
+      const headers = {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${ process.env.TTL_USER_TOKEN }`
+      };
+
+      try {
+        const response = await axios.get( url, { headers } );
+        const theQueue = response.data
+        return theQueue.songs[0];
+      } catch ( error ) {
+        console.error( `Error calling get api...error:${error}\nurl:${url}` );
+        throw error;
+      }
+    },
+
+    djUp: async function( socket ) {
+      const firstSong = await this.getFirstSongInQueue()
+      // console.log( `firstSong: ${ JSON.stringify(firstSong, null, 2) }` );
+      await socket.action( ActionName.addDj, {
+        roomUuid: botDefaults.roomUuid,
+        tokenRole: process.env.TTL_USER_TOKEN,
+        userUuid: botDefaults.botUuid
+      } );
+
+      await socket.action( ActionName.updateNextSong, {
+        roomUuid: botDefaults.roomUuid,
+        song: firstSong,
+        userUuid: botDefaults.botUuid
+      } );
+    },
+
+    djDown: async function( socket ) {
+      await socket.action( ActionName.removeDj, {
+        roomUuid: botDefaults.roomUuid,
+        userUuid: botDefaults.botUuid,
+        djUuid: botDefaults.botUuid
+      } );
+    },
+
     // ========================================================
 
     // ========================================================
@@ -83,8 +130,6 @@ const botFunctions = () => {
     },
 
     tonystark: async function ( data, theMessage, userFunctions, chatFunctions ) {
-      const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve( "done" ), delay ) )
-
       const restartMe = async () => {
         await chatFunctions.botSpeak( "I'll just try switching it off and on again...", true );
         await this.logCommandUsage( userFunctions, 'tonystark', data, theMessage )
@@ -142,11 +187,11 @@ const botFunctions = () => {
       }
     },
 
-    autoDJCommand: function ( data, chatFunctions ) {
+    autoDJCommand: async function ( data, chatFunctions, userFunctions, socket ) {
       if ( this.autoDJEnabled() ) {
-        this.disableAutoDJ( data, chatFunctions );
+        await this.disableAutoDJ( data, chatFunctions, userFunctions, socket );
       } else {
-        this.enableAutoDJ( data, chatFunctions );
+        await this.enableAutoDJ( data, chatFunctions );
       }
     },
 
@@ -163,7 +208,7 @@ const botFunctions = () => {
       const doInOrder = async () => {
         await this.reportUptime( data, userFunctions, chatFunctions );
         await sleep( 100 );
-        this.reportAutoDJStatus( data, chatFunctions );
+        await this.reportAutoDJStatus( data, chatFunctions );
         await sleep( 100 );
         this.reportSongStats( data, chatFunctions );
         await sleep( 100 );
@@ -362,78 +407,82 @@ const botFunctions = () => {
     },
 
     checkVideoRegions: () => checkVideoRegions,
-    enablecheckVideoRegions: function ( data, videoFunctions, chatFunctions ) {
+    enablecheckVideoRegions: async function ( data, videoFunctions, chatFunctions ) {
       checkVideoRegions = true;
-      this.reportRegionCheckStatus( data, videoFunctions, chatFunctions );
+      await this.reportRegionCheckStatus( data, videoFunctions, chatFunctions );
     },
-    disablecheckVideoRegions: function ( data, videoFunctions, chatFunctions ) {
+    disablecheckVideoRegions: async function ( data, videoFunctions, chatFunctions ) {
       checkVideoRegions = false;
-      this.reportRegionCheckStatus( data, videoFunctions, chatFunctions );
+      await this.reportRegionCheckStatus( data, videoFunctions, chatFunctions );
     },
 
-    reportRegionCheckStatus: function ( data, videoFunctions, chatFunctions ) {
+    reportRegionCheckStatus: async function ( data, videoFunctions, chatFunctions ) {
       if ( this.checkVideoRegions() ) {
         videoFunctions.listAlertRegions( data, chatFunctions );
       } else {
-        chatFunctions.botSpeak( 'Video Region checking is disabled' );
+        await chatFunctions.botSpeak( 'Video Region checking is disabled' );
       }
     },
 
     refreshingEnabled: () => refreshingEnabled,
-    enableRefreshing: function ( data, chatFunctions ) {
+    enableRefreshing: async function ( data, chatFunctions ) {
       refreshingEnabled = true;
-      this.reportRefreshStatus( data, chatFunctions );
+      await this.reportRefreshStatus( data, chatFunctions );
     },
-    disableRefreshing: function ( data, chatFunctions ) {
+    disableRefreshing: async function ( data, chatFunctions ) {
       refreshingEnabled = false;
-      this.reportRefreshStatus( data, chatFunctions );
+      await this.reportRefreshStatus( data, chatFunctions );
     },
 
-    reportRefreshStatus: function ( data, chatFunctions ) {
+    reportRefreshStatus: async function ( data, chatFunctions ) {
       if ( this.refreshingEnabled() ) {
-        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is enabled' );
+        await chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is enabled' );
       } else {
-        chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is disabled' );
+        await chatFunctions.botSpeak( 'The ' + commandIdentifier + 'refresh command is disabled' );
       }
     },
 
     autoDJEnabled: () => autoDJEnabled,
-    enableAutoDJ: function ( data, chatFunctions ) {
+    enableAutoDJ: async function ( data, chatFunctions ) {
       autoDJEnabled = true;
-      this.reportAutoDJStatus( data, chatFunctions );
+      await this.reportAutoDJStatus( data, chatFunctions );
     },
-    disableAutoDJ: function ( data, chatFunctions ) {
+    disableAutoDJ: async function ( data, chatFunctions, userFunctions, socket ) {
       autoDJEnabled = false;
-      this.reportAutoDJStatus( data, chatFunctions );
+      if ( await this.isBotOnStage( userFunctions)) {
+        await this.djDown( socket )
+      }
+      await this.reportAutoDJStatus( data, chatFunctions );
     },
 
     whenToGetOnStage: () => whenToGetOnStage,
-    setWhenToGetOnStage: function ( data, args, chatFunctions ) {
+    setWhenToGetOnStage: async function ( data, args, chatFunctions ) {
       const numberOfDJs = args[ 0 ];
       if ( isNaN( numberOfDJs ) ) {
-        chatFunctions.botSpeak( 'Don\'t be silly. I can\'t set the auto-DJing start value to ' + numberOfDJs );
+        await chatFunctions.botSpeak( 'Don\'t be silly. I can\'t set the auto-DJing start value to ' + numberOfDJs );
       } else {
         whenToGetOnStage = numberOfDJs;
-        this.reportAutoDJStatus( data, chatFunctions )
+        await this.reportAutoDJStatus( data, chatFunctions )
       }
     },
 
     whenToGetOffStage: () => whenToGetOffStage,
-    setWhenToGetOffStage: function ( data, args, chatFunctions ) {
+    setWhenToGetOffStage: async function ( data, args, chatFunctions ) {
       const numberOfDJs = args[ 0 ];
       if ( isNaN( numberOfDJs ) ) {
-        chatFunctions.botSpeak( 'Don\'t be silly. I can\'t set the auto-DJing stop value to ' + numberOfDJs );
+        await chatFunctions.botSpeak( 'Don\'t be silly. I can\'t set the auto-DJing stop value to ' + numberOfDJs );
       } else {
         whenToGetOffStage = numberOfDJs;
-        this.reportAutoDJStatus( data, chatFunctions )
+        await this.reportAutoDJStatus( data, chatFunctions )
       }
     },
 
-    reportAutoDJStatus: function ( data, chatFunctions ) {
+    reportAutoDJStatus: async function ( data, chatFunctions ) {
       if ( this.autoDJEnabled() ) {
-        chatFunctions.botSpeak( 'Auto-DJing is enabled and will start at ' + this.whenToGetOnStage() + ' and stop at ' + this.whenToGetOffStage() );
+        await chatFunctions.botSpeak( 'Auto-DJing is enabled and will start at ' + this.whenToGetOnStage() + ' and' +
+          ' stop at ' + this.whenToGetOffStage() );
       } else {
-        chatFunctions.botSpeak( 'Auto DJing is disabled' )
+        await chatFunctions.botSpeak( 'Auto DJing is disabled' )
       }
     },
 
@@ -510,47 +559,16 @@ const botFunctions = () => {
       checkActivity = Date.now(); //update when someone says something
     },
 
-    isBotOnStage: function ( userFunctions ) {
-      return userFunctions.isUserIDOnStage( authModule.USERID );
+    isBotOnStage: async function ( userFunctions ) {
+      return await userFunctions.isUserIDOnStage( authModule.USERID )
     },
-
+    
     shouldTheBotDJ: function ( userFunctions ) {
-      return userFunctions.howManyDJs() >= 1 && // is there at least one DJ on stage
-        userFunctions.howManyDJs() <= this.whenToGetOnStage() && // are there fewer than the limit of DJs on stage
+      return userFunctions.howManyDJs() >= this.whenToGetOnStage() && // is there at least one DJ on stage
+        userFunctions.howManyDJs() < this.whenToGetOffStage() && // are there fewer than the limit of DJs on stage
         userFunctions.queueList().length === 0 && // is the queue empty
         userFunctions.vipList.length === 0 && // there no VIPs
         userFunctions.refreshDJCount() === 0; // is there someone currently using the refresh command
-    },
-
-    shouldStopBotDJing: async function ( userFunctions ) {
-      return userFunctions.howManyDJs() >= this.whenToGetOffStage() && // are there enough DJs onstage
-        await userFunctions.getCurrentDJID() !== authModule.USERID; // check the Bot isn't currently DJing
-    },
-
-    checkAutoDJing: async function ( userFunctions ) {
-      if ( autoDjingTimer != null ) {
-        clearTimeout( autoDjingTimer );
-        autoDjingTimer = null;
-      }
-
-      if ( this.autoDJEnabled() === true ) {
-
-        autoDjingTimer = setTimeout( async function () {
-          if ( !this.isBotOnStage( userFunctions ) ) { //if the bot is not already on stage
-            if ( this.shouldTheBotDJ( userFunctions ) ) {
-              this.startBotDJing();
-            }
-          } else { //else it is on stage
-            if ( await this.shouldStopBotDJing( userFunctions ) ) {
-              this.removeBotFromStage(); // remove the Bot from stage
-            }
-          }
-        }.bind( this ), 1000 * 10 ); //delay for 10 seconds
-      }
-    },
-
-    removeBotFromStage: function () {
-      bot.remDj( authModule.USERID ); // remove the Bot from stage
     },
 
     startBotDJing: function () {
@@ -558,6 +576,199 @@ const botFunctions = () => {
       bot.addDj(); // start the Bot DJing
     },
 
+    shouldStopBotDJing: async function ( userFunctions ) {
+      return userFunctions.howManyDJs() > this.whenToGetOffStage() && // are there enough DJs onstage
+        ( await userFunctions.getCurrentDJID() ) !== authModule.USERID; // check the Bot isn't currently DJing
+    },
+    
+    checkAutoDJing: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
+      if ( autoDjingTimer != null ) {
+        clearTimeout( autoDjingTimer );
+        autoDjingTimer = null;
+      }
+
+      if ( this.autoDJEnabled() === true ) {
+        autoDjingTimer = setTimeout(async () => {
+          await this.getOnOrOffStage( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions );
+        }, 1000 * 10);
+      }
+    },
+
+    getOnOrOffStage: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
+      const botOnStage = await this.isBotOnStage(userFunctions);
+
+      if (!botOnStage && this.shouldTheBotDJ(userFunctions)) {
+        await this.djUp(socket);
+        await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions );
+        return;
+      }
+
+      if (botOnStage && await this.shouldStopBotDJing(userFunctions)) {
+        await this.djDown(socket);
+        return;
+      }
+
+      await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions );
+    },
+
+    prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
+      console.group("prepareToSpin");
+      const DJs = await userFunctions.djList();
+      const botPosition = DJs.indexOf(authModule.USERID);
+
+      if (botPosition === 1 || DJs.length === 1) {
+        await this.previousPlaysManager.initialize(databaseFunctions);
+
+        const theArtist = songFunctions.artist;
+        const theTrack = songFunctions.song;
+        let nextTrack;
+        let matchingSong = null;
+
+        while (!matchingSong) {
+          nextTrack = await this.getTrackToAdd(theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions);
+          if (!nextTrack) {
+            console.error("getTrackToAdd returned no track.");
+            break;
+          }
+
+          const nextArtist = nextTrack.artist;
+          const nextSong = nextTrack.song;
+          const nextTrackData = await playlistFunctions.findTracks(nextArtist, nextSong);
+
+          matchingSong = nextTrackData.songs.find(song => song.artistName.toLowerCase() === nextArtist.toLowerCase());
+
+          if (!matchingSong) {
+            console.log(`No matching song found for "${nextSong}" by "${nextArtist}". Retrying...`);
+            await this.previousPlaysManager.addTrack(nextTrack);  // Prevent re-picking this track
+          }
+        }
+
+        if (matchingSong) {
+          await playlistFunctions.addSongToQueue(matchingSong);
+          console.log("Song added to queue:", JSON.stringify(matchingSong, null, 2));
+
+          const firstSong = await this.getFirstSongInQueue();
+          await socket.action(ActionName.updateNextSong, {
+            roomUuid: botDefaults.roomUuid,
+            song: firstSong,
+            userUuid: botDefaults.botUuid
+          });
+        }
+      }
+
+      console.groupEnd();
+    },
+
+    getTrackToAdd: async function (theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions) {
+      console.group("getTrackToAdd");
+
+      let attempts = 0;
+      let nextTrack = null;
+
+      while (attempts < 3) {
+        if (attempts > 0) {
+          console.log(`Retrying in 5 seconds... (Attempt ${attempts + 1}/3)`);
+          await new Promise(resolve => setTimeout(resolve, 5000));
+        }
+
+        try {
+          nextTrack = await this.getNextTrack( mlFunctions, theArtist, theTrack, roomFunctions );
+          console.log(`nextTrack returned is: ${JSON.stringify(nextTrack, null, 2)}`);
+
+          if (!nextTrack || !nextTrack.artist || !nextTrack.song) {
+            console.error("Invalid track received, retrying...");
+            nextTrack = null;
+            continue;
+          }
+
+          if (await this.isDuplicateTrack(nextTrack, databaseFunctions)) {
+            console.log(`Track "${nextTrack.song}" by "${nextTrack.artist}" was recently played. Picking another...`);
+            await this.previousPlaysManager.addTrack(nextTrack);
+            nextTrack = null; // Trigger another retry
+            continue;
+          }
+          console.groupEnd();
+          return nextTrack;
+        } catch (error) {
+          console.error("Error in suggestFollow:", error.message);
+          nextTrack = null;
+        }
+
+        attempts++;
+      }
+
+      console.groupEnd();
+      return nextTrack;
+    },
+    
+    getNextTrack: async function (mlFunctions, artist, track, roomFunctions) {
+      const previousPlays = await this.previousPlaysManager.getPreviousPlays()
+      let nextTrack = await mlFunctions.suggestFollow(artist, track, roomFunctions, previousPlays);
+
+      if (typeof nextTrack === "string") {
+        try {
+          nextTrack = nextTrack.trim(); // Trim any leading/trailing spaces
+
+          // Ensure it only replaces JSON markers if they exist
+          if (nextTrack.startsWith("```json") || nextTrack.startsWith("```")) {
+            nextTrack = nextTrack.replace(/```json|```/g, "").trim();
+          }
+
+          nextTrack = JSON.parse(nextTrack);
+        } catch (error) {
+          console.error("Failed to parse replyJSON:", error, "Raw response:", nextTrack);
+          throw new Error("Invalid track data received");
+        }
+      } else if (typeof nextTrack === "object" && nextTrack !== null) {
+        console.log("nextTrack is already an object, skipping parsing.");
+      } else {
+        console.error("Unexpected nextTrack type:", typeof nextTrack, nextTrack);
+        throw new Error("Unexpected track data type");
+      }
+
+      if (!nextTrack || typeof nextTrack !== "object" || !nextTrack.artist || !nextTrack.song) {
+        throw new Error("Invalid track received");
+      }
+      
+      return nextTrack;
+    },
+
+    isDuplicateTrack: async function (track, databaseFunctions) {
+      console.group(`isDuplicateTrack`);
+      if (!track || !track.artist || !track.song) {
+        console.groupEnd();
+        return false;
+      }
+
+      const isDuplicate = await databaseFunctions.findInPlayHistory(track.artist, track.song, 8); // Get last 8
+      console.log(`isDuplicate: ${ Boolean(isDuplicate) }`);
+      console.groupEnd();
+
+      return Boolean(isDuplicate);
+    },
+
+    previousPlaysManager: {
+      previousPlays: [],
+
+      async initialize(databaseFunctions) {
+        this.previousPlays = await databaseFunctions.getPreviousPlays();
+        console.log(`Loaded previousPlays: ${JSON.stringify(this.previousPlays)}`);
+        console.log(`previousPlays count now: ${this.previousPlays.length}`)
+      },
+
+      async addTrack(track) {
+        if (track && track.artist && track.song) {
+          this.previousPlays.push(track);
+          console.log(`Added to previousPlays: ${JSON.stringify(track, null, 2)}`);
+          console.log(`previousPlays count now: ${this.previousPlays.length}`)
+        }
+      },
+
+      async getPreviousPlays() {
+        return this.previousPlays;
+      }
+    },
+    
     isSongInBotPlaylist: function ( thisSong ) {
       let foundSong = false;
       for ( let listLoop = 0; listLoop < botDefaults.botPlaylist.length; listLoop++ ) {
@@ -593,11 +804,7 @@ const botFunctions = () => {
     },
 
     isBotCurrentDJ: function ( userFunctions ) {
-      if ( userFunctions.getCurrentDJID() === authModule.USERID ) {
-        return true;
-      } else {
-        return false;
-      }
+      return userFunctions.getCurrentDJID() === authModule.USERID;
     },
 
     deleteCurrentTrackFromBotPlaylist: function ( data, userFunctions, chatFunctions, songFunctions ) {
@@ -621,7 +828,7 @@ const botFunctions = () => {
       }
     },
 
-    clearAllTimers: async function ( userFunctions, roomFunctions, songFunctions, chatFunctions, socket ) {
+    clearAllTimers: async function ( userFunctions, roomFunctions, songFunctions, chatFunctions ) {
       await userFunctions.clearInformTimer( roomFunctions, chatFunctions );
       await roomFunctions.clearSongLimitTimer( userFunctions, roomFunctions, chatFunctions );
       songFunctions.clearWatchDogTimer();
@@ -639,7 +846,7 @@ const botFunctions = () => {
 
       songFunctions.startSongWatchdog( data, userFunctions, socket );
 
-      //this removes the user from the stage if their song is over the length limit and the don't skip
+      //this removes the user from the stage if their song is over the length limit and they don't skip
       let theTimeout = 60;
       if ( ( length / theTimeout ) >= musicDefaults.songLengthLimit ) {
         if ( theDJID === authModule.USERID || masterIndex === -1 ) //if dj is the bot or not a master

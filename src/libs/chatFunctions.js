@@ -12,6 +12,7 @@ const room = process.env.ROOM_UUID;
 
 const chatFunctions = ( ) => {
   return {
+
     botSpeak: async function ( message, publicChat, recipient ) {
       // let pmCommand;
 
@@ -68,6 +69,26 @@ const chatFunctions = ( ) => {
     // ========================================================
     // Misc chat functions
     // ========================================================
+
+    suggestFollow: async function( mlFunctions, songFunctions, roomFunctions, databaseFunctions ) {
+      const previousPlays = await databaseFunctions.getPreviousPlays()
+      let replyJSON = await mlFunctions.suggestFollow( songFunctions.artist, songFunctions.song, roomFunctions, previousPlays );
+      
+      if (typeof replyJSON === "string") {
+        try {
+          // Remove Markdown-style backticks if present
+          replyJSON = replyJSON.replace(/```json|```/g, "").trim();
+
+          // Parse cleaned JSON
+          replyJSON = JSON.parse(replyJSON);
+        } catch (error) {
+          console.error("Failed to parse replyJSON:", error);
+          return;
+        }
+      }
+
+      await this.botSpeak( `How about playing ${ replyJSON.song } by ${ replyJSON.artist }.`);
+    },
 
     isThereADJ: async function ( userFunctions, data ) {
       const receiverID = await userFunctions.getCurrentDJID( data );

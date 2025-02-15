@@ -1,5 +1,6 @@
 import pool from '../libs/dbConnectionPool.js'
 import { logger } from "../utils/logging.js";
+import authModule from "./auth.js";
 
 const databaseFunctions = () => {
 
@@ -558,6 +559,44 @@ const databaseFunctions = () => {
           console.error('Error:', error);
           throw error;
         });
+    },
+
+    getPreviousPlays: async function () {
+      const selectQuery = "SELECT " +
+        "COALESCE(v.artistDisplayName, v.artistName) AS artist, " +
+        "COALESCE(v.trackDisplayName, v.trackName)   AS song " +
+        "FROM videoData v " +
+        "JOIN tracksPlayed tp ON tp.videoData_id=v.id " +
+        "WHERE tp.playedLength > 30 AND " +
+        "tp.djID != ? " +
+        "ORDER BY tp.whenPlayed DESC LIMIT 10;";
+      const values = [ authModule.USERID ];
+      return this.runQuery( selectQuery, values )
+        .then( ( result ) => {
+          if ( result.length !== 0 ) {
+            return result;
+          }
+        } )
+        .catch( ( ex ) => { console.error( "Something went wrong the previous plays: " + ex ); } );
+    },
+
+    findInPlayHistory: async function ( artist, song, hours ) {
+      const selectQuery = "SELECT " +
+        "COALESCE(v.artistDisplayName, v.artistName) AS artist, " +
+        "COALESCE(v.trackDisplayName, v.trackName)   AS song " +
+        "FROM videoData v " +
+        "JOIN tracksPlayed tp ON tp.videoData_id=v.id " +
+        "WHERE tp.whenPlayed > DATE_SUB(NOW(), INTERVAL ? HOUR) AND " +
+        "( v.artistDisplayName = ? OR v.artistName = ? ) AND " +
+        "( v.trackDisplayName = ? OR v.trackName = ? );";
+      const values = [ hours, artist, artist, song, song ];
+      return this.runQuery( selectQuery, values )
+        .then( ( result ) => {
+          if ( result.length !== 0 ) {
+            return result;
+          }
+        } )
+        .catch( ( ex ) => { console.error( "Something went wrong the previous plays: " + ex ); } );
     },
 
     // ========================================================

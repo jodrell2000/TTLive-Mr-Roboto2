@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { buildUrl, makeRequest } from '../utils/networking.js'
+// import { CometChat } from "@cometchat/chat-sdk-javascript";
 
 const startTimeStamp = Math.floor( Date.now() / 1000 )
 
@@ -101,3 +102,48 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
   return await makeRequest( url, { headers } )
 }
+
+export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeStamp ) => {
+  userFunctions.theUsersList().forEach(user => {
+    if (user.id) {
+      console.log( "User ID: " + user.id)
+    }
+  })
+  headers.appid = process.env.CHAT_API_KEY
+  const messageLimit = 50
+  const paths = [
+    'v3.0',
+    'users',
+    userId,
+    'messages'
+  ]
+  const searchParams = [
+    [ 'per_page', messageLimit ],
+    [ 'hideMessagesFromBlockedUsers', 0 ],
+    [ 'unread', 0 ],
+    [ 'types', 'ChatMessage' ],
+    [ 'withTags', 0 ],
+    [ 'hideDeleted', 0 ],
+    [ 'sentAt', fromTimestamp ],
+    [ 'affix', 'append' ]
+  ]
+  const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
+  return await makeRequest( url, { headers } )
+}
+
+// let listenerID = process.env.CHAT_USER_ID;
+//
+// CometChat.addMessageListener(
+//   listenerID,
+//   new CometChat.MessageListener({
+//     onTextMessageReceived: (textMessage) => {
+//       console.log("Text message received successfully", textMessage);
+//     },
+//     onMediaMessageReceived: (mediaMessage) => {
+//       console.log("Media message received successfully", mediaMessage);
+//     },
+//     onCustomMessageReceived: (customMessage) => {
+//       console.log("Custom message received successfully", customMessage);
+//     },
+//   })
+// );

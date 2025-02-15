@@ -1,4 +1,4 @@
-export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
+export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) => {
   let OKToDJ;
   let theMessage;
 
@@ -24,7 +24,6 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
       if ( await userFunctions.hasDjsElement( currentState ) ) {
         await userFunctions.resetDJs( currentState.djs )
-        // console.log( `djList:${ userFunctions.djList() }` )
       }
 
       if ( userFunctions.isUserIDInQueue( theUserID ) ) {
@@ -35,6 +34,11 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
       if ( await userFunctions.isUserInRefreshList( theUserID ) ) {
         await userFunctions.removeRefreshFromUser( theUserID, databaseFunctions );
       }
+
+      // check if Bot should start to DJ
+      // and if it's their turn, pick a track to play
+      await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions )
+
       // }
 
       // check to see if conditions are met for bots autodjing feature

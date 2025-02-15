@@ -273,11 +273,6 @@ const commandFunctions = () => {
   }
   moderatorCommands.randomiseplaylist.help = "Shuffle Robos playlist";
 
-  moderatorCommands.autodj = () => {
-    bot.addDj();
-  }
-  moderatorCommands.autodj.help = "Starts the Bot DJing";
-
   moderatorCommands.lengthlimit = ( { data, args, songFunctions, chatFunctions } ) => {
     songFunctions.switchLengthLimit( data, args, chatFunctions )
   }
@@ -309,8 +304,8 @@ const commandFunctions = () => {
   }
   moderatorCommands.songstats.help = "Switch the readout of the song stats on or off";
 
-  moderatorCommands.autodj = ( { data, botFunctions, chatFunctions } ) => {
-    botFunctions.autoDJCommand( data, chatFunctions )
+  moderatorCommands.autodj = ( { data, botFunctions, chatFunctions, userFunctions, socket } ) => {
+    botFunctions.autoDJCommand( data, chatFunctions, userFunctions, socket )
   }
   moderatorCommands.autodj.help = "Enables or Disables the auto DJing function";
 
@@ -406,16 +401,16 @@ const commandFunctions = () => {
     botFunctions.informDJCommand( data, reassembleArgs( args ), userFunctions, chatFunctions );
   }
   moderatorCommands.informdj.help = "Have the Bot send the current DJ a message";
-
-  moderatorCommands.awesome = ( { botFunctions } ) => {
-    botFunctions.awesomeCommand();
-  }
-  moderatorCommands.awesome.help = "Have the Bot upvote";
-
-  moderatorCommands.lame = ( { botFunctions } ) => {
-    botFunctions.lameCommand();
-  }
-  moderatorCommands.lame.help = "Have the Bot downvote";
+  //
+  // moderatorCommands.awesome = ( { botFunctions } ) => {
+  //   botFunctions.awesomeCommand();
+  // }
+  // moderatorCommands.awesome.help = "Have the Bot upvote";
+  //
+  // moderatorCommands.lame = ( { botFunctions } ) => {
+  //   botFunctions.lameCommand();
+  // }
+  // moderatorCommands.lame.help = "Have the Bot downvote";
 
   moderatorCommands.alias = ( { data, chatFunctions } ) => {
     addAlias( data, chatFunctions );
@@ -674,6 +669,26 @@ const commandFunctions = () => {
     playlistFunctions.addTrackToPlaylist( data, songFunctions, chatFunctions );
   }
   playlistCommands.addtracktoplaylist.help = "List the Bots playlists";
+
+  playlistCommands.suggestfollow = ( { chatFunctions, mlFunctions, songFunctions, roomFunctions, databaseFunctions } ) => {
+    chatFunctions.suggestFollow( mlFunctions, songFunctions, roomFunctions, databaseFunctions );
+  }
+  playlistCommands.suggestfollow.help = "Have Robo suggest a track to play after this one";
+
+  playlistCommands.djup = ( { botFunctions, socket } ) => {
+    botFunctions.djUp( socket );
+  }
+  playlistCommands.djup.help = "Have Robo suggest a track to play after this one";
+
+  playlistCommands.djdown = ( { botFunctions, socket } ) => {
+    botFunctions.djDown( socket );
+  }
+  playlistCommands.djdown.help = "Have Robo suggest a track to play after this one";
+
+  playlistCommands.preparetospin = ( { botFunctions, userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions } ) => {
+    botFunctions.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions );
+  }
+  playlistCommands.preparetospin.help = "Have Robo pick a new track and put it at the top of his queue";
 
   // #############################
   // end of commands

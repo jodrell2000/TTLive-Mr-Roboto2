@@ -1,4 +1,4 @@
-export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions ) => {
+export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) => {
   
   const beforeDJList = await userFunctions.djList();
   await userFunctions.resetDJs( currentState.djs )
@@ -15,6 +15,11 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
     await userFunctions.removeEscortMeFromUser( removedDJuuid, databaseFunctions );
     await userFunctions.resetDJFlags( removedDJuuid, databaseFunctions );
   }
+
+  // check if Bot should start to DJ
+  // and if it's their turn, pick a track to play
+  await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions )
+
 }
 
 //gives them one chance to get off-stage, then after that they're play limit is treated as normal

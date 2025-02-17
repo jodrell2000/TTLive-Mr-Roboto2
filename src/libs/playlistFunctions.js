@@ -184,27 +184,40 @@ const playlistFunctions = ( ) => {
     // ========================================================
 
     findTracks: async function (artistName, trackName) {
-      try {
-        const searchString = `${artistName} ${trackName}`;
-        const url = `https://playlists.prod.tt.fm/search?q=${encodeURIComponent(searchString)}`;
+      let attempts = 0;
+      const maxAttempts = 3;
+      const delay = 10000; // 10 seconds
 
-        console.log(`url: ${url}`);
+      while (attempts < maxAttempts) {
+        try {
+          const searchString = `${artistName} ${trackName}`;
+          const url = `https://playlists.prod.tt.fm/search?q=${encodeURIComponent(searchString)}`;
 
-        const { data: responseData } = await axios.get(url, { headers });
-        return responseData;
+          console.log(`Attempt ${attempts + 1}: Fetching ${url}`);
 
-      } catch (error) {
-        console.error("Error in findTracks:", error.message);
+          const { data: responseData } = await axios.get(url, { headers });
+          return responseData; // Success! Return the data
 
-        // Optionally log more details for debugging
-        if (error.response) {
-          console.error("Response data:", error.response.data);
-          console.error("Status code:", error.response.status);
-        } else if (error.request) {
-          console.error("No response received:", error.request);
+        } catch (error) {
+          console.error(`Error in findTracks (attempt ${attempts + 1}):`, error.message);
+
+          if (error.response) {
+            console.error("Response data:", error.response.data);
+            console.error("Status code:", error.response.status);
+          } else if (error.request) {
+            console.error("No response received:", error.request);
+          }
+
+          attempts++;
+
+          if (attempts < maxAttempts) {
+            console.log(`Retrying in ${delay / 1000} seconds...`);
+            await new Promise(resolve => setTimeout(resolve, delay)); // Wait before retrying
+          } else {
+            console.error("Max retries reached. Unable to find tracks.");
+            return null; // Failure after 3 attempts
+          }
         }
-
-        return null; // Return null to indicate failure
       }
     }
   }

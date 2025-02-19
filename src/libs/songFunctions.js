@@ -336,7 +336,7 @@ const songFunctions = () => {
       if ( trackID ) {
         await databaseFunctions.getSongInfoData( trackID )
           .then( async ( songInfo ) => {
-            await chatFunctions.botSpeak( `The song ${ songInfo.trackName } by ${ songInfo.artistName } was first played by @${ songInfo.username }. It has been played ${ songInfo.playCount } times by ${ songInfo.djCount } different DJs, and was first played on ${ songInfo.firstPlay }` );
+            await chatFunctions.botSpeak( `The song ${ songInfo.trackName } by ${ songInfo.artistName } was first played by @${ decodeURIComponent( songInfo.username ) }. It has been played ${ songInfo.playCount } times by ${ songInfo.djCount } different DJs, and was first played on ${ songInfo.firstPlay }` );
           } )
       } else {
         await chatFunctions.botSpeak( "I can't find a confirmed listing for this track" );

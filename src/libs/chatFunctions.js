@@ -198,6 +198,7 @@ const chatFunctions = ( ) => {
     },
 
     coinflip: async function ( data ) {
+      console.log('here');
       const theUsername = data.senderName
       let randomNumber = Math.random();
       if ( randomNumber === 0.5 ) {

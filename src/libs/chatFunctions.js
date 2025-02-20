@@ -287,29 +287,36 @@ const chatFunctions = ( ) => {
     // ========================================================
     // Fruit machine functions
     // ========================================================
+
+    symbols: () => [
+      { symbol: "🍒", payout: 1, probability: 0.4 },  // 40%
+      { symbol: "🍋", payout: 2, probability: 0.3 },  // 30%
+      { symbol: "🍇", payout: 3, probability: 0.2 },  // 20%
+      { symbol: "🍉", payout: 5, probability: 0.08 }, // 8%
+      { symbol: "⭐", payout: 10, probability: 0.02 } // 2%
+    ],
+    
+    odds: async function () {
+      await this.botSpeak("Here are the odds for each symbol:");
+      for ( const item of this.symbols ) {
+        await this.botSpeak(`${item.symbol}: ${item.probability * 100}% chance, Payout: ${item.payout}:1`);
+      }
+    },
     
     fruitMachine: async function ( data ) {
       const winnings = this.playGame( 1 );
     },
 
     getRandomSymbol: async function () {
-      const symbols = [
-        { symbol: "🍒", payout: 1, probability: 0.4 },  // 40%
-        { symbol: "🍋", payout: 2, probability: 0.3 },  // 30%
-        { symbol: "🍇", payout: 3, probability: 0.2 },  // 20%
-        { symbol: "🍉", payout: 5, probability: 0.08 }, // 8%
-        { symbol: "⭐", payout: 10, probability: 0.02 } // 2%
-      ];
-
       const rand = Math.random();
       let cumulative = 0;
-      for ( const item of symbols ) {
+      for ( const item of this.symbols ) {
         cumulative += item.probability;
         if ( rand < cumulative ) {
           return item;
         }
       }
-      return symbols[ symbols.length - 1 ]; // Fallback
+      return this.symbols[ this.symbols.length - 1 ]; // Fallback
     },
 
     spin: async function () {

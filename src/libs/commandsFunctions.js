@@ -255,11 +255,16 @@ const commandFunctions = () => {
     userFunctions.whosAFK( data, chatFunctions );
   }
   userCommands.whosafk.help = "Tells you which users have enabled AFK";
-  
+
   chatCommands.fruitmachine = ( { chatFunctions, data} ) => {
     chatFunctions.fruitMachine( data );
   }
   chatCommands.fruitmachine.help = "Gamble your RC away";
+
+  chatCommands.odds = ( { chatFunctions, data} ) => {
+    chatFunctions.odds( data );
+  }
+  chatCommands.odds.help = "Read the odds for the Fruit Machine";
 
 
   // #############################################

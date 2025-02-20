@@ -313,7 +313,7 @@ const chatFunctions = ( ) => {
       return symbols[ symbols.length - 1 ]; // Fallback
     },
 
-    spin function () {
+    spin: function () {
       const result = [ this.getRandomSymbol(), this.getRandomSymbol(), this.getRandomSymbol() ];
       console.log( `Spun: ${ result.map( s => s.symbol ).join( " | " ) }` );
 

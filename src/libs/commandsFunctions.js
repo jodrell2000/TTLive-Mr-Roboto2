@@ -4,6 +4,7 @@ import chatCommandItems from '../defaults/chatCommandItems.js'
 import Storage from 'node-storage';
 import { dirname } from 'path';
 import { logger } from "../utils/logging.js";
+import chatFunctions from "./chatFunctions.js";
 
 const generalCommands = {};
 const userCommands = {};
@@ -254,6 +255,12 @@ const commandFunctions = () => {
     userFunctions.whosAFK( data, chatFunctions );
   }
   userCommands.whosafk.help = "Tells you which users have enabled AFK";
+  
+  chatCommands.fruitmachine = ( { chatFunctions, data} ) => {
+    chatFunctions.fruitMachine( data );
+  }
+  chatCommands.fruitmachine.help = "Gamble your RC away";
+
 
   // #############################################
   // Testing commands

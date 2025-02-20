@@ -281,6 +281,62 @@ const chatFunctions = ( ) => {
       await this.botSpeak( theMessage, true );
     },
 
+
+    // ========================================================
+
+    // ========================================================
+    // Fruit machine functions
+    // ========================================================
+    
+    fruitMachine: async function ( data ) {
+      const message = this.playGame( 1 );
+      await this.botSpeak( message )
+    },
+
+    getRandomSymbol: function () {
+      const symbols = [
+        { symbol: "🍒", payout: 1, probability: 0.4 },  // 40%
+        { symbol: "🍋", payout: 2, probability: 0.3 },  // 30%
+        { symbol: "🍇", payout: 3, probability: 0.2 },  // 20%
+        { symbol: "🍉", payout: 5, probability: 0.08 }, // 8%
+        { symbol: "⭐", payout: 10, probability: 0.02 } // 2%
+      ];
+
+      const rand = Math.random();
+      let cumulative = 0;
+      for ( const item of symbols ) {
+        cumulative += item.probability;
+        if ( rand < cumulative ) {
+          return item;
+        }
+      }
+      return symbols[ symbols.length - 1 ]; // Fallback
+    },
+
+    spin function () {
+      const result = [ this.getRandomSymbol(), this.getRandomSymbol(), this.getRandomSymbol() ];
+      console.log( `Spun: ${ result.map( s => s.symbol ).join( " | " ) }` );
+
+      if ( result[ 0 ].symbol === result[ 1 ].symbol && result[ 1 ].symbol === result[ 2 ].symbol ) {
+        const payout = result[ 0 ].payout;
+        console.log( `JACKPOT! You win ${ payout }:1!` );
+        return payout;
+      } else {
+        console.log( "No win, try again!" );
+        return 0;
+      }
+    },
+
+    // Simulate playing the fruit machine
+    playGame: function ( betAmount ) {
+      console.log( "Spinning..." );
+      const multiplier = this.spin();
+      const winnings = betAmount * multiplier;
+      const message = `You bet ${ betAmount }, and won ${ winnings }!`
+
+      return message;
+    },
+
     // ========================================================
 
     userGreeting: async function ( userID, theUsername, roomFunctions, userFunctions, databaseFunctions ) {

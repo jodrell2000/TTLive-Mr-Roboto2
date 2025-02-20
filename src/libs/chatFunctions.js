@@ -298,7 +298,7 @@ const chatFunctions = ( ) => {
     
     odds: async function () {
       await this.botSpeak("Here are the odds for each symbol:");
-      for ( const item of this.symbols ) {
+      for ( const item of this.symbols() ) {
         await this.botSpeak(`${item.symbol}: ${item.probability * 100}% chance, Payout: ${item.payout}:1`);
       }
     },
@@ -310,13 +310,13 @@ const chatFunctions = ( ) => {
     getRandomSymbol: async function () {
       const rand = Math.random();
       let cumulative = 0;
-      for ( const item of this.symbols ) {
+      for (const item of this.symbols) {
         cumulative += item.probability;
-        if ( rand < cumulative ) {
+        if (rand < cumulative) {
           return item;
         }
       }
-      return this.symbols[ this.symbols.length - 1 ]; // Fallback
+      return this.symbols[this.symbols.length - 1];
     },
 
     spin: async function () {

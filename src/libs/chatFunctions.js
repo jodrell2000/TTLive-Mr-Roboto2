@@ -293,7 +293,7 @@ const chatFunctions = ( ) => {
       await this.botSpeak( message )
     },
 
-    getRandomSymbol: function () {
+    getRandomSymbol: async function () {
       const symbols = [
         { symbol: "🍒", payout: 1, probability: 0.4 },  // 40%
         { symbol: "🍋", payout: 2, probability: 0.3 },  // 30%
@@ -313,28 +313,26 @@ const chatFunctions = ( ) => {
       return symbols[ symbols.length - 1 ]; // Fallback
     },
 
-    spin: function () {
-      const result = [ this.getRandomSymbol(), this.getRandomSymbol(), this.getRandomSymbol() ];
-      console.log( `Spun: ${ result.map( s => s.symbol ).join( " | " ) }` );
+    spin: async function () {
+      const result = [ await this.getRandomSymbol(), await this.getRandomSymbol(), await this.getRandomSymbol() ];
+      await this.botSpeak( `Spun: ${ result.map( s => s.symbol ).join( " | " ) }` )
 
       if ( result[ 0 ].symbol === result[ 1 ].symbol && result[ 1 ].symbol === result[ 2 ].symbol ) {
         const payout = result[ 0 ].payout;
-        console.log( `JACKPOT! You win ${ payout }:1!` );
+        await this.botSpeak( `JACKPOT! You win ${ payout }:1!` )
         return payout;
       } else {
-        console.log( "No win, try again!" );
+        await this.botSpeak( "No win, try again!" )
         return 0;
       }
     },
 
     // Simulate playing the fruit machine
-    playGame: function ( betAmount ) {
+    playGame: async function ( betAmount ) {
       console.log( "Spinning..." );
-      const multiplier = this.spin();
+      const multiplier = await this.spin();
       const winnings = betAmount * multiplier;
-      const message = `You bet ${ betAmount }, and won ${ winnings }!`
-
-      return message;
+      return `You bet ${ betAmount }, and won ${ winnings }!`
     },
 
     // ========================================================

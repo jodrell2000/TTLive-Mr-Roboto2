@@ -310,7 +310,7 @@ const chatFunctions = ( ) => {
     getRandomSymbol: async function () {
       const rand = Math.random();
       let cumulative = 0;
-      for (const item of this.symbols) {
+      for (const item of this.symbols()) {
         cumulative += item.probability;
         if (rand < cumulative) {
           return item;

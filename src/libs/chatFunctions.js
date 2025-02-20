@@ -289,8 +289,7 @@ const chatFunctions = ( ) => {
     // ========================================================
     
     fruitMachine: async function ( data ) {
-      const message = this.playGame( 1 );
-      await this.botSpeak( message )
+      const winnings = this.playGame( 1 );
     },
 
     getRandomSymbol: async function () {
@@ -316,7 +315,6 @@ const chatFunctions = ( ) => {
     spin: async function () {
       const result = [ await this.getRandomSymbol(), await this.getRandomSymbol(), await this.getRandomSymbol() ];
       await this.botSpeak( `Spun: ${ result.map( s => s.symbol ).join( " | " ) }` )
-
       if ( result[ 0 ].symbol === result[ 1 ].symbol && result[ 1 ].symbol === result[ 2 ].symbol ) {
         const payout = result[ 0 ].payout;
         await this.botSpeak( `JACKPOT! You win ${ payout }:1!` )
@@ -329,10 +327,11 @@ const chatFunctions = ( ) => {
 
     // Simulate playing the fruit machine
     playGame: async function ( betAmount ) {
-      console.log( "Spinning..." );
+      await this.botSpeak( "Spinning..." )
       const multiplier = await this.spin();
       const winnings = betAmount * multiplier;
-      return `You bet ${ betAmount }, and won ${ winnings }!`
+      await this.botSpeak( `You bet ${ betAmount }, and won ${ winnings }!` )
+      return winnings;
     },
 
     // ========================================================

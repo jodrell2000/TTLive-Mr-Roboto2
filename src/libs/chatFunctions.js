@@ -289,7 +289,7 @@ const chatFunctions = ( ) => {
     // ========================================================
 
     symbols: () => [
-      { symbol: "🍒", payout: 2, probability: 0.4 },  // 40%
+      { symbol: "🍒", payout: 2, probability: 0.5 },  // 50%
       { symbol: "🍋", payout: 3, probability: 0.3 },  // 30%
       { symbol: "🍇", payout: 4, probability: 0.2 },  // 20%
       { symbol: "🍉", payout: 10, probability: 0.05 }, // 5%

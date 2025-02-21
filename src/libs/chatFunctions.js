@@ -289,11 +289,11 @@ const chatFunctions = ( ) => {
     // ========================================================
 
     symbols: () => [
-      { symbol: "🍒", payout: 2, probability: 0.125 },  // 1 in 8
-      { symbol: "🍋", payout: 3, probability: 0.0667 }, // 1 in 15
-      { symbol: "🍇", payout: 4, probability: 0.0333 }, // 1 in 30
-      { symbol: "🍉", payout: 5, probability: 0.0167 }, // 1 in 60
-      { symbol: "⭐", payout: 10, probability: 0.01 }   // 1 in 100
+      { symbol: "🍒", payout: 2, probability: 0.18 },  // 18% chance
+      { symbol: "🍋", payout: 3, probability: 0.08 },  // 8% chance
+      { symbol: "🍇", payout: 4, probability: 0.03 },  // 3% chance
+      { symbol: "🍉", payout: 5, probability: 0.02 },  // 2% chance
+      { symbol: "⭐", payout: 10, probability: 0.01 }  // 1% chance
     ],
     
     fruitMachine: async function ( data, args, userFunctions ) {

@@ -289,17 +289,18 @@ const chatFunctions = ( ) => {
     // ========================================================
 
     symbols: () => [
-      { symbol: "🍒", payout: 2, probability: 0.5 },  // 50%
-      { symbol: "🍋", payout: 3, probability: 0.3 },  // 30%
-      { symbol: "🍇", payout: 4, probability: 0.2 },  // 20%
-      { symbol: "🍉", payout: 10, probability: 0.05 }, // 5%
-      { symbol: "⭐", payout: 50, probability: 0.01 } // 1%
+      { symbol: "🍒", payout: 1, probability: 0.2700 },  // 1 in 5
+      { symbol: "🍋", payout: 2, probability: 0.2142 },  // 1 in 10
+      { symbol: "🍇", payout: 3, probability: 0.1879 },  // 1 in 15
+      { symbol: "🍉", payout: 5, probability: 0.1700 },  // 1 in 25
+      { symbol: "⭐", payout: 10, probability: 0.1580 }  // 1 in 50
     ],
     
     odds: async function () {
       await this.botSpeak("Here are the odds for each symbol:");
-      for ( const item of this.symbols() ) {
-        await this.botSpeak(`${item.symbol}: ${item.probability * 100}% chance, Payout: ${item.payout}:1`);
+      for (const item of this.symbols) {
+        const lineProbability = Math.pow(item.probability, 3) * 100;
+        await this.botSpeak(`${item.symbol}: ${item.probability * 100}% chance per reel, ${lineProbability.toFixed(2)}% chance for a full line, Payout: ${item.payout}:1`);
       }
     },
     

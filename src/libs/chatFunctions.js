@@ -298,7 +298,7 @@ const chatFunctions = ( ) => {
     
     odds: async function () {
       await this.botSpeak("Here are the odds for each symbol:");
-      for (const item of this.symbols) {
+      for (const item of this.symbols()) {
         const lineProbability = Math.pow(item.probability, 3) * 100;
         await this.botSpeak(`${item.symbol}: ${item.probability * 100}% chance per reel, ${lineProbability.toFixed(2)}% chance for a full line, Payout: ${item.payout}:1`);
       }

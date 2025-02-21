@@ -289,9 +289,9 @@ const chatFunctions = ( ) => {
     // ========================================================
 
     symbols: () => [
-      { symbol: "🍒", payout: 1, probability: 0.58 },  // 1 in 5
-      { symbol: "🍋", payout: 2, probability: 0.46 },  // 1 in 10
-      { symbol: "🍇", payout: 3, probability: 0.41 },  // 1 in 15
+      { symbol: "🍒", payout: 2, probability: 0.58 },  // 1 in 5
+      { symbol: "🍋", payout: 3, probability: 0.46 },  // 1 in 10
+      { symbol: "🍇", payout: 4, probability: 0.41 },  // 1 in 15
       { symbol: "🍉", payout: 5, probability: 0.36 },  // 1 in 25
       { symbol: "⭐", payout: 10, probability: 0.34 }  // 1 in 50
     ],

@@ -299,7 +299,9 @@ const chatFunctions = ( ) => {
     fruitMachine: async function ( data, args, userFunctions ) {
       console.log(`data: ${ JSON.stringify( data, null, 2 ) }; `);
       console.log(`args: ${ JSON.stringify( args, null, 2 ) }; `);
-      const [ bet, ...restArgs ] = args;
+      let [ bet, ...restArgs ] = args;
+      bet = Number(bet); // Convert bet to a number
+
       console.log(`bet: ${ JSON.stringify( bet, null, 2 ) }; `);
       const userPlaying = await userFunctions.whoSentTheCommand( data );
       // await userFunctions.canUserAffordToSpendThisMuch( userPlaying, bet, chatFunctions, data );

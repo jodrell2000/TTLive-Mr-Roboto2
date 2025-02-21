@@ -305,7 +305,7 @@ const chatFunctions = ( ) => {
       // await userFunctions.canUserAffordToSpendThisMuch( userPlaying, bet, chatFunctions, data );
 
       try {
-        await this.validateBet(bet, userPlaying.id, userFunctions, data);
+        await this.validateBet(bet, userPlaying, userFunctions, data);
 
         const winnings = this.playGame(bet);
       } catch (error) {
@@ -314,6 +314,7 @@ const chatFunctions = ( ) => {
     },
 
     validateBet: async function (numCoins, sendingUserID, userFunctions, data) {
+      console.log(`numCoins: ${ JSON.stringify( numCoins, null, 2 ) }; `);
       if (numCoins === undefined || isNaN(numCoins)) {
         await this.botSpeak(`@${await userFunctions.getUsername(sendingUserID)} you must provide a number of coins to bet, eg. /fruitmachine 2`);
         throw new Error("Invalid number of coins");

@@ -256,8 +256,8 @@ const commandFunctions = () => {
   }
   userCommands.whosafk.help = "Tells you which users have enabled AFK";
 
-  chatCommands.fruitmachine = ( { chatFunctions, data} ) => {
-    chatFunctions.fruitMachine( data );
+  chatCommands.fruitmachine = ( { chatFunctions, data, args, userFunctions } ) => {
+    chatFunctions.fruitMachine( data, args, userFunctions );
   }
   chatCommands.fruitmachine.help = "Gamble your RC away";
 

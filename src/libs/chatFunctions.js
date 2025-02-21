@@ -289,24 +289,39 @@ const chatFunctions = ( ) => {
     // ========================================================
 
     symbols: () => [
-      { symbol: "🍒", payout: 2, probability: 0.58 },  // 1 in 5
-      { symbol: "🍋", payout: 3, probability: 0.46 },  // 1 in 10
-      { symbol: "🍇", payout: 4, probability: 0.41 },  // 1 in 15
-      { symbol: "🍉", payout: 5, probability: 0.36 },  // 1 in 25
-      { symbol: "⭐", payout: 10, probability: 0.34 }  // 1 in 50
+      { symbol: "🍒", payout: 2, probability: 0.125 },  // 1 in 8
+      { symbol: "🍋", payout: 3, probability: 0.0667 }, // 1 in 15
+      { symbol: "🍇", payout: 4, probability: 0.0333 }, // 1 in 30
+      { symbol: "🍉", payout: 5, probability: 0.0167 }, // 1 in 60
+      { symbol: "⭐", payout: 10, probability: 0.01 }   // 1 in 100
     ],
     
-    odds: async function () {
-      await this.botSpeak("Here are the odds for each symbol:");
-      for (const item of this.symbols()) {
-        const lineProbability = Math.pow(item.probability, 3) * 100;
-        await this.botSpeak(`${item.symbol}: ${(item.probability * 100).toFixed(2)}% chance per reel, ${lineProbability.toFixed(2)}% chance for a full line, Payout: ${item.payout}:1`);
+    fruitMachine: async function ( data, args, userFunctions ) {
+      const [ bet, ...restArgs ] = args;
+      const userPlaying = await userFunctions.whoSentTheCommand( data );
+      // await userFunctions.canUserAffordToSpendThisMuch( userPlaying, bet, chatFunctions, data );
+
+      try {
+        await this.validateBet(bet, userPlaying.id, userFunctions, data);
+
+        const winnings = this.playGame(bet);
+      } catch (error) {
+        console.error(error.message);
       }
     },
-    
-    fruitMachine: async function ( data ) {
-      const winnings = this.playGame( 1 );
+
+    validateBet: async function (numCoins, sendingUserID, userFunctions, data) {
+      if (numCoins === undefined || isNaN(numCoins)) {
+        await this.botSpeak(`@${await userFunctions(sendingUserID)} you must provide a number of coins to bet, eg. /fruitmachine 2`);
+        throw new Error("Invalid number of coins");
+      }
+      if (numCoins < 1 || numCoins > 10 || !Number.isInteger(numCoins)) {
+        await this.botSpeak(`@${await userFunctions(sendingUserID)} you can only bet a whole number of RC between 1 and 10.`);
+        throw new Error("Bet out of range");
+      }
+      return true;
     },
+
 
     getRandomSymbol: async function () {
       const rand = Math.random();
@@ -333,13 +348,20 @@ const chatFunctions = ( ) => {
       }
     },
 
-    // Simulate playing the fruit machine
     playGame: async function ( betAmount ) {
       await this.botSpeak( "Spinning..." )
       const multiplier = await this.spin();
       const winnings = betAmount * multiplier;
       await this.botSpeak( `You bet ${ betAmount }, and won ${ winnings }!` )
       return winnings;
+    },
+
+    odds: async function () {
+      await this.botSpeak("Here are the odds for each symbol:");
+      for (const item of this.symbols()) {
+        const lineProbability = Math.pow(item.probability, 3) * 100;
+        await this.botSpeak(`${item.symbol}: ${(item.probability * 100).toFixed(2)}% chance per reel, ${lineProbability.toFixed(2)}% chance for a full line, Payout: ${item.payout}:1`);
+      }
     },
 
     // ========================================================

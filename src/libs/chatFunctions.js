@@ -300,6 +300,7 @@ const chatFunctions = ( ) => {
       console.log(`data: ${ JSON.stringify( data, null, 2 ) }; `);
       console.log(`args: ${ JSON.stringify( args, null, 2 ) }; `);
       const [ bet, ...restArgs ] = args;
+      console.log(`bet: ${ JSON.stringify( bet, null, 2 ) }; `);
       const userPlaying = await userFunctions.whoSentTheCommand( data );
       // await userFunctions.canUserAffordToSpendThisMuch( userPlaying, bet, chatFunctions, data );
 
@@ -314,11 +315,11 @@ const chatFunctions = ( ) => {
 
     validateBet: async function (numCoins, sendingUserID, userFunctions, data) {
       if (numCoins === undefined || isNaN(numCoins)) {
-        await this.botSpeak(`@${await userFunctions(sendingUserID)} you must provide a number of coins to bet, eg. /fruitmachine 2`);
+        await this.botSpeak(`@${await userFunctions.getUsername(sendingUserID)} you must provide a number of coins to bet, eg. /fruitmachine 2`);
         throw new Error("Invalid number of coins");
       }
       if (numCoins < 1 || numCoins > 10 || !Number.isInteger(numCoins)) {
-        await this.botSpeak(`@${await userFunctions(sendingUserID)} you can only bet a whole number of RC between 1 and 10.`);
+        await this.botSpeak(`@${await userFunctions.getUsername(sendingUserID)} you can only bet a whole number of RC between 1 and 10.`);
         throw new Error("Bet out of range");
       }
       return true;

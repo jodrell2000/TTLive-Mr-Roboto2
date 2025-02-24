@@ -294,7 +294,11 @@ const databaseFunctions = () => {
     },
 
     // ========================================================
-
+    select  u.username, SUM(fa.betAmount) as "Bets", SUM(fa.winnings) as "Winnings", 
+    COALESCE( ROUND(
+      ( (  SUM(fa.winnings) / SUM(fa.betAmount) ) * 100 )
+    , 2), 0) AS "%age payout" 
+  from fruitMachineAudit fa join users u on u.id=fa.users_id GROUP BY fa.users_id;
     // ========================================================
     // Fruitmachine Audit Functions
     // ========================================================

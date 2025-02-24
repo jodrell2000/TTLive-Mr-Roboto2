@@ -289,12 +289,24 @@ const chatFunctions = ( ) => {
     // ========================================================
 
     symbols: () => [
-      { symbol: "🍒", payout: 2, probability: 0.57 },  // ~57% per reel → ~18% full line
-      { symbol: "🍋", payout: 3, probability: 0.43 },  // ~43% per reel → ~8% full line
-      { symbol: "🍇", payout: 4, probability: 0.31 },  // ~31% per reel → ~3% full line
-      { symbol: "🍉", payout: 5, probability: 0.27 },  // ~27% per reel → ~2% full line
-      { symbol: "⭐", payout: 10, probability: 0.22 }  // ~22% per reel → ~1% full line
+      { symbol: "🍒", payout: 2, probability: 0.58 },  // ~18% full line
+      { symbol: "🍋", payout: 3, probability: 0.22 },  // ~8% full line
+      { symbol: "🍇", payout: 4, probability: 0.12 },  // ~3% full line
+      { symbol: "🍉", payout: 5, probability: 0.06 },  // ~2% full line
+      { symbol: "⭐", payout: 10, probability: 0.02 }  // ~1% full line
     ],
+
+    getRandomSymbol: async function () {
+      const rand = Math.random();
+      let cumulative = 0;
+      for (const item of this.symbols()) {
+        cumulative += item.probability;
+        if (rand < cumulative) {
+          return item;
+        }
+      }
+      return this.symbols[this.symbols.length - 1];
+    },
     
     fruitMachine: async function ( data, args, userFunctions, databaseFunctions, chatFunctions ) {
       console.log(`data: ${ JSON.stringify( data, null, 2 ) }; `);
@@ -331,19 +343,6 @@ const chatFunctions = ( ) => {
         throw new Error("User can't afford the bet");
       }
       return true;
-    },
-
-
-    getRandomSymbol: async function () {
-      const rand = Math.random();
-      let cumulative = 0;
-      for (const item of this.symbols()) {
-        cumulative += item.probability;
-        if (rand < cumulative) {
-          return item;
-        }
-      }
-      return this.symbols[this.symbols.length - 1];
     },
 
     spin: async function (userID, betAmount, databaseFunctions ) {

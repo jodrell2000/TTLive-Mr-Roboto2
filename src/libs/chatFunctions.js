@@ -296,7 +296,7 @@ const chatFunctions = ( ) => {
       { symbol: "⭐", payout: 10, probability: 0.22 }  // ~22% per reel → ~1% full line
     ],
     
-    fruitMachine: async function ( data, args, userFunctions ) {
+    fruitMachine: async function ( data, args, userFunctions, databaseFunctions, chatFunctions ) {
       console.log(`data: ${ JSON.stringify( data, null, 2 ) }; `);
       console.log(`args: ${ JSON.stringify( args, null, 2 ) }; `);
       let [ bet, ...restArgs ] = args;
@@ -307,15 +307,15 @@ const chatFunctions = ( ) => {
       // await userFunctions.canUserAffordToSpendThisMuch( userPlaying, bet, chatFunctions, data );
 
       try {
-        await this.validateBet(bet, userPlaying, userFunctions, data);
+        await this.validateBet(bet, userPlaying, userFunctions, data, chatFunctions);
 
-        const winnings = this.playGame(bet);
+        await this.playGame( userPlaying, bet, databaseFunctions );
       } catch (error) {
         console.error(error.message);
       }
     },
 
-    validateBet: async function (numCoins, sendingUserID, userFunctions, data) {
+    validateBet: async function ( numCoins, sendingUserID, userFunctions, data, chatFunctions ) {
       console.log(`numCoins: ${ JSON.stringify( numCoins, null, 2 ) }; `);
       if (numCoins === undefined || isNaN(numCoins)) {
         await this.botSpeak(`@${await userFunctions.getUsername(sendingUserID)} you must provide a number of coins to bet, eg. /fruitmachine 2`);
@@ -324,6 +324,11 @@ const chatFunctions = ( ) => {
       if (numCoins < 1 || numCoins > 10 || !Number.isInteger(numCoins)) {
         await this.botSpeak(`@${await userFunctions.getUsername(sendingUserID)} you can only bet a whole number of RC between 1 and 10.`);
         throw new Error("Bet out of range");
+      }
+      
+      if ( ! await userFunctions.canUserAffordToSpendThisMuch( sendingUserID, numCoins, chatFunctions, data )) {
+        await this.botSpeak(`Sorry @${await userFunctions.getUsername(sendingUserID)}, you can't afford to bet that much.`);
+        throw new Error("User can't afford the bet");
       }
       return true;
     },
@@ -341,25 +346,26 @@ const chatFunctions = ( ) => {
       return this.symbols[this.symbols.length - 1];
     },
 
-    spin: async function () {
+    spin: async function (userID, betAmount, databaseFunctions ) {
       const result = [ await this.getRandomSymbol(), await this.getRandomSymbol(), await this.getRandomSymbol() ];
       await this.botSpeak( `Spun: ${ result.map( s => s.symbol ).join( " | " ) }` )
       if ( result[ 0 ].symbol === result[ 1 ].symbol && result[ 1 ].symbol === result[ 2 ].symbol ) {
         const payout = result[ 0 ].payout;
         await this.botSpeak( `JACKPOT! You win ${ payout }:1!` )
+        await databaseFunctions.fruitMachineAuditEntry( userID, betAmount, result, payout, databaseFunctions)
         return payout;
       } else {
         await this.botSpeak( "No win, try again!" )
+        await databaseFunctions.fruitMachineAuditEntry( userID, betAmount, result, 0, databaseFunctions)
         return 0;
       }
     },
 
-    playGame: async function ( betAmount ) {
+    playGame: async function ( userID, betAmount, databaseFunctions ) {
       await this.botSpeak( "Spinning..." )
-      const multiplier = await this.spin();
+      const multiplier = await this.spin( userID, betAmount, databaseFunctions );
       const winnings = betAmount * multiplier;
       await this.botSpeak( `You bet ${ betAmount }, and won ${ winnings }!` )
-      return winnings;
     },
 
     odds: async function () {

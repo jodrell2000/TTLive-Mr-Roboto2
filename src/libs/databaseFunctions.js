@@ -301,7 +301,7 @@ const databaseFunctions = () => {
 
     fruitMachineAuditEntry: async function ( userID, betAmount, result, multiplier ) {
       const theQuery = `INSERT INTO fruitMachineAudit ( users_id, betAmount, reelOne, reelTwo, ReelThree, multiplier, winnings) VALUES (?, ?, ?, ?, ?, ?, ?);`;
-      const values = [ userID, betAmount, result[ 0 ].symbol, result[ 1 ].symbol, result[ 2 ].symbol, multiplier, betAmount * multiplier ];
+      const values = [ userID, betAmount, encodeURIComponent( result[ 0 ].symbol ), encodeURIComponent( result[ 1 ].symbol ), encodeURIComponent( result[ 2 ].symbol ), multiplier, betAmount * multiplier ];
 
       try {
         return await this.runQuery( theQuery, values );

@@ -300,8 +300,20 @@ const databaseFunctions = () => {
     // ========================================================
 
     fruitMachineAuditEntry: async function ( userID, betAmount, result, multiplier ) {
+      const symbolMap = {
+        "🍒": "Cherries",
+        "🍋": "Lemons",
+        "🍇": "Grapes",
+        "🍉": "Melons",
+        "⭐": "Stars"
+      };
+
+      const reelOne = symbolMap[result[0].symbol] || "Unknown";
+      const reelTwo = symbolMap[result[1].symbol] || "Unknown";
+      const reelThree = symbolMap[result[2].symbol] || "Unknown";
+
       const theQuery = `INSERT INTO fruitMachineAudit ( users_id, betAmount, reelOne, reelTwo, ReelThree, multiplier, winnings) VALUES (?, ?, ?, ?, ?, ?, ?);`;
-      const values = [ userID, betAmount, encodeURIComponent( result[ 0 ].symbol ), encodeURIComponent( result[ 1 ].symbol ), encodeURIComponent( result[ 2 ].symbol ), multiplier, betAmount * multiplier ];
+      const values = [ userID, betAmount, reelOne, reelTwo, reelThree, multiplier, betAmount * multiplier ];
 
       try {
         return await this.runQuery( theQuery, values );

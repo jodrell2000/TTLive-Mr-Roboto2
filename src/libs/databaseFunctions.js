@@ -326,7 +326,30 @@ const databaseFunctions = () => {
         throw error;
       }
     },
+
+    fruitMachineUserResults: async function ( userID ) {
+      const theQuery = `select SUM(fa.betAmount) as "Bets", SUM(fa.winnings) as "Winnings", COALESCE( ROUND( ( ( SUM(fa.winnings) / SUM(fa.betAmount) ) * 100 ), 2), 0) AS "%age payout" FROM fruitMachineAudit fa JOIN users u ON u.id=fa.users_id WHERE u.id = ?`;
+      const values = [ userID ];
+      try {
+        return await this.runQuery( theQuery, values );
+      } catch ( error ) {
+        console.error( 'Error in fruitMachineUserResults:', error.message );
+        throw error;
+      }
+    },
     
+    fruitMachineReelResults: async function () {
+      const theQuery = `SELECT symbol, ROUND(COUNT(CASE WHEN reelOne = symbol THEN 1 END) * 100.0 / COUNT(*), 2) AS reelOne_Percentage, ROUND(COUNT(CASE WHEN reelTwo = symbol THEN 1 END) * 100.0 / COUNT(*), 2) AS reelTwo_Percentage, ROUND(COUNT(CASE WHEN reelThree = symbol THEN 1 END) * 100.0 / COUNT(*), 2) AS reelThree_Percentage FROM ( SELECT reelOne AS symbol FROM fruitMachineAudit UNION SELECT reelTwo FROM fruitMachineAudit UNION SELECT reelThree FROM fruitMachineAudit ) AS uniqueSymbols CROSS JOIN fruitMachineAudit GROUP BY symbol ORDER BY NULL;`;
+      const values = [  ];
+      try {
+        return await this.runQuery( theQuery, values );
+      } catch ( error ) {
+        console.error( 'Error in fruitMachineReelResults:', error.message );
+        throw error;
+      }
+
+    },
+
     // ========================================================
 
     // ========================================================

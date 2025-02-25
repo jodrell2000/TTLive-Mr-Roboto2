@@ -375,6 +375,17 @@ const chatFunctions = ( ) => {
       }
     },
 
+    fruitMachineUserResults: async function ( data, userFunctions, databaseFunctions ) {
+      const userID = await userFunctions.whoSentTheCommand( data );
+      const results = databaseFunctions.fruitMachineUserResults( userID ) 
+      console.log(`results: ${ JSON.stringify( results, null, 2 ) }`);
+    },
+
+    fruitMachineReelResults: async function ( databaseFunctions ) {
+      const results = databaseFunctions.fruitMachineReelResults( )
+      console.log(`results: ${ JSON.stringify( results, null, 2 ) }`);
+    },
+
     // ========================================================
 
     userGreeting: async function ( userID, theUsername, roomFunctions, userFunctions, databaseFunctions ) {

@@ -266,6 +266,16 @@ const commandFunctions = () => {
   }
   chatCommands.odds.help = "Read the odds for the Fruit Machine";
 
+  chatCommands.fruitmachineresults = ( { chatFunctions, data, userFunctions, databaseFunctions } ) => {
+    chatFunctions.fruitMachineUserResults( data, userFunctions, databaseFunctions );
+  }
+  chatCommands.fruitmachineresults.help = "Tells you how much you've won/lost playing the fruit machine";
+
+  chatCommands.fruitmachinereels = ( { chatFunctions, databaseFunctions} ) => {
+    chatFunctions.fruitMachineReelResults( databaseFunctions );
+  }
+  chatCommands.fruitmachinereels.help = "Tells you the actual percentages for each symbol appearing";
+
 
   // #############################################
   // Testing commands

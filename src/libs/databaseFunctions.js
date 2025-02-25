@@ -294,11 +294,7 @@ const databaseFunctions = () => {
     },
 
     // ========================================================
-  //   select  u.username, SUM(fa.betAmount) as "Bets", SUM(fa.winnings) as "Winnings", 
-  //   COALESCE( ROUND(
-  //     ( (  SUM(fa.winnings) / SUM(fa.betAmount) ) * 100 )
-  //   , 2), 0) AS "%age payout" 
-  // from fruitMachineAudit fa join users u on u.id=fa.users_id GROUP BY fa.users_id;
+
     // ========================================================
     // Fruitmachine Audit Functions
     // ========================================================
@@ -343,7 +339,9 @@ const databaseFunctions = () => {
       const values = [  ];
       try {
         console.log(`query: ${theQuery}`)
-        return await this.runQuery( theQuery, values );
+        const result = await this.runQuery( theQuery, values );
+        console.log(`'result: ${ result }`)
+        return result
       } catch ( error ) {
         console.error( 'Error in fruitMachineReelResults:', error.message );
         throw error;

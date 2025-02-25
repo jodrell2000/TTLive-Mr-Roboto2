@@ -379,7 +379,7 @@ const chatFunctions = ( ) => {
       const userID = await userFunctions.whoSentTheCommand( data );
       const results = await databaseFunctions.fruitMachineUserResults( userID ) 
       const username = await userFunctions.getUsername( userID );
-      await this.botSpeak(`@${ username } you have spent ${ results[0].Bets } on the Fruit Machine. You've won ${ results[0].Winnings } giving you a win percentage of ${ results[0].payout }%`)
+      await this.botSpeak(`@${ username } you have spent ${ results[0].Bets }RC on the Fruit Machine. You've won ${ results[0].Winnings }RC giving you a win percentage of ${ results[0].payout }%`)
     },
 
     fruitMachineReelResults: async function ( databaseFunctions ) {

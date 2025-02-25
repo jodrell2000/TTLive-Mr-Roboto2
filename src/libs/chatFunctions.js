@@ -384,6 +384,7 @@ const chatFunctions = ( ) => {
 
     fruitMachineReelResults: async function ( databaseFunctions ) {
       const results = await databaseFunctions.fruitMachineReelResults( )
+      console.log(`results: ${ JSON.stringify(results, null, 2) }`)
     },
 
     // ========================================================

@@ -628,6 +628,7 @@ const botFunctions = () => {
           nextTrack = await this.getTrackToAdd(theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions);
           if (!nextTrack) {
             console.error("getTrackToAdd returned no track.");
+            await new Promise(resolve => setTimeout(resolve, 5 * 1000)); // Wait 5 seconds
             break;
           }
 

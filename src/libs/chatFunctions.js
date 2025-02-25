@@ -377,12 +377,12 @@ const chatFunctions = ( ) => {
 
     fruitMachineUserResults: async function ( data, userFunctions, databaseFunctions ) {
       const userID = await userFunctions.whoSentTheCommand( data );
-      const results = databaseFunctions.fruitMachineUserResults( userID ) 
+      const results = await databaseFunctions.fruitMachineUserResults( userID ) 
       console.log(`results: ${ JSON.stringify( results, null, 2 ) }`);
     },
 
     fruitMachineReelResults: async function ( databaseFunctions ) {
-      const results = databaseFunctions.fruitMachineReelResults( )
+      const results = await databaseFunctions.fruitMachineReelResults( )
       console.log(`results: ${ JSON.stringify( results, null, 2 ) }`);
     },
 

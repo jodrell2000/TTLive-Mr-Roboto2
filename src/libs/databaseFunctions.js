@@ -943,7 +943,7 @@ const databaseFunctions = () => {
                                     LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                            WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                  tp.playedLength > 60 AND
-                                 u.id = '${ process.env.USERID }' AND
+                                 u.id != '${ process.env.USERID }' AND
                                  DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                  (${ includeDays.join( ', ' ) })
                            GROUP BY COALESCE(v.artistDisplayName, v.artistName),
@@ -974,7 +974,7 @@ const databaseFunctions = () => {
                                     LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                            WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                  tp.playedLength > 60 AND
-                                 u.id = '${ process.env.USERID }' AND
+                                 u.id != '${ process.env.USERID }' AND
                                  DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                  (${ includeDays.join( ', ' ) })
                            GROUP BY COALESCE(v.artistDisplayName, v.artistName),
@@ -1004,7 +1004,7 @@ const databaseFunctions = () => {
                                     LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                            WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                  tp.playedLength > 60 AND
-                                 u.id = '${ process.env.USERID }' AND
+                                 u.id != '${ process.env.USERID }' AND
                                  DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                  (${ includeDays.join( ', ' ) })
                            GROUP BY COALESCE(v.artistDisplayName, v.artistName),
@@ -1044,7 +1044,7 @@ const databaseFunctions = () => {
                                           LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                                  WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                        tp.playedLength > 60 AND
-                                       u.id = '${ process.env.USERID }' AND
+                                       u.id != '${ process.env.USERID }' AND
                                        DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                        (${ includeDays.join( ', ' ) })
                                  GROUP BY tp.id, COALESCE(v.artistDisplayName, v.artistName)) trackPoints
@@ -1070,7 +1070,7 @@ const databaseFunctions = () => {
                            FROM tracksPlayed tp
                                     JOIN users u ON tp.djID = u.id
                            WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
-                                 u.id = '${ process.env.USERID }';`;
+                                 u.id != '${ process.env.USERID }';`;
       const values = [ startDate, endDate ];
 
       try {
@@ -1101,7 +1101,7 @@ const databaseFunctions = () => {
                                         LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                                  WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                        tp.playedLength > 60 AND
-                                       u.id = '${ process.env.USERID }'
+                                       u.id != '${ process.env.USERID }'
                                  GROUP BY tp.id, u.username) trackPoints
                            GROUP BY dj
                            ORDER BY 2 DESC

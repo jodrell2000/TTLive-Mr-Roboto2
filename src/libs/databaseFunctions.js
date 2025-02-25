@@ -1100,7 +1100,8 @@ const databaseFunctions = () => {
                                         LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
                                         LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                                  WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
-                                       tp.playedLength > 60
+                                       tp.playedLength > 60 AND
+                                       u.username != 'Mr. Roboto'
                                  GROUP BY tp.id, u.username) trackPoints
                            GROUP BY dj
                            ORDER BY 2 DESC

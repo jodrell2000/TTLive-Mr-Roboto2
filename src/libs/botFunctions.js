@@ -612,7 +612,6 @@ const botFunctions = () => {
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
-      console.group("prepareToSpin");
       const DJs = await userFunctions.djList();
       const botPosition = DJs.indexOf(authModule.USERID);
 
@@ -672,8 +671,6 @@ const botFunctions = () => {
           });
         }
       }
-
-      console.groupEnd();
     },
 
 

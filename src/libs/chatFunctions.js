@@ -313,15 +313,14 @@ const chatFunctions = ( ) => {
       bet = Number(bet); // Convert bet to a number
 
       const userPlaying = await userFunctions.whoSentTheCommand( data );
-      if ( await userFunctions.canUserAffordToSpendThisMuch( userPlaying, bet, chatFunctions, data ) ) {
-        await userFunctions.updateRoboCoins( userPlaying, await userFunctions.getRoboCoins( userPlaying ) - bet, databaseFunctions )
-        try {
-          await this.validateBet(bet, userPlaying, userFunctions, data, chatFunctions);
-  
+      await userFunctions.updateRoboCoins( userPlaying, await userFunctions.getRoboCoins( userPlaying ) - bet, databaseFunctions )
+      try {
+        await this.validateBet(bet, userPlaying, userFunctions, data, chatFunctions);
+        if ( await userFunctions.canUserAffordToSpendThisMuch( userPlaying, bet, chatFunctions, data ) ) {
           await this.playGame( userPlaying, bet, databaseFunctions, userFunctions );
-        } catch (error) {
-          console.error(error.message);
         }
+      } catch (error) {
+        console.error(error.message);
       }
     },
 

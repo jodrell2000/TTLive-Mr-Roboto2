@@ -342,6 +342,7 @@ const databaseFunctions = () => {
       const theQuery = `SELECT symbol, ROUND(COUNT(CASE WHEN reelOne = symbol THEN 1 END) * 100.0 / COUNT(*), 2) AS reelOne_Percentage, ROUND(COUNT(CASE WHEN reelTwo = symbol THEN 1 END) * 100.0 / COUNT(*), 2) AS reelTwo_Percentage, ROUND(COUNT(CASE WHEN reelThree = symbol THEN 1 END) * 100.0 / COUNT(*), 2) AS reelThree_Percentage FROM ( SELECT reelOne AS symbol FROM fruitMachineAudit UNION SELECT reelTwo FROM fruitMachineAudit UNION SELECT reelThree FROM fruitMachineAudit ) AS uniqueSymbols CROSS JOIN fruitMachineAudit GROUP BY symbol ORDER BY NULL;`;
       const values = [  ];
       try {
+        console.log(`query: ${theQuery}`)
         return await this.runQuery( theQuery, values );
       } catch ( error ) {
         console.error( 'Error in fruitMachineReelResults:', error.message );

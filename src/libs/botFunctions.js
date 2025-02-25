@@ -641,6 +641,7 @@ const botFunctions = () => {
           if (!matchingSong) {
             console.log(`No matching song found for "${nextSong}" by "${nextArtist}". Retrying...`);
             await this.previousPlaysManager.addTrack(nextTrack);  // Prevent re-picking this track
+            await new Promise(resolve => setTimeout(resolve, 1 * 1000)); // Wait 1 second
             continue; // Retry the loop
           }
 
@@ -654,6 +655,7 @@ const botFunctions = () => {
           if (isDuplicate) {
             console.log(`Skipping "${trackToCheck.song}" by "${trackToCheck.artist}" as it was recently played.`);
             await this.previousPlaysManager.addTrack(trackToCheck); // Prevent choosing again
+            await new Promise(resolve => setTimeout(resolve, 1 * 1000)); // Wait 1 second
             matchingSong = null; // Reset to trigger another loop iteration
           }
         }

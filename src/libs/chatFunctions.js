@@ -314,10 +314,11 @@ const chatFunctions = ( ) => {
 
       const userPlaying = await userFunctions.whoSentTheCommand( data );
       if ( await userFunctions.canUserAffordToSpendThisMuch( userPlaying, bet, chatFunctions, data ) ) {
+        await userFunctions.updateRoboCoins( userPlaying, await userFunctions.getRoboCoins( userPlaying ) - bet, databaseFunctions )
         try {
           await this.validateBet(bet, userPlaying, userFunctions, data, chatFunctions);
   
-          await this.playGame( userPlaying, bet, databaseFunctions );
+          await this.playGame( userPlaying, bet, databaseFunctions, userFunctions );
         } catch (error) {
           console.error(error.message);
         }
@@ -341,12 +342,13 @@ const chatFunctions = ( ) => {
       return true;
     },
 
-    spin: async function (userID, betAmount, databaseFunctions ) {
+    spin: async function (userID, betAmount, databaseFunctions, userFunctions ) {
       const result = [ await this.getRandomSymbol(), await this.getRandomSymbol(), await this.getRandomSymbol() ];
       await this.botSpeak( `Spun: ${ result.map( s => s.symbol ).join( " | " ) }` )
       if ( result[ 0 ].symbol === result[ 1 ].symbol && result[ 1 ].symbol === result[ 2 ].symbol ) {
         const payout = result[ 0 ].payout;
         await this.botSpeak( `JACKPOT! You win ${ payout }:1!` )
+        await userFunctions.updateRoboCoins( userID, await userFunctions.getRoboCoins( userID ) + payout, databaseFunctions )
         await databaseFunctions.fruitMachineAuditEntry( userID, betAmount, result, payout, databaseFunctions)
         return payout;
       } else {
@@ -356,9 +358,9 @@ const chatFunctions = ( ) => {
       }
     },
 
-    playGame: async function ( userID, betAmount, databaseFunctions ) {
+    playGame: async function ( userID, betAmount, databaseFunctions, userFunctions ) {
       await this.botSpeak( "Spinning..." )
-      const multiplier = await this.spin( userID, betAmount, databaseFunctions );
+      const multiplier = await this.spin( userID, betAmount, databaseFunctions, userFunctions );
       const winnings = betAmount * multiplier;
       await this.botSpeak( `You bet ${ betAmount }, and won ${ winnings }!` )
     },

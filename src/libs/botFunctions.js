@@ -698,6 +698,7 @@ const botFunctions = () => {
 
           if (await this.isDuplicateTrack(nextTrack, databaseFunctions)) {
             console.log(`Track "${nextTrack.song}" by "${nextTrack.artist}" was recently played. Picking another...`);
+            await new Promise(resolve => setTimeout(resolve, 1 * 1000)); // Wait 1 second
             await this.previousPlaysManager.addTrack(nextTrack);
             nextTrack = null; // Trigger another retry
             continue;

@@ -385,6 +385,14 @@ const chatFunctions = ( ) => {
     fruitMachineReelResults: async function ( databaseFunctions ) {
       const results = await databaseFunctions.fruitMachineReelResults( )
       console.log(`results: ${ JSON.stringify(results, null, 2) }`)
+
+      const symbolOrder = ["Cherries", "Lemons", "Grapes", "Melons", "Stars"];
+      const sortedResults = results.sort((a, b) => symbolOrder.indexOf(a.symbol) - symbolOrder.indexOf(b.symbol));
+      const reelSummaries = sortedResults.map(result =>
+        `${result.symbol}: Reel 1 - ${result.reelOne_Percentage}%, Reel 2 - ${result.reelTwo_Percentage}%, Reel 3 - ${result.reelThree_Percentage}%`
+      ).join("\n");
+
+      await this.botSpeak(`Symbol Distribution:\n${reelSummaries}` );
     },
 
     // ========================================================

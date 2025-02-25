@@ -313,14 +313,16 @@ const chatFunctions = ( ) => {
       bet = Number(bet); // Convert bet to a number
 
       const userPlaying = await userFunctions.whoSentTheCommand( data );
-      // await userFunctions.canUserAffordToSpendThisMuch( userPlaying, bet, chatFunctions, data );
-
-      try {
-        await this.validateBet(bet, userPlaying, userFunctions, data, chatFunctions);
-
-        await this.playGame( userPlaying, bet, databaseFunctions );
-      } catch (error) {
-        console.error(error.message);
+      if ( await userFunctions.canUserAffordToSpendThisMuch( userPlaying, bet, chatFunctions, data ) ) {
+        try {
+          await this.validateBet(bet, userPlaying, userFunctions, data, chatFunctions);
+  
+          await this.playGame( userPlaying, bet, databaseFunctions );
+        } catch (error) {
+          console.error(error.message);
+        }
+      } else {
+        await this.botSpeak(`Sorry @${await userFunctions.getUsername( userPlaying )}, but you don't have enough RC to place that bet.`);
       }
     },
 

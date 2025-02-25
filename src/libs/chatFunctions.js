@@ -321,8 +321,6 @@ const chatFunctions = ( ) => {
         } catch (error) {
           console.error(error.message);
         }
-      } else {
-        await this.botSpeak(`Sorry @${await userFunctions.getUsername( userPlaying )}, but you don't have enough RC to place that bet.`);
       }
     },
 

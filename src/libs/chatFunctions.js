@@ -348,7 +348,7 @@ const chatFunctions = ( ) => {
       if ( result[ 0 ].symbol === result[ 1 ].symbol && result[ 1 ].symbol === result[ 2 ].symbol ) {
         const payout = result[ 0 ].payout;
         await this.botSpeak( `JACKPOT! You win ${ payout }:1!` )
-        await userFunctions.updateRoboCoins( userID, await userFunctions.getRoboCoins( userID ) + payout, databaseFunctions )
+        await userFunctions.updateRoboCoins( userID, await userFunctions.getRoboCoins( userID ) + ( payout * betAmount ), databaseFunctions )
         await databaseFunctions.fruitMachineAuditEntry( userID, betAmount, result, payout, databaseFunctions)
         return payout;
       } else {

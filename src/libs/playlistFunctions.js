@@ -190,7 +190,7 @@ const playlistFunctions = ( ) => {
 
       while (attempts < maxAttempts) {
         try {
-          const searchString = `${artistName} ${trackName}`;
+          const searchString = `${trackName} ${artistName}`;
           const url = `https://playlists.prod.tt.fm/search?q=${encodeURIComponent(searchString)}`;
 
           console.log(`Attempt ${attempts + 1}: Fetching ${url}`);

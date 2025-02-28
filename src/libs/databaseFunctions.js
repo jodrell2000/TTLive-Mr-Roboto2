@@ -296,6 +296,59 @@ const databaseFunctions = () => {
     // ========================================================
 
     // ========================================================
+    // Fruitmachine Audit Functions
+    // ========================================================
+
+    fruitMachineAuditEntry: async function ( userID, betAmount, result, multiplier ) {
+      const symbolMap = {
+        "🍒": "Cherries",
+        "🍋": "Lemons",
+        "🍇": "Grapes",
+        "🍉": "Melons",
+        "⭐": "Stars"
+      };
+
+      const reelOne = symbolMap[result[0].symbol] || "Unknown";
+      const reelTwo = symbolMap[result[1].symbol] || "Unknown";
+      const reelThree = symbolMap[result[2].symbol] || "Unknown";
+
+      const theQuery = `INSERT INTO fruitMachineAudit ( users_id, betAmount, reelOne, reelTwo, ReelThree, multiplier, winnings) VALUES (?, ?, ?, ?, ?, ?, ?);`;
+      const values = [ userID, betAmount, reelOne, reelTwo, reelThree, multiplier, betAmount * multiplier ];
+
+      try {
+        return await this.runQuery( theQuery, values );
+      } catch ( error ) {
+        console.error( 'Error in fruitMachineAuditEntry:', error.message );
+        throw error;
+      }
+    },
+
+    fruitMachineUserResults: async function ( userID ) {
+      const theQuery = `select SUM(fa.betAmount) as "Bets", SUM(fa.winnings) as "Winnings", COALESCE( ROUND( ( ( SUM(fa.winnings) / SUM(fa.betAmount) ) * 100 ), 2), 0) AS "payout" FROM fruitMachineAudit fa JOIN users u ON u.id=fa.users_id WHERE u.id = ?`;
+      const values = [ userID ];
+      try {
+        return await this.runQuery( theQuery, values );
+      } catch ( error ) {
+        console.error( 'Error in fruitMachineUserResults:', error.message );
+        throw error;
+      }
+    },
+    
+    fruitMachineReelResults: async function () {
+      const theQuery = `SELECT symbol, ROUND(COUNT(CASE WHEN reelOne = symbol THEN 1 END) * 100.0 / COUNT(*), 2) AS reelOne_Percentage, ROUND(COUNT(CASE WHEN reelTwo = symbol THEN 1 END) * 100.0 / COUNT(*), 2) AS reelTwo_Percentage, ROUND(COUNT(CASE WHEN reelThree = symbol THEN 1 END) * 100.0 / COUNT(*), 2) AS reelThree_Percentage FROM ( SELECT reelOne AS symbol FROM fruitMachineAudit UNION SELECT reelTwo FROM fruitMachineAudit UNION SELECT reelThree FROM fruitMachineAudit ) AS uniqueSymbols CROSS JOIN fruitMachineAudit GROUP BY symbol ORDER BY NULL;`;
+      const values = [  ];
+      try {
+        return await this.runQuery( theQuery, values );
+      } catch ( error ) {
+        console.error( 'Error in fruitMachineReelResults:', error.message );
+        throw error;
+      }
+
+    },
+
+    // ========================================================
+
+    // ========================================================
     // BBBoot Functions
     // ========================================================
 
@@ -890,7 +943,7 @@ const databaseFunctions = () => {
                                     LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                            WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                  tp.playedLength > 60 AND
-                                 u.username != 'Mr. Roboto' AND
+                                 u.id != '${ process.env.USERID }' AND
                                  DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                  (${ includeDays.join( ', ' ) })
                            GROUP BY COALESCE(v.artistDisplayName, v.artistName),
@@ -921,7 +974,7 @@ const databaseFunctions = () => {
                                     LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                            WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                  tp.playedLength > 60 AND
-                                 u.username != 'Mr. Roboto' AND
+                                 u.id != '${ process.env.USERID }' AND
                                  DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                  (${ includeDays.join( ', ' ) })
                            GROUP BY COALESCE(v.artistDisplayName, v.artistName),
@@ -951,7 +1004,7 @@ const databaseFunctions = () => {
                                     LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                            WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                  tp.playedLength > 60 AND
-                                 u.username != 'Mr. Roboto' AND
+                                 u.id != '${ process.env.USERID }' AND
                                  DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                  (${ includeDays.join( ', ' ) })
                            GROUP BY COALESCE(v.artistDisplayName, v.artistName),
@@ -991,7 +1044,7 @@ const databaseFunctions = () => {
                                           LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                                  WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
                                        tp.playedLength > 60 AND
-                                       u.username != 'Mr. Roboto' AND
+                                       u.id != '${ process.env.USERID }' AND
                                        DAYOFWEEK(CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central')) IN
                                        (${ includeDays.join( ', ' ) })
                                  GROUP BY tp.id, COALESCE(v.artistDisplayName, v.artistName)) trackPoints
@@ -1017,7 +1070,7 @@ const databaseFunctions = () => {
                            FROM tracksPlayed tp
                                     JOIN users u ON tp.djID = u.id
                            WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
-                                 u.username != 'Mr. Roboto';`;
+                                 u.id != '${ process.env.USERID }';`;
       const values = [ startDate, endDate ];
 
       try {
@@ -1047,7 +1100,8 @@ const databaseFunctions = () => {
                                         LEFT JOIN extendedTrackStats e ON e.tracksPlayed_id = tp.id
                                         LEFT JOIN commandsToCount c ON c.id = e.commandsToCount_id
                                  WHERE CONVERT_TZ(tp.whenPlayed, 'UTC', 'US/Central') BETWEEN ? AND ? AND
-                                       tp.playedLength > 60
+                                       tp.playedLength > 60 AND
+                                       u.id != '${ process.env.USERID }'
                                  GROUP BY tp.id, u.username) trackPoints
                            GROUP BY dj
                            ORDER BY 2 DESC

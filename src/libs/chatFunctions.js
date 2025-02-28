@@ -281,6 +281,116 @@ const chatFunctions = ( ) => {
       await this.botSpeak( theMessage, true );
     },
 
+
+    // ========================================================
+
+    // ========================================================
+    // Fruit machine functions
+    // ========================================================
+
+    symbols: () => [
+      { symbol: "🍒", payout: 2, probability: 0.58 },  // ~18% full line
+      { symbol: "🍋", payout: 3, probability: 0.22 },  // ~8% full line
+      { symbol: "🍇", payout: 4, probability: 0.12 },  // ~3% full line
+      { symbol: "🍉", payout: 5, probability: 0.06 },  // ~2% full line
+      { symbol: "⭐", payout: 10, probability: 0.02 }  // ~1% full line
+    ],
+
+    getRandomSymbol: async function () {
+      const rand = Math.random();
+      let cumulative = 0;
+      for (const item of this.symbols()) {
+        cumulative += item.probability;
+        if (rand < cumulative) {
+          return item;
+        }
+      }
+      return this.symbols[this.symbols.length - 1];
+    },
+    
+    fruitMachine: async function ( data, args, userFunctions, databaseFunctions, chatFunctions ) {
+      let [ bet, ...restArgs ] = args;
+      bet = Number(bet); // Convert bet to a number
+
+      const userPlaying = await userFunctions.whoSentTheCommand( data );
+      try {
+        await this.validateBet(bet, userPlaying, userFunctions, data, chatFunctions);
+        if ( await userFunctions.canUserAffordToSpendThisMuch( userPlaying, bet, chatFunctions, data ) ) {
+          await userFunctions.updateRoboCoins( userPlaying, await userFunctions.getRoboCoins( userPlaying ) - bet, databaseFunctions )
+          await this.playGame( userPlaying, bet, databaseFunctions, userFunctions );
+        }
+      } catch (error) {
+        console.error(error.message);
+      }
+    },
+
+    validateBet: async function ( numCoins, sendingUserID, userFunctions, data, chatFunctions ) {
+      if (numCoins === undefined || isNaN(numCoins)) {
+        await this.botSpeak(`@${await userFunctions.getUsername(sendingUserID)} you must provide a number of coins to bet, eg. /fruitmachine 2`);
+        throw new Error("Invalid number of coins");
+      }
+      if (numCoins < 1 || numCoins > 10 || !Number.isInteger(numCoins)) {
+        await this.botSpeak(`@${await userFunctions.getUsername(sendingUserID)} you can only bet a whole number of RC between 1 and 10.`);
+        throw new Error("Bet out of range");
+      }
+      
+      if ( ! await userFunctions.canUserAffordToSpendThisMuch( sendingUserID, numCoins, chatFunctions, data )) {
+        await this.botSpeak(`Sorry @${await userFunctions.getUsername(sendingUserID)}, you can't afford to bet that much.`);
+        throw new Error("User can't afford the bet");
+      }
+      return true;
+    },
+
+    spin: async function (userID, betAmount, databaseFunctions, userFunctions ) {
+      const result = [ await this.getRandomSymbol(), await this.getRandomSymbol(), await this.getRandomSymbol() ];
+      await this.botSpeak( `Spun: ${ result.map( s => s.symbol ).join( " | " ) }` )
+      if ( result[ 0 ].symbol === result[ 1 ].symbol && result[ 1 ].symbol === result[ 2 ].symbol ) {
+        const payout = result[ 0 ].payout;
+        await this.botSpeak( `JACKPOT! You win ${ payout }:1!` )
+        await userFunctions.updateRoboCoins( userID, await userFunctions.getRoboCoins( userID ) + ( payout * betAmount ), databaseFunctions )
+        await databaseFunctions.fruitMachineAuditEntry( userID, betAmount, result, payout, databaseFunctions)
+        return payout;
+      } else {
+        await this.botSpeak( "No win, try again!" )
+        await databaseFunctions.fruitMachineAuditEntry( userID, betAmount, result, 0, databaseFunctions)
+        return 0;
+      }
+    },
+
+    playGame: async function ( userID, betAmount, databaseFunctions, userFunctions ) {
+      await this.botSpeak( "Spinning..." )
+      const multiplier = await this.spin( userID, betAmount, databaseFunctions, userFunctions );
+      const winnings = betAmount * multiplier;
+      await this.botSpeak( `You bet ${ betAmount }, and won ${ winnings }!` )
+    },
+
+    odds: async function () {
+      await this.botSpeak("Here are the odds for each symbol:");
+      for (const item of this.symbols()) {
+        const lineProbability = Math.pow(item.probability, 3) * 100;
+        await this.botSpeak(`${item.symbol}: ${(item.probability * 100).toFixed(2)}% chance per reel, ${lineProbability.toFixed(2)}% chance for a full line, Payout: ${item.payout}:1`);
+      }
+    },
+
+    fruitMachineUserResults: async function ( data, userFunctions, databaseFunctions ) {
+      const userID = await userFunctions.whoSentTheCommand( data );
+      const results = await databaseFunctions.fruitMachineUserResults( userID ) 
+      const username = await userFunctions.getUsername( userID );
+      
+      await this.botSpeak(`@${ username } you have spent ${ results[0].Bets }RC on the Fruit Machine. You've won ${ results[0].Winnings }RC giving you a win percentage of ${ results[0].payout }%`)
+    },
+
+    fruitMachineReelResults: async function ( databaseFunctions ) {
+      const results = await databaseFunctions.fruitMachineReelResults( )
+      const symbolOrder = ["Cherries", "Lemons", "Grapes", "Melons", "Stars"];
+      const sortedResults = results.sort((a, b) => symbolOrder.indexOf(a.symbol) - symbolOrder.indexOf(b.symbol));
+      const reelSummaries = sortedResults.map(result =>
+        `${result.symbol}: Reel 1 - ${result.reelOne_Percentage}%, Reel 2 - ${result.reelTwo_Percentage}%, Reel 3 - ${result.reelThree_Percentage}%`
+      ).join("\n");
+
+      await this.botSpeak(`Symbol Distribution:\n${reelSummaries}` );
+    },
+
     // ========================================================
 
     userGreeting: async function ( userID, theUsername, roomFunctions, userFunctions, databaseFunctions ) {

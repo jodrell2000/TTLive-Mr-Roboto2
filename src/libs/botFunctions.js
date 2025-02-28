@@ -612,7 +612,6 @@ const botFunctions = () => {
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
-      console.group("prepareToSpin");
       const DJs = await userFunctions.djList();
       const botPosition = DJs.indexOf(authModule.USERID);
 
@@ -628,6 +627,7 @@ const botFunctions = () => {
           nextTrack = await this.getTrackToAdd(theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions);
           if (!nextTrack) {
             console.error("getTrackToAdd returned no track.");
+            await new Promise(resolve => setTimeout(resolve, 5 * 1000)); // Wait 5 seconds
             break;
           }
 
@@ -640,6 +640,7 @@ const botFunctions = () => {
           if (!matchingSong) {
             console.log(`No matching song found for "${nextSong}" by "${nextArtist}". Retrying...`);
             await this.previousPlaysManager.addTrack(nextTrack);  // Prevent re-picking this track
+            await new Promise(resolve => setTimeout(resolve, 1 * 1000)); // Wait 1 second
             continue; // Retry the loop
           }
 
@@ -653,6 +654,7 @@ const botFunctions = () => {
           if (isDuplicate) {
             console.log(`Skipping "${trackToCheck.song}" by "${trackToCheck.artist}" as it was recently played.`);
             await this.previousPlaysManager.addTrack(trackToCheck); // Prevent choosing again
+            await new Promise(resolve => setTimeout(resolve, 1 * 1000)); // Wait 1 second
             matchingSong = null; // Reset to trigger another loop iteration
           }
         }
@@ -669,8 +671,6 @@ const botFunctions = () => {
           });
         }
       }
-
-      console.groupEnd();
     },
 
 
@@ -698,6 +698,7 @@ const botFunctions = () => {
 
           if (await this.isDuplicateTrack(nextTrack, databaseFunctions)) {
             console.log(`Track "${nextTrack.song}" by "${nextTrack.artist}" was recently played. Picking another...`);
+            await new Promise(resolve => setTimeout(resolve, 1 * 1000)); // Wait 1 second
             await this.previousPlaysManager.addTrack(nextTrack);
             nextTrack = null; // Trigger another retry
             continue;

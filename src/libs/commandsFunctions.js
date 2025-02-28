@@ -4,6 +4,7 @@ import chatCommandItems from '../defaults/chatCommandItems.js'
 import Storage from 'node-storage';
 import { dirname } from 'path';
 import { logger } from "../utils/logging.js";
+import chatFunctions from "./chatFunctions.js";
 
 const generalCommands = {};
 const userCommands = {};
@@ -254,6 +255,27 @@ const commandFunctions = () => {
     userFunctions.whosAFK( data, chatFunctions );
   }
   userCommands.whosafk.help = "Tells you which users have enabled AFK";
+
+  chatCommands.fruitmachine = ( { chatFunctions, data, args, userFunctions, databaseFunctions } ) => {
+    chatFunctions.fruitMachine( data, args, userFunctions, databaseFunctions, chatFunctions );
+  }
+  chatCommands.fruitmachine.help = "Gamble your RC away";
+
+  chatCommands.odds = ( { chatFunctions, data} ) => {
+    chatFunctions.odds( data );
+  }
+  chatCommands.odds.help = "Read the odds for the Fruit Machine";
+
+  chatCommands.fruitmachineresults = ( { chatFunctions, data, userFunctions, databaseFunctions } ) => {
+    chatFunctions.fruitMachineUserResults( data, userFunctions, databaseFunctions );
+  }
+  chatCommands.fruitmachineresults.help = "Tells you how much you've won/lost playing the fruit machine";
+
+  chatCommands.fruitmachinereels = ( { chatFunctions, databaseFunctions} ) => {
+    chatFunctions.fruitMachineReelResults( databaseFunctions );
+  }
+  chatCommands.fruitmachinereels.help = "Tells you the actual percentages for each symbol appearing";
+
 
   // #############################################
   // Testing commands

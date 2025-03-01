@@ -5,10 +5,11 @@ import { joinChat, getMessages, getUserMessages } from './cometchat.js'
 import { logger } from '../utils/logging.js'
 import handlers from '../handlers/index.js'
 import startup from '../libs/startup.js'
-import playlistFunctions from "./playlistFunctions.js";
+import { CometChat } from '@cometchat/chat-sdk-javascript'
+import playlistFunctions from './playlistFunctions.js'
 
 export class Bot {
-  constructor( slug ) {
+  constructor (slug) {
     this.lastMessageIDs = {}
   }
 
@@ -16,25 +17,25 @@ export class Bot {
   // Connection functions
   // ========================================================
 
-  async connect( roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions ) {
-    logger.debug( 'Connecting to room' )
-    await joinChat( process.env.ROOM_UUID )
+  async connect (roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions) {
+    logger.debug('Connecting to room')
+    await joinChat(process.env.ROOM_UUID)
 
-    this.socket = new SocketClient( 'https://socket.prod.tt.fm' )
+    this.socket = new SocketClient('https://socket.prod.tt.fm')
 
-    const connection = await this.socket.joinRoom( process.env.TTL_USER_TOKEN, {
+    const connection = await this.socket.joinRoom(process.env.TTL_USER_TOKEN, {
       roomUuid: process.env.ROOM_UUID
-    } )
+    })
     this.state = connection.state
 
-    this.socket.on("reconnect", async () => {
-      const { state } = await this.socket.joinRoom( process.env.TTL_USER_TOKEN, {
+    this.socket.on('reconnect', async () => {
+      const { state } = await this.socket.joinRoom(process.env.TTL_USER_TOKEN, {
         roomUuid: process.env.ROOM_UUID
-      } );
+      })
       this.state = connection.state
-    });
+    })
 
-    await startup( process.env.ROOM_UUID, this.state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions )
+    await startup(process.env.ROOM_UUID, this.state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions)
   }
 
   // ========================================================
@@ -61,105 +62,121 @@ export class Bot {
   //   }
   // }
 
-  async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
-    const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp )
-    if ( response?.data ) {
+  async processNewMessages (commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions) {
+    const response = await getMessages(process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp)
+    if (response?.data) {
       const messages = response.data
-      if ( messages?.length ) {
-        for ( const message in messages ) {
-          this.lastMessageIDs.fromTimestamp = messages[ message ].sentAt + 1
-          const customMessage = messages[ message ]?.data?.customData?.message ?? ''
-          if ( !customMessage ) return
-          const sender = messages[ message ]?.sender ?? ''
-          if ( [ process.env.CHAT_USER_ID, process.env.CHAT_REPLY_ID ].includes( sender ) ) return
-          handlers.message( {
+      if (messages?.length) {
+        for (const message in messages) {
+          this.lastMessageIDs.fromTimestamp = messages[message].sentAt + 1
+          const customMessage = messages[message]?.data?.customData?.message ?? ''
+          if (!customMessage) return
+          const sender = messages[message]?.sender ?? ''
+          if ([process.env.CHAT_USER_ID, process.env.CHAT_REPLY_ID].includes(sender)) return
+          handlers.message({
             message: customMessage,
             sender,
-            senderName: messages[ message ]?.data?.customData?.userName
-          }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions, this.socket )
+            senderName: messages[message]?.data?.customData?.userName
+          }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions, this.socket)
         }
       }
     }
   }
 
-  ensurePathExists( obj, path ) {
-    let keys = path.split( '/' );
-    keys.shift(); // Remove the leading empty string from splitting at '/'
-    let current = obj;
+  ensurePathExists (obj, path) {
+    let keys = path.split('/')
+    keys.shift() // Remove the leading empty string from splitting at '/'
+    let current = obj
 
-    for ( let i = 0; i < keys.length; i++ ) {
-      if ( !current[ keys[ i ] ] ) {
-        current[ keys[ i ] ] = {};
+    for (let i = 0; i < keys.length; i++) {
+      if (!current[keys[i]]) {
+        current[keys[i]] = {}
       }
-      current = current[ keys[ i ] ];
+      current = current[keys[i]]
     }
   }
 
-  configureListeners( socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
-    const self = this
-    logger.debug( 'Setting up listeners' )
+  configureListeners (socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions) {
 
-    this.socket.on( 'statefulMessage', async payload => {
+    const cometListenerID = process.env.CHAT_TOKEN
+    CometChat.addMessageListener(
+      cometListenerID,
+      new CometChat.MessageListener({
+        onTextMessageReceived: (textMessage) => {
+          console.log('Text message received successfully', textMessage)
+        },
+        onMediaMessageReceived: (mediaMessage) => {
+          console.log('Media message received successfully', mediaMessage)
+        },
+        onCustomMessageReceived: (customMessage) => {
+          console.log('Custom message received successfully', customMessage)
+        },
+      })
+    )
+
+    const self = this
+    logger.debug('Setting up listeners')
+
+    this.socket.on('statefulMessage', async payload => {
       // logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
 
       try {
-        payload.statePatch.forEach( patch => {
-          if ( patch.op === 'replace' || patch.op === 'add' ) {
+        payload.statePatch.forEach(patch => {
+          if (patch.op === 'replace' || patch.op === 'add') {
             // logger.debug( `patch: ${ JSON.stringify( patch ) }` )
-            this.ensurePathExists( self.state, patch.path );
+            this.ensurePathExists(self.state, patch.path)
           }
-        } );
-        self.state = fastJson.applyPatch( self.state, payload.statePatch ).newDocument;
-      } catch ( error ) {
-        console.error( 'Error applying patch:', error );
+        })
+        self.state = fastJson.applyPatch(self.state, payload.statePatch).newDocument
+      } catch (error) {
+        console.error('Error applying patch:', error)
         // console.error( 'Payload state patch:', JSON.stringify( payload.statePatch, null, 2 ) );
         // console.error( 'Current state:', JSON.stringify( self.state, null, 2 ) );
       }
 
-
-      if  ( ["userJoined", "userLeft", "addedDj", "removedDj"].includes(payload.name) ) {
-        await handlers[ payload.name ]( self.state, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions )
-      } else  if ( payload.name === "votedOnSong" ) {
+      if (['userJoined', 'userLeft', 'addedDj', 'removedDj'].includes(payload.name)) {
+        await handlers[payload.name](self.state, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions)
+      } else if (payload.name === 'votedOnSong') {
         // console.log("Do nothing, handled by serverMessage")
       } else {
-        if ( handlers[ payload.name ] ) {
-          await handlers[ payload.name ]( self.state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, this.socket, mlFunctions, playlistFunctions )
+        if (handlers[payload.name]) {
+          await handlers[payload.name](self.state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, this.socket, mlFunctions, playlistFunctions)
         }
       }
-    } )
+    })
 
-    this.socket.on( "statelessMessage", ( payload ) => {
-      switch ( payload.name ) {
-        case "playedOneTimeAnimation":
+    this.socket.on('statelessMessage', (payload) => {
+      switch (payload.name) {
+        case 'playedOneTimeAnimation':
           // logger.debug( `User ${ payload.params.userUuid } playedOneTimeAnimation` )
-          handlers.playedOneTimeAnimation( payload, userFunctions, songFunctions, databaseFunctions )
-          break;
-        case "kickedFromRoom":
-          break;
+          handlers.playedOneTimeAnimation(payload, userFunctions, songFunctions, databaseFunctions)
+          break
+        case 'kickedFromRoom':
+          break
         default:
-          logger.debug( `statelessMessage: ${ payload.name } -------------------------------------------` )
-          break;
+          logger.debug(`statelessMessage: ${payload.name} -------------------------------------------`)
+          break
       }
-    } );
+    })
 
-    this.socket.on( "serverMessage", ( payload ) => {
+    this.socket.on('serverMessage', (payload) => {
       // logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
 
-      if ( ["votedOnSong"].includes(payload.message.name) ) {
+      if (['votedOnSong'].includes(payload.message.name)) {
         // logger.debug(payload)
-        handlers[ payload.message.name ]( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
+        handlers[payload.message.name](payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions)
       } else {
-        if ( payload.message.statePatch ) {
+        if (payload.message.statePatch) {
           try {
-            payload.message.statePatch.forEach( patch => {
-              if ( patch.op === 'replace' || patch.op === 'add' ) {
+            payload.message.statePatch.forEach(patch => {
+              if (patch.op === 'replace' || patch.op === 'add') {
                 // logger.debug( `patch: ${ JSON.stringify( patch ) }` )
-                this.ensurePathExists( self.state, patch.path );
+                this.ensurePathExists(self.state, patch.path)
               }
-            } );
-            self.state = fastJson.applyPatch( self.state, payload.message.statePatch ).newDocument;
-          } catch ( error ) {
-            console.error( 'Error applying patch:', error );
+            })
+            self.state = fastJson.applyPatch(self.state, payload.message.statePatch).newDocument
+          } catch (error) {
+            console.error('Error applying patch:', error)
             // console.error( 'Payload state patch:', JSON.stringify( payload.statePatch, null, 2 ) );
             // console.error( 'Current state:', JSON.stringify( self.state, null, 2 ) );
           }
@@ -169,16 +186,16 @@ export class Bot {
           // logger.debug( `-------------------------------------------` )
         }
       }
-    } );
+    })
 
-    this.socket.on( "error", async ( message ) => {
-      logger.debug( `error --------------------------------------------` )
-      logger.debug( `error ${ message }` )
-      switch ( message ) {
-        case "Nothing is playing right now.":
-          handlers.nothingPlaying( userFunctions, databaseFunctions, botFunctions )
-          break;
+    this.socket.on('error', async (message) => {
+      logger.debug(`error --------------------------------------------`)
+      logger.debug(`error ${message}`)
+      switch (message) {
+        case 'Nothing is playing right now.':
+          handlers.nothingPlaying(userFunctions, databaseFunctions, botFunctions)
+          break
       }
-    } );
+    })
   }
 }

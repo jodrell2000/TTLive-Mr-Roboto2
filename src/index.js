@@ -14,10 +14,20 @@ import botFunctions from './libs/botFunctions.js'
 import mlFunctions from './libs/mlFunctions.js'
 import playlistFunctions from './libs/playlistFunctions.js'
 
+// web pages 'n' stuff!
+import express, { query } from 'express'
+import path from 'path'
+import pug from 'pug'
+import bodyParser from 'body-parser'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc.js'
+import bcrypt from 'bcrypt'
+import session from 'express-session'
+
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason)
   // Recommended: send the information to a logging service or write to a log file
-});
+})
 
 const commandFunctionsInstance = commandFunctions()
 const userFunctionsInstance = userFunctions()
@@ -32,72 +42,63 @@ const botFunctionsInstance = botFunctions()
 const mlFunctionsInstance = mlFunctions()
 const playlistFunctionsInstance = playlistFunctions()
 
-const roomBot = new Bot( process.env.JOIN_ROOM )
-await roomBot.connect( roomFunctionsInstance, userFunctionsInstance, chatFunctionsInstance, songFunctionsInstance, botFunctionsInstance, databaseFunctionsInstance )
-roomBot.configureListeners( roomBot.socket, commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance, playlistFunctionsInstance )
+const roomBot = new Bot(process.env.JOIN_ROOM)
+await roomBot.connect(roomFunctionsInstance, userFunctionsInstance, chatFunctionsInstance, songFunctionsInstance, botFunctionsInstance, databaseFunctionsInstance)
+roomBot.configureListeners(roomBot.socket, commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance, playlistFunctionsInstance)
 const repeatedTasks = new Chain()
 repeatedTasks
-  .add( () => roomBot.processNewMessages( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance, playlistFunctionsInstance ) )
+  .add(() => roomBot.processNewMessages(commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance, playlistFunctionsInstance))
   // .add( () => roomBot.processUserMessages( commandFunctionsInstance, userFunctionsInstance, videoFunctionsInstance, botFunctionsInstance, chatFunctionsInstance, roomFunctionsInstance, songFunctionsInstance, databaseFunctionsInstance, documentationFunctionsInstance, dateFunctionsInstance, mlFunctionsInstance, playlistFunctionsInstance ) )
-  .every( 100 )
+  .every(100)
 
-// web pages 'n' stuff!
-import express, { query } from 'express';
-const app = express();
-import path from 'path'
-import pug from 'pug'
-import bodyParser from 'body-parser'
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc.js'
-dayjs.extend( utc )
-import bcrypt from 'bcrypt'
-import session from 'express-session'
+const app = express()
 
+dayjs.extend(utc)
 
-app.use( session( {
+app.use(session({
   secret: 'your_secret_key',
   resave: false,
   saveUninitialized: true
-} ) );
+}))
 
 // serve static files from the images folder
-app.use( '/images', express.static( '/home/jodrell/apps/mr_roboto/TTLive-Mr-Roboto2/images' ) );
+app.use('/images', express.static('/home/jodrell/apps/mr_roboto/TTLive-Mr-Roboto2/images'))
 
 // client authentication
-app.use( ( req, res, next ) => {
-  if ( req.originalUrl === '/login' || req.originalUrl === '/signup' || req.originalUrl === '/instructions' || req.originalUrl === '/images' ) {
-    return next();
+app.use((req, res, next) => {
+  if (req.originalUrl === '/login' || req.originalUrl === '/signup' || req.originalUrl === '/instructions' || req.originalUrl === '/images') {
+    return next()
   }
-  protectRoute( req, res, next );
-} );
+  protectRoute(req, res, next)
+})
 
-app.use( `/scripts`, express.static( './scripts' ) );
-app.use( `/modules`, express.static( './node_modules' ) );
-app.use( `/styles`, express.static( './styles' ) );
-app.use( express.json() );
-app.use( bodyParser.urlencoded( { extended: false } ) );
+app.use('/scripts', express.static('./scripts'))
+app.use('/modules', express.static('./node_modules'))
+app.use('/styles', express.static('./styles'))
+app.use(express.json())
+app.use(bodyParser.urlencoded({ extended: false }))
 
 // ########################################################################
 // DB Song Editor
 // ########################################################################
 
-app.get( '/listunverified', async ( req, res ) => {
+app.get('/listunverified', async (req, res) => {
   try {
-    const sortParam = req.body.sort || req.query.sort || '';
-    const whereParam = req.body.where || req.query.where || '';
-    const searchParam = req.body.searchTerm || req.query.searchTerm || '';
-    const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || '';
-    const dbSearchArgs = req.query || req.body;
+    const sortParam = req.body.sort || req.query.sort || ''
+    const whereParam = req.body.where || req.query.where || ''
+    const searchParam = req.body.searchTerm || req.query.searchTerm || ''
+    const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || ''
+    const dbSearchArgs = req.query || req.body
 
-    const songList = await databaseFunctionsInstance.getUnverifiedSongList( dbSearchArgs );
-    const dbStats = await databaseFunctionsInstance.getVerifiedStats();
-    const djStatsObject = await databaseFunctionsInstance.getVerificationDJStats();
-    const unfixedCount = dbStats[ 'Unfixed' ];
-    let availableRoboCoins = songFunctionsInstance.fixTrackPayments() * unfixedCount;
-    availableRoboCoins = availableRoboCoins.toFixed( 2 );
-    const djStats = Object.entries( djStatsObject ).slice( 0, 7 );
+    const songList = await databaseFunctionsInstance.getUnverifiedSongList(dbSearchArgs)
+    const dbStats = await databaseFunctionsInstance.getVerifiedStats()
+    const djStatsObject = await databaseFunctionsInstance.getVerificationDJStats()
+    const unfixedCount = dbStats.Unfixed
+    let availableRoboCoins = songFunctionsInstance.fixTrackPayments() * unfixedCount
+    availableRoboCoins = availableRoboCoins.toFixed(2)
+    const djStats = Object.entries(djStatsObject).slice(0, 7)
 
-    let html = pug.renderFile( './templates/listUnverifiedSongs.pug', {
+    const html = pug.renderFile('./templates/listUnverifiedSongs.pug', {
       songList,
       sort: sortParam,
       where: whereParam,
@@ -106,90 +107,100 @@ app.get( '/listunverified', async ( req, res ) => {
       djStats,
       availableRoboCoins,
       unverifiedonly: unverifiedParam
-    } );
-    res.send( html );
-  } catch ( error ) {
-    console.error( error );
-    res.sendStatus( 500 );
+    })
+    res.send(html)
+  } catch (error) {
+    console.error(error)
+    res.sendStatus(500)
   }
-} );
+})
 
-app.post( '/updateArtistDisplayName', async ( req, res ) => {
+app.post('/updateArtistDisplayName', async (req, res) => {
   try {
-    const username = req.session.user;
+    const username = req.session.user
 
-    const videoData_id = req.body.videoData_id;
-    const artistDisplayName = req.body.artistDisplayName;
-    const sortParam = req.body.sort || req.query.sort || '';
-    const whereParam = req.body.where || req.query.where || '';
-    const searchParam = req.body.searchTerm || req.query.searchTerm || '';
-    const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || '';
+    const videoData_id = req.body.videoData_id
+    const artistDisplayName = req.body.artistDisplayName
+    const sortParam = req.body.sort || req.query.sort || ''
+    const whereParam = req.body.where || req.query.where || ''
+    const searchParam = req.body.searchTerm || req.query.searchTerm || ''
+    const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || ''
 
-    await databaseFunctionsInstance.updateArtistDisplayName( videoData_id, artistDisplayName );
+    await databaseFunctionsInstance.updateArtistDisplayName(videoData_id, artistDisplayName)
 
-    const userID = await userFunctionsInstance.getUserIDFromUsername( username );
-    const numCoins = songFunctionsInstance.fixTrackPayments();
-    const changeReason = "Fixed artist name for " + videoData_id;
-    const changeID = 5;
-    await userFunctionsInstance.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctionsInstance );
+    const userID = await userFunctionsInstance.getUserIDFromUsername(username)
+    const numCoins = songFunctionsInstance.fixTrackPayments()
+    const changeReason = 'Fixed artist name for ' + videoData_id
+    const changeID = 5
+    await userFunctionsInstance.addRoboCoins(userID, numCoins, changeReason, changeID, databaseFunctionsInstance)
 
-    const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam, unverifiedonly: unverifiedParam } );
-    const redirectUrl = '/listunverified?' + queryParams.toString();
-    res.redirect( redirectUrl );
-  } catch ( error ) {
-    console.error( 'Error in updateArtistDisplayName:', error );
-    res.status( 500 ).send( 'Internal server error' );
+    const queryParams = new URLSearchParams({
+      sort: sortParam,
+      where: whereParam,
+      searchTerm: searchParam,
+      unverifiedonly: unverifiedParam
+    })
+    const redirectUrl = '/listunverified?' + queryParams.toString()
+    res.redirect(redirectUrl)
+  } catch (error) {
+    console.error('Error in updateArtistDisplayName:', error)
+    res.status(500).send('Internal server error')
   }
-} );
-app.post( '/updateTrackDisplayName', async ( req, res ) => {
+})
+app.post('/updateTrackDisplayName', async (req, res) => {
   try {
-    const username = req.session.user;
-    const videoData_id = req.body.videoData_id;
-    const trackDisplayName = req.body.trackDisplayName;
-    const sortParam = req.body.sort || req.query.sort || '';
-    const whereParam = req.body.where || req.query.where || '';
-    const searchParam = req.body.searchTerm || req.query.searchTerm || '';
-    const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || '';
+    const username = req.session.user
+    const videoData_id = req.body.videoData_id
+    const trackDisplayName = req.body.trackDisplayName
+    const sortParam = req.body.sort || req.query.sort || ''
+    const whereParam = req.body.where || req.query.where || ''
+    const searchParam = req.body.searchTerm || req.query.searchTerm || ''
+    const unverifiedParam = req.body.unverifiedonly || req.query.unverifiedonly || ''
 
-    await databaseFunctionsInstance.updateTrackDisplayName( videoData_id, trackDisplayName );
+    await databaseFunctionsInstance.updateTrackDisplayName(videoData_id, trackDisplayName)
 
-    const userID = await userFunctionsInstance.getUserIDFromUsername( username );
-    const numCoins = songFunctionsInstance.fixTrackPayments();
-    const changeReason = "Fixed track name for " + videoData_id;
-    const changeID = 5;
+    const userID = await userFunctionsInstance.getUserIDFromUsername(username)
+    const numCoins = songFunctionsInstance.fixTrackPayments()
+    const changeReason = 'Fixed track name for ' + videoData_id
+    const changeID = 5
     // console.log(`updateTrackDisplayName username:${username}`)
     // console.log(`updateTrackDisplayName userID:${userID}`)
-    await userFunctionsInstance.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctionsInstance );
+    await userFunctionsInstance.addRoboCoins(userID, numCoins, changeReason, changeID, databaseFunctionsInstance)
 
-    const queryParams = new URLSearchParams( { sort: sortParam, where: whereParam, searchTerm: searchParam, unverifiedonly: unverifiedParam } );
-    const redirectUrl = '/listunverified?' + queryParams.toString();
-    res.redirect( redirectUrl );
-  } catch ( error ) {
-    console.error( 'Error in updateArtistDisplayName:', error );
-    res.status( 500 ).send( 'Internal server error' );
+    const queryParams = new URLSearchParams({
+      sort: sortParam,
+      where: whereParam,
+      searchTerm: searchParam,
+      unverifiedonly: unverifiedParam
+    })
+    const redirectUrl = '/listunverified?' + queryParams.toString()
+    res.redirect(redirectUrl)
+  } catch (error) {
+    console.error('Error in updateArtistDisplayName:', error)
+    res.status(500).send('Internal server error')
   }
-} );
+})
 
 // ########################################################################
 // Top 10 Countdown Data
 // ########################################################################
 
-async function getTop10( req, res, functionName, templateFile ) {
+async function getTop10 (req, res, functionName, templateFile) {
   try {
-    const { startDate, endDate } = req.query;
-    const [ formStartDate, formEndDate, linkStartDate, linkEndDate ] = [
-      dateFunctionsInstance.formStartDate( dayjs, startDate ),
-      dateFunctionsInstance.formEndDate( dayjs, endDate ),
-      dateFunctionsInstance.linkStartDate( dayjs, startDate ),
-      dateFunctionsInstance.linkEndDate( dayjs, endDate ),
-    ];
-    const [ top10SongList, top1080sSongList, top10WednesdaySongList, top10FridaySongList ] = await Promise.all( [
-      databaseFunctionsInstance[ functionName ]( dateFunctionsInstance.dbStartDate( dayjs, startDate ), dateFunctionsInstance.dbEndDate( dayjs, endDate ) ),
-      databaseFunctionsInstance[ functionName ]( dateFunctionsInstance.dbStartDate( dayjs, startDate ), dateFunctionsInstance.dbEndDate( dayjs, endDate ), [ 0, 1, 2, 3, 5 ] ),
-      databaseFunctionsInstance[ functionName ]( dateFunctionsInstance.dbStartDate( dayjs, startDate ), dateFunctionsInstance.dbEndDate( dayjs, endDate ), [ 4 ] ),
-      databaseFunctionsInstance[ functionName ]( dateFunctionsInstance.dbStartDate( dayjs, startDate ), dateFunctionsInstance.dbEndDate( dayjs, endDate ), [ 6 ] ),
-    ] );
-    const html = pug.renderFile( `./templates/${ templateFile }.pug`, {
+    const { startDate, endDate } = req.query
+    const [formStartDate, formEndDate, linkStartDate, linkEndDate] = [
+      dateFunctionsInstance.formStartDate(dayjs, startDate),
+      dateFunctionsInstance.formEndDate(dayjs, endDate),
+      dateFunctionsInstance.linkStartDate(dayjs, startDate),
+      dateFunctionsInstance.linkEndDate(dayjs, endDate)
+    ]
+    const [top10SongList, top1080sSongList, top10WednesdaySongList, top10FridaySongList] = await Promise.all([
+      databaseFunctionsInstance[functionName](dateFunctionsInstance.dbStartDate(dayjs, startDate), dateFunctionsInstance.dbEndDate(dayjs, endDate)),
+      databaseFunctionsInstance[functionName](dateFunctionsInstance.dbStartDate(dayjs, startDate), dateFunctionsInstance.dbEndDate(dayjs, endDate), [0, 1, 2, 3, 5]),
+      databaseFunctionsInstance[functionName](dateFunctionsInstance.dbStartDate(dayjs, startDate), dateFunctionsInstance.dbEndDate(dayjs, endDate), [4]),
+      databaseFunctionsInstance[functionName](dateFunctionsInstance.dbStartDate(dayjs, startDate), dateFunctionsInstance.dbEndDate(dayjs, endDate), [6])
+    ])
+    const html = pug.renderFile(`./templates/${templateFile}.pug`, {
       top10SongList,
       top1080sSongList,
       top10WednesdaySongList,
@@ -197,63 +208,62 @@ async function getTop10( req, res, functionName, templateFile ) {
       formStartDate,
       formEndDate,
       linkStartDate,
-      linkEndDate,
-    } );
-    res.send( html );
-  } catch ( error ) {
-    console.error( error );
-    res.sendStatus( 500 );
+      linkEndDate
+    })
+    res.send(html)
+  } catch (error) {
+    console.error(error)
+    res.sendStatus(500)
   }
 }
 
-async function getSummary( req, res, templateFile ) {
+async function getSummary (req, res, templateFile) {
   try {
-    const { startDate, endDate } = req.query;
-    const [ formStartDate, formEndDate, linkStartDate, linkEndDate ] = [
-      dateFunctionsInstance.formStartDate( dayjs, startDate ),
-      dateFunctionsInstance.formEndDate( dayjs, endDate ),
-      dateFunctionsInstance.linkStartDate( dayjs, startDate ),
-      dateFunctionsInstance.linkEndDate( dayjs, endDate ),
-    ];
-    const [ summary, top10DJs ] = await Promise.all( [
-      databaseFunctionsInstance.roomSummaryResults( dateFunctionsInstance.dbStartDate( dayjs, startDate ), dateFunctionsInstance.dbEndDate( dayjs, endDate ) ),
-      databaseFunctionsInstance.top10DJResults( dateFunctionsInstance.dbStartDate( dayjs, startDate ), dateFunctionsInstance.dbEndDate( dayjs, endDate ) ),
-    ] );
-    const html = pug.renderFile( `./templates/${ templateFile }.pug`, {
+    const { startDate, endDate } = req.query
+    const [formStartDate, formEndDate, linkStartDate, linkEndDate] = [
+      dateFunctionsInstance.formStartDate(dayjs, startDate),
+      dateFunctionsInstance.formEndDate(dayjs, endDate),
+      dateFunctionsInstance.linkStartDate(dayjs, startDate),
+      dateFunctionsInstance.linkEndDate(dayjs, endDate)
+    ]
+    const [summary, top10DJs] = await Promise.all([
+      databaseFunctionsInstance.roomSummaryResults(dateFunctionsInstance.dbStartDate(dayjs, startDate), dateFunctionsInstance.dbEndDate(dayjs, endDate)),
+      databaseFunctionsInstance.top10DJResults(dateFunctionsInstance.dbStartDate(dayjs, startDate), dateFunctionsInstance.dbEndDate(dayjs, endDate))
+    ])
+    const html = pug.renderFile(`./templates/${templateFile}.pug`, {
       summary,
       top10DJs,
       formStartDate,
       formEndDate,
       linkStartDate,
-      linkEndDate,
-    } );
-    res.send( html );
-  } catch ( error ) {
-    console.error( error );
-    res.sendStatus( 500 );
+      linkEndDate
+    })
+    res.send(html)
+  } catch (error) {
+    console.error(error)
+    res.sendStatus(500)
   }
 }
 
-app.get( '/fulltop10', async ( req, res ) => {
-  await getTop10( req, res, "fullTop10Results", "fullTop10" );
-} );
+app.get('/fulltop10', async (req, res) => {
+  await getTop10(req, res, 'fullTop10Results', 'fullTop10')
+})
 
-app.get( '/likesTop10', async ( req, res ) => {
-  await getTop10( req, res, "top10ByLikesResults", "likesTop10" );
-} );
+app.get('/likesTop10', async (req, res) => {
+  await getTop10(req, res, 'top10ByLikesResults', 'likesTop10')
+})
 
-app.get( '/mostplayedtracks', async ( req, res ) => {
-  await getTop10( req, res, "mostPlayedTracksResults", "mostplayedtracks" );
-} );
+app.get('/mostplayedtracks', async (req, res) => {
+  await getTop10(req, res, 'mostPlayedTracksResults', 'mostplayedtracks')
+})
 
-app.get( '/mostplayedartists', async ( req, res ) => {
-  await getTop10( req, res, "mostPlayedArtistsResults", "mostplayedartists" );
-} );
+app.get('/mostplayedartists', async (req, res) => {
+  await getTop10(req, res, 'mostPlayedArtistsResults', 'mostplayedartists')
+})
 
-app.get( '/summary', async ( req, res ) => {
-  await getSummary( req, res, "summary" );
-} );
-
+app.get('/summary', async (req, res) => {
+  await getSummary(req, res, 'summary')
+})
 
 // ########################################################################
 // Bot Playlist Editor
@@ -299,105 +309,101 @@ app.get( '/summary', async ( req, res ) => {
 // General functions
 // ########################################################################
 
-app.get( '/instructions', ( req, res ) => {
-  let html = pug.renderFile( './templates/instructions.pug' );
-  res.send( html );
+app.get('/instructions', (req, res) => {
+  const html = pug.renderFile('./templates/instructions.pug')
+  res.send(html)
+})
 
-} );
+app.get('/signup', (req, res) => {
+  const html = pug.renderFile('./templates/signup.pug')
+  res.send(html)
+})
 
-app.get( '/signup', ( req, res ) => {
-  let html = pug.renderFile( './templates/signup.pug' );
-  res.send( html );
-
-} );
-
-app.post( '/signup', async ( req, res, next ) => {
-  const { email, username, password, confirmPassword } = req.body;
-  const userID = await userFunctionsInstance.getUserIDFromUsername( username );
+app.post('/signup', async (req, res, next) => {
+  const { email, username, password, confirmPassword } = req.body
+  const userID = await userFunctionsInstance.getUserIDFromUsername(username)
 
   try {
-    if ( password !== confirmPassword ) {
-      return res.status( 400 ).send( 'Passwords do not match' );
+    if (password !== confirmPassword) {
+      return res.status(400).send('Passwords do not match')
     }
 
-    const user = userFunctionsInstance.userExists( userID );
-    if ( !user ) {
-      return res.status( 400 ).send( 'User does not exist' );
+    const user = userFunctionsInstance.userExists(userID)
+    if (!user) {
+      return res.status(400).send('User does not exist')
     }
-    const verify = await userFunctionsInstance.verifyUsersEmail( userID, email, databaseFunctionsInstance );
-    if ( !verify ) {
-      return res.status( 400 ).send( "User's email does not match" );
-    }
-
-    const passwordHash = await bcrypt.hash( password, 10 );
-
-    const passwordSet = await setPassword( { next, username, passwordHash } );
-    if ( !passwordSet ) {
-      return res.status( 400 ).send( "Couldn't set the password" );
+    const verify = await userFunctionsInstance.verifyUsersEmail(userID, email, databaseFunctionsInstance)
+    if (!verify) {
+      return res.status(400).send('User\'s email does not match')
     }
 
-    res.redirect( '/login' );
-  } catch ( error ) {
-    console.error( 'Error during signup:', error );
-    return res.status( 500 ).send( 'Internal server error' );
+    const passwordHash = await bcrypt.hash(password, 10)
+
+    const passwordSet = await setPassword({ next, username, passwordHash })
+    if (!passwordSet) {
+      return res.status(400).send('Couldn\'t set the password')
+    }
+
+    res.redirect('/login')
+  } catch (error) {
+    console.error('Error during signup:', error)
+    return res.status(500).send('Internal server error')
   }
-} );
+})
 
-function protectRoute( req, res, next ) {
-  if ( req.session && req.session.user ) {
+function protectRoute (req, res, next) {
+  if (req.session && req.session.user) {
     // User is authenticated, proceed to the next middleware
-    next();
+    next()
   } else {
     // User is not authenticated, redirect to the login page
-    req.session.originalUrl = req.originalUrl;
-    res.redirect( '/login' );
+    req.session.originalUrl = req.originalUrl
+    res.redirect('/login')
   }
 }
 
-app.get( '/login', ( req, res ) => {
-  let html = pug.renderFile( './templates/login.pug' );
-  res.send( html );
+app.get('/login', (req, res) => {
+  const html = pug.renderFile('./templates/login.pug')
+  res.send(html)
+})
 
-} );
-
-app.post( '/login', async ( req, res ) => {
-  const { username, password } = req.body;
-  if ( await authentication( username, password ) ) {
-    req.session.user = username;
-    const redirectTo = req.session.originalUrl || '/listunverified';
-    delete req.session.originalUrl;
-    res.redirect( redirectTo );
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body
+  if (await authentication(username, password)) {
+    req.session.user = username
+    const redirectTo = req.session.originalUrl || '/listunverified'
+    delete req.session.originalUrl
+    res.redirect(redirectTo)
   } else {
-    res.redirect( '/signup' );
+    res.redirect('/signup')
   }
-} );
+})
 
-async function authentication( username, password ) {
-  
+async function authentication (username, password) {
   try {
-    const hashedPassword = await databaseFunctionsInstance.retrieveHashedPassword( encodeURIComponent(username) );
-    if ( !hashedPassword ) {
-      return false; // User not found
+    const hashedPassword = await databaseFunctionsInstance.retrieveHashedPassword(encodeURIComponent(username))
+    if (!hashedPassword) {
+      return false // User not found
     }
 
-    return await bcrypt.compare( password, hashedPassword ); // Return true if passwords match, false otherwise
-  } catch ( error ) {
-    console.error( 'Error during authentication:', error );
-    throw new Error( 'Internal server error' );
+    return await bcrypt.compare(password, hashedPassword) // Return true if passwords match, false otherwise
+  } catch (error) {
+    console.error('Error during authentication:', error)
+    throw new Error('Internal server error')
   }
 }
 
-async function setPassword( { username, passwordHash } ) {
+async function setPassword ({ username, passwordHash }) {
   try {
-    const userID = await userFunctionsInstance.getUserIDFromUsername( username );
-    await userFunctionsInstance.storeUserData( userID, "password_hash", passwordHash, databaseFunctionsInstance );
-    return true;
-  } catch ( error ) {
-    console.error( 'Error setting password:', error );
-    return false;
+    const userID = await userFunctionsInstance.getUserIDFromUsername(username)
+    await userFunctionsInstance.storeUserData(userID, 'password_hash', passwordHash, databaseFunctionsInstance)
+    return true
+  } catch (error) {
+    console.error('Error setting password:', error)
+    return false
   }
 }
 
-app.listen( ( 14501 ), () => {
-  console.log( "Server is Running" );
-} )
+app.listen((14501), () => {
+  console.log('Server is Running')
+})

@@ -38,11 +38,13 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     await songFunctions.resetVoteSnagging();
     await botFunctions.clearAllTimers( userFunctions, roomFunctions, songFunctions, chatFunctions, socket );
 
-    if ( state.nowPlaying.song ) {
-      await songFunctions.getSongTagsFromState( state )
-      await databaseFunctions.saveTrackData( djID, state.nowPlaying.song );
+    if (state.nowPlaying && state.nowPlaying.song) {
+      await songFunctions.getSongTagsFromState(state);
+      await databaseFunctions.saveTrackData(djID, state.nowPlaying.song);
+    } else {
+      console.warn("No song is currently playing, skipping song tag and save.");
     }
-
+    
     await userFunctions.setPreviousDJID( djID );
     await songFunctions.setSongTags( state.nowPlaying.song )
     songFunctions.setPreviousTrack( state.nowPlaying.song.trackName )

@@ -845,10 +845,25 @@ const botFunctions = () => {
     },
 
     clearAllTimers: async function ( userFunctions, roomFunctions, songFunctions, chatFunctions ) {
-      await userFunctions.clearInformTimer( roomFunctions, chatFunctions );
-      await roomFunctions.clearSongLimitTimer( userFunctions, roomFunctions, chatFunctions );
-      songFunctions.clearWatchDogTimer();
-      await songFunctions.clearTakedownTimer( userFunctions, roomFunctions, chatFunctions );
+      if (userFunctions.clearInformTimer) {
+        await userFunctions.clearInformTimer( roomFunctions, chatFunctions );
+      }
+
+      if (roomFunctions?.clearSongLimitTimer) {
+        await roomFunctions.clearSongLimitTimer(userFunctions, roomFunctions, chatFunctions);
+      }
+      
+      try {
+        songFunctions.clearWatchDogTimer();
+      } catch (error) {
+        console.warn("clearWatchDogTimer failed:", error.message);
+      }
+      
+      try {
+        await songFunctions.clearTakedownTimer(userFunctions, roomFunctions, chatFunctions);
+      } catch (error) {
+        console.warn("clearTakedownTimer failed:", error.message);
+      }
     },
 
     checkOnNewSong: async function ( data, roomFunctions, songFunctions, userFunctions, chatFunctions, socket ) {

@@ -289,11 +289,11 @@ const chatFunctions = ( ) => {
     // ========================================================
 
     symbols: () => [
-      { symbol: "🍒", payout: 2, probability: 0.58 },  // ~18% full line
-      { symbol: "🍋", payout: 3, probability: 0.22 },  // ~8% full line
-      { symbol: "🍇", payout: 4, probability: 0.12 },  // ~3% full line
-      { symbol: "🍉", payout: 5, probability: 0.06 },  // ~2% full line
-      { symbol: "⭐", payout: 10, probability: 0.02 }  // ~1% full line
+      { symbol: "🍒", payout: 2, probability: 0.7368 },  // ~40% full line
+      { symbol: "🍋", payout: 3, probability: 0.3162 },  // ~30% full line
+      { symbol: "🍇", payout: 4, probability: 0.2611 },  // ~20% full line
+      { symbol: "🍉", payout: 5, probability: 0.2154 },  // ~10% full line
+      { symbol: "⭐", payout: 10, probability: 0.1700 }   // ~5% full line
     ],
 
     getRandomSymbol: async function () {

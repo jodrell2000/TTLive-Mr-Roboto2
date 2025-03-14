@@ -45,7 +45,7 @@ const mlFunctions = () => {
     songInfo: async function( songFunctions, chatFunctions ) {
       const track = songFunctions.previousTrack()
       const artist = songFunctions.previousArtist()
-      const theQuestion = `The song I'm currently listening to is ${ track } by ${ artist }. In 100 words or less, tell me something interesting about the song. It may or may not be a cover version`
+      const theQuestion = `The song I'm currently listening to is ${ track } by ${ artist }. In 150 words or less, write a description of the song. When searching note that it may or may not be a cover version`
       const theResponse = await this.askGoogleAI( theQuestion, chatFunctions )
       await chatFunctions.botSpeak( theResponse )
     },

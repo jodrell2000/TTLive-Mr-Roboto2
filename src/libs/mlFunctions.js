@@ -33,7 +33,7 @@ const mlFunctions = () => {
       // }
 
       // Extract response text
-      const theResponse = reply.data.candidates?.[0]?.content?.parts?.[0]?.text || "No response text available";
+      const theResponse = reply.response.text() || "No response text available";
 
       if (theResponse !== "No response text available" && theResponse !== "Error occurred") {
         return theResponse;

@@ -12,7 +12,7 @@ const mlFunctions = () => {
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
       const reply = await model.generateContent(theQuestion);
-      console.log(reply.response.text());
+      // console.log(reply.response.text());
       
       
       // const apiKey = process.env.googleAIKey;

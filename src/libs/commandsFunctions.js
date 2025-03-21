@@ -167,7 +167,7 @@ const commandFunctions = () => {
   }
   generalCommands.giverc.argumentCount = 2;
   generalCommands.giverc.help = "Give someone RoboCoin";
-  generalCommands.giverc.sampleArguments = [ "jodrell", "10" ];
+  generalCommands.giverc.sampleArguments = [ "10", "jodrell" ];
 
   // #############################################
   // General user Queue commands

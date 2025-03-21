@@ -2715,10 +2715,12 @@ const userFunctions = () => {
     },
 
     giveRoboCoinCommand: async function ( data, args, chatFunctions, databaseFunctions ) {
+      console.log(`data: ${ JSON.stringify( data, null, 2 ) }`);
       const sendingUserID = await this.whoSentTheCommand( data );
       const [ numCoins, ...restArgs ] = args;
       const username = restArgs.join( " " );
       const receivingUserID = await this.getUserIDFromUsername( username );
+      console.log(`numCoins: ${ numCoins }`)
 
       try {
         await this.validateNumCoins( numCoins, sendingUserID, chatFunctions, data );

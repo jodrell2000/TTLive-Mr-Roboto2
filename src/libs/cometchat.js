@@ -30,6 +30,8 @@ export const joinChat = async ( roomId ) => {
 
 export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
   headers.appid = process.env.CHAT_API_KEY
+  headers.onBehalfOf = process.env.USERID
+
   const messageLimit = 50
   const paths = [
     'v3.0',
@@ -57,6 +59,8 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
     }
   })
   headers.appid = process.env.CHAT_API_KEY
+  headers.onBehalfOf = process.env.USERID
+
   const messageLimit = 50
   const paths = [
     'v3.0',
@@ -122,9 +126,9 @@ export const postMessage = async ( options ) => {
   }
   // console.log( payload )
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths )
-  console.log(`url: ${url}`)
-  console.log(`headers: ${JSON.stringify(headers, null, 2)}`)
-  console.log(`payload: ${JSON.stringify(payload, null, 2)}`)
+  // console.log(`url: ${url}`)
+  // console.log(`headers: ${JSON.stringify(headers, null, 2)}`)
+  // console.log(`payload: ${JSON.stringify(payload, null, 2)}`)
 
   try {
     const messageResponse = await makeRequest(
@@ -133,7 +137,7 @@ export const postMessage = async ( options ) => {
       headers
     );
 
-    console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
+    // console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
 
     return {
       message: options.message,
@@ -141,7 +145,7 @@ export const postMessage = async ( options ) => {
     };
 
   } catch (error) {
-    console.error("❌ Error in makeRequest:", JSON.stringify(error, null, 2));
+    // console.error("❌ Error in makeRequest:", JSON.stringify(error, null, 2));
     return {
       message: options.message,
       error: error.message || "Unknown error",

@@ -114,13 +114,10 @@ export const postMessage = async ( options ) => {
     category: 'message',
     data: {
       text: options.message,
-      // metadata: {
-      //   incrementUnreadCount: false
-      // }
+      metadata: {
+        chatMessage: customData
+      }
     },
-    // metadata: {
-    //   incrementUnreadCount: false
-    // },
     receiver: options.room
   }
   // console.log( payload )

@@ -79,6 +79,11 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
 
 export const postMessage = async ( options ) => {
   headers.appid = process.env.CHAT_API_KEY
+
+  --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+
+  
   const paths = [
     'v3.0',
     'messages'
@@ -127,10 +132,26 @@ export const postMessage = async ( options ) => {
   console.log(`headers: ${JSON.stringify(headers, null, 2)}`)
   console.log(`payload: ${JSON.stringify(payload, null, 2)}`)
 
-  const messageResponse = await makeRequest( url, { method: 'POST', body: JSON.stringify( payload ) }, headers )
-  return {
-    message: options.message,
-    messageResponse
+  try {
+    const messageResponse = await makeRequest(
+      url,
+      { method: 'POST', body: JSON.stringify(payload) },
+      headers
+    );
+
+    console.log("✅ messageResponse:", messageResponse);
+
+    return {
+      message: options.message,
+      messageResponse
+    };
+
+  } catch (error) {
+    console.error("❌ Error in makeRequest:", error);
+    return {
+      message: options.message,
+      error: error.message || "Unknown error",
+    };
   }
 }
 

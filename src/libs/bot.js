@@ -6,6 +6,8 @@ import { logger } from '../utils/logging.js'
 import handlers from '../handlers/index.js'
 import startup from '../libs/startup.js'
 import playlistFunctions from "./playlistFunctions.js";
+import { CometChat } from "@cometchat/chat-sdk-javascript";
+
 
 export class Bot {
   constructor( slug ) {
@@ -98,6 +100,24 @@ export class Bot {
   configureListeners( socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     const self = this
     logger.debug( 'Setting up listeners' )
+
+    let listenerID = process.env.CHAT_USER_ID;
+
+    CometChat.addMessageListener(
+      listenerID,
+      new CometChat.MessageListener({
+        onTextMessageReceived: (textMessage) => {
+          console.log("New Text message received successfully", textMessage);
+        },
+        // onMediaMessageReceived: (mediaMessage) => {
+        //   console.log("Media message received successfully", mediaMessage);
+        // },
+        onCustomMessageReceived: (customMessage) => {
+          console.log("New Custom message received successfully", customMessage);
+        },
+      })
+    );
+
 
     this.socket.on( 'statefulMessage', async payload => {
       // logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )

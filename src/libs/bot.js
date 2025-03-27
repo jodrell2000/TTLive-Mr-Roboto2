@@ -103,20 +103,20 @@ export class Bot {
 
     let listenerID = process.env.CHAT_USER_ID;
 
-    CometChat.addMessageListener(
-      listenerID,
-      new CometChat.MessageListener({
-        onTextMessageReceived: (textMessage) => {
-          console.log("New Text message received successfully", textMessage);
-        },
-        // onMediaMessageReceived: (mediaMessage) => {
-        //   console.log("Media message received successfully", mediaMessage);
-        // },
-        onCustomMessageReceived: (customMessage) => {
-          console.log("New Custom message received successfully", customMessage);
-        },
-      })
-    );
+    // CometChat.addMessageListener(
+    //   listenerID,
+    //   new CometChat.MessageListener({
+    //     onTextMessageReceived: (textMessage) => {
+    //       console.log("New Text message received successfully", textMessage);
+    //     },
+    //     // onMediaMessageReceived: (mediaMessage) => {
+    //     //   console.log("Media message received successfully", mediaMessage);
+    //     // },
+    //     onCustomMessageReceived: (customMessage) => {
+    //       console.log("New Custom message received successfully", customMessage);
+    //     },
+    //   })
+    // );
 
 
     this.socket.on( 'statefulMessage', async payload => {

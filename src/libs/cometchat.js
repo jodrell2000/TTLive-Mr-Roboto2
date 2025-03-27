@@ -109,9 +109,9 @@ export const postMessage = async ( options ) => {
   }
 
   const payload = {
-    type: 'TextMessage',
+    type: 'text',
     receiverType: 'group',
-    // category: 'custom',
+    category: 'message',
     data: {
       customData,
       metadata: {

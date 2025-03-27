@@ -111,7 +111,7 @@ export const postMessage = async ( options ) => {
     receiverType: 'group',
     category: 'message',
     data: {
-      customData,
+      text: options.message,
       metadata: {
         incrementUnreadCount: false
       }

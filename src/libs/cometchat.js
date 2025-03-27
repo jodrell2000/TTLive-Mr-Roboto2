@@ -125,6 +125,7 @@ export const postMessage = async ( options ) => {
   }
   // console.log( payload )
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths )
+  console.log(`url: ${url}`)
   const messageResponse = await makeRequest( url, { method: 'POST', body: JSON.stringify( payload ) }, headers )
   return {
     message: options.message,

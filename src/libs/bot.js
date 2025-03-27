@@ -6,7 +6,7 @@ import { logger } from '../utils/logging.js'
 import handlers from '../handlers/index.js'
 import startup from '../libs/startup.js'
 import playlistFunctions from "./playlistFunctions.js";
-// import CometChatSDK from "@cometchat/chat-sdk-javascript";
+import CometChatSDK from "@cometchat/chat-sdk-javascript";
 // const { CometChat } = CometChatSDK;
 
 export class Bot {

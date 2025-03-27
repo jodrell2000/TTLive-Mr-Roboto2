@@ -74,12 +74,12 @@ export class Bot {
       if ( messages?.length ) {
         for ( const message in messages ) {
           this.lastMessageIDs.fromTimestamp = messages[ message ].sentAt + 1
-          const customMessage = messages[ message ]?.data?.chatMessage?.message ?? ''
-          if ( !customMessage ) return
+          const chatMessage = messages[ message ]?.data?.chatMessage?.message ?? ''
+          if ( !chatMessage ) return
           const sender = messages[ message ]?.sender ?? ''
           if ( [ process.env.CHAT_USER_ID, process.env.CHAT_REPLY_ID ].includes( sender ) ) return
           handlers.message( {
-            message: customMessage,
+            message: chatMessage,
             sender,
             senderName: messages[ message ]?.data?.chatMessage?.userName
           }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions, this.socket )

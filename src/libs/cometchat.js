@@ -120,7 +120,8 @@ export const postMessage = async ( options ) => {
     metadata: {
       incrementUnreadCount: false
     },
-    receiver: options.room
+    receiver: "12345"
+    // receiver: options.room
   }
   // console.log( payload )
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths )

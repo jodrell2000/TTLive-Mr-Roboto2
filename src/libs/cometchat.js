@@ -120,11 +120,10 @@ export const postMessage = async ( options ) => {
     metadata: {
       incrementUnreadCount: false
     },
-    receiver: "12345"
-    // receiver: options.room
+    receiver: options.room
   }
   // console.log( payload )
-  const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths )
+  const url = buildUrl( `12345.apiclient-us.cometchat.io`, paths )
   console.log(`url: ${url}`)
   console.log(`headers: ${JSON.stringify(headers, null, 2)}`)
   console.log(`payload: ${JSON.stringify(payload, null, 2)}`)

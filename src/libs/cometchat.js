@@ -41,7 +41,7 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
     [ 'per_page', messageLimit ],
     [ 'hideMessagesFromBlockedUsers', 0 ],
     [ 'unread', 0 ],
-    [ 'types', 'TextMessage' ],
+    [ 'types', 'ChatMessage' ],
     [ 'withTags', 0 ],
     [ 'hideDeleted', 0 ],
     [ 'sentAt', fromTimestamp ],
@@ -69,7 +69,7 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
     [ 'per_page', messageLimit ],
     [ 'hideMessagesFromBlockedUsers', 0 ],
     [ 'unread', 0 ],
-    [ 'types', 'TextMessage' ],
+    [ 'types', 'ChatMessage' ],
     [ 'withTags', 0 ],
     [ 'hideDeleted', 0 ],
     [ 'sentAt', fromTimestamp ],
@@ -109,18 +109,18 @@ export const postMessage = async ( options ) => {
   }
 
   const payload = {
-    type: 'text',
+    type: 'ChatMessage',
     receiverType: 'group',
-    category: 'message',
+    category: 'custom',
     data: {
       customData,
       metadata: {
         incrementUnreadCount: false
       }
     },
-    // metadata: {
-    //   incrementUnreadCount: false
-    // },
+    metadata: {
+      incrementUnreadCount: false
+    },
     receiver: options.room
   }
   // console.log( payload )
@@ -128,12 +128,70 @@ export const postMessage = async ( options ) => {
   console.log(`url: ${url}`)
   console.log(`headers: ${JSON.stringify(headers, null, 2)}`)
   console.log(`payload: ${JSON.stringify(payload, null, 2)}`)
+
   const messageResponse = await makeRequest( url, { method: 'POST', body: JSON.stringify( payload ) }, headers )
   return {
     message: options.message,
     messageResponse
   }
 }
+
+
+// export const postMessage = async ( options ) => {
+//   headers.appid = process.env.CHAT_API_KEY
+//   const paths = [
+//     'v3.0',
+//     'messages'
+//   ]
+//
+//   const customData = {
+//     message: options.message || '',
+//     avatarId: process.env.CHAT_AVATAR_ID,
+//     userName: process.env.CHAT_NAME,
+//     color: `#${ process.env.CHAT_COLOUR }`,
+//     mentions: [],
+//     userUuid: process.env.CHAT_USER_ID,
+//     badges: [ 'VERIFIED', 'STAFF' ],
+//     id: uuidv4()
+//   }
+//   if ( options.images ) customData.imageUrls = options.images
+//
+//   if ( options.mentions ) {
+//     customData.mentions = options.mentions.map( mention => {
+//       return {
+//         start: mention.position,
+//         userNickname: mention.nickname,
+//         userUuid: mention.userId
+//       }
+//     } )
+//   }
+//
+//   const payload = {
+//     type: 'text',
+//     receiverType: 'group',
+//     category: 'message',
+//     data: {
+//       customData,
+//       metadata: {
+//         incrementUnreadCount: false
+//       }
+//     },
+//     // metadata: {
+//     //   incrementUnreadCount: false
+//     // },
+//     receiver: options.room
+//   }
+//   // console.log( payload )
+//   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths )
+//   console.log(`url: ${url}`)
+//   console.log(`headers: ${JSON.stringify(headers, null, 2)}`)
+//   console.log(`payload: ${JSON.stringify(payload, null, 2)}`)
+//   const messageResponse = await makeRequest( url, { method: 'POST', body: JSON.stringify( payload ) }, headers )
+//   return {
+//     message: options.message,
+//     messageResponse
+//   }
+// }
 
 // let listenerID = process.env.CHAT_USER_ID;
 //

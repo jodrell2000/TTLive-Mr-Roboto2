@@ -73,15 +73,14 @@ export class Bot {
       const messages = response.data
       if ( messages?.length ) {
         for ( const message in messages ) {
-          console.log(`Here`)
           this.lastMessageIDs.fromTimestamp = messages[ message ].sentAt + 1
           console.log( `this.lastMessageIDs.fromTimestamp: ${this.lastMessageIDs.fromTimestamp}` )
 
-          const chatMessage = messages[ message ]?.data?.chatMessage?.message ?? ''
+          const chatMessage = message?.data?.metadata?.chatMessage?.message ?? '';
           console.log( `chatMessage: ${JSON.stringify(chatMessage)}` )
 
           if ( !chatMessage ) return
-          const sender = messages[ message ]?.sender ?? ''
+          const sender = message?.data?.metadata?.chatMessage?.userName ?? ''
           console.log(`sender: ${sender} - ${message}`)
           if ( [ process.env.CHAT_USER_ID, process.env.CHAT_REPLY_ID ].includes( sender ) ) return
           handlers.message( {

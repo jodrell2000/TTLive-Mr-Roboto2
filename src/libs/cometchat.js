@@ -79,6 +79,7 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
 
 export const postMessage = async ( options ) => {
   headers.appid = process.env.CHAT_API_KEY
+  headers.onBehalfOf = process.env.USERID
   
   const paths = [
     'v3.0',

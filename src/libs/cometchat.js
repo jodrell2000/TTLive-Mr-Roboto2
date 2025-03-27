@@ -54,7 +54,7 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
   try {
     const messageResponse = await makeRequest( url, { headers } )
 
-    console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
+    // console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
 
     return messageResponse;
 
@@ -97,7 +97,7 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
   try {
     const messageResponse = await makeRequest( url, { headers } )
 
-    console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
+    // console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
 
     return messageResponse;
 

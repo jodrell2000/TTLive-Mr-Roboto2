@@ -19,6 +19,7 @@ export const makeRequest = async ( url, options, extraHeaders ) => {
     ...options
   }
   
+  console.log(`url.href: ${url.href}`)
   console.log(`requestOptions: ${JSON.stringify(requestOptions, null, 2)}`)
   try {
     const response = await fetch( url.href, requestOptions )

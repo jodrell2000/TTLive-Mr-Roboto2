@@ -8,9 +8,9 @@ import startup from '../libs/startup.js'
 import playlistFunctions from "./playlistFunctions.js";
 // import CometChatSDK from "@cometchat/chat-sdk-javascript";
 // const { CometChat } = CometChatSDK;
-global.window = {}; // Mock the window object
-import CometChatSDK from "@cometchat-pro/chat";
-const { CometChat } = CometChatSDK;
+// global.window = {}; // Mock the window object
+// import CometChatSDK from "@cometchat-pro/chat";
+// const { CometChat } = CometChatSDK;
 
 export class Bot {
   constructor( slug ) {

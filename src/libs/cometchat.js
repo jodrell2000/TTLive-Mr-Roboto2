@@ -79,7 +79,20 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
     [ 'affix', 'append' ]
   ]
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
-  return await makeRequest( url, { headers } )
+
+  try {
+    const messageResponse = await makeRequest( url, { headers } )
+
+    console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
+
+    return messageResponse;
+
+  } catch (error) {
+    console.error("❌ Error in makeRequest:", JSON.stringify(error, null, 2));
+    return {
+      error: error.message || "Unknown error",
+    };
+  }
 }
 
 export const postMessage = async ( options ) => {

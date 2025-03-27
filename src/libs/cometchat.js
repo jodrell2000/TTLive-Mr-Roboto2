@@ -135,7 +135,7 @@ export const postMessage = async ( options ) => {
       headers
     );
 
-    console.log("✅ messageResponse:", messageResponse);
+    console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
 
     return {
       message: options.message,
@@ -143,7 +143,7 @@ export const postMessage = async ( options ) => {
     };
 
   } catch (error) {
-    console.error("❌ Error in makeRequest:", error);
+    console.error("❌ Error in makeRequest:", JSON.stringify(error, null, 2));
     return {
       message: options.message,
       error: error.message || "Unknown error",

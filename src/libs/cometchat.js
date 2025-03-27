@@ -79,10 +79,6 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
 
 export const postMessage = async ( options ) => {
   headers.appid = process.env.CHAT_API_KEY
-
-  --header 'accept: application/json' \
-     --header 'content-type: application/json' \
-
   
   const paths = [
     'v3.0',

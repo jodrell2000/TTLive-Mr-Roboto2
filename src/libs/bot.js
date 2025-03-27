@@ -77,6 +77,7 @@ export class Bot {
           console.log( `this.lastMessageIDs.fromTimestamp: ${this.lastMessageIDs.fromTimestamp}` )
 
           const chatMessage = message?.data?.metadata?.chatMessage?.message ?? '';
+          console.log( `chatMessage: ${chatMessage}` )
           console.log( `chatMessage: ${JSON.stringify(message.data.metadata.chatMessage.message)}` )
 
           if ( !chatMessage ) return

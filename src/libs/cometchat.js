@@ -107,7 +107,9 @@ export const postMessage = async ( options ) => {
   }
 
   const payload = {
+    type: 'ChatMessage',
     receiverType: 'group',
+    category: 'custom',
     data: {
       customData,
       metadata: {

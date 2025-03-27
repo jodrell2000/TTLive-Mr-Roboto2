@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { buildUrl, makeRequest } from '../utils/networking.js'
-import { CometChat } from "@cometchat/chat-sdk-javascript";
+// import { CometChat } from "@cometchat/chat-sdk-javascript";
 
 const startTimeStamp = Math.floor( Date.now() / 1000 )
 

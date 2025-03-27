@@ -68,7 +68,7 @@ export class Bot {
 
   async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp )
-    console.log(`response: ${JSON.stringify(response, null, 2)}`)
+    // console.log(`response: ${JSON.stringify(response, null, 2)}`)
     if ( response?.data ) {
       const messages = response.data
       if ( messages?.length ) {
@@ -77,6 +77,7 @@ export class Bot {
           const chatMessage = messages[ message ]?.data?.chatMessage?.message ?? ''
           if ( !chatMessage ) return
           const sender = messages[ message ]?.sender ?? ''
+          console.log(`sender: ${sender} - ${message}`)
           if ( [ process.env.CHAT_USER_ID, process.env.CHAT_REPLY_ID ].includes( sender ) ) return
           handlers.message( {
             message: chatMessage,

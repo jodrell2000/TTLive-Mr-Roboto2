@@ -113,14 +113,14 @@ export const postMessage = async ( options ) => {
     receiverType: 'group',
     category: 'message',
     data: {
-      customData,
+      // customData,
       metadata: {
         incrementUnreadCount: false
       }
     },
-    metadata: {
-      incrementUnreadCount: false
-    },
+    // metadata: {
+    //   incrementUnreadCount: false
+    // },
     receiver: options.room
   }
   // console.log( payload )

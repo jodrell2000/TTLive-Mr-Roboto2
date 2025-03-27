@@ -49,6 +49,7 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
     [ 'affix', 'append' ]
   ]
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
+  console.log(`url: ${JSON.stringify(url, null, 2)}`)
   return await makeRequest( url, { headers } )
 }
 

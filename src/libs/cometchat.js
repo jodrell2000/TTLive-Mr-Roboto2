@@ -41,7 +41,7 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
     [ 'per_page', messageLimit ],
     [ 'hideMessagesFromBlockedUsers', 0 ],
     [ 'unread', 0 ],
-    [ 'types', 'ChatMessage' ],
+    [ 'types', 'TextMessage' ],
     [ 'withTags', 0 ],
     [ 'hideDeleted', 0 ],
     [ 'sentAt', fromTimestamp ],
@@ -69,7 +69,7 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
     [ 'per_page', messageLimit ],
     [ 'hideMessagesFromBlockedUsers', 0 ],
     [ 'unread', 0 ],
-    [ 'types', 'ChatMessage' ],
+    [ 'types', 'TextMessage' ],
     [ 'withTags', 0 ],
     [ 'hideDeleted', 0 ],
     [ 'sentAt', fromTimestamp ],
@@ -109,9 +109,9 @@ export const postMessage = async ( options ) => {
   }
 
   const payload = {
-    type: 'ChatMessage',
+    type: 'TextMessage',
     receiverType: 'group',
-    category: 'custom',
+    // category: 'custom',
     data: {
       customData,
       metadata: {

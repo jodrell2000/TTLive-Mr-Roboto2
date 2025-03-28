@@ -46,7 +46,7 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp, lastI
     [ 'undelivered', 1 ],
     [ 'withTags', 0 ],
     [ 'hideDeleted', 0 ],
-    [ 'sentAt', fromTimestamp ],
+    // [ 'sentAt', fromTimestamp ],
     [ 'affix', 'append' ],
     [ 'id', lastID ]
   ]
@@ -54,7 +54,7 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp, lastI
   // console.log(`url: ${JSON.stringify(url, null, 2)}`)
 
   try {
-    console.log(`Sending message request`)
+    // console.log(`Sending message request`)
     const messageResponse = await makeRequest( url, { headers } )
 
     // console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));

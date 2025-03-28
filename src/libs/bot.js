@@ -67,12 +67,13 @@ export class Bot {
   // }
 
   async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
-    const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp )
+    const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp, this.lastMessageIDs?.id )
     if ( response?.data ) {
       const messages = response.data
       if ( messages?.length ) {
         for ( const message of messages ) {
           this.lastMessageIDs.fromTimestamp = messages.sentAt + 1
+          this.lastMessageIDs.id = message.id
 
           const chatMessage = message?.data?.metadata?.chatMessage?.message ?? '';
 

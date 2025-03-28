@@ -28,7 +28,7 @@ export const joinChat = async ( roomId ) => {
 }
 
 
-export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
+export const getMessages = async ( roomId, fromTimestamp = startTimeStamp, lastID ) => {
   headers.appid = process.env.CHAT_API_KEY
   headers.onBehalfOf = process.env.USERID
 
@@ -47,7 +47,8 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
     [ 'withTags', 0 ],
     [ 'hideDeleted', 0 ],
     [ 'sentAt', fromTimestamp ],
-    [ 'affix', 'append' ]
+    [ 'affix', 'append' ],
+    [ 'id', lastID ]
   ]
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
   // console.log(`url: ${JSON.stringify(url, null, 2)}`)

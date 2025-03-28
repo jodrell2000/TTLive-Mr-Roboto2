@@ -72,7 +72,7 @@ export class Bot {
       const messages = response.data
       if ( messages?.length ) {
         for ( const message of messages ) {
-          this.lastMessageIDs.fromTimestamp = messages.sentAt
+          this.lastMessageIDs.fromTimestamp = messages.sentAt + 1
 
           const chatMessage = message?.data?.metadata?.chatMessage?.message ?? '';
 

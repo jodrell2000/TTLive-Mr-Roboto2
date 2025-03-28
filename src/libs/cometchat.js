@@ -53,6 +53,7 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
   // console.log(`url: ${JSON.stringify(url, null, 2)}`)
 
   try {
+    console.log(`Sending message request`)
     const messageResponse = await makeRequest( url, { headers } )
 
     // console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));

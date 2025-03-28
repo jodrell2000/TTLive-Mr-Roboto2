@@ -42,7 +42,7 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp ) => {
   const searchParams = [
     [ 'per_page', messageLimit ],
     [ 'hideMessagesFromBlockedUsers', 0 ],
-    [ 'unread', 0 ],
+    [ 'unread', 1 ],
     [ 'withTags', 0 ],
     [ 'hideDeleted', 0 ],
     [ 'sentAt', fromTimestamp ],

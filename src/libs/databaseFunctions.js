@@ -936,7 +936,7 @@ const databaseFunctions = () => {
                                       1 +
                                       SUM(tp.upvotes - tp.downvotes) +
                                       SUM(tp.snags * 6) +
-                                      SUM(tp.jumps * 2) +
+                                      SUM(tp.jumps) +
                                       SUM(IF(c.command = 'props', e.count, 0)) * 5 +
                                       SUM(IF(c.command = 'noice', e.count, 0)) * 5 +
                                       SUM(IF(c.command = 'spin', e.count, 0)) * 5 +
@@ -1038,7 +1038,7 @@ const databaseFunctions = () => {
                                         ( 1 +
                                         SUM(tp.upvotes - tp.downvotes) +
                                         SUM(tp.snags * 6) +
-                                        SUM(tp.jumps * 2) +
+                                        SUM(tp.jumps) +
                                         SUM(IF(c.command = 'props', e.count, 0)) * 5 +
                                         SUM(IF(c.command = 'noice', e.count, 0)) * 5 +
                                         SUM(IF(c.command = 'spin', e.count, 0)) * 5 +
@@ -1096,7 +1096,7 @@ const databaseFunctions = () => {
                                     ( 1 +
                                     SUM(tp.upvotes - tp.downvotes) +
                                     SUM(tp.snags * 6) +
-                                    SUM(tp.jumps * 2) +
+                                    SUM(tp.jumps) +
                                     SUM(IF(c.command = 'props', e.count, 0)) * 5 +
                                     SUM(IF(c.command = 'noice', e.count, 0)) * 5 +
                                     SUM(IF(c.command = 'spin', e.count, 0)) * 5 +

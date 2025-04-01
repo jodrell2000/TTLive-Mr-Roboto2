@@ -141,7 +141,6 @@ const userFunctions = () => {
     botStartReset: function ( botFunctions, songFunctions ) {
       // clear everything from memory in case there's any chuff
       this.resetQueueList();
-      this.resetAFKPeople();
       this.resetModPM();
       this.clearDJList();
 
@@ -1210,6 +1209,15 @@ const userFunctions = () => {
     // ========================================================
 
     afkPeople: () => afkPeople,
+    
+    setAfkPeople: (newList) => {
+      if (Array.isArray(newList)) {
+        afkPeople = newList;
+      } else {
+        console.error("setAfkPeople: Expected an array but received", typeof newList);
+      }
+    },
+    
     resetAFKPeople: function () {
       afkPeople = []
     },

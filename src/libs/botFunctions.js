@@ -63,7 +63,7 @@ const botFunctions = () => {
 
       const afkPeople = await databaseFunctions.retrieveMemory("afkPeople");
       if (afkPeople !== null && Array.isArray(afkPeople)) {
-        userFunctions.afkPeople(afkPeople);
+        userFunctions.setAfkPeople( afkPeople );
       }
     },
 

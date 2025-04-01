@@ -2250,12 +2250,16 @@ const userFunctions = () => {
 
     checkTextForUsernames: function ( theText ) {
       let loopUsername;
+      const theAFKPeople = this.afkPeople()
+      console.log(`theAFKPeople: ${theAFKPeople}`);
       let mentions = [];
 
       if ( theText.indexOf( '@' ) !== -1 ) {
-        for ( let afkPeopleLoop = 0; afkPeopleLoop < afkPeople.length; afkPeopleLoop++ ) {
-          loopUsername = this.getUsername( afkPeople[ afkPeopleLoop ] );
+        for ( let afkPeopleLoop = 0; afkPeopleLoop < theAFKPeople.length; afkPeopleLoop++ ) {
+          loopUsername = this.getUsername( theAFKPeople[ afkPeopleLoop ] );
+          console.log( `loopUsername: ${loopUsername}` );
           if ( theText.indexOf( '@' + loopUsername ) !== -1 ) {
+            console.log(`Found one`)
             mentions.push( loopUsername );
           }
         }

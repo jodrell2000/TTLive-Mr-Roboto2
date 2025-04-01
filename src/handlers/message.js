@@ -11,14 +11,14 @@ export default async ( payload, commandFunctions, userFunctions, videoFunctions,
   console.log(`Someone said something: ${payload.message}`)
   console.log(`Payload: ${JSON.stringify(payload, null, 2)}`);
 
-  // //checks to see if someone is trying to speak to an afk person or not.
-  // const foundUsernames = userFunctions.checkTextForUsernames( text );
-  //
-  // for ( let userLoop = 0; userLoop < foundUsernames.length; userLoop++ ) {
-  //   let thisAFKUserID = await userFunctions.getUserIDFromUsername( foundUsernames[ userLoop ] );
-  //   if ( await userFunctions.isUserAFK( thisAFKUserID ) && !userFunctions.isThisTheBot(  ) === true ) {
-  //     await userFunctions.sendUserIsAFKMessage( data, thisAFKUserID, chatFunctions );
-  //   }
-  // }
+  //checks to see if someone is trying to speak to an afk person or not.
+  const foundUsernames = userFunctions.checkTextForUsernames( text );
+
+  for ( let userLoop = 0; userLoop < foundUsernames.length; userLoop++ ) {
+    let thisAFKUserID = await userFunctions.getUserIDFromUsername( foundUsernames[ userLoop ] );
+    if ( await userFunctions.isUserAFK( thisAFKUserID ) && !userFunctions.isThisTheBot( payload.sender ) === true ) {
+      await userFunctions.sendUserIsAFKMessage( thisAFKUserID, chatFunctions );
+    }
+  }
 
 }

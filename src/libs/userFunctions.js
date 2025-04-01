@@ -1290,7 +1290,7 @@ const userFunctions = () => {
       return afkPeople.length;
     },
 
-    sendUserIsAFKMessage: async function ( data, userID, chatFunctions ) {
+    sendUserIsAFKMessage: async function ( userID, chatFunctions ) {
       await chatFunctions.botSpeak( '@' + await this.getUsername( userID ) + ' is currently AFK, sorry' )
     },
 

@@ -1266,7 +1266,7 @@ const userFunctions = () => {
 
     removeUserFromAFKList: async function ( data, chatFunctions, databaseFunctions ) {
       const theUserID = await this.whoSentTheCommand( data );
-      await this.removeUserIDFromAFKArray( theUserID );
+      await this.removeUserIDFromAFKArray( theUserID, databaseFunctions );
       await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + ' you are no longer afk' )
     },
 

@@ -7,4 +7,6 @@ export default async ( payload, commandFunctions, userFunctions, videoFunctions,
   if ( await commandFunctions.wasThisACommand( payload.message ) ) {
     await commandFunctions.parseCommands( payload, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions, playlistFunctions, socket );
   }
+  
+  console.log(`Someone said something: ${payload.message}`)
 }

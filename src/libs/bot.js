@@ -78,7 +78,6 @@ export class Bot {
           const chatMessage = message?.data?.metadata?.chatMessage?.message ?? '';
 
           if ( !chatMessage ) return
-          console.log(chatMessage)
           const sender = message?.sender ?? ''
           if ( [ process.env.CHAT_USER_ID, process.env.CHAT_REPLY_ID ].includes( sender ) ) return
           handlers.message( {

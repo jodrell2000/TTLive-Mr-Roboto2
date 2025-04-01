@@ -55,11 +55,17 @@ const botFunctions = () => {
     // Memory Functions
     // ========================================================
 
-    reloadMemory: async function ( databaseFunctions, roomFunctions ) {
+    reloadMemory: async function ( databaseFunctions, roomFunctions, userFunctions ) {
       const theTheme = await databaseFunctions.retrieveMemory( "theme" )
       if ( theTheme !== null ) {
         await roomFunctions.setTheme( theTheme )
       }
+      
+      const afkPeople = await databaseFunctions.retrieveMemory( "afkPeople" )
+      if ( afkPeople !== null ) {
+        userFunctions.afkPeople( afkPeople )
+      }
+
     },
 
     // ========================================================

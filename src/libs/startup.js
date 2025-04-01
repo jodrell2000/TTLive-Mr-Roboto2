@@ -8,7 +8,7 @@ export default async ( roomUUID, state, roomFunctions, userFunctions, chatFuncti
     await roomFunctions.storeRoomData( roomUUID )
     
     await databaseFunctions.resetAllCurrentDJs()
-    await botFunctions.reloadMemory( databaseFunctions, roomFunctions );
+    await botFunctions.reloadMemory( databaseFunctions, roomFunctions, userFunctions );
     
     await chatFunctions.botChat("System online...")
     if ( state.nowPlaying.song ) {

@@ -1246,30 +1246,33 @@ const userFunctions = () => {
       return isAlreadyAfk !== -1;
     },
 
-    switchUserAFK: async function ( data, chatFunctions ) {
+    switchUserAFK: async function ( data, chatFunctions, databaseFunctions ) {
       const theUserID = await this.whoSentTheCommand( data );
       if ( await this.isUserAFK( theUserID ) === true ) {
-        await this.removeUserFromAFKList( data, chatFunctions );
+        await this.removeUserFromAFKList( data, chatFunctions, databaseFunctions );
       } else {
-        await this.addToAFKList( data, chatFunctions );
+        await this.addToAFKList( data, chatFunctions, databaseFunctions );
       }
     },
 
-    addToAFKList: async function ( data, chatFunctions ) {
+    addToAFKList: async function ( data, chatFunctions, databaseFunctions ) {
       const theUserID = await this.whoSentTheCommand( data );
       afkPeople.push( theUserID );
+      await databaseFunctions.recordMemory( "afkPeople", afkPeople )
+
       await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + ' you are marked as afk' )
     },
 
-    removeUserFromAFKList: async function ( data, chatFunctions ) {
+    removeUserFromAFKList: async function ( data, chatFunctions, databaseFunctions ) {
       const theUserID = await this.whoSentTheCommand( data );
       await this.removeUserIDFromAFKArray( theUserID );
       await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + ' you are no longer afk' )
     },
 
-    removeUserIDFromAFKArray: async function ( theUserID ) {
+    removeUserIDFromAFKArray: async function ( theUserID, databaseFunctions ) {
       const listPosition = afkPeople.indexOf( theUserID );
       afkPeople.splice( listPosition, 1 );
+      await databaseFunctions.recordMemory( "afkPeople", afkPeople )
     },
 
     howManyAFKUsers: function () {

@@ -12,7 +12,7 @@ export default async ( payload, commandFunctions, userFunctions, videoFunctions,
   console.log(`Payload: ${JSON.stringify(payload, null, 2)}`);
 
   //checks to see if someone is trying to speak to an afk person or not.
-  const foundUsernames = userFunctions.checkTextForUsernames( text );
+  const foundUsernames = userFunctions.checkTextForUsernames( payload.message );
 
   for ( let userLoop = 0; userLoop < foundUsernames.length; userLoop++ ) {
     let thisAFKUserID = await userFunctions.getUserIDFromUsername( foundUsernames[ userLoop ] );

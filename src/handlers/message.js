@@ -8,12 +8,8 @@ export default async ( payload, commandFunctions, userFunctions, videoFunctions,
     await commandFunctions.parseCommands( payload, userFunctions, botFunctions, roomFunctions, songFunctions, chatFunctions, videoFunctions, documentationFunctions, databaseFunctions, dateFunctions, mlFunctions, playlistFunctions, socket );
   }
 
-  console.log(`Someone said something: ${payload.message}`)
-  console.log(`Payload: ${JSON.stringify(payload, null, 2)}`);
-
   //checks to see if someone is trying to speak to an afk person or not.
   const foundUsernames = await userFunctions.checkTextForUsernames( payload.message );
-  console.log(`found usernames: ${foundUsernames}`);
 
   for ( let userLoop = 0; userLoop < foundUsernames.length; userLoop++ ) {
     let thisAFKUserID = await userFunctions.getUserIDFromUsername( foundUsernames[ userLoop ] );

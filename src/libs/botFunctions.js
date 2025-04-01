@@ -823,13 +823,13 @@ const botFunctions = () => {
       return userFunctions.getCurrentDJID() === authModule.USERID;
     },
 
-    deleteCurrentTrackFromBotPlaylist: function ( data, userFunctions, chatFunctions, songFunctions ) {
+    deleteCurrentTrackFromBotPlaylist: async function ( data, userFunctions, chatFunctions, songFunctions ) {
       if ( this.isBotCurrentDJ( userFunctions ) !== true ) {
-        chatFunctions.botSpeak( "I can't delete anything if I'm not playing anything?!?", true );
+        await chatFunctions.botSpeak( "I can't delete anything if I'm not playing anything?!?", true );
       } else {
-        chatFunctions.botSpeak( "OK, I'll delete that", true );
+        await chatFunctions.botSpeak( "OK, I'll delete that", true );
 
-        const senderID = userFunctions.whoSentTheCommand( data );
+        const senderID = await userFunctions.whoSentTheCommand( data );
         const senderUsername = userFunctions.getUsername( senderID );
         const currentDateTime = require( 'moment' );
 

@@ -462,7 +462,7 @@ const userFunctions = () => {
     },
 
     myRegionCommand: async function ( data, args, chatFunctions, videoFunctions, databaseFunctions ) {
-      const userID = this.whoSentTheCommand( data );
+      const userID = await this.whoSentTheCommand( data );
 
       if ( args[ 0 ] === undefined ) {
         await chatFunctions.botSpeak( `@${ await this.getUsername( userID ) } you must give a region code, e.g., \`/myregion GB\`. Please use one of the 2 character ISO country codes, [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)` );
@@ -504,7 +504,7 @@ const userFunctions = () => {
     },
 
     storeNoRegion: async function ( data, chatFunctions, videoFunctions, databaseFunctions ) {
-      const userID = this.whoSentTheCommand( data );
+      const userID = await this.whoSentTheCommand( data );
 
       await this.deleteUserRegion( userID, data, videoFunctions, chatFunctions, databaseFunctions );
       await this.storeUserData( userID, "noregion", true, databaseFunctions );
@@ -617,7 +617,7 @@ const userFunctions = () => {
 
     readSingleUserStatus: async function ( data, chatFunctions, roomFunctions ) {
       let username = [];
-      username.push( this.getUsername( this.whoSentTheCommand( data ) ) );
+      username.push( this.getUsername( await this.whoSentTheCommand( data ) ) );
 
       await this.readUserStatus( data, username, chatFunctions, roomFunctions );
     },
@@ -832,7 +832,7 @@ const userFunctions = () => {
     // ========================================================
 
     refreshCommand: async function ( data, chatFunctions, botFunctions, databaseFunctions ) {
-      const theUserID = this.whoSentTheCommand( data );
+      const theUserID = await this.whoSentTheCommand( data );
       let [ , theMessage ] = this.addRefreshToUser( theUserID, botFunctions, databaseFunctions );
 
       await chatFunctions.botSpeak( theMessage );
@@ -842,10 +842,10 @@ const userFunctions = () => {
       if ( botFunctions.refreshingEnabled() ) {
         if ( await this.isUserInUsersList( userID ) ) {
           if ( await this.isUserIDOnStage( userID ) ) {
-            if ( !this.isUserInRefreshList( userID ) ) {
+            if ( !await this.isUserInRefreshList( userID ) ) {
               const listPosition = this.getPositionOnUsersList( userID );
               await this.storeUserData( userID, 'RefreshStart', Date.now(), databaseFunctions );
-              await this.storeUserData( userID, 'RefreshCount', this.getUsersRefreshCount() + 1, databaseFunctions );
+              await this.storeUserData( userID, 'RefreshCount', await this.getUsersRefreshCount() + 1, databaseFunctions );
               await this.storeUserData( userID, 'RefreshCurrentPlayCount', this.getDJCurrentPlayCount( userID ), databaseFunctions );
               await this.storeUserData( userID, 'RefreshTotalPlayCount', this.getDJTotalPlayCount( userID ), databaseFunctions );
 
@@ -1256,13 +1256,13 @@ const userFunctions = () => {
     },
 
     addToAFKList: async function ( data, chatFunctions ) {
-      const theUserID = this.whoSentTheCommand( data );
+      const theUserID = await this.whoSentTheCommand( data );
       afkPeople.push( theUserID );
       await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + ' you are marked as afk' )
     },
 
     removeUserFromAFKList: async function ( data, chatFunctions ) {
-      const theUserID = this.whoSentTheCommand( data );
+      const theUserID = await this.whoSentTheCommand( data );
       await this.removeUserIDFromAFKArray( theUserID );
       await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + ' you are no longer afk' )
     },
@@ -1789,7 +1789,7 @@ const userFunctions = () => {
     },
 
     whatsMyQueuePosition: async function ( data, chatFunctions ) {
-      const userID = this.whoSentTheCommand( data );
+      const userID = await this.whoSentTheCommand( data );
 
       if ( !roomDefaults.queueActive ) {
         await chatFunctions.botSpeak( '@' + await this.getUsername( userID ) + ', the queue is currently disabled' );
@@ -1804,15 +1804,15 @@ const userFunctions = () => {
       }
     },
 
-    addme: function ( data, chatFunctions ) {
-      const userID = this.whoSentTheCommand( data );
+    addme: async function ( data, chatFunctions ) {
+      const userID = await this.whoSentTheCommand( data );
 
       const [ added, theMessage ] = this.addUserToQueue( userID );
 
       if ( added === true ) {
-        this.readQueue( data, chatFunctions )
+        await this.readQueue( data, chatFunctions )
       } else {
-        chatFunctions.botSpeak( theMessage );
+        await chatFunctions.botSpeak( theMessage );
       }
     },
 
@@ -1825,7 +1825,7 @@ const userFunctions = () => {
     },
 
     removeme: async function ( data, chatFunctions, botFunctions ) {
-      const userID = this.whoSentTheCommand( data );
+      const userID = await this.whoSentTheCommand( data );
       if ( this.isUserIDInQueue( userID ) ) {
         this.removeUserFromQueue( userID, botFunctions )
         await chatFunctions.botSpeak( "@" + await this.getUsername( userID ) + ', I\'ve removed you from the queue' );
@@ -2792,7 +2792,7 @@ const userFunctions = () => {
     },
 
     chargeMe: async function ( callCost, data, chatFunctions, databaseFunctions, functionCall, description = "" ) {
-      const sendingUserID = this.whoSentTheCommand( data );
+      const sendingUserID = await this.whoSentTheCommand( data );
 
       try {
         await this.canUserAffordToSpendThisMuch( sendingUserID, callCost, chatFunctions, data );

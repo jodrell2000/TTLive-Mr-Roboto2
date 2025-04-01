@@ -2133,7 +2133,7 @@ const userFunctions = () => {
       await this.resetUsersSpamCount( userID, databaseFunctions );
 
       // remove the user from afk, just in case it was hanging around from a previous visit
-      if ( this.isUserAFK( userID ) ) {
+      if ( await this.isUserAFK( userID ) ) {
         await this.removeUserIDFromAFKArray( userID );
       }
 

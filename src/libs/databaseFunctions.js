@@ -151,18 +151,27 @@ const databaseFunctions = () => {
       }
     },
 
-    retrieveMemory: async function ( key ) {
+    retrieveMemory: async function (key) {
       const theQuery = "SELECT theValue FROM persistentMemory WHERE theKey = ?";
-      const theValues = [ key ];
+      const theValues = [key];
+
       try {
-        const result = await this.runQuery( theQuery, theValues );
-        if ( result.length > 0 ) {
-          return result[ 0 ].theValue;
+        const result = await this.runQuery(theQuery, theValues);
+
+        if (result.length > 0) {
+          const storedValue = result[0].theValue;
+
+          // Check if the stored value is a JSON string
+          try {
+            return JSON.parse(storedValue); // If it’s valid JSON, return as object/array
+          } catch (error) {
+            return storedValue; // Otherwise, return as a string
+          }
         } else {
           return null;
         }
-      } catch ( error ) {
-        console.error( 'Unable to retrieve memory:', error.message );
+      } catch (error) {
+        console.error("Unable to retrieve memory:", error.message);
         throw error;
       }
     },

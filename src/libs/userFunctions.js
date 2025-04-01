@@ -1259,7 +1259,7 @@ const userFunctions = () => {
       const theUserID = await this.whoSentTheCommand( data );
       afkPeople.push( theUserID );
       console.log(`afkPeople: ${JSON.stringify( afkPeople, null, 2) }`);
-      await databaseFunctions.recordMemory( "afkPeople", afkPeople )
+      await databaseFunctions.recordMemory( "afkPeople", JSON.stringify(afkPeople) )
 
       await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + ' you are marked as afk' )
     },
@@ -1275,7 +1275,7 @@ const userFunctions = () => {
       afkPeople.splice( listPosition, 1 );
       console.log(`afkPeople: ${JSON.stringify( afkPeople, null, 2) }`);
 
-      await databaseFunctions.recordMemory( "afkPeople", afkPeople )
+      await databaseFunctions.recordMemory( "afkPeople", JSON.stringify(afkPeople) )
     },
 
     howManyAFKUsers: function () {

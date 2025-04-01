@@ -60,12 +60,11 @@ const botFunctions = () => {
       if ( theTheme !== null ) {
         await roomFunctions.setTheme( theTheme )
       }
-      
-      const afkPeople = await databaseFunctions.retrieveMemory( "afkPeople" )
-      if ( afkPeople !== null ) {
-        userFunctions.afkPeople( afkPeople )
-      }
 
+      const afkPeople = await databaseFunctions.retrieveMemory("afkPeople");
+      if (afkPeople !== null && Array.isArray(afkPeople)) {
+        userFunctions.afkPeople(afkPeople);
+      }
     },
 
     // ========================================================

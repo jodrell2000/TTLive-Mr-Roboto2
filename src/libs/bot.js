@@ -6,6 +6,11 @@ import { logger } from '../utils/logging.js'
 import handlers from '../handlers/index.js'
 import startup from '../libs/startup.js'
 import playlistFunctions from "./playlistFunctions.js";
+// import CometChatSDK from "@cometchat/chat-sdk-javascript";
+// const { CometChat } = CometChatSDK;
+// global.window = {}; // Mock the window object
+// import CometChatSDK from "@cometchat-pro/chat";
+// const { CometChat } = CometChatSDK;
 
 export class Bot {
   constructor( slug ) {
@@ -62,20 +67,24 @@ export class Bot {
   // }
 
   async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
-    const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp )
+    const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp, this.lastMessageIDs?.id )
     if ( response?.data ) {
       const messages = response.data
       if ( messages?.length ) {
-        for ( const message in messages ) {
-          this.lastMessageIDs.fromTimestamp = messages[ message ].sentAt + 1
-          const customMessage = messages[ message ]?.data?.customData?.message ?? ''
-          if ( !customMessage ) return
-          const sender = messages[ message ]?.sender ?? ''
+        for ( const message of messages ) {
+          this.lastMessageIDs.fromTimestamp = messages.sentAt + 1
+          this.lastMessageIDs.id = message.id
+
+          const chatMessage = message?.data?.metadata?.chatMessage?.message ?? '';
+
+          if ( !chatMessage ) return
+          console.log(chatMessage)
+          const sender = message?.sender ?? ''
           if ( [ process.env.CHAT_USER_ID, process.env.CHAT_REPLY_ID ].includes( sender ) ) return
           handlers.message( {
-            message: customMessage,
+            message: chatMessage,
             sender,
-            senderName: messages[ message ]?.data?.customData?.userName
+            senderName: messages[ message ]?.data?.chatMessage?.userName
           }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions, this.socket )
         }
       }
@@ -98,6 +107,24 @@ export class Bot {
   configureListeners( socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     const self = this
     logger.debug( 'Setting up listeners' )
+
+    let listenerID = process.env.CHAT_USER_ID;
+
+    // CometChat.addMessageListener(
+    //   listenerID,
+    //   new CometChat.MessageListener({
+    //     onTextMessageReceived: (textMessage) => {
+    //       console.log("New Text message received successfully", textMessage);
+    //     },
+    //     // onMediaMessageReceived: (mediaMessage) => {
+    //     //   console.log("Media message received successfully", mediaMessage);
+    //     // },
+    //     onCustomMessageReceived: (customMessage) => {
+    //       console.log("New Custom message received successfully", customMessage);
+    //     },
+    //   })
+    // );
+
 
     this.socket.on( 'statefulMessage', async payload => {
       // logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )

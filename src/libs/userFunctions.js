@@ -1241,14 +1241,14 @@ const userFunctions = () => {
       }
     },
 
-    isUserAFK: function ( userID ) {
+    isUserAFK: async function ( userID ) {
       let isAlreadyAfk = afkPeople.indexOf( userID );
       return isAlreadyAfk !== -1;
     },
 
     switchUserAFK: async function ( data, chatFunctions ) {
-      const theUserID = this.whoSentTheCommand( data );
-      if ( this.isUserAFK( theUserID ) === true ) {
+      const theUserID = await this.whoSentTheCommand( data );
+      if ( await this.isUserAFK( theUserID ) === true ) {
         await this.removeUserFromAFKList( data, chatFunctions );
       } else {
         await this.addToAFKList( data, chatFunctions );
@@ -1257,7 +1257,6 @@ const userFunctions = () => {
 
     addToAFKList: async function ( data, chatFunctions ) {
       const theUserID = this.whoSentTheCommand( data );
-
       afkPeople.push( theUserID );
       await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + ' you are marked as afk' )
     },

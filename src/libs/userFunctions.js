@@ -1992,8 +1992,8 @@ const userFunctions = () => {
         djList.splice( checkIfStillInDjArray, 1 );
       }
 
-      if ( this.isUserAFK( userID ) ) {
-        await this.removeUserIDFromAFKArray( userID );
+      if ( await this.isUserAFK( userID ) ) {
+        await this.removeUserIDFromAFKArray( userID, databaseFunctions );
       }
 
       //removes people leaving the room in modpm still
@@ -2134,7 +2134,7 @@ const userFunctions = () => {
 
       // remove the user from afk, just in case it was hanging around from a previous visit
       if ( await this.isUserAFK( userID ) ) {
-        await this.removeUserIDFromAFKArray( userID );
+        await this.removeUserIDFromAFKArray( userID, databaseFunctions );
       }
 
       await this.updateModeratorStatus( userID, roomFunctions )

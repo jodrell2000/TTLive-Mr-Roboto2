@@ -251,8 +251,8 @@ const commandFunctions = () => {
   // User commands
   // #############################################
 
-  userCommands.afk = ( { data, userFunctions, chatFunctions } ) => {
-    userFunctions.switchUserAFK( data, chatFunctions );
+  userCommands.afk = ( { data, userFunctions, chatFunctions, databaseFunctions } ) => {
+    userFunctions.switchUserAFK( data, chatFunctions, databaseFunctions );
   }
   userCommands.afk.help = "Switches the senders AFK state";
 

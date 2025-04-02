@@ -352,7 +352,7 @@ const userFunctions = () => {
     },
 
     getUserIDFromUsername: async function ( theUsername ) {
-      // console.log(`getUserIDFromUsername theUserList:${JSON.stringify(theUsersList,null,2)}`)
+      console.log(`getUserIDFromUsername theUserList:${JSON.stringify(theUsersList,null,2)}`)
       for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
         if ( theUsersList[ userLoop ].username.toLowerCase() === theUsername.toLowerCase() ) {
           return theUsersList[ userLoop ].id;
@@ -627,7 +627,7 @@ const userFunctions = () => {
         theUsername += args[ userLoop ] + ' ';
       }
       theUsername = theUsername.substring( 0, theUsername.length - 1 );
-
+      console.log( `theUsername: ${ theUsername }` );
       const theUserID = await this.getUserIDFromUsername( theUsername );
       const roomJoined = formatRelativeTime( ( Date.now() - await this.getUserJoinedRoom( theUserID ) ) / 1000 );
       let modText = '';

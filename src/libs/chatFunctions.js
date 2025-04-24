@@ -192,6 +192,7 @@ const chatFunctions = ( ) => {
         }
 
         const randomPic = [ pictureVariable[ Math.floor( Math.random() * pictureVariable.length ) ] ];
+        console.log(`randomPic: ${randomPic}`);
         await this.botSpeakPicture( "",randomPic );
       }
       readInOrder().then( );

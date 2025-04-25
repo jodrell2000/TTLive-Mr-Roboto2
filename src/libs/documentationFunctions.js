@@ -204,7 +204,7 @@ const documentationFunctions = () => {
 </html>
 `, { flag: 'a+' });
       });
-    }
+    },
 
     rebuildThemesDocumentation: function ( theThemes ) {
       fs.writeFileSync( themesDocOutputFile, "<html><body>The Theme Randomizer currently contains the following" +

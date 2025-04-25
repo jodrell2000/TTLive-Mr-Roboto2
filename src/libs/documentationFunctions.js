@@ -96,8 +96,6 @@ const documentationFunctions = () => {
     //     } );
     // },
     rebuildChatDocumentation: function () {
-      const fs = require( 'fs' );
-
       // Write the initial HTML structure
       fs.writeFileSync( chatDocOutputFile, `
 <html>

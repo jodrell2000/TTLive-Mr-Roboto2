@@ -97,7 +97,7 @@ const documentationFunctions = () => {
     // },
     rebuildChatDocumentation: function () {
       // Write the initial HTML structure
-      fs.writeFileSync( chatDocOutputFile, `
+      fs.writeFileSync(chatDocOutputFile, `
 <html>
 <head>
   <style type="text/css">
@@ -112,7 +112,14 @@ const documentationFunctions = () => {
       background-color:#ffffff;position:sticky;top:-1px;
       will-change:transform
     }
-    .image-container img {margin-right: 5px; margin-top: 5px;}
+    .image-container {
+      display: none;
+      margin-top: 10px;
+    }
+    .image-container img {
+      margin-right: 5px;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
@@ -125,64 +132,79 @@ const documentationFunctions = () => {
     </tr>
   </thead>
   <tbody>
-` );
+`);
 
       // Read and parse the JSON data
-      fs.readFile( chatDataFileName, function ( err, data ) {
-        if ( err ) {
-          console.error( "Error reading data file:", err );
+      fs.readFile(chatDataFileName, function (err, data) {
+        if (err) {
+          console.error("Error reading data file:", err);
           return;
         }
 
-        const jsonParsed = JSON.parse( data );
-        const theCommands = Object.keys( jsonParsed.chatMessages );
+        const jsonParsed = JSON.parse(data);
+        const theCommands = Object.keys(jsonParsed.chatMessages);
 
-        theCommands.forEach( ( key, index ) => {
-          const theMessages = jsonParsed.chatMessages[ key ].messages;
-          const thePictures = jsonParsed.chatMessages[ key ].pictures || [];
-          const imageContainerId = `img-container-${ index }`;
-          const imageData = JSON.stringify( thePictures ).replace( /"/g, '&quot;' ); // Escape for HTML
+        theCommands.forEach((key, index) => {
+          const theMessages = jsonParsed.chatMessages[key].messages;
+          const thePictures = jsonParsed.chatMessages[key].pictures || [];
+          const imageContainerId = `img-container-${index}`;
+          const buttonId = `btn-${index}`;
+          const imageData = JSON.stringify(thePictures).replace(/"/g, '&quot;');
 
           // Write the row
-          fs.writeFileSync( chatDocOutputFile, `
+          fs.writeFileSync(chatDocOutputFile, `
   <tr>
-    <td class="tg-0lax">${ key }</td>
-    <td class="tg-0lax"><ul>${ theMessages.map( m => `<li>${ m }</li>` ).join( '' ) }</ul></td>
+    <td class="tg-0lax">${key}</td>
+    <td class="tg-0lax"><ul>${theMessages.map(m => `<li>${m}</li>`).join('')}</ul></td>
     <td class="tg-0lax">
-      <button onclick="loadImages('${ imageContainerId }', JSON.parse(this.dataset.images))" data-images="${ imageData }">Show Images</button>
-      <div id="${ imageContainerId }" class="image-container" style="margin-top: 10px;"></div>
+      <button id="${buttonId}" onclick="toggleImages('${imageContainerId}', '${buttonId}', JSON.parse(this.dataset.images))"
+        data-images="${imageData}">Show Images</button>
+      <div id="${imageContainerId}" class="image-container"></div>
     </td>
   </tr>
-`, { flag: 'a+' } );
-        } );
+`, { flag: 'a+' });
+        });
 
         // Finalize the HTML with closing tags and JS
-        fs.writeFileSync( chatDocOutputFile, `
+        fs.writeFileSync(chatDocOutputFile, `
   </tbody>
 </table>
 
 <script>
-  function loadImages(containerId, imageList) {
+  function toggleImages(containerId, buttonId, imageList) {
     const container = document.getElementById(containerId);
-    if (!container || container.dataset.loaded === "true") return;
+    const button = document.getElementById(buttonId);
 
-    imageList.forEach(src => {
-      const img = document.createElement("img");
-      img.src = src;
-      img.width = 100;
-      img.loading = "lazy";
-      container.appendChild(img);
-    });
+    if (!container || !button) return;
 
-    container.dataset.loaded = "true";
+    if (container.style.display === "none" || container.style.display === "") {
+      // Show and load images if not already loaded
+      container.style.display = "block";
+      button.innerText = "Hide Images";
+
+      if (container.dataset.loaded !== "true") {
+        imageList.forEach(src => {
+          const img = document.createElement("img");
+          img.src = src;
+          img.width = 100;
+          img.loading = "lazy";
+          container.appendChild(img);
+        });
+        container.dataset.loaded = "true";
+      }
+    } else {
+      // Hide
+      container.style.display = "none";
+      button.innerText = "Show Images";
+    }
   }
 </script>
 
 </body>
 </html>
-`, { flag: 'a+' } );
-      } );
-    },
+`, { flag: 'a+' });
+      });
+    }
 
     rebuildThemesDocumentation: function ( theThemes ) {
       fs.writeFileSync( themesDocOutputFile, "<html><body>The Theme Randomizer currently contains the following" +

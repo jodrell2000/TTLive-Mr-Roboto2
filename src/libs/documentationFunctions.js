@@ -192,7 +192,9 @@ const documentationFunctions = () => {
         }
 
         const jsonParsed = JSON.parse(data);
-        const theCommands = Object.keys(jsonParsed.chatMessages);
+        // const theCommands = Object.keys(jsonParsed.chatMessages);
+        const theCommands = Object.keys(jsonParsed.chatMessages).sort((a, b) => a.localeCompare(b));
+
 
         theCommands.forEach((key, index) => {
           const theMessages = jsonParsed.chatMessages[key].messages;

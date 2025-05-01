@@ -18,69 +18,58 @@ EOF
 
 # Import chat data
 node <<EOF
-const fs = require('fs');
-const mysql = require('mysql2/promise');
+import fs from 'fs';
+import pool from '../libs/dbConnectionPool.js';
 
 async function importChatData() {
-  const db = await mysql.createConnection({
-    host: 'localhost',
-    user: process.env.DBUSERNAME,
-    password: process.env.DBPASSWORD,
-    database: process.env.DBNAME
-  });
+  const connection = await pool.getConnection();
 
   const chatData = JSON.parse(fs.readFileSync("$CHAT_JSON", "utf8"));
 
   for (const [command, { messages, pictures = [] }] of Object.entries(chatData.chatMessages)) {
-    const [cmdResult] = await db.execute("INSERT INTO chat_commands (command) VALUES (?)", [command]);
+    const [cmdResult] = await connection.execute("INSERT INTO chat_commands (command) VALUES (?)", [command]);
     const cmdId = cmdResult.insertId;
 
     for (const msg of messages) {
-      await db.execute("INSERT INTO chat_messages (chat_command_id, message) VALUES (?, ?)", [cmdId, msg]);
+      await connection.execute("INSERT INTO chat_messages (chat_command_id, message) VALUES (?, ?)", [cmdId, msg]);
     }
 
     for (const url of pictures) {
-      await db.execute("INSERT INTO chat_pictures (chat_command_id, url) VALUES (?, ?)", [cmdId, url]);
+      await connection.execute("INSERT INTO chat_pictures (chat_command_id, url) VALUES (?, ?)", [cmdId, url]);
     }
   }
-  await db.end();
+  connection.release();
 }
 
 importChatData().catch(console.error);
 EOF
 
-
 # Import alias data
 node <<EOF
-const fs = require('fs');
-const mysql = require('mysql2/promise');
+import fs from 'fs';
+import pool from '../libs/dbConnectionPool.js';
 
 async function importAliasData() {
-  const db = await mysql.createConnection({
-    host: 'localhost',
-    user: process.env.DBUSERNAME,
-    password: process.env.DBPASSWORD,
-    database: process.env.DBNAME
-  });
+  const connection = await pool.getConnection();
 
   const aliasData = JSON.parse(fs.readFileSync("$ALIAS_JSON", "utf8"));
   const commandAliases = aliasData.commands || {};
 
   for (const [command, aliases] of Object.entries(commandAliases)) {
-    const [rows] = await db.execute("SELECT id FROM chat_commands WHERE command = ?", [command]);
+    const [rows] = await connection.execute("SELECT id FROM chat_commands WHERE command = ?", [command]);
     if (rows.length === 0) continue;
 
     const cmdId = rows[0].id;
 
     for (const alias of aliases) {
       try {
-        await db.execute("INSERT INTO chat_aliases (chat_command_id, alias_name) VALUES (?, ?)", [cmdId, alias]);
+        await connection.execute("INSERT INTO chat_aliases (chat_command_id, alias_name) VALUES (?, ?)", [cmdId, alias]);
       } catch {
         console.warn(\`Skipping duplicate alias: \${alias}\`);
       }
     }
   }
-  await db.end();
+  connection.release();
 }
 
 importAliasData().catch(console.error);

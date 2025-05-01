@@ -22,28 +22,56 @@ node <<EOF
 import fs from 'fs';
 import pool from '../src/libs/dbConnectionPool.js';
 
-async function importChatData() {
-  const connection = await pool.getConnection();
-
-  const chatData = JSON.parse(fs.readFileSync("$CHAT_JSON", "utf8"));
-
-  for (const [command, { messages, pictures = [] }] of Object.entries(chatData.chatMessages)) {
-    const [cmdResult] = await connection.execute("INSERT INTO chat_commands (command) VALUES (?)", [command]);
-    const cmdId = cmdResult.insertId;
-
-    for (const msg of messages) {
-      await connection.execute("INSERT INTO chat_messages (chat_command_id, message) VALUES (?, ?)", [cmdId, msg]);
+function importChatData() {
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting connection from pool:", err);
+      return;
     }
 
-    for (const url of pictures) {
-      await connection.execute("INSERT INTO chat_pictures (chat_command_id, url) VALUES (?, ?)", [cmdId, url]);
+    const chatData = JSON.parse(fs.readFileSync("$CHAT_JSON", "utf8"));
+
+    // Process chat commands
+    const commandQueries = [];
+    for (const [command, { messages, pictures = [] }] of Object.entries(chatData.chatMessages)) {
+      const queryCommand = "INSERT INTO chat_commands (command) VALUES (?)";
+      
+      pool.query(queryCommand, [command], (err, cmdResult) => {
+        if (err) {
+          console.error("Error inserting command:", err);
+          return;
+        }
+
+        const cmdId = cmdResult.insertId;
+
+        // Insert messages
+        messages.forEach(msg => {
+          const queryMsg = "INSERT INTO chat_messages (chat_command_id, message) VALUES (?, ?)";
+          pool.query(queryMsg, [cmdId, msg], (err) => {
+            if (err) {
+              console.error("Error inserting message:", err);
+            }
+          });
+        });
+
+        // Insert pictures
+        pictures.forEach(url => {
+          const queryPic = "INSERT INTO chat_pictures (chat_command_id, url) VALUES (?, ?)";
+          pool.query(queryPic, [cmdId, url], (err) => {
+            if (err) {
+              console.error("Error inserting picture:", err);
+            }
+          });
+        });
+      });
     }
-  }
-  connection.release();
+
+    // Release connection after completing queries
+    connection.release();
+  });
 }
 
-importChatData().catch(console.error);
-EOF
+importChatData();EOF
 
 # Import alias data
 node <<EOF

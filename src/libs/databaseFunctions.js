@@ -1133,41 +1133,41 @@ const databaseFunctions = () => {
     // Command & Alias Functions
     // ========================================================
 
-    isChatCommand: async function ( value ) {
-      const selectQuery = 'SELECT count(*) AS count FROM chatCommands WHERE command=?;';
-      const values = [ value ];
-      try {
-        const result = await this.runQuery( selectQuery, values );
-        return result[ 0 ].count > 0;
-      } catch ( error ) {
-        console.error( error );
-        throw error;
-      }
-    },
-
-    isAlias: async function ( value ) {
-      const selectQuery = 'SELECT count(*) AS count FROM aliases WHERE alias=?;';
-      const values = [ value ];
-      try {
-        const result = await this.runQuery( selectQuery, values );
-        return result[ 0 ].count > 0;
-      } catch ( error ) {
-        console.error( error );
-        throw error;
-      }
-    },
-
-    getAliases: async function ( command ) {
-      const selectQuery = 'SELECT alias FROM aliases WHERE command=?;';
-      const values = [ command ];
-      try {
-        const result = await this.runQuery( selectQuery, values );
-        return result.length > 0 ? result : false;
-      } catch ( error ) {
-        console.error( error );
-        throw error;
-      }
-    },
+    // isChatCommand: async function ( value ) {
+    //   const selectQuery = 'SELECT count(*) AS count FROM chatCommands WHERE command=?;';
+    //   const values = [ value ];
+    //   try {
+    //     const result = await this.runQuery( selectQuery, values );
+    //     return result[ 0 ].count > 0;
+    //   } catch ( error ) {
+    //     console.error( error );
+    //     throw error;
+    //   }
+    // },
+    //
+    // isAlias: async function ( value ) {
+    //   const selectQuery = 'SELECT count(*) AS count FROM aliases WHERE alias=?;';
+    //   const values = [ value ];
+    //   try {
+    //     const result = await this.runQuery( selectQuery, values );
+    //     return result[ 0 ].count > 0;
+    //   } catch ( error ) {
+    //     console.error( error );
+    //     throw error;
+    //   }
+    // },
+    //
+    // getAliases: async function ( command ) {
+    //   const selectQuery = 'SELECT alias FROM aliases WHERE command=?;';
+    //   const values = [ command ];
+    //   try {
+    //     const result = await this.runQuery( selectQuery, values );
+    //     return result.length > 0 ? result : false;
+    //   } catch ( error ) {
+    //     console.error( error );
+    //     throw error;
+    //   }
+    // },
 
     // getChatPicture: async function ( command ) {
     //   if ( await this.isChatCommand( command ) ) {

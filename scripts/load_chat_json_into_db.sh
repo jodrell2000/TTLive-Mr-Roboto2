@@ -71,7 +71,8 @@ function importChatData() {
   });
 }
 
-importChatData();EOF
+importChatData();
+EOF
 
 # Import alias data
 node <<EOF

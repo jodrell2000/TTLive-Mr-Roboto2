@@ -616,7 +616,7 @@ const userFunctions = () => {
 
     readSingleUserStatus: async function ( data, chatFunctions, roomFunctions ) {
       let username = [];
-      username.push( this.getUsername( await this.whoSentTheCommand( data ) ) );
+      username.push( await this.getUsername( await this.whoSentTheCommand( data ) ) );
 
       await this.readUserStatus( data, username, chatFunctions, roomFunctions );
     },

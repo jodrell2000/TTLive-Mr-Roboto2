@@ -19,7 +19,7 @@ EOF
 # Import chat data
 node <<EOF
 import fs from 'fs';
-import pool from '../libs/dbConnectionPool.js';
+import pool from '../src/libs/dbConnectionPool.js';
 
 async function importChatData() {
   const connection = await pool.getConnection();
@@ -47,7 +47,7 @@ EOF
 # Import alias data
 node <<EOF
 import fs from 'fs';
-import pool from '../libs/dbConnectionPool.js';
+import pool from '../src/libs/dbConnectionPool.js';
 
 async function importAliasData() {
   const connection = await pool.getConnection();

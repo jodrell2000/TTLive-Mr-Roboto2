@@ -18,63 +18,71 @@ EOF
 
 # Import chat data
 node <<EOF
-import fs from 'fs';
-import mysql from 'mysql2/promise';
+const fs = require('fs');
+const mysql = require('mysql2/promise');
 
-const db = await mysql.createConnection({
-  host: 'localhost',
-  user: process.env.DBUSERNAME,
-  password: process.env.DBPASSWORD,
-  database: process.env.DBNAME
-});
+async function importChatData() {
+  const db = await mysql.createConnection({
+    host: 'localhost',
+    user: process.env.DBUSERNAME,
+    password: process.env.DBPASSWORD,
+    database: process.env.DBNAME
+  });
 
-const chatData = JSON.parse(fs.readFileSync("$CHAT_JSON", "utf8"));
+  const chatData = JSON.parse(fs.readFileSync("$CHAT_JSON", "utf8"));
 
-for (const [command, { messages, pictures = [] }] of Object.entries(chatData.chatMessages)) {
-  const [cmdResult] = await db.execute("INSERT INTO chat_commands (command) VALUES (?)", [command]);
-  const cmdId = cmdResult.insertId;
+  for (const [command, { messages, pictures = [] }] of Object.entries(chatData.chatMessages)) {
+    const [cmdResult] = await db.execute("INSERT INTO chat_commands (command) VALUES (?)", [command]);
+    const cmdId = cmdResult.insertId;
 
-  for (const msg of messages) {
-    await db.execute("INSERT INTO chat_messages (chat_command_id, message) VALUES (?, ?)", [cmdId, msg]);
+    for (const msg of messages) {
+      await db.execute("INSERT INTO chat_messages (chat_command_id, message) VALUES (?, ?)", [cmdId, msg]);
+    }
+
+    for (const url of pictures) {
+      await db.execute("INSERT INTO chat_pictures (chat_command_id, url) VALUES (?, ?)", [cmdId, url]);
+    }
   }
-
-  for (const url of pictures) {
-    await db.execute("INSERT INTO chat_pictures (chat_command_id, url) VALUES (?, ?)", [cmdId, url]);
-  }
+  await db.end();
 }
-await db.end();
+
+importChatData().catch(console.error);
 EOF
 
 # Import alias data
 node <<EOF
-import fs from 'fs';
-import mysql from 'mysql2/promise';
+const fs = require('fs');
+const mysql = require('mysql2/promise');
 
-const db = await mysql.createConnection({
-  host: 'localhost',
-  user: process.env.DBUSERNAME,
-  password: process.env.DBPASSWORD,
-  database: process.env.DBNAME
-});
+async function importAliasData() {
+  const db = await mysql.createConnection({
+    host: 'localhost',
+    user: process.env.DBUSERNAME,
+    password: process.env.DBPASSWORD,
+    database: process.env.DBNAME
+  });
 
-const aliasData = JSON.parse(fs.readFileSync("$ALIAS_JSON", "utf8"));
-const commandAliases = aliasData.commands || {};
+  const aliasData = JSON.parse(fs.readFileSync("$ALIAS_JSON", "utf8"));
+  const commandAliases = aliasData.commands || {};
 
-for (const [command, aliases] of Object.entries(commandAliases)) {
-  const [rows] = await db.execute("SELECT id FROM chat_commands WHERE command = ?", [command]);
-  if (rows.length === 0) continue;
+  for (const [command, aliases] of Object.entries(commandAliases)) {
+    const [rows] = await db.execute("SELECT id FROM chat_commands WHERE command = ?", [command]);
+    if (rows.length === 0) continue;
 
-  const cmdId = rows[0].id;
+    const cmdId = rows[0].id;
 
-  for (const alias of aliases) {
-    try {
-      await db.execute("INSERT INTO chat_aliases (chat_command_id, alias_name) VALUES (?, ?)", [cmdId, alias]);
-    } catch {
-      console.warn(\`Skipping duplicate alias: \${alias}\`);
+    for (const alias of aliases) {
+      try {
+        await db.execute("INSERT INTO chat_aliases (chat_command_id, alias_name) VALUES (?, ?)", [cmdId, alias]);
+      } catch {
+        console.warn(\`Skipping duplicate alias: \${alias}\`);
+      }
     }
   }
+  await db.end();
 }
-await db.end();
+
+importAliasData().catch(console.error);
 EOF
 
 echo "✅ Data import complete."

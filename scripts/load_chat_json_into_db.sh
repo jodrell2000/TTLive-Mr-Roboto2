@@ -5,8 +5,9 @@ set -a
 source "$(dirname "$0")/../.env"
 set +a
 
-CHAT_JSON="$(dirname "$0")/../$CHATDATA"
-ALIAS_JSON="$(dirname "$0")/../$ALIASDATA"
+# Define paths relative to the script location
+CHAT_JSON="$(dirname "$0")/../data/$CHATDATA"
+ALIAS_JSON="$(dirname "$0")/../data/$ALIASDATA"
 
 # Clear existing data
 mysql -u "$DBUSERNAME" -p"$DBPASSWORD" "$DBNAME" <<EOF

@@ -79,6 +79,7 @@ function importChatData() {
 }
 
 importChatData();
+
 EOF
 
 # Import alias data

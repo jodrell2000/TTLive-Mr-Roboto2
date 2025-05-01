@@ -19,7 +19,8 @@ pool.getConnection((err, connection) => {
 
     const [command, { messages, pictures = [] }] = entries[index];
 
-    connection.query("INSERT INTO chat_commands (command) VALUES (?)", [command], (err, cmdResult) => {
+    connection.query("SET NAMES utf8mb4; SET CHARACTER SET utf8mb4; SET character_set_connection = utf8mb4; INSERT" +
+      " INTO chat_commands (command) VALUES (?)", [command], (err, cmdResult) => {
       if (err) {
         console.error(`Error inserting command "${command}":`, err);
         return insertNext(index + 1);
@@ -30,7 +31,8 @@ pool.getConnection((err, connection) => {
       const insertMessages = messages.map(msg =>
         new Promise((resolve, reject) => {
           connection.query(
-            "INSERT INTO chat_messages (chat_command_id, message) VALUES (?, ?)",
+            "SET NAMES utf8mb4; SET CHARACTER SET utf8mb4; SET character_set_connection = utf8mb4; INSERT INTO" +
+            " chat_messages (chat_command_id, message) VALUES (?, ?)",
             [cmdId, msg],
             err => err ? reject(err) : resolve()
           );
@@ -40,7 +42,8 @@ pool.getConnection((err, connection) => {
       const insertPictures = pictures.map(url =>
         new Promise((resolve, reject) => {
           connection.query(
-            "INSERT INTO chat_pictures (chat_command_id, url) VALUES (?, ?)",
+            "SET NAMES utf8mb4; SET CHARACTER SET utf8mb4; SET character_set_connection = utf8mb4; INSERT INTO" +
+            " chat_pictures (chat_command_id, url) VALUES (?, ?)",
             [cmdId, url],
             err => err ? reject(err) : resolve()
           );

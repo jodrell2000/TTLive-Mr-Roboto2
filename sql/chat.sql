@@ -23,3 +23,13 @@ CREATE TABLE chat_aliases (
                          alias_name VARCHAR(255) UNIQUE,
                          FOREIGN KEY (chat_command_id) REFERENCES chat_commands(id) ON DELETE CASCADE
 );
+
+
+ALTER DATABASE robotodb CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci;
+
+ALTER TABLE chat_messages CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+ALTER TABLE chat_commands CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+ALTER TABLE chat_pictures CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+ALTER TABLE chat_aliases CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+ALTER TABLE chat_messages MODIFY message TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;

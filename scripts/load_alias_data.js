@@ -12,7 +12,8 @@ const commandAliases = aliasData.commands || {};
   try {
     for (const [command, aliases] of Object.entries(commandAliases)) {
       const [rows] = await new Promise((resolve, reject) =>
-        connection.query("SELECT id FROM chat_commands WHERE command = ?", [command], (err, results) =>
+        connection.query("SET NAMES utf8mb4; SET CHARACTER SET utf8mb4; SET character_set_connection =" +
+          " utf8mb4; SELECT id FROM chat_commands WHERE command = ?", [command], (err, results) =>
           err ? reject(err) : resolve([results])
         )
       );
@@ -23,7 +24,8 @@ const commandAliases = aliasData.commands || {};
       for (const alias of aliases) {
         await new Promise((resolve, reject) => {
           connection.query(
-            "INSERT INTO chat_aliases (chat_command_id, alias_name) VALUES (?, ?)",
+            "SET NAMES utf8mb4; SET CHARACTER SET utf8mb4; SET character_set_connection = utf8mb4; INSERT INTO" +
+            " chat_aliases (chat_command_id, alias_name) VALUES (?, ?)",
             [cmdId, alias],
             err => {
               if (err && err.code === 'ER_DUP_ENTRY') {

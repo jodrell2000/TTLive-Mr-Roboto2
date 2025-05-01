@@ -49,6 +49,7 @@ async function importChatData() {
 importChatData().catch(console.error);
 EOF
 
+
 # Import alias data
 node <<EOF
 const fs = require('fs');

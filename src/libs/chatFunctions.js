@@ -404,10 +404,7 @@ const chatFunctions = ( ) => {
           theMessage = customGreeting.message;
         } else if ( userProfile.avatarId !== "ghost" && theUsername && !( await databaseFunctions.hasUserHadInitialRoboCoinGift( userID ) ) ) {
           await userFunctions.giveInitialRoboCoinGift( userID, databaseFunctions );
-          setTimeout( async () => {
-            await this.botSpeak( `Welcome to the ${await roomFunctions.roomName()} room @${await userFunctions.getUsername( userID )}. Have a gift of 100 RoboCoins!` );
-          }, 3 * 1000 );
-
+          theMessage = `Welcome to the ${await roomFunctions.roomName()} room @${await userFunctions.getUsername( userID )}. Have a gift of 100 RoboCoins!`
         } else {
           theMessage = roomFunctions.roomJoinMessage();
         }

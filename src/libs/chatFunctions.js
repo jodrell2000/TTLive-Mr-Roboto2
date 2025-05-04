@@ -403,7 +403,7 @@ const chatFunctions = ( ) => {
         if ( customGreeting !== undefined ) {
           theMessage = customGreeting.message;
         } else if ( userProfile.avatarId !== "ghost" && theUsername && !( await databaseFunctions.hasUserHadInitialRoboCoinGift( userID ) ) ) {
-          await userFunctions.giveInitialRoboCoinGift( userID, databaseFunctions, chatFunctions, roomFunctions );
+          await userFunctions.giveInitialRoboCoinGift( userID, databaseFunctions, this, roomFunctions );
         } else {
           theMessage = roomFunctions.roomJoinMessage();
         }

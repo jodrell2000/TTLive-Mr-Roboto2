@@ -394,7 +394,7 @@ const chatFunctions = ( ) => {
 
     // ========================================================
 
-    userGreeting: async function ( userID, theUsername, roomFunctions, userFunctions, databaseFunctions ) {
+    userGreeting: async function ( userID, theUsername, roomFunctions, userFunctions, databaseFunctions, userProfile ) {
       //console.log('user greeting')
       if ( theUsername !== "Guest" && !userFunctions.isThisTheBot( userID ) ) {
         const customGreeting = userMessages.userGreetings.find( ( { id } ) => id === userID );
@@ -402,6 +402,8 @@ const chatFunctions = ( ) => {
 
         if ( customGreeting !== undefined ) {
           theMessage = customGreeting.message;
+        } else if ( userProfile.avatarId !== "ghost" && theUsername && !( await databaseFunctions.hasUserHadInitialRoboCoinGift( userID ) ) ) {
+          await userFunctions.giveInitialRoboCoinGift( userID, databaseFunctions, chatFunctions, roomFunctions );
         } else {
           theMessage = roomFunctions.roomJoinMessage();
         }

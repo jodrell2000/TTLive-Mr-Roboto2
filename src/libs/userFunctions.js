@@ -2140,10 +2140,6 @@ const userFunctions = () => {
       await this.updateModeratorStatus( userID, roomFunctions )
 
       await this.addUserIsHere( userID, databaseFunctions );
-
-      if ( userProfile.avatarId !== "ghost" && username && !( await databaseFunctions.hasUserHadInitialRoboCoinGift( userID ) ) ) {
-        await this.giveInitialRoboCoinGift( userID, databaseFunctions, chatFunctions, roomFunctions );
-      }
     },
     
     userLeavesRoom: async function( uuid, roomFunctions, databaseFunctions ) {

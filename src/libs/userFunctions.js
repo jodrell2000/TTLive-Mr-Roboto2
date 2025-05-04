@@ -2697,7 +2697,7 @@ const userFunctions = () => {
       console.error( 'RoboCoin error:', JSON.stringify( error ) );
     },
 
-    giveInitialRoboCoinGift: async function ( userID, databaseFunctions, chatFunctions, roomFunctions ) {
+    giveInitialRoboCoinGift: async function ( userID, databaseFunctions ) {
       const numCoins = 100;
       const changeReason = "Welcome gift";
       const changeID = 1;

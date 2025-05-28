@@ -5,40 +5,21 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const mlFunctions = () => {
   return {
     askGoogleAI: async function (theQuestion, chatFunctions) {
-
-
-
-      const genAI = new GoogleGenerativeAI( process.env.googleAIKey );
+      const genAI = new GoogleGenerativeAI(process.env.googleAIKey);
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-      const reply = await model.generateContent(theQuestion);
-      // console.log(reply.response.text());
-      
-      
-      // const apiKey = process.env.googleAIKey;
-      // const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+      try {
+        const reply = await model.generateContent(theQuestion);
+        const theResponse = reply?.response?.text?.() || "No response text available";
 
-      // const payload = {
-      //   contents: [{ parts: [{ text: theQuestion }] }]
-      // };
-      //
-      // let response
-      // try {
-      //   response = await axios.post(url, payload, {
-      //     headers: { "Content-Type": "application/json" }
-      //   });
-      // } catch (error) {
-      //   console.error("Error fetching content from askGoogleAI:", error.message);
-      //   return "Error occurred";
-      // }
-
-      // Extract response text
-      const theResponse = reply.response.text() || "No response text available";
-
-      if (theResponse !== "No response text available" && theResponse !== "Error occurred") {
-        return theResponse;
-      } else {
-        return "No response";
+        if (theResponse !== "No response text available") {
+          return theResponse;
+        } else {
+          return "No response";
+        }
+      } catch (error) {
+        console.error("Google AI error:", error);
+        return "An error occurred while talking to Google Gemini.. Please wait a minute and try again";
       }
     },
 

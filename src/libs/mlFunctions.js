@@ -19,7 +19,7 @@ const mlFunctions = () => {
         }
       } catch (error) {
         console.error("Google AI error:", error);
-        return "An error occurred while talking to Google Gemini.. Please wait a minute and try again";
+        return "An error occurred while talking to Google Gemini. Please wait a minute and try again";
       }
     },
 

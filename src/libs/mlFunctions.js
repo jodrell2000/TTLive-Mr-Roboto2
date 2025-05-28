@@ -53,7 +53,7 @@ const mlFunctions = () => {
     popFacts: async function( songFunctions, chatFunctions ) {
       const track = songFunctions.previousTrack()
       const artist = songFunctions.previousArtist()
-      const theQuestion = `tell me the meaning of the lyrics of the song ${ track } by ${ artist } in less than 200 words.`
+      const theQuestion = `The song I'm currently listening to is ${ track } by ${ artist }. Tell me three short interesting facts about the song and/or the artist. When searching note that it may or may not be a cover version. Do not tell me that you're giving me three facts as part of the reply`
       const theResponse = await this.askGoogleAI( theQuestion, chatFunctions )
       await chatFunctions.botSpeak( theResponse )
     },
@@ -61,7 +61,7 @@ const mlFunctions = () => {
     songMeaning: async function( songFunctions, chatFunctions ) {
       const track = songFunctions.previousTrack()
       const artist = songFunctions.previousArtist()
-      const theQuestion = `The song I'm currently listening to is ${ track } by ${ artist }. Tell me three short interesting facts about the song and/or the artist. When searching note that it may or may not be a cover version. Do not tell me that you're giving me three facts as part of the reply`
+      const theQuestion = `tell me the meaning of the lyrics of the song ${ track } by ${ artist } in less than 200 words.`
       const theResponse = await this.askGoogleAI( theQuestion, chatFunctions )
       await chatFunctions.botSpeak( theResponse )
     },

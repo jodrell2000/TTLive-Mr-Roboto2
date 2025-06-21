@@ -17,6 +17,7 @@ const databaseFunctions = () => {
             console.error( `Error acquiring connection from pool: ${ ex }` );
             reject( new Error( 'Error acquiring connection from pool' ) );
           } else {
+            console.log(`query: ${query}`);
             connection.query( query, values, ( ex, results, fields ) => {
               connection.release();
               if ( ex ) {

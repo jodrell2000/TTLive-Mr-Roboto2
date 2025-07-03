@@ -5,40 +5,21 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const mlFunctions = () => {
   return {
     askGoogleAI: async function (theQuestion, chatFunctions) {
-
-
-
-      const genAI = new GoogleGenerativeAI( process.env.googleAIKey );
+      const genAI = new GoogleGenerativeAI(process.env.googleAIKey);
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-      const reply = await model.generateContent(theQuestion);
-      // console.log(reply.response.text());
-      
-      
-      // const apiKey = process.env.googleAIKey;
-      // const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+      try {
+        const reply = await model.generateContent(theQuestion);
+        const theResponse = reply?.response?.text?.() || "No response text available";
 
-      // const payload = {
-      //   contents: [{ parts: [{ text: theQuestion }] }]
-      // };
-      //
-      // let response
-      // try {
-      //   response = await axios.post(url, payload, {
-      //     headers: { "Content-Type": "application/json" }
-      //   });
-      // } catch (error) {
-      //   console.error("Error fetching content from askGoogleAI:", error.message);
-      //   return "Error occurred";
-      // }
-
-      // Extract response text
-      const theResponse = reply.response.text() || "No response text available";
-
-      if (theResponse !== "No response text available" && theResponse !== "Error occurred") {
-        return theResponse;
-      } else {
-        return "No response";
+        if (theResponse !== "No response text available") {
+          return theResponse;
+        } else {
+          return "No response";
+        }
+      } catch (error) {
+        console.error("Google AI error:", error);
+        return "An error occurred while connecting to Google Gemini. Please wait a minute and try again";
       }
     },
 
@@ -54,6 +35,14 @@ const mlFunctions = () => {
       const track = songFunctions.previousTrack()
       const artist = songFunctions.previousArtist()
       const theQuestion = `The song I'm currently listening to is ${ track } by ${ artist }. Tell me three short interesting facts about the song and/or the artist. When searching note that it may or may not be a cover version. Do not tell me that you're giving me three facts as part of the reply`
+      const theResponse = await this.askGoogleAI( theQuestion, chatFunctions )
+      await chatFunctions.botSpeak( theResponse )
+    },
+
+    songMeaning: async function( songFunctions, chatFunctions ) {
+      const track = songFunctions.previousTrack()
+      const artist = songFunctions.previousArtist()
+      const theQuestion = `tell me the meaning of the lyrics of the song ${ track } by ${ artist } in less than 200 words.`
       const theResponse = await this.askGoogleAI( theQuestion, chatFunctions )
       await chatFunctions.botSpeak( theResponse )
     },

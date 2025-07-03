@@ -17,6 +17,7 @@ const databaseFunctions = () => {
             console.error( `Error acquiring connection from pool: ${ ex }` );
             reject( new Error( 'Error acquiring connection from pool' ) );
           } else {
+            // console.log(`query: ${query}`);
             connection.query( query, values, ( ex, results, fields ) => {
               connection.release();
               if ( ex ) {
@@ -1138,26 +1139,28 @@ const databaseFunctions = () => {
       const values = [ value ];
       try {
         const result = await this.runQuery( selectQuery, values );
-        return result[ 0 ].count > 0;
+        const count = result[0]?.count || 0;
+        return count > 0;
       } catch ( error ) {
         console.error( error );
         throw error;
       }
     },
 
-    isAlias: async function ( value ) {
-      const selectQuery = 'SELECT count(*) AS count FROM aliases WHERE alias=?;';
-      const values = [ value ];
+    isAlias: async function (value) {
+      const selectQuery = 'SELECT COUNT(*) AS count FROM aliases WHERE alias = ?;';
+      const values = [value];
       try {
-        const result = await this.runQuery( selectQuery, values );
-        return result[ 0 ].count > 0;
-      } catch ( error ) {
-        console.error( error );
+        const result = await this.runQuery(selectQuery, values);
+        const count = result[0]?.count || 0;
+        return count > 0;
+      } catch (error) {
+        console.error(error);
         throw error;
       }
     },
 
-    getAliases: async function ( command ) {
+    getAliasesForCommand: async function ( command ) {
       const selectQuery = 'SELECT alias FROM aliases WHERE command=?;';
       const values = [ command ];
       try {
@@ -1169,13 +1172,13 @@ const databaseFunctions = () => {
       }
     },
 
-    // getChatPicture: async function ( command ) {
-    //   if ( await this.isChatCommand( command ) ) {
-    //     const selectQuery = 'SELECT ci.imageURL FROM chatImages ci WHERE command=?;';
-    //     const values = [ value ];
-    //
-    //   }
-    // },
+    getChatPicture: async function ( command ) {
+      if ( await this.isChatCommand( command ) ) {
+        const selectQuery = 'SELECT ci.imageURL FROM chatImages ci WHERE command=?;';
+        const values = [ value ];
+
+      }
+    },
 
     // ========================================================
 

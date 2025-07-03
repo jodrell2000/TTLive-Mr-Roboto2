@@ -138,6 +138,11 @@ const commandFunctions = () => {
   }
   generalCommands.popfacts.help = "Asks the AI for 3 interesting facts about the song";
 
+  generalCommands.meaning = ( { mlFunctions, songFunctions, chatFunctions } ) => {
+    mlFunctions.songMeaning( songFunctions, chatFunctions );
+  }
+  generalCommands.meaning.help = "Asks the AI what a song is about";
+
   generalCommands.whatyear = ( { mlFunctions, songFunctions, chatFunctions } ) => {
     mlFunctions.whatYear( songFunctions, chatFunctions );
   }

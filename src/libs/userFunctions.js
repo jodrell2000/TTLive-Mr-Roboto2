@@ -616,7 +616,7 @@ const userFunctions = () => {
 
     readSingleUserStatus: async function ( data, chatFunctions, roomFunctions ) {
       let username = [];
-      username.push( this.getUsername( await this.whoSentTheCommand( data ) ) );
+      username.push( await this.getUsername( await this.whoSentTheCommand( data ) ) );
 
       await this.readUserStatus( data, username, chatFunctions, roomFunctions );
     },
@@ -2140,10 +2140,6 @@ const userFunctions = () => {
       await this.updateModeratorStatus( userID, roomFunctions )
 
       await this.addUserIsHere( userID, databaseFunctions );
-
-      if ( userProfile.avatarId !== "ghost" && username && !( await databaseFunctions.hasUserHadInitialRoboCoinGift( userID ) ) ) {
-        await this.giveInitialRoboCoinGift( userID, databaseFunctions, chatFunctions, roomFunctions );
-      }
     },
     
     userLeavesRoom: async function( uuid, roomFunctions, databaseFunctions ) {
@@ -2701,14 +2697,11 @@ const userFunctions = () => {
       console.error( 'RoboCoin error:', JSON.stringify( error ) );
     },
 
-    giveInitialRoboCoinGift: async function ( userID, databaseFunctions, chatFunctions, roomFunctions ) {
+    giveInitialRoboCoinGift: async function ( userID, databaseFunctions ) {
       const numCoins = 100;
       const changeReason = "Welcome gift";
       const changeID = 1;
       await this.addRoboCoins( userID, numCoins, changeReason, changeID, databaseFunctions );
-      setTimeout( async () => {
-        await chatFunctions.botSpeak( `Welcome to the ${await roomFunctions.roomName()} room @${await this.getUsername( userID )}. Have a gift of 100 RoboCoins!` );
-      }, 3 * 1000 );
     },
 
     // ========================================================

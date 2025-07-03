@@ -25,7 +25,7 @@ export default async (currentState, payload, socket, userFunctions, roomFunction
     await userFunctions.userJoinsRoom(userProfile, roomFunctions, databaseFunctions, chatFunctions);
 
     if (!isGhost) {
-      await chatFunctions.userGreeting(userInfo.uuid, userInfo.nickname, roomFunctions, userFunctions, databaseFunctions);
+      await chatFunctions.userGreeting(userInfo.uuid, userInfo.nickname, roomFunctions, userFunctions, databaseFunctions, userProfile);
     }
   }
 }

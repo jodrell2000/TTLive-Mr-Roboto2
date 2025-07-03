@@ -51,7 +51,7 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp, lastI
     [ 'id', lastID ]
   ]
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
-  // console.log(`url: ${JSON.stringify(url, null, 2)}`)
+  console.log(`url: ${JSON.stringify(url, null, 2)}`)
 
   try {
     // console.log(`Sending message request`)
@@ -155,7 +155,7 @@ export const postMessage = async ( options ) => {
     },
     receiver: options.room
   }
-  console.log( JSON.stringify(payload,  null, 2) )
+  // console.log( JSON.stringify(payload,  null, 2) )
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths )
   // console.log(`url: ${url}`)
   // console.log(`headers: ${JSON.stringify(headers, null, 2)}`)

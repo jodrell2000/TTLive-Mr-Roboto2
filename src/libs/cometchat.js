@@ -155,7 +155,7 @@ export const postMessage = async ( options ) => {
     },
     receiver: options.room
   }
-  // console.log( payload )
+  console.log( JSON.stringify(payload) )
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths )
   // console.log(`url: ${url}`)
   // console.log(`headers: ${JSON.stringify(headers, null, 2)}`)

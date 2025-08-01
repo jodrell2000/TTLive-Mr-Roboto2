@@ -108,7 +108,7 @@ export class Bot {
     logger.debug( 'Setting up listeners' )
     
     this.socket.on( 'statefulMessage', async payload => {
-      // logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
+      logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
 
       try {
         payload.statePatch.forEach( patch => {

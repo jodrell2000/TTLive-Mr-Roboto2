@@ -189,18 +189,24 @@ const chatFunctions = ( ) => {
       const self = this;
 
       const readInOrder = async () => {
+        console.log(`DEBUG: Starting multilineChatCommand with messageVariable length: ${messageVariable.length}, pictureVariable length: ${pictureVariable.length}`);
+        console.log(`DEBUG: Selected message number: ${randomMessageNumber}`);
+        
         for ( let messageLoop = 0; messageLoop < messageVariable[ randomMessageNumber ].length; messageLoop++ ) {
+          console.log(`DEBUG: Sending message ${messageLoop}: "${messageVariable[ randomMessageNumber ][ messageLoop ][ 0 ]}"`);
           await this.botSpeak( messageVariable[ randomMessageNumber ][ messageLoop ][ 0 ] );
           await sleep( messageVariable[ randomMessageNumber ][ messageLoop ][ 1 ] )
         }
 
         const randomPic = [ pictureVariable[ Math.floor( Math.random() * pictureVariable.length ) ] ];
-        console.log(`randomPic: ${randomPic}`);
+        console.log(`DEBUG: Selected randomPic: ${JSON.stringify(randomPic)}`);
+        console.log(`DEBUG: About to call botSpeakPicture with empty message and randomPic`);
         try {
           const result = await self.botSpeakPicture( "", randomPic );
+          console.log(`DEBUG: botSpeakPicture result: ${JSON.stringify(result)}`);
         } catch (error) {
-          console.error(`DEBUG: Error calling botSpeakPicture: ${error.message}`);
-          console.error(`DEBUG: Error stack: ${error.stack}`);
+          console.error(`ERROR: Error calling botSpeakPicture: ${error.message}`);
+          console.error(`ERROR: Error stack: ${error.stack}`);
         }
       }
       readInOrder().then( );

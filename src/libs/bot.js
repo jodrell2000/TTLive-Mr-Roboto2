@@ -1,11 +1,10 @@
-import { ServerMessageName, SocketClient, StatefulServerMessageName, StatelessServerMessageName } from 'ttfm-socket'
+import { SocketClient } from 'ttfm-socket'
 import fastJson from 'fast-json-patch'
 
-import { joinChat, getMessages, getUserMessages } from './cometchat.js'
+import { joinChat, getMessages } from './cometchat.js'
 import { logger } from '../utils/logging.js'
 import handlers from '../handlers/index.js'
 import startup from '../libs/startup.js'
-import playlistFunctions from "./playlistFunctions.js";
 // import CometChatSDK from "@cometchat/chat-sdk-javascript";
 // const { CometChat } = CometChatSDK;
 // global.window = {}; // Mock the window object
@@ -13,7 +12,7 @@ import playlistFunctions from "./playlistFunctions.js";
 // const { CometChat } = CometChatSDK;
 
 export class Bot {
-  constructor( slug ) {
+  constructor() {
     this.lastMessageIDs = {}
   }
 
@@ -22,24 +21,54 @@ export class Bot {
   // ========================================================
 
   async connect( roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions ) {
-    logger.debug( 'Connecting to room' )
-    await joinChat( process.env.ROOM_UUID )
+    // Validate required environment variables
+    if (!process.env.ROOM_UUID || !process.env.TTL_USER_TOKEN) {
+      logger.error('Missing required environment variables: ROOM_UUID and/or TTL_USER_TOKEN')
+      return false
+    }
 
-    this.socket = new SocketClient( 'https://socket.prod.tt.fm' )
+    try {
 
-    const connection = await this.socket.joinRoom( process.env.TTL_USER_TOKEN, {
-      roomUuid: process.env.ROOM_UUID
-    } )
-    this.state = connection.state
+      logger.debug( 'Connecting to room' )
+      await joinChat( process.env.ROOM_UUID )
 
-    this.socket.on("reconnect", async () => {
-      const { state } = await this.socket.joinRoom( process.env.TTL_USER_TOKEN, {
+      this.socket = new SocketClient( 'https://socket.prod.tt.fm' )
+
+      const connection = await this.socket.joinRoom( process.env.TTL_USER_TOKEN, {
         roomUuid: process.env.ROOM_UUID
-      } );
+      } )
       this.state = connection.state
-    });
+      this.isConnected = true
+      logger.debug( `Connected to room with state: ${ JSON.stringify( this.state, null, 2 ) }` )
 
-    await startup( process.env.ROOM_UUID, this.state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions )
+      this.socket.on("disconnect", () => {
+        this.isConnected = false
+        logger.debug('Disconnected from socket')
+      })
+
+      this.socket.on("reconnect", async () => {
+        try {
+          const { state } = await this.socket.joinRoom( process.env.TTL_USER_TOKEN, {
+            roomUuid: process.env.ROOM_UUID
+          });
+          this.state = state // Use the new state, not the old connection.state
+          this.isConnected = true
+          logger.debug('Reconnected to socket')
+        } catch (error) {
+          logger.error(`Reconnection failed: ${error.message}`)
+        }
+      });
+
+      await startup( process.env.ROOM_UUID, this.state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions )
+
+      // Configure listeners after successful connection
+      this.configureListeners( this.socket, null, userFunctions, null, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, null, null, null, null )
+      return true
+    } catch (error) {
+      this.isConnected = false
+      logger.error(`Connection failed: ${error.message}`)
+      throw error
+    }
   }
 
   // ========================================================
@@ -67,19 +96,19 @@ export class Bot {
   // }
 
   async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
-    const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp, this.lastMessageIDs?.id )
+    const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp, this.lastMessageIDs?.id );
     if ( response?.data ) {
-      const messages = response.data
+      const messages = response.data;
       if ( messages?.length ) {
         for ( const message of messages ) {
-          this.lastMessageIDs.fromTimestamp = messages.sentAt + 1
-          this.lastMessageIDs.id = message.id
+          this.lastMessageIDs.fromTimestamp = messages.sentAt + 1;
+          this.lastMessageIDs.id = message.id;
 
           const chatMessage = message?.data?.metadata?.chatMessage?.message ?? '';
 
-          if ( !chatMessage ) return
-          const sender = message?.sender ?? ''
-          if ( [ process.env.CHAT_USER_ID, process.env.CHAT_REPLY_ID ].includes( sender ) ) return
+          if ( !chatMessage ) return;
+          const sender = message?.sender ?? '';
+          if ( [ process.env.CHAT_USER_ID, process.env.CHAT_REPLY_ID ].includes( sender ) ) return;
           handlers.message( {
             message: chatMessage,
             sender,
@@ -106,25 +135,7 @@ export class Bot {
   configureListeners( socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     const self = this
     logger.debug( 'Setting up listeners' )
-
-    let listenerID = process.env.CHAT_USER_ID;
-
-    // CometChat.addMessageListener(
-    //   listenerID,
-    //   new CometChat.MessageListener({
-    //     onTextMessageReceived: (textMessage) => {
-    //       console.log("New Text message received successfully", textMessage);
-    //     },
-    //     // onMediaMessageReceived: (mediaMessage) => {
-    //     //   console.log("Media message received successfully", mediaMessage);
-    //     // },
-    //     onCustomMessageReceived: (customMessage) => {
-    //       console.log("New Custom message received successfully", customMessage);
-    //     },
-    //   })
-    // );
-
-
+    
     this.socket.on( 'statefulMessage', async payload => {
       // logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
 

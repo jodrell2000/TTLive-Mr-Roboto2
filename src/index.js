@@ -42,13 +42,12 @@ repeatedTasks
   .every( 100 )
 
 // web pages 'n' stuff!
-import express, { query } from 'express';
+import express from 'express';
 const app = express();
-import path from 'path'
 import pug from 'pug'
 import bodyParser from 'body-parser'
 import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc.js'
+import utc from 'dayjs/plugin/utc'
 dayjs.extend( utc )
 import bcrypt from 'bcrypt'
 import session from 'express-session'
@@ -401,4 +400,4 @@ async function setPassword( { username, passwordHash } ) {
 
 app.listen( ( 14501 ), () => {
   console.log( "Server is Running" );
-} )
+} );

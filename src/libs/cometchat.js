@@ -23,8 +23,7 @@ export const joinChat = async ( roomId ) => {
   ]
 
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths )
-  const response = await makeRequest( url, { headers, method: 'POST' } )
-  return response
+  return await makeRequest( url, { headers, method: 'POST' } )
 }
 
 
@@ -55,11 +54,9 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp, lastI
 
   try {
     // console.log(`Sending message request`)
-    const messageResponse = await makeRequest( url, { headers } )
+    return await makeRequest( url, { headers } );
 
     // console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
-
-    return messageResponse;
 
   } catch (error) {
     console.error("❌ Error in makeRequest:", JSON.stringify(error, null, 2));
@@ -71,6 +68,9 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp, lastI
 }
 
 export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeStamp ) => {
+  // Get the user ID from the user functions
+  const userId = process.env.USERID;
+
   userFunctions.theUsersList().forEach(user => {
     if (user.id) {
       console.log( "User ID: " + user.id)
@@ -98,11 +98,9 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
   const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
 
   try {
-    const messageResponse = await makeRequest( url, { headers } )
+    return await makeRequest( url, { headers } );
 
     // console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
-
-    return messageResponse;
 
   } catch (error) {
     console.error("❌ Error in makeRequest:", JSON.stringify(error, null, 2));

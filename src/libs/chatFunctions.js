@@ -5,15 +5,14 @@ import Storage from 'node-storage';
 import { dirname } from 'path';
 
 import { postMessage } from './cometchat.js'
-import { logger } from "../utils/logging.js";
 
 const chatDataFileName = process.env.CHATDATA; 
 const room = process.env.ROOM_UUID;
 
-const chatFunctions = ( ) => {
+const chatFunctions = () => {
   return {
 
-    botSpeak: async function ( message, publicChat, recipient ) {
+    botSpeak: async function ( message ) {
       await this.botChat( message ).then();
     },
 
@@ -176,7 +175,7 @@ const chatFunctions = ( ) => {
 
       const readInOrder = async () => {
         // Get the last message (note: array indices are 0-based, so last element is at length-1)
-        let lastMessage = "";
+        let lastMessage;
         if (messageVariable[randomMessageNumber] && messageVariable[randomMessageNumber].length > 0) {
           const lastIndex = messageVariable[randomMessageNumber].length - 1;
           lastMessage = messageVariable[randomMessageNumber][lastIndex][0];
@@ -312,7 +311,7 @@ const chatFunctions = ( ) => {
     },
     
     fruitMachine: async function ( data, args, userFunctions, databaseFunctions, chatFunctions ) {
-      let [ bet, ...restArgs ] = args;
+      let [ bet ] = args;
       bet = Number(bet); // Convert bet to a number
 
       const userPlaying = await userFunctions.whoSentTheCommand( data );
@@ -475,7 +474,7 @@ const chatFunctions = ( ) => {
       }
     },
 
-    readPlaylistStats: async function ( data ) {
+    readPlaylistStats: async function () {
       if ( botDefaults.botPlaylist !== null ) {
         await this.botSpeak( 'There are currently ' + botDefaults.botPlaylist.length + ' songs in my playlist.' );
       }

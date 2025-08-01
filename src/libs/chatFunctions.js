@@ -192,8 +192,16 @@ const chatFunctions = ( ) => {
         console.log(`DEBUG: Starting multilineChatCommand with messageVariable length: ${messageVariable.length}, pictureVariable length: ${pictureVariable.length}`);
         console.log(`DEBUG: Selected message number: ${randomMessageNumber}`);
         
-        let lastMessage = messageVariable[ randomMessageNumber ][ messageVariable[ randomMessageNumber ].length ][ 0 ];
-        console.log(`DEBUG: lastMessage "${lastMessage}"`);
+        // Get the last message (note: array indices are 0-based, so last element is at length-1)
+        let lastMessage = "";
+        if (messageVariable[randomMessageNumber] && messageVariable[randomMessageNumber].length > 0) {
+          const lastIndex = messageVariable[randomMessageNumber].length - 1;
+          lastMessage = messageVariable[randomMessageNumber][lastIndex][0];
+          console.log(`DEBUG: Got last message: "${lastMessage}"`);
+        } else {
+          console.log(`DEBUG: No messages found in sequence, using default message`);
+          lastMessage = "Check this out!";
+        }
 
         // Loop through all messages except the last one
         for ( let messageLoop = 0; messageLoop < messageVariable[ randomMessageNumber ].length - 1; messageLoop++ ) {
@@ -204,7 +212,7 @@ const chatFunctions = ( ) => {
 
         const randomPic = [ pictureVariable[ Math.floor( Math.random() * pictureVariable.length ) ] ];
         console.log(`DEBUG: Selected randomPic: ${JSON.stringify(randomPic)}`);
-        console.log(`DEBUG: Message is: ${lastMessage}`);
+        console.log(`DEBUG: Using message with picture: "${lastMessage}"`);
         try {
           const result = await self.botSpeakPicture( lastMessage, randomPic );
           console.log(`DEBUG: botSpeakPicture result: ${JSON.stringify(result)}`);

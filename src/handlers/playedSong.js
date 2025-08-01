@@ -5,7 +5,7 @@ import playlistFunctions from "../libs/playlistFunctions.js";
 import authModule from "../libs/auth.js";
 
 export default async ( state, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, socket, mlFunctions, playlistFunctions ) => {
-  // logger.debug( `================== playedSong ====================` )
+  logger.debug( `================== playedSong ====================` )
 
   if ( await userFunctions.hasDjsElement( state ) ) {
     await userFunctions.resetDJs( state.djs )
@@ -37,13 +37,8 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     await songFunctions.resetJumpCount();
     await songFunctions.resetVoteSnagging();
     await botFunctions.clearAllTimers( userFunctions, roomFunctions, songFunctions, chatFunctions, socket );
-
-    if (state.nowPlaying && state.nowPlaying.song) {
-      await songFunctions.getSongTagsFromState(state);
-      await databaseFunctions.saveTrackData(djID, state.nowPlaying.song);
-    } else {
-      console.warn("No song is currently playing, skipping song tag and save.");
-    }
+    await songFunctions.getSongTagsFromState(state);
+    await databaseFunctions.saveTrackData(djID, state.nowPlaying.song);
     
     await userFunctions.setPreviousDJID( djID );
     await songFunctions.setSongTags( state.nowPlaying.song )
@@ -51,6 +46,8 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     songFunctions.setPreviousArtist( state.nowPlaying.song.artistName )
     const theMessage = 'Now playing ' + state.nowPlaying.song.trackName + ' by ' + state.nowPlaying.song.artistName
     await chatFunctions.botSpeak( theMessage )
+  } else {
+    console.warn("No song is currently playing, skipping song tag and save.");
   }
   roomFunctions.setDJCount( state.djs.length ); //the number of djs on stage
 

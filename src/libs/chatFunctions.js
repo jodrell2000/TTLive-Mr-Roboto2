@@ -192,8 +192,12 @@ const chatFunctions = ( ) => {
         console.log(`DEBUG: Starting multilineChatCommand with messageVariable length: ${messageVariable.length}, pictureVariable length: ${pictureVariable.length}`);
         console.log(`DEBUG: Selected message number: ${randomMessageNumber}`);
         
-        for ( let messageLoop = 0; messageLoop < messageVariable[ randomMessageNumber ].length; messageLoop++ ) {
-          console.log(`DEBUG: Sending message ${messageLoop}: "${messageVariable[ randomMessageNumber ][ messageLoop ][ 0 ]}"`);
+        let lastMessage = messageVariable[ messageVariable.length ];
+        console.log(`DEBUG: lastMessage "${lastMessage}"`);
+
+        // Loop through all messages except the last one
+        for ( let messageLoop = 0; messageLoop < messageVariable[ randomMessageNumber ].length - 1; messageLoop++ ) {
+          console.log(`DEBUG: Sending message ${messageLoop}: "${messageVariable[ randomMessageNumber ][ messageLoop ][ 0 ]}"`); 
           await this.botSpeak( messageVariable[ randomMessageNumber ][ messageLoop ][ 0 ] );
           await sleep( messageVariable[ randomMessageNumber ][ messageLoop ][ 1 ] )
         }
@@ -202,7 +206,7 @@ const chatFunctions = ( ) => {
         console.log(`DEBUG: Selected randomPic: ${JSON.stringify(randomPic)}`);
         console.log(`DEBUG: About to call botSpeakPicture with empty message and randomPic`);
         try {
-          const result = await self.botSpeakPicture( " ", randomPic );
+          const result = await self.botSpeakPicture( lastMessage, randomPic );
           console.log(`DEBUG: botSpeakPicture result: ${JSON.stringify(result)}`);
         } catch (error) {
           console.error(`ERROR: Error calling botSpeakPicture: ${error.message}`);

@@ -185,6 +185,9 @@ const chatFunctions = ( ) => {
       const sleep = ( delay ) => new Promise( ( resolve ) => setTimeout( resolve, delay ) )
       let randomMessageNumber = Math.ceil( Math.random() * messageVariable.length ) - 1;
 
+      // Store reference to 'this' to maintain context
+      const self = this;
+
       const readInOrder = async () => {
         for ( let messageLoop = 0; messageLoop < messageVariable[ randomMessageNumber ].length; messageLoop++ ) {
           await this.botSpeak( messageVariable[ randomMessageNumber ][ messageLoop ][ 0 ] );
@@ -193,7 +196,12 @@ const chatFunctions = ( ) => {
 
         const randomPic = [ pictureVariable[ Math.floor( Math.random() * pictureVariable.length ) ] ];
         console.log(`randomPic: ${randomPic}`);
-        await this.botSpeakPicture( "",randomPic );
+        try {
+          const result = await self.botSpeakPicture( "", randomPic );
+        } catch (error) {
+          console.error(`DEBUG: Error calling botSpeakPicture: ${error.message}`);
+          console.error(`DEBUG: Error stack: ${error.stack}`);
+        }
       }
       readInOrder().then( );
     },

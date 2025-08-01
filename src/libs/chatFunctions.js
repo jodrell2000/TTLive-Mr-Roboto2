@@ -14,20 +14,6 @@ const chatFunctions = ( ) => {
   return {
 
     botSpeak: async function ( message, publicChat, recipient ) {
-      // let pmCommand;
-
-      // if ( recipient === undefined && data !== null ) {
-      //   if ( data.command === "pmmed" ) {
-      //     pmCommand = true;
-      //     recipient = data.senderid;
-      //   }
-      // }
-
-      // if ( pmCommand === true && publicChat === undefined ) {
-      //   await this.botPM( message, recipient );
-      // } else {
-      //   await this.botChat( message ).then();
-      // }
       await this.botChat( message ).then();
     },
 
@@ -189,36 +175,26 @@ const chatFunctions = ( ) => {
       const self = this;
 
       const readInOrder = async () => {
-        console.log(`DEBUG: Starting multilineChatCommand with messageVariable length: ${messageVariable.length}, pictureVariable length: ${pictureVariable.length}`);
-        console.log(`DEBUG: Selected message number: ${randomMessageNumber}`);
-        
         // Get the last message (note: array indices are 0-based, so last element is at length-1)
         let lastMessage = "";
         if (messageVariable[randomMessageNumber] && messageVariable[randomMessageNumber].length > 0) {
           const lastIndex = messageVariable[randomMessageNumber].length - 1;
           lastMessage = messageVariable[randomMessageNumber][lastIndex][0];
-          console.log(`DEBUG: Got last message: "${lastMessage}"`);
         } else {
-          console.log(`DEBUG: No messages found in sequence, using default message`);
-          lastMessage = "Check this out!";
+          lastMessage = ".";
         }
 
         // Loop through all messages except the last one
         for ( let messageLoop = 0; messageLoop < messageVariable[ randomMessageNumber ].length - 1; messageLoop++ ) {
-          console.log(`DEBUG: Sending message ${messageLoop}: "${messageVariable[ randomMessageNumber ][ messageLoop ][ 0 ]}"`); 
           await this.botSpeak( messageVariable[ randomMessageNumber ][ messageLoop ][ 0 ] );
           await sleep( messageVariable[ randomMessageNumber ][ messageLoop ][ 1 ] )
         }
 
         const randomPic = [ pictureVariable[ Math.floor( Math.random() * pictureVariable.length ) ] ];
-        console.log(`DEBUG: Selected randomPic: ${JSON.stringify(randomPic)}`);
-        console.log(`DEBUG: Using message with picture: "${lastMessage}"`);
         try {
-          const result = await self.botSpeakPicture( lastMessage, randomPic );
-          console.log(`DEBUG: botSpeakPicture result: ${JSON.stringify(result)}`);
+          await self.botSpeakPicture( lastMessage, randomPic );
         } catch (error) {
-          console.error(`ERROR: Error calling botSpeakPicture: ${error.message}`);
-          console.error(`ERROR: Error stack: ${error.stack}`);
+          console.error(`Error calling botSpeakPicture: ${error.message}`);
         }
       }
       readInOrder().then( );

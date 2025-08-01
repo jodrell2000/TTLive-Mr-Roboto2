@@ -106,10 +106,10 @@ export class Bot {
 
   configureListeners( socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     const self = this
-    logger.debug( 'Setting up listeners' )
+    logger.debug( 'configureListeners: Setting up listeners' )
     
     this.socket.on( 'statefulMessage', async payload => {
-      logger.debug( `statefulMessage - ${ payload.name } -------------------------------------------` )
+      logger.debug( `configureListeners: statefulMessage - ${ payload.name } -------------------------------------------` )
 
       try {
         payload.statePatch.forEach( patch => {
@@ -120,7 +120,7 @@ export class Bot {
         } );
         self.state = fastJson.applyPatch( self.state, payload.statePatch ).newDocument;
       } catch ( error ) {
-        logger.error( `Error applying patch: ${error.message}` );
+        logger.error( `configureListeners: Error applying patch: ${error.message}` );
         // logger.error( `Payload state patch: ${JSON.stringify( payload.statePatch, null, 2 )}` );
         // logger.error( `Current state: ${JSON.stringify( self.state, null, 2 )}` );
       }
@@ -146,7 +146,7 @@ export class Bot {
         case "kickedFromRoom":
           break;
         default:
-          logger.debug( `statelessMessage: ${ payload.name } -------------------------------------------` )
+          logger.debug( `configureListeners: statelessMessage: ${ payload.name } -------------------------------------------` )
           break;
       }
     } );
@@ -168,7 +168,7 @@ export class Bot {
             } );
             self.state = fastJson.applyPatch( self.state, payload.message.statePatch ).newDocument;
           } catch ( error ) {
-            logger.error( `Error applying patch: ${error.message}` );
+            logger.error( `configureListeners: Error applying patch: ${error.message}` );
             // logger.error( `Payload state patch: ${JSON.stringify( payload.statePatch, null, 2 )}` );
             // logger.error( `Current state: ${JSON.stringify( self.state, null, 2 )}` );
           }

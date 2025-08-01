@@ -18,13 +18,13 @@ export class Bot {
   async connect( roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions, commandFunctions,  videoFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     // Validate required environment variables
     if (!process.env.ROOM_UUID || !process.env.TTL_USER_TOKEN) {
-      logger.error('Missing required environment variables: ROOM_UUID and/or TTL_USER_TOKEN')
+      logger.error('connect: Missing required environment variables: ROOM_UUID and/or TTL_USER_TOKEN')
       return false
     }
 
     try {
 
-      logger.debug( 'Connecting to room' )
+      logger.debug( 'connect: Connecting to room' )
       await joinChat( process.env.ROOM_UUID )
 
       this.socket = new SocketClient( 'https://socket.prod.tt.fm' )
@@ -34,11 +34,11 @@ export class Bot {
       } )
       this.state = connection.state
       this.isConnected = true
-      logger.debug( `Connected to room with state: ${ JSON.stringify( this.state, null, 2 ) }` )
+      logger.debug( `connect: Connected to room with state: ${ JSON.stringify( this.state, null, 2 ) }` )
 
       this.socket.on("disconnect", () => {
         this.isConnected = false
-        logger.debug('Disconnected from socket')
+        logger.debug('connect: Disconnected from socket')
       })
 
       this.socket.on("reconnect", async () => {
@@ -48,9 +48,9 @@ export class Bot {
           });
           this.state = state // Use the new state, not the old connection.state
           this.isConnected = true
-          logger.debug('Reconnected to socket')
+          logger.debug('connect: Reconnected to socket')
         } catch (error) {
-          logger.error(`Reconnection failed: ${error.message}`)
+          logger.error(`connect: Reconnection failed: ${error.message}`)
         }
       });
 
@@ -62,7 +62,7 @@ export class Bot {
       return true
     } catch (error) {
       this.isConnected = false
-      logger.error(`Connection failed: ${error.message}`)
+      logger.error(`connect: Connection failed: ${error.message}`)
       throw error
     }
   }
@@ -181,8 +181,8 @@ export class Bot {
     } );
 
     this.socket.on( "error", async ( message ) => {
-      logger.debug( `error --------------------------------------------` )
-      logger.debug( `error ${ message }` )
+      logger.debug( `configureListeners: error --------------------------------------------` )
+      logger.debug( `configureListeners: error ${ message }` )
       switch ( message ) {
         case "Nothing is playing right now.":
           handlers.nothingPlaying( userFunctions, databaseFunctions, botFunctions )

@@ -5,11 +5,6 @@ import { joinChat, getMessages } from './cometchat.js'
 import { logger } from '../utils/logging.js'
 import handlers from '../handlers/index.js'
 import startup from '../libs/startup.js'
-// import CometChatSDK from "@cometchat/chat-sdk-javascript";
-// const { CometChat } = CometChatSDK;
-// global.window = {}; // Mock the window object
-// import CometChatSDK from "@cometchat-pro/chat";
-// const { CometChat } = CometChatSDK;
 
 export class Bot {
   constructor() {

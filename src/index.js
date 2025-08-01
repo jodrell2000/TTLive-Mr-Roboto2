@@ -1,5 +1,12 @@
 import { Chain } from 'repeat'
 import { Bot } from './libs/bot.js'
+import path from 'path'
+import { fileRotation } from './utils/fileRotation.js'
+import { logger } from './utils/logging.js'
+
+// Run log file cleanup on startup
+fileRotation.cleanupOldLogs(path.join(process.cwd(), 'logs'))
+logger.info('Application starting up')
 
 import commandFunctions from './libs/commandsFunctions.js'
 import userFunctions from './libs/userFunctions.js'

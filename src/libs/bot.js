@@ -70,31 +70,7 @@ export class Bot {
       throw error
     }
   }
-
-  // ========================================================
-
-  // async processUserMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
-  //   const response = await getUserMessages( userFunctions, this.lastMessageIDs?.fromTimestamp )
-  //   // console.log( `response: ${JSON.stringify(response, null, 2)}` );
-  //   if ( response?.data ) {
-  //     const messages = response.data
-  //     if ( messages?.length ) {
-  //       for ( const message in messages ) {
-  //         this.lastMessageIDs.fromTimestamp = messages[ message ].sentAt + 1
-  //         const customMessage = messages[ message ]?.data?.customData?.message ?? ''
-  //         if ( !customMessage ) return
-  //         const sender = messages[ message ]?.sender ?? ''
-  //         if ( [ process.env.CHAT_USER_ID, process.env.CHAT_REPLY_ID ].includes( sender ) ) return
-  //         handlers.message( {
-  //           message: customMessage,
-  //           sender,
-  //           senderName: messages[ message ]?.data?.customData?.userName
-  //         }, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions, this.socket )
-  //       }
-  //     }
-  //   }
-  // }
-
+  
   async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp, this.lastMessageIDs?.id );
     if ( response?.data ) {
@@ -148,9 +124,9 @@ export class Bot {
         } );
         self.state = fastJson.applyPatch( self.state, payload.statePatch ).newDocument;
       } catch ( error ) {
-        console.error( 'Error applying patch:', error );
-        // console.error( 'Payload state patch:', JSON.stringify( payload.statePatch, null, 2 ) );
-        // console.error( 'Current state:', JSON.stringify( self.state, null, 2 ) );
+        logger.error( `Error applying patch: ${error.message}` );
+        // logger.error( `Payload state patch: ${JSON.stringify( payload.statePatch, null, 2 )}` );
+        // logger.error( `Current state: ${JSON.stringify( self.state, null, 2 )}` );
       }
 
 
@@ -196,9 +172,9 @@ export class Bot {
             } );
             self.state = fastJson.applyPatch( self.state, payload.message.statePatch ).newDocument;
           } catch ( error ) {
-            console.error( 'Error applying patch:', error );
-            // console.error( 'Payload state patch:', JSON.stringify( payload.statePatch, null, 2 ) );
-            // console.error( 'Current state:', JSON.stringify( self.state, null, 2 ) );
+            logger.error( `Error applying patch: ${error.message}` );
+            // logger.error( `Payload state patch: ${JSON.stringify( payload.statePatch, null, 2 )}` );
+            // logger.error( `Current state: ${JSON.stringify( self.state, null, 2 )}` );
           }
 
           // logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )

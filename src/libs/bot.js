@@ -15,7 +15,7 @@ export class Bot {
   // Connection functions
   // ========================================================
 
-  async connect( roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions ) {
+  async connect( roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions, commandFunctions,  videoFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     // Validate required environment variables
     if (!process.env.ROOM_UUID || !process.env.TTL_USER_TOKEN) {
       logger.error('Missing required environment variables: ROOM_UUID and/or TTL_USER_TOKEN')
@@ -57,7 +57,8 @@ export class Bot {
       await startup( process.env.ROOM_UUID, this.state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions )
 
       // Configure listeners after successful connection
-      this.configureListeners( this.socket, null, userFunctions, null, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, null, null, null, null )
+      this.configureListeners( this.socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions )
+
       return true
     } catch (error) {
       this.isConnected = false

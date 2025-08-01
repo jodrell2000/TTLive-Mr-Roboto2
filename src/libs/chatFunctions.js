@@ -202,7 +202,7 @@ const chatFunctions = ( ) => {
         console.log(`DEBUG: Selected randomPic: ${JSON.stringify(randomPic)}`);
         console.log(`DEBUG: About to call botSpeakPicture with empty message and randomPic`);
         try {
-          const result = await self.botSpeakPicture( "", randomPic );
+          const result = await self.botSpeakPicture( " ", randomPic );
           console.log(`DEBUG: botSpeakPicture result: ${JSON.stringify(result)}`);
         } catch (error) {
           console.error(`ERROR: Error calling botSpeakPicture: ${error.message}`);

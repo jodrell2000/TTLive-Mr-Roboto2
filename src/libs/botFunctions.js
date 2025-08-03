@@ -605,6 +605,7 @@ const botFunctions = () => {
 
     getOnOrOffStage: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
       const botOnStage = await this.isBotOnStage(userFunctions);
+      logger.debug(`getOnOrOffStage, botOnStage=${botOnStage}`)
 
       if (!botOnStage && this.shouldTheBotDJ(userFunctions)) {
         await this.djUp(socket);

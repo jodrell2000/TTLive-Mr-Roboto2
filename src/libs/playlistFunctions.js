@@ -124,45 +124,49 @@ const playlistFunctions = ( ) => {
     // Queue Functions
     // ========================================================
 
-  //   First matching song found: {
-  //   "artistName": "Bon Jovi",
-  //     "trackName": "You Give Love A Bad Name",
-  //     "genre": null,
-  //     "duration": 223,
-  //     "thumbnails": {
-  //     "sevenDigital": "http://artwork-cdn.7static.com/static/img/sleeveart/00/083/669/0008366908_800.jpg"
-  //   },
-  //   "musicProviders": {
-  //     "sevenDigital": "76753480"
-  //   },
-  //   "isrc": "USPR39402224",
-  //     "playbackToken": null,
-  //     "explicit": false
-  // }
-
-  
+    returnQueueCrateUUID: async function() {
+      const url = `https://gateway.prod.tt.fm/api/playlist-service/crate/special/queue`;
+      try {
+        const { data: responseData } = await axios.get(url, { headers });
+        return responseData.crateUuid;
+      } catch (error) {
+        console.error(`Error getting queue crate UUID: ${error.message}`);
+        throw error;
+      }
+    },
+    
     addSongToQueue: async function( songData ) {
       const providerKey = Object.keys(songData.musicProviders)[0]; // "sevenDigital"
       const providerID = songData.musicProviders[providerKey]; // "76753480"
 
-      const url = `https://playlists.prod.tt.fm/crate/special/queue/songs`
+      const queueCrateUUID = await this.returnQueueCrateUUID();
+      const url = `https://gateway.prod.tt.fm/api/playlist-service/api/v1/playlists/${queueCrateUUID}/tracks`
 
       const payload = {
         songs: [
           {
-            "musicProvider": providerKey,
             "songId": providerID,
-            "artistName": songData.artistName,
-            "trackName": songData.trackName,
-            "duration": songData.duration,
-            "isrc": songData.isrc,
-            "genre": songData.genre,
-            "playbackToken": songData.playbackToken,
-            "explicit": songData.explicit
+            "append": false
           }
         ],
-        "append": false
       }
+
+      // const payload = {
+      //   songs: [
+      //     {
+      //       "musicProvider": providerKey,
+      //       "songId": providerID,
+      //       "artistName": songData.artistName,
+      //       "trackName": songData.trackName,
+      //       "duration": songData.duration,
+      //       "isrc": songData.isrc,
+      //       "genre": songData.genre,
+      //       "playbackToken": songData.playbackToken,
+      //       "explicit": songData.explicit
+      //     }
+      //   ],
+      //   "append": false
+      // }
 
       await axios.post(url, payload, { headers })
     },

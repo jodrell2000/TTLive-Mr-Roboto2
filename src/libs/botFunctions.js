@@ -668,12 +668,12 @@ const botFunctions = () => {
           await playlistFunctions.addSongToQueue(matchingSong);
           console.log("Song added to queue:", JSON.stringify(matchingSong, null, 2));
 
-          const firstSong = await this.getFirstSongInQueue();
-          await socket.action(ActionName.updateNextSong, {
-            roomUuid: botDefaults.roomUuid,
-            song: firstSong,
-            userUuid: botDefaults.botUuid
-          });
+          // const firstSong = await this.getFirstSongInQueue();
+          // await socket.action(ActionName.updateNextSong, {
+          //   roomUuid: botDefaults.roomUuid,
+          //   song: firstSong,
+          //   userUuid: botDefaults.botUuid
+          // });
         }
       }
     },

@@ -3,6 +3,8 @@ import botDefaults from '../defaults/botDefaults.js'
 import musicDefaults from '../defaults/musicDefaults.js'
 import { commandIdentifier } from '../defaults/chatDefaults.js'
 import axios from 'axios'
+import { logger } from '../utils/logging.js'
+
 import authModule from '../libs/auth.js'
 import { ActionName } from "ttfm-socket";
 import { spawn } from 'child_process';
@@ -617,6 +619,7 @@ const botFunctions = () => {
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
+      logger.debug(`prepareToSpin`)
       const DJs = await userFunctions.djList();
       const botPosition = DJs.indexOf(authModule.USERID);
 
@@ -624,12 +627,15 @@ const botFunctions = () => {
         await this.previousPlaysManager.initialize(databaseFunctions);
 
         const theArtist = songFunctions.artist;
+        logger.debug(`prepareToSpin, theArtist:${theArtist}`)
         const theTrack = songFunctions.song;
+        logger.debug(`prepareToSpin, theTrack:${theTrack}`)
         let nextTrack;
         let matchingSong = null;
 
         while (!matchingSong) {
           nextTrack = await this.getTrackToAdd(theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions);
+          logger.debug(`prepareToSpin, nextTrack: ${JSON.stringify(nextTrack, null, 2)}`)
           if (!nextTrack) {
             console.error("getTrackToAdd returned no track.");
             await new Promise(resolve => setTimeout(resolve, 5 * 1000)); // Wait 5 seconds

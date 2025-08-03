@@ -1,4 +1,5 @@
 import axios from "axios";
+import { logger } from '../utils/logging.js'
 
 const headers = {
   'accept': 'application/json',

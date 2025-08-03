@@ -589,12 +589,14 @@ const botFunctions = () => {
     },
     
     checkAutoDJing: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
+      logger.debug(`checkAutoDJing`)
       if ( autoDjingTimer != null ) {
         clearTimeout( autoDjingTimer );
         autoDjingTimer = null;
       }
 
       if ( this.autoDJEnabled() === true ) {
+        logger.debug(`checkAutoDJing, autoDJEnabled===true`)
         autoDjingTimer = setTimeout(async () => {
           await this.getOnOrOffStage( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions );
         }, 1000 * 10);

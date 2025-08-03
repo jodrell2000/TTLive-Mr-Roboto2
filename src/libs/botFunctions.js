@@ -93,8 +93,10 @@ const botFunctions = () => {
     },
 
     djUp: async function( socket ) {
+      logger.debug(`djUp`)
       const firstSong = await this.getFirstSongInQueue()
-      // console.log( `firstSong: ${ JSON.stringify(firstSong, null, 2) }` );
+      logger.debug(`djUp, firstSong: ${ JSON.stringify(firstSong, null, 2) }`)
+
       await socket.action( ActionName.addDj, {
         roomUuid: botDefaults.roomUuid,
         tokenRole: process.env.TTL_USER_TOKEN,

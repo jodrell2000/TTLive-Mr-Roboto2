@@ -93,27 +93,16 @@ const botFunctions = () => {
       }
     },
 
-    djUp: async function( socket ) {
+    addBotToDJList: async function( socket ) {
       logger.debug(`djUp`)
-      // const firstSong = await this.getFirstSongInQueue()
-      // logger.debug(`djUp, firstSong: ${ JSON.stringify(firstSong, null, 2) }`)
-
       await socket.action( ActionName.addDj, {
         roomUuid: botDefaults.roomUuid,
         tokenRole: process.env.TTL_USER_TOKEN,
         userUuid: botDefaults.botUuid
       } );
-
-      // await this.prepareToSpin(userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions);
-
-      // await socket.action( ActionName.updateNextSong, {
-      //   roomUuid: botDefaults.roomUuid,
-      //   song: firstSong,
-      //   userUuid: botDefaults.botUuid
-      // } );
     },
 
-    djDown: async function( socket ) {
+    removeBotFromDJList: async function( socket ) {
       await socket.action( ActionName.removeDj, {
         roomUuid: botDefaults.roomUuid,
         userUuid: botDefaults.botUuid,
@@ -462,7 +451,7 @@ const botFunctions = () => {
     disableAutoDJ: async function ( data, chatFunctions, userFunctions, socket ) {
       autoDJEnabled = false;
       if ( await this.isBotOnStage( userFunctions)) {
-        await this.djDown( socket )
+        await this.removeBotFromDJList( socket )
       }
       await this.reportAutoDJStatus( data, chatFunctions );
     },
@@ -618,11 +607,13 @@ const botFunctions = () => {
       logger.debug(`getOnOrOffStage, shouldStopBotDJing: ${shouldStopDJ}`);
 
       if (!botOnStage && shouldDJ) {
-        await this.djUp(socket);
+        await this.addBotToDJList(socket);
       } else if (botOnStage && shouldStopDJ) {
-        await this.djDown(socket);
+        await this.removeBotFromDJList(socket);
         return;
       }
+
+      await this.prepareToSpin(userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions);
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {

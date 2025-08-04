@@ -152,7 +152,7 @@ export class Bot {
     } );
 
     this.socket.on( "serverMessage", ( payload ) => {
-      // logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
+      logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
 
       if ( ["votedOnSong"].includes(payload.message.name) ) {
         // logger.debug(payload)

@@ -76,6 +76,7 @@ const botFunctions = () => {
     // ========================================================
     
     getFirstSongInQueue: async function () {
+      // broken
       const url = "https://playlists.prod.tt.fm/crate/special/queue/songs"
       const headers = {
         'accept': 'application/json',
@@ -605,23 +606,23 @@ const botFunctions = () => {
       }
     },
 
-    getOnOrOffStage: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
+    getOnOrOffStage: async function (userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions) {
       const botOnStage = await this.isBotOnStage(userFunctions);
-      logger.debug(`getOnOrOffStage, botOnStage=${botOnStage}`)
-      logger.debug(`getOnOrOffStage, shouldTheBotDJ: ${this.shouldTheBotDJ(userFunctions)}`)
+      const shouldDJ = this.shouldTheBotDJ(userFunctions);
+      const shouldStopDJ = await this.shouldStopBotDJing(userFunctions);
 
-      if (!botOnStage && this.shouldTheBotDJ(userFunctions)) {
+      logger.debug(`getOnOrOffStage, botOnStage=${botOnStage}`);
+      logger.debug(`getOnOrOffStage, shouldTheBotDJ: ${shouldDJ}`);
+      logger.debug(`getOnOrOffStage, shouldStopBotDJing: ${shouldStopDJ}`);
+
+      if (!botOnStage && shouldDJ) {
         await this.djUp(socket);
-        await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions );
-        return;
-      }
-
-      if (botOnStage && await this.shouldStopBotDJing(userFunctions)) {
+      } else if (botOnStage && shouldStopDJ) {
         await this.djDown(socket);
         return;
       }
 
-      await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions );
+      await this.prepareToSpin(userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions);
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {

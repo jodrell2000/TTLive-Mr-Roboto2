@@ -95,8 +95,8 @@ const botFunctions = () => {
 
     djUp: async function( socket ) {
       logger.debug(`djUp`)
-      const firstSong = await this.getFirstSongInQueue()
-      logger.debug(`djUp, firstSong: ${ JSON.stringify(firstSong, null, 2) }`)
+      // const firstSong = await this.getFirstSongInQueue()
+      // logger.debug(`djUp, firstSong: ${ JSON.stringify(firstSong, null, 2) }`)
 
       await socket.action( ActionName.addDj, {
         roomUuid: botDefaults.roomUuid,
@@ -104,11 +104,13 @@ const botFunctions = () => {
         userUuid: botDefaults.botUuid
       } );
 
-      await socket.action( ActionName.updateNextSong, {
-        roomUuid: botDefaults.roomUuid,
-        song: firstSong,
-        userUuid: botDefaults.botUuid
-      } );
+      // await this.prepareToSpin(userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions);
+
+      // await socket.action( ActionName.updateNextSong, {
+      //   roomUuid: botDefaults.roomUuid,
+      //   song: firstSong,
+      //   userUuid: botDefaults.botUuid
+      // } );
     },
 
     djDown: async function( socket ) {
@@ -621,8 +623,6 @@ const botFunctions = () => {
         await this.djDown(socket);
         return;
       }
-
-      await this.prepareToSpin(userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions);
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {

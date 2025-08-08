@@ -193,7 +193,7 @@ const playlistFunctions = ( ) => {
     // ========================================================
 
     findTracks: async function (artistName, trackName) {
-      logger.debug(`findTracks: Attempt ${attempts + 1}: Fetching ${url}`);
+      logger.debug(`findTracks: artistName: ${artistName}, trackName: ${trackName}`);
 
       let attempts = 0;
       const maxAttempts = 3;

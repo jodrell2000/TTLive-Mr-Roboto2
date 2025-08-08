@@ -564,7 +564,7 @@ const botFunctions = () => {
       return await userFunctions.isUserIDOnStage( authModule.USERID )
     },
     
-    shouldTheBotDJ: function ( userFunctions ) {
+    shouldTheBotDJ: async function ( userFunctions ) {
       return userFunctions.howManyDJs() >= this.whenToGetOnStage() && // is there at least one DJ on stage
         userFunctions.howManyDJs() < this.whenToGetOffStage() && // are there fewer than the limit of DJs on stage
         userFunctions.queueList().length === 0 && // is the queue empty
@@ -599,7 +599,7 @@ const botFunctions = () => {
 
     getOnOrOffStage: async function (userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions) {
       const botOnStage = await this.isBotOnStage(userFunctions);
-      const shouldDJ = this.shouldTheBotDJ(userFunctions);
+      const shouldDJ = await this.shouldTheBotDJ(userFunctions);
       const shouldStopDJ = await this.shouldStopBotDJing(userFunctions);
 
       logger.debug(`getOnOrOffStage, botOnStage=${botOnStage}`);

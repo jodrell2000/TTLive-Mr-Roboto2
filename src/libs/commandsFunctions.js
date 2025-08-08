@@ -708,12 +708,12 @@ const commandFunctions = () => {
   playlistCommands.suggestfollow.help = "Have Robo suggest a track to play after this one";
 
   playlistCommands.djup = ( { botFunctions, socket } ) => {
-    botFunctions.djUp( socket );
+    botFunctions.addBotToDJList( socket );
   }
   playlistCommands.djup.help = "Have Robo suggest a track to play after this one";
 
   playlistCommands.djdown = ( { botFunctions, socket } ) => {
-    botFunctions.djDown( socket );
+    botFunctions.removeBotFromDJList( socket );
   }
   playlistCommands.djdown.help = "Have Robo suggest a track to play after this one";
 

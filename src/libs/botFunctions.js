@@ -643,8 +643,10 @@ const botFunctions = () => {
           const nextArtist = nextTrack.artist;
           const nextSong = nextTrack.song;
           const nextTrackData = await playlistFunctions.findTracks(nextArtist, nextSong);
+          logger.debug(`prepareToSpin, nextTrackData: ${JSON.stringify(nextTrackData, null, 2)}`)
 
           matchingSong = nextTrackData.songs.find(song => song.artistName.toLowerCase() === nextArtist.toLowerCase());
+          logger.debug(`prepareToSpin, matchingSong: ${JSON.stringify(matchingSong, null, 2)}`)
 
           if (!matchingSong) {
             console.log(`No matching song found for "${nextSong}" by "${nextArtist}". Retrying...`);

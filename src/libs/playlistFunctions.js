@@ -137,6 +137,8 @@ const playlistFunctions = ( ) => {
     },
     
     addSongToQueue: async function( songData ) {
+      logger.debug(`addSongToQueue, songData: ${JSON.stringify(songData, null, 2)}`)
+
       const providerKey = Object.keys(songData.musicProviders)[0]; // "sevenDigital"
       const providerID = songData.musicProviders[providerKey]; // "76753480"
 
@@ -168,6 +170,8 @@ const playlistFunctions = ( ) => {
       //   ],
       //   "append": false
       // }
+      logger.debug(`addSongToQueue, url: ${JSON.stringify(url, null, 2)}`)
+      logger.debug(`addSongToQueue, payload: ${JSON.stringify(payload, null, 2)}`)
 
       await axios.post(url, payload, { headers })
     },

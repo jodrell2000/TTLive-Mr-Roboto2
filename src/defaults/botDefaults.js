@@ -3,7 +3,7 @@ export default {
 
   //this is for the bot's autodjing(triggers on new song, bot also gets on when no song is playing, unless autodjing is turned off)
   autoDJEnabled: false, //autodjing(on by default)
-  whenToGetOnStage: 1, //with this many or fewer people djing the bot will get on stage(only if autodjing is enabled)
+  whenToGetOnStage: 0, //with this many or fewer people djing the bot will get on stage(only if autodjing is enabled)
   whenToGetOffStage: 3, //when this many people are on stage and auto djing is enabled the bot will get off
   // stage(note: the bot counts as one person)
 

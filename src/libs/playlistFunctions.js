@@ -149,8 +149,8 @@ const playlistFunctions = ( ) => {
             "songId": Number(songData.id),
             "append": false
       }
-      logger.debug(`addSongToQueue, url: ${JSON.stringify(url, null, 2)}`)
-      logger.debug(`addSongToQueue, payload: ${JSON.stringify(payload, null, 2)}`)
+      // logger.debug(`addSongToQueue, url: ${JSON.stringify(url, null, 2)}`)
+      // logger.debug(`addSongToQueue, payload: ${JSON.stringify(payload, null, 2)}`)
 
       await axios.post(url, payload, { headers })
     },

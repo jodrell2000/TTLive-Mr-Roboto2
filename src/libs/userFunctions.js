@@ -9,6 +9,8 @@ import countryLookup from 'country-code-lookup';
 import axios from "axios";
 import { ActionName } from "ttfm-socket";
 import botDefaults from "../defaults/botDefaults.js";
+import { logger } from '../utils/logging.js'
+
 // import { data } from "express-session/session/cookie.js";
 
 let theUsersList = []; // object array of everyone in the room
@@ -163,11 +165,11 @@ const userFunctions = () => {
         if (typeof data === 'object') {
           return data.hasOwnProperty('djs');
         } else {
-          console.error('Input is not a valid object');
+          logger.error('Input is not a valid object');
           return false;
         }
       } catch (error) {
-        console.error('Error checking for djs element:', error);
+        logger.error('Error checking for djs element:', error);
         return false;
       }
     },
@@ -185,7 +187,7 @@ const userFunctions = () => {
       try {
         return await axios.get( url, { headers } );
       } catch ( error ) {
-        console.error( `Error calling get api...error:${error}\nurl:${url}` );
+        logger.error( `Error calling get api...error:${error}\nurl:${url}` );
         throw error;
       }
     },
@@ -199,7 +201,7 @@ const userFunctions = () => {
       try {
         return await axios.post(url, payload, { headers })
       } catch ( error ) {
-        console.error( `Error calling post api...error:\n${JSON.stringify(error,null,2)}\nurl:${url}\npayload:${JSON.stringify(payload,null,2)}` );
+        logger.error( `Error calling post api...error:\n${JSON.stringify(error,null,2)}\nurl:${url}\npayload:${JSON.stringify(payload,null,2)}` );
         throw error;
       }
     },
@@ -219,7 +221,7 @@ const userFunctions = () => {
           theUsersList[ userPosition ][ key ] = value;
           await databaseFunctions.storeUserData( theUsersList[ userPosition ] );
         } catch ( error ) {
-          console.error( "Error storing user data:", error.message );
+          logger.error( "Error storing user data:", error.message );
           throw error;
         }
       }
@@ -247,14 +249,14 @@ const userFunctions = () => {
     },
 
     getUserProfileFromAPI: async function ( uuid ) {
-      // console.log(`getUserProfileFromAPI uuid:${uuid}`)
+      // logger.debug(`getUserProfileFromAPI uuid:${uuid}`)
       if ( uuid !== undefined ) {
         const url = `https://gateway.prod.tt.fm/api/user-service/users/profiles?users=${ uuid }`;
         try {
           const response = await this.apiGet( url )
           return response.data[ 0 ]?.userProfile;
         } catch ( error ) {
-          console.error( 'Error fetching user profile:', error );
+          logger.error( 'Error fetching user profile:', error );
           throw error;
         }
       }
@@ -293,7 +295,7 @@ const userFunctions = () => {
         await this.storeUserData( userID, "email", email, databaseFunctions );
         await chatFunctions.botSpeak( 'Email address for ' + username + ' set to ' + email );
       } catch ( error ) {
-        console.error( 'Error setting email address:', error );
+        logger.error( 'Error setting email address:', error );
         throw error;
       }
     },
@@ -303,7 +305,7 @@ const userFunctions = () => {
         const returnedEmail = await databaseFunctions.getUsersEmailAddress( userID );
         return returnedEmail === givenEmail;
       } catch ( error ) {
-        console.error( 'Error in verifyUsersEmail:', error );
+        logger.error( 'Error in verifyUsersEmail:', error );
         return false;
       }
     },
@@ -352,7 +354,7 @@ const userFunctions = () => {
     },
 
     getUserIDFromUsername: async function ( theUsername ) {
-      console.log(`getUserIDFromUsername theUserList:${JSON.stringify(theUsersList,null,2)}`)
+      logger.debug(`getUserIDFromUsername theUserList:${JSON.stringify(theUsersList,null,2)}`)
       for ( let userLoop = 0; userLoop < theUsersList.length; userLoop++ ) {
         if ( theUsersList[ userLoop ].username.toLowerCase() === theUsername.toLowerCase() ) {
           return theUsersList[ userLoop ].id;
@@ -362,9 +364,9 @@ const userFunctions = () => {
     },
 
     enableEscortMe: async function ( data, chatFunctions, databaseFunctions ) {
-      // console.group( `enableEscortMe` )
+      // logger.debug( `enableEscortMe` )
       const theUserID = await this.whoSentTheCommand( data );
-      // console.log( `theUserID:${ theUserID }` )
+      // logger.debug( `theUserID:${ theUserID }` )
       let theError = '';
       if ( await this.escortMeIsEnabled( theUserID ) ) {
         theError += ", you've already enabled Escort Me...";
@@ -380,7 +382,6 @@ const userFunctions = () => {
       } else {
         await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + theError );
       }
-      // console.groupEnd()
     },
 
     disableEscortMe: async function ( data, chatFunctions, databaseFunctions ) {
@@ -474,7 +475,7 @@ const userFunctions = () => {
       if ( !isValidRegion ) {
         await chatFunctions.botSpeak( `@${ await this.getUsername( userID ) } that region is not recognized. Please use one of the 2 character ISO country codes, [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)` );
       } else {
-        // console.log( "this.getUserRegion( userID ): " + this.getUserRegion( userID ) );
+        // logger.debug( "this.getUserRegion( userID ): " + this.getUserRegion( userID ) );
         if ( !this.getUserRegion( userID ) ) {
           this.storeUserRegion( data, userID, theRegion, chatFunctions, videoFunctions, databaseFunctions );
         } else {
@@ -544,7 +545,7 @@ const userFunctions = () => {
           regionsArray.push( this.getUserRegion( theUsersList[ userLoop ][ "id" ] ) );
         }
       }
-      // console.log( "Regions array:" + regionsArray.filter( ( v, i, a ) => a.indexOf( v ) === i ) );
+      // logger.debug( "Regions array:" + regionsArray.filter( ( v, i, a ) => a.indexOf( v ) === i ) );
       return regionsArray.filter( ( v, i, a ) => a.indexOf( v ) === i );
     },
 
@@ -627,7 +628,7 @@ const userFunctions = () => {
         theUsername += args[ userLoop ] + ' ';
       }
       theUsername = theUsername.substring( 0, theUsername.length - 1 );
-      console.log( `theUsername: ${ theUsername }` );
+      logger.debug( `theUsername: ${ theUsername }` );
       const theUserID = await this.getUserIDFromUsername( theUsername );
       const roomJoined = formatRelativeTime( ( Date.now() - await this.getUserJoinedRoom( theUserID ) ) / 1000 );
       let modText = '';
@@ -1214,7 +1215,7 @@ const userFunctions = () => {
       if (Array.isArray(newList)) {
         afkPeople = newList;
       } else {
-        console.error("setAfkPeople: Expected an array but received", typeof newList);
+        logger.error("setAfkPeople: Expected an array but received", typeof newList);
       }
     },
     
@@ -1266,7 +1267,7 @@ const userFunctions = () => {
     addToAFKList: async function ( data, chatFunctions, databaseFunctions ) {
       const theUserID = await this.whoSentTheCommand( data );
       afkPeople.push( theUserID );
-      console.log(`afkPeople: ${JSON.stringify( afkPeople, null, 2) }`);
+      logger.debug(`afkPeople: ${JSON.stringify( afkPeople, null, 2) }`);
       await databaseFunctions.recordMemory( "afkPeople", JSON.stringify(afkPeople) )
 
       await chatFunctions.botSpeak( '@' + await this.getUsername( theUserID ) + ' you are marked as afk' )
@@ -1281,7 +1282,7 @@ const userFunctions = () => {
     removeUserIDFromAFKArray: async function ( theUserID, databaseFunctions ) {
       const listPosition = afkPeople.indexOf( theUserID );
       afkPeople.splice( listPosition, 1 );
-      console.log(`afkPeople: ${JSON.stringify( afkPeople, null, 2) }`);
+      logger.debug(`afkPeople: ${JSON.stringify( afkPeople, null, 2) }`);
 
       await databaseFunctions.recordMemory( "afkPeople", JSON.stringify(afkPeople) )
     },
@@ -1414,7 +1415,7 @@ const userFunctions = () => {
           return { username, uuid };
         })
       );
-      console.log("DJ List now contains:", JSON.stringify(detailedDJList, null, 2));
+      logger.debug("DJ List now contains:", JSON.stringify(detailedDJList, null, 2));
     },
 
     checkOKToDJ: async function ( theUserID, roomFunctions ) {
@@ -1487,13 +1488,12 @@ const userFunctions = () => {
     },
 
     removeDJ: async function ( djID, message, socket ) {
-      console.group( '! removeDJ ===============================' );
-      console.log( '========================================' );
+      logger.debug( '========================================' );
 
-      console.log( 'DJ removed at ' + moment().format( 'DD/MM/yyyy HH:mm:ss' ) );
-      console.log( 'The DJ ' + await this.getUsername( djID ) + ' with ID ' + djID + ' is being removed from the' +
+      logger.debug( 'DJ removed at ' + moment().format( 'DD/MM/yyyy HH:mm:ss' ) );
+      logger.debug( 'The DJ ' + await this.getUsername( djID ) + ' with ID ' + djID + ' is being removed from the' +
         ' decks' );
-      console.log( 'Reason: ' + message );
+      logger.debug( 'Reason: ' + message );
 
       await socket.action( ActionName.removeDj, {
         roomUuid: botDefaults.roomUuid,
@@ -1501,8 +1501,7 @@ const userFunctions = () => {
         djUuid: djID
       } );
 
-      console.log( '========================================' );
-      console.groupEnd();
+      logger.debug( '========================================' );
     },
 
     // ========================================================
@@ -1931,12 +1930,12 @@ const userFunctions = () => {
             try {
               await this.updateUser( user, databaseFunctions );
             } catch ( error ) {
-              console.error( `Failed to update user ${ userProfile.nickname } (${ userProfile.uuid }):`, error );
+              logger.error( `Failed to update user ${ userProfile.nickname } (${ userProfile.uuid }):`, error );
             }
           }
         }
       } else {
-        console.error( 'Invalid data format' );
+        logger.error( 'Invalid data format' );
       }
     },
 
@@ -2055,22 +2054,22 @@ const userFunctions = () => {
         slug: roomSlug
       };
       const url = "https://gateway.prod.tt.fm/api/room-service/roomUserRoles/kick-user-from-room"
-      console.group( "! bootThisUser ===============================" );
-      console.log( '========================================' );
-      console.log( "Booting userID:" + userID );
-      console.log( bootMessage );
-      console.log( '========================================' );
+      logger.debug( "! bootThisUser ===============================" );
+      logger.debug( '========================================' );
+      logger.debug( "Booting userID:" + userID );
+      logger.debug( bootMessage );
+      logger.debug( '========================================' );
 
       try {
         await this.apiPost(url, bootPayload);
       } catch (error) {
         if (error.response && error.response.data) {
-          console.error('API Post Error:');
-          console.error('Status Code:', error.response.data.statusCode);
-          console.error('Message:', error.response.data.message);
-          console.error('Error:', error.response.data.error);
+          logger.error('API Post Error:');
+          logger.error('Status Code:', error.response.data.statusCode);
+          logger.error('Message:', error.response.data.message);
+          logger.error('Error:', error.response.data.error);
         } else {
-          console.error('Error:', error.message || error);
+          logger.error('Error:', error.message || error);
         }
         throw error;
       }
@@ -2078,10 +2077,9 @@ const userFunctions = () => {
       // need to figure out PMs to do this bit
       // if ( bootMessage == null ) {
       // } else {
-      //   console.log( "Booting userID:" + userID + " with message:" + bootMessage );
+      //   logger.debug( "Booting userID:" + userID + " with message:" + bootMessage );
       //   bot.bootUser( userID, bootMessage );
       // }
-      console.groupEnd();
     },
 
     greetNewuser: function ( userID, username, roomFunctions ) {
@@ -2143,7 +2141,7 @@ const userFunctions = () => {
     },
     
     userLeavesRoom: async function( uuid, roomFunctions, databaseFunctions ) {
-      // console.log(`${ uuid } left...`)
+      // logger.debug(`${ uuid } left...`)
     },
 
     updateUsername: async function ( userID, username, databaseFunctions ) {
@@ -2181,7 +2179,7 @@ const userFunctions = () => {
     },
 
     addUserToTheUsersList: async function ( userID, userProfile ) {
-      // console.log(`addUserToTheUsersList userID:${userID}`)
+      // logger.debug(`addUserToTheUsersList userID:${userID}`)
       if ( !await this.isUserInUsersList( userID ) ) {
         theUsersList.push( { id: userID, username: userProfile.username } );
       }
@@ -2422,22 +2420,22 @@ const userFunctions = () => {
 
     findBBBootTarget: async function ( uuid, databaseFunctions ) {
       const targetList = await databaseFunctions.getAllBBBootTargets();
-      console.log(`Possible targets: ${JSON.stringify( targetList, null, 2 )}`);
+      logger.debug(`Possible targets: ${JSON.stringify( targetList, null, 2 )}`);
       
       const currentUsers = theUsersList.map(user => user.id);
-      console.log(`All users: ${JSON.stringify( currentUsers, null, 2 )}`);
+      logger.debug(`All users: ${JSON.stringify( currentUsers, null, 2 )}`);
 
       const availableTargets = targetList.filter(id => currentUsers.includes(id) && id !== uuid);
-      console.log(`Available Targets: ${JSON.stringify( availableTargets, null, 2 )}`);
+      logger.debug(`Available Targets: ${JSON.stringify( availableTargets, null, 2 )}`);
 
       if (availableTargets.length === 0) {
-        console.log("No available targets.");
+        logger.debug("No available targets.");
         return null;
       }
 
       const randomIndex = Math.floor(Math.random() * availableTargets.length);
       const randomTarget = availableTargets[randomIndex];
-      console.log(`Selected Target: ${randomTarget}`);
+      logger.debug(`Selected Target: ${randomTarget}`);
       return randomTarget;
     },
 
@@ -2473,8 +2471,8 @@ const userFunctions = () => {
     cannotBBBootMessage: async function ( bootingUserID, chatFunctions ) {
       const bbbootTimestamp = await this.getBBBootTimestamp( bootingUserID );
       const msSinceLastBoot = Date.now() - bbbootTimestamp;
-      console.log(`bbbootTimestamp: ${ bbbootTimestamp }`)
-      console.log(`msSinceLastBoot: ${ msSinceLastBoot }`)
+      logger.debug(`bbbootTimestamp: ${ bbbootTimestamp }`)
+      logger.debug(`msSinceLastBoot: ${ msSinceLastBoot }`)
 
       const formattedLastBBBoot = formatRelativeTime( msSinceLastBoot / 1000 );
       await chatFunctions.botSpeak( 'Sorry @' + await this.getUsername( bootingUserID ) + ", you can't play" +
@@ -2621,7 +2619,7 @@ const userFunctions = () => {
         const coins = parseFloat( numCoins );
         await this.processRoboCoins( userID, coins, changeReason, changeID, subtractRCOperation, databaseFunctions );
       } catch ( error ) {
-        console.error( 'Error in subtractRoboCoins:', error.message );
+        logger.error( 'Error in subtractRoboCoins:', error.message );
         // Handle the error as needed
       }
     },
@@ -2631,7 +2629,7 @@ const userFunctions = () => {
         const coins = parseFloat( numCoins );
         await this.processRoboCoins( userID, coins, changeReason, changeID, addRCOperation, databaseFunctions );
       } catch ( error ) {
-        console.error( 'Error in addRoboCoins:', error.message );
+        logger.error( 'Error in addRoboCoins:', error.message );
         // Handle the error as needed
       }
     },
@@ -2646,7 +2644,7 @@ const userFunctions = () => {
         // Pass positive or negative numCoins to auditRoboCoin based on the type of operation
         await this.auditRoboCoin( userID, before, after, operation === addRCOperation ? numCoins : -numCoins, changeReason, changeID, databaseFunctions );
       } catch ( error ) {
-        console.error( `Error in ${ operation.name }:`, error.message );
+        logger.error( `Error in ${ operation.name }:`, error.message );
         throw error;
       }
     },
@@ -2664,7 +2662,7 @@ const userFunctions = () => {
       try {
         await databaseFunctions.saveRoboCoinAudit( userID, before, after, numCoins, changeReason, changeID );
       } catch ( error ) {
-        console.error( 'Query failed:', error );
+        logger.error( 'Query failed:', error );
       }
     },
 
@@ -2694,7 +2692,7 @@ const userFunctions = () => {
     },
 
     handleError: async function ( error ) {
-      console.error( 'RoboCoin error:', JSON.stringify( error ) );
+      logger.error( 'RoboCoin error:', JSON.stringify( error ) );
     },
 
     giveInitialRoboCoinGift: async function ( userID, databaseFunctions ) {
@@ -2716,7 +2714,7 @@ const userFunctions = () => {
         const theCoins = await this.getRoboCoins( userID );
         await chatFunctions.botSpeak( '@' + await this.getUsername( userID ) + " you currently have " + parseFloat( theCoins ).toFixed( 2 ) + " RoboCoins" );
       } catch ( error ) {
-        console.error( "Error reading RoboCoins:", error.message );
+        logger.error( "Error reading RoboCoins:", error.message );
         // Handle the error as needed
       }
     },
@@ -2769,7 +2767,7 @@ const userFunctions = () => {
             functionStore[ sendingUserID + "timeout" ] = null;
           } )
           .catch( ( error ) => {
-            console.error( 'Error confirming command:', error );
+            logger.error( 'Error confirming command:', error );
           } );
       } else {
         await chatFunctions.botSpeak( "@" + await this.getUsername( sendingUserID ) + " there's nothing to confirm??" );

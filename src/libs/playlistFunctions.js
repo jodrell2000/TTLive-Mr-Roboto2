@@ -146,7 +146,7 @@ const playlistFunctions = ( ) => {
       const url = `https://gateway.prod.tt.fm/api/playlist-service/api/v1/playlists/${queueCrateUUID}/tracks`
 
       const payload = {
-            "songId": songData.id,
+            "songId": Number(songData.id),
             "append": false
       }
 

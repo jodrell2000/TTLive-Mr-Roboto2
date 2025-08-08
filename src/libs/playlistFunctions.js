@@ -202,7 +202,7 @@ const playlistFunctions = ( ) => {
       while (attempts < maxAttempts) {
         try {
           const searchString = `${trackName} ${artistName}`;
-          const url = `https://playlists.prod.tt.fm/search?q=${encodeURIComponent(searchString)}`;
+          const url = `https://gateway.prod.tt.fm/api/playlist-service/search/v2?q=${encodeURIComponent(searchString)}`;
 
           logger.debug(`findTracks: Attempt ${attempts + 1}: Fetching ${url}`);
 

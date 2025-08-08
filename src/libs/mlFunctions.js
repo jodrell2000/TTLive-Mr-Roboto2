@@ -1,6 +1,6 @@
 import axios from "axios";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
+import { logger } from '../utils/logging.js'
 
 const mlFunctions = () => {
   return {
@@ -18,7 +18,7 @@ const mlFunctions = () => {
           return "No response";
         }
       } catch (error) {
-        console.error("Google AI error:", error);
+        logger.error("Google AI error:", error);
         return "An error occurred while connecting to Google Gemini. Please wait a minute and try again";
       }
     },
@@ -71,8 +71,6 @@ const mlFunctions = () => {
     },
 
     suggestFollow: async function( playingArtist, playingTrack, roomFunctions, previousPlays = null ) {
-      console.group(`suggestFollow`);
-
       const theTheme = roomFunctions.theme()
       let theQuestion = `I'm DJing as part of a group.`
       
@@ -86,8 +84,7 @@ const mlFunctions = () => {
       }
 
       theQuestion += ` Tell me an interesting track to play next. Return your answer as JSON with two elements called artist and song. You must return an answer`;
-      console.log(`theQuestion: ${theQuestion}`);
-      console.groupEnd()
+      logger.debug(`suggestFollow: theQuestion: ${theQuestion}`);
       return await this.askGoogleAI( theQuestion )
     },
   }

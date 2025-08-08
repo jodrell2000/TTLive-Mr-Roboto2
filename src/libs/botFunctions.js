@@ -77,7 +77,7 @@ const botFunctions = () => {
     
     getFirstSongInQueue: async function () {
       // broken
-      const url = "https://playlists.prod.tt.fm/crate/special/queue/songs"
+      const url = "https://gateway.prod.tt.fm/api/playlist-service/crate/special/queue/songs"
       const headers = {
         'accept': 'application/json',
         'Authorization': `Bearer ${ process.env.TTL_USER_TOKEN }`
@@ -672,14 +672,14 @@ const botFunctions = () => {
 
         if (matchingSong) {
           await playlistFunctions.addSongToQueue(matchingSong);
-          console.log("Song added to queue:", JSON.stringify(matchingSong, null, 2));
+          logger.debug(`Song added to queue: ${matchingSong.trackName} by ${matchingSong.artistName}`);
 
-          // const firstSong = await this.getFirstSongInQueue();
-          // await socket.action(ActionName.updateNextSong, {
-          //   roomUuid: botDefaults.roomUuid,
-          //   song: firstSong,
-          //   userUuid: botDefaults.botUuid
-          // });
+          const firstSong = await this.getFirstSongInQueue();
+          await socket.action(ActionName.updateNextSong, {
+            roomUuid: botDefaults.roomUuid,
+            song: firstSong,
+            userUuid: botDefaults.botUuid
+          });
         }
       }
     },

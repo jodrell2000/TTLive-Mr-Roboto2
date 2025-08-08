@@ -633,7 +633,7 @@ const botFunctions = () => {
 
         while (!matchingSong) {
           nextTrack = await this.getTrackToAdd(theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions);
-          logger.debug(`prepareToSpin, nextTrack: ${JSON.stringify(nextTrack, null, 2)}`)
+          // logger.debug(`prepareToSpin, nextTrack: ${JSON.stringify(nextTrack, null, 2)}`)
           if (!nextTrack) {
             console.error("getTrackToAdd returned no track.");
             await new Promise(resolve => setTimeout(resolve, 5 * 1000)); // Wait 5 seconds
@@ -643,10 +643,10 @@ const botFunctions = () => {
           const nextArtist = nextTrack.artist;
           const nextSong = nextTrack.song;
           const nextTrackData = await playlistFunctions.findTracks(nextArtist, nextSong);
-          logger.debug(`prepareToSpin, nextTrackData: ${JSON.stringify(nextTrackData, null, 2)}`)
+          // logger.debug(`prepareToSpin, nextTrackData: ${JSON.stringify(nextTrackData, null, 2)}`)
 
           matchingSong = nextTrackData.songs.find(song => song.artistName.toLowerCase() === nextArtist.toLowerCase());
-          logger.debug(`prepareToSpin, matchingSong: ${JSON.stringify(matchingSong, null, 2)}`)
+          // logger.debug(`prepareToSpin, matchingSong: ${JSON.stringify(matchingSong, null, 2)}`)
 
           if (!matchingSong) {
             logger.debug(`No matching song found for "${nextSong}" by "${nextArtist}". Retrying...`);

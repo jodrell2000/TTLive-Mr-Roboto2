@@ -137,7 +137,7 @@ const playlistFunctions = ( ) => {
     },
     
     addSongToQueue: async function( songData ) {
-      logger.debug(`addSongToQueue, songData: ${JSON.stringify(songData, null, 2)}`)
+      // logger.debug(`addSongToQueue, songData: ${JSON.stringify(songData, null, 2)}`)
 
       const providerKey = Object.keys(songData.musicProviders)[0]; // "sevenDigital"
       const providerID = songData.musicProviders[providerKey]; // "76753480"
@@ -149,23 +149,6 @@ const playlistFunctions = ( ) => {
             "songId": Number(songData.id),
             "append": false
       }
-
-      // const payload = {
-      //   songs: [
-      //     {
-      //       "musicProvider": providerKey,
-      //       "songId": songData.artistName,
-      //       "artistName": songData.artistName,
-      //       "trackName": songData.trackName,
-      //       "duration": songData.duration,
-      //       "isrc": songData.isrc,
-      //       "genre": songData.genre,
-      //       "playbackToken": songData.playbackToken,
-      //       "explicit": songData.explicit
-      //     }
-      //   ],
-      //   "append": false
-      // }
       logger.debug(`addSongToQueue, url: ${JSON.stringify(url, null, 2)}`)
       logger.debug(`addSongToQueue, payload: ${JSON.stringify(payload, null, 2)}`)
 

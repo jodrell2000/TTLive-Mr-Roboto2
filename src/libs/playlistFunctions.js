@@ -148,7 +148,7 @@ const playlistFunctions = ( ) => {
       const payload = {
         songs: [
           {
-            "songId": providerID,
+            "songId": songData.id,
             "append": false
           }
         ],
@@ -158,7 +158,7 @@ const playlistFunctions = ( ) => {
       //   songs: [
       //     {
       //       "musicProvider": providerKey,
-      //       "songId": providerID,
+      //       "songId": songData.artistName,
       //       "artistName": songData.artistName,
       //       "trackName": songData.trackName,
       //       "duration": songData.duration,

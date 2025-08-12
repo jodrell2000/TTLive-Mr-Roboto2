@@ -26,7 +26,7 @@ const mlFunctions = () => {
     songInfo: async function( songFunctions, chatFunctions ) {
       const track = songFunctions.previousTrack()
       const artist = songFunctions.previousArtist()
-      const theQuestion = `The song I'm currently listening to is ${ track } by ${ artist }. In 150 words or less, write a description of the song. When searching note that it may or may not be a cover version`
+      const theQuestion = `The song I'm currently listening to is ${ track } by ${ artist }. In 150 words or less, write a description of the song. When searching note that it may not be beig performed by the original recording artist`
       const theResponse = await this.askGoogleAI( theQuestion, chatFunctions )
       await chatFunctions.botSpeak( theResponse )
     },
@@ -50,7 +50,7 @@ const mlFunctions = () => {
     whatYear: async function( songFunctions, chatFunctions ) {
       const track = songFunctions.previousTrack()
       const artist = songFunctions.previousArtist()
-      const theQuestion = `In what year was the song ${ track } by ${ artist } released?`
+      const theQuestion = `In what year was the song ${ track } by ${ artist } originally released?`
       const theResponse = await this.askGoogleAI( theQuestion, chatFunctions )
       await chatFunctions.botSpeak( theResponse )
     },
@@ -72,10 +72,10 @@ const mlFunctions = () => {
 
     suggestFollow: async function( playingArtist, playingTrack, roomFunctions, previousPlays = null ) {
       const theTheme = roomFunctions.theme()
-      let theQuestion = `I'm DJing as part of a group.`
+      let theQuestion = `I want you to act as a DJ playing as part of a group in a club.`
       
       if ( theTheme != false ) {
-        theQuestion += ` The theme is ${ theTheme }.`
+        theQuestion += ` The theme for the day is ${ theTheme }.`
       }
 
       if ( Array.isArray(previousPlays) && previousPlays.length > 0 ) {
@@ -83,7 +83,7 @@ const mlFunctions = () => {
         theQuestion += ` The previous ${previousPlays.length} plays were ${previousTracks}.`;
       }
 
-      theQuestion += ` Tell me an interesting track to play next. Return your answer as JSON with two elements called artist and song. You must return an answer`;
+      theQuestion += ` Tell me what interesting track you would play next to keep the vibe of the club going. Return your answer as JSON with two elements called artist and song. You must return an answer`;
       logger.debug(`suggestFollow: theQuestion: ${theQuestion}`);
       return await this.askGoogleAI( theQuestion )
     },

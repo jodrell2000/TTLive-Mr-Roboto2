@@ -83,7 +83,7 @@ const mlFunctions = () => {
         theQuestion += ` The previous ${previousPlays.length} plays were ${previousTracks}.`;
       }
 
-      theQuestion += ` Tell me what interesting track you would play next to keep the vibe of the club going. You MUST return your answer as correctly formatted JSON with two elements called artist and song. You must return an answer`;
+      theQuestion += ` Tell me what interesting track you would play next to keep the vibe of the club going. Your reply MUST consist on ONLY correctly formatted JSON with two elements called artist and song with no additional comments. You must return an answer`;
       logger.debug(`suggestFollow: theQuestion: ${theQuestion}`);
       return await this.askGoogleAI( theQuestion )
     },

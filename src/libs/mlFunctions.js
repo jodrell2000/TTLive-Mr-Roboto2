@@ -72,9 +72,10 @@ const mlFunctions = () => {
 
     suggestFollow: async function( playingArtist, playingTrack, roomFunctions, previousPlays = null ) {
       const theTheme = roomFunctions.theme()
-      let theQuestion = `I want you to act as a DJ playing as part of a group in a club.`
+      const hangoutName = await roomFunctions.roomName()
+      let theQuestion = `I want you to act as a DJ playing as part of a group in a club called ${ hangoutName }.`
       
-      if ( theTheme != false ) {
+      if ( theTheme !== false ) {
         theQuestion += ` The theme for the day is ${ theTheme }.`
       }
 

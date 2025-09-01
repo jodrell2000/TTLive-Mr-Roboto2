@@ -6,7 +6,7 @@ const mlFunctions = () => {
   return {
     askGoogleAI: async function (theQuestion, chatFunctions) {
       const genAI = new GoogleGenerativeAI(process.env.googleAIKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
 
       try {
         const reply = await model.generateContent(theQuestion);

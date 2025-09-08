@@ -1,0 +1,14 @@
+{
+  "watch": ["src"],
+  "ignore": [
+    "node_modules",
+    "logs",
+    "data",
+    "tmp",
+    ".git",
+    "backups",
+    "Example Messages",
+    ".github"
+  ],
+  "ext": "js,json"
+}

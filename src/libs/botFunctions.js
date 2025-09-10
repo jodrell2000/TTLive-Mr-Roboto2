@@ -63,8 +63,8 @@ const botFunctions = () => {
         await roomFunctions.setTheme( theTheme )
       }
 
-      const afkPeople = await databaseFunctions.retrieveMemory("afkPeople");
-      if (afkPeople !== null && Array.isArray(afkPeople)) {
+      const afkPeople = await databaseFunctions.retrieveMemory( "afkPeople" );
+      if ( afkPeople !== null && Array.isArray( afkPeople ) ) {
         userFunctions.setAfkPeople( afkPeople );
       }
     },
@@ -74,7 +74,7 @@ const botFunctions = () => {
     // ========================================================
     // DJing Functions
     // ========================================================
-    
+
     getFirstSongInQueue: async function () {
       // broken
       const url = "https://gateway.prod.tt.fm/api/playlist-service/crate/special/queue/songs"
@@ -86,15 +86,15 @@ const botFunctions = () => {
       try {
         const response = await axios.get( url, { headers } );
         const theQueue = response.data
-        return theQueue.songs[0];
+        return theQueue.songs[ 0 ];
       } catch ( error ) {
-        console.error( `Error calling get api...error:${error}\nurl:${url}` );
+        console.error( `Error calling get api...error:${ error }\nurl:${ url }` );
         throw error;
       }
     },
 
-    addBotToDJList: async function( socket ) {
-      logger.debug(`djUp`)
+    addBotToDJList: async function ( socket ) {
+      logger.debug( `djUp` )
       await socket.action( ActionName.addDj, {
         roomUuid: botDefaults.roomUuid,
         tokenRole: process.env.TTL_USER_TOKEN,
@@ -102,7 +102,7 @@ const botFunctions = () => {
       } );
     },
 
-    removeBotFromDJList: async function( socket ) {
+    removeBotFromDJList: async function ( socket ) {
       await socket.action( ActionName.removeDj, {
         roomUuid: botDefaults.roomUuid,
         userUuid: botDefaults.botUuid,
@@ -134,12 +134,12 @@ const botFunctions = () => {
       const restartMe = async () => {
         await chatFunctions.botSpeak( "I'll just try switching it off and on again...", true );
         await this.logCommandUsage( userFunctions, 'tonystark', data, theMessage )
-        const subprocess = spawn(process.argv[0], process.argv.slice(1), {
+        const subprocess = spawn( process.argv[ 0 ], process.argv.slice( 1 ), {
           detached: true,
           stdio: 'inherit',
-        });
+        } );
         subprocess.unref();
-        process.exit(0);
+        process.exit( 0 );
       }
       await restartMe();
     },
@@ -339,7 +339,7 @@ const botFunctions = () => {
         songVotes: { like: true }
       } );
     },
-    
+
     downvote: async function ( socket ) {
       await socket.action( ActionName.voteOnSong, {
         roomUuid: botDefaults.roomUuid,
@@ -347,10 +347,10 @@ const botFunctions = () => {
         songVotes: { like: false }
       } );
     },
-    
+
     // ========================================================
 
-    async readFavouriteArtist( data, chatFunctions, databaseFunctions ) {
+    async readFavouriteArtist ( data, chatFunctions, databaseFunctions ) {
       const favouriteArtist = await this.favouriteArtist( databaseFunctions );
       await chatFunctions.botSpeak( "This week, I have been mostly listening to " + favouriteArtist );
     },
@@ -373,14 +373,14 @@ const botFunctions = () => {
       } )
     },
 
-    async chooseNewFavourite( databaseFunctions ) {
+    async chooseNewFavourite ( databaseFunctions ) {
       await databaseFunctions.getRandomVerifiedArtist()
         .then( ( displayName ) => {
           favouriteArtist = displayName;
         } )
     },
 
-    async isFavouriteArtist( databaseFunctions, theArtist ) {
+    async isFavouriteArtist ( databaseFunctions, theArtist ) {
       const currentFavourite = await this.favouriteArtist( databaseFunctions );
 
       return new Promise( ( resolve, reject ) => {
@@ -450,7 +450,7 @@ const botFunctions = () => {
     },
     disableAutoDJ: async function ( data, chatFunctions, userFunctions, socket ) {
       autoDJEnabled = false;
-      if ( await this.isBotOnStage( userFunctions)) {
+      if ( await this.isBotOnStage( userFunctions ) ) {
         await this.removeBotFromDJList( socket )
       }
       await this.reportAutoDJStatus( data, chatFunctions );
@@ -563,7 +563,7 @@ const botFunctions = () => {
     isBotOnStage: async function ( userFunctions ) {
       return await userFunctions.isUserIDOnStage( authModule.USERID )
     },
-    
+
     shouldTheBotDJ: async function ( userFunctions ) {
       return userFunctions.howManyDJs() >= this.whenToGetOnStage() && // is there at least one DJ on stage
         userFunctions.howManyDJs() < this.whenToGetOffStage() && // are there fewer than the limit of DJs on stage
@@ -581,77 +581,77 @@ const botFunctions = () => {
       return userFunctions.howManyDJs() > this.whenToGetOffStage() && // are there enough DJs onstage
         ( await userFunctions.getCurrentDJID() ) !== authModule.USERID; // check the Bot isn't currently DJing
     },
-    
+
     checkAutoDJing: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
-      logger.debug(`checkAutoDJing`)
+      logger.debug( `checkAutoDJing` )
       if ( autoDjingTimer != null ) {
         clearTimeout( autoDjingTimer );
         autoDjingTimer = null;
       }
 
       if ( this.autoDJEnabled() === true ) {
-        logger.debug(`checkAutoDJing, autoDJEnabled===true`)
-        autoDjingTimer = setTimeout(async () => {
+        logger.debug( `checkAutoDJing, autoDJEnabled===true` )
+        autoDjingTimer = setTimeout( async () => {
           await this.getOnOrOffStage( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions );
-        }, 1000 * 10);
+        }, 1000 * 10 );
       }
     },
 
-    getOnOrOffStage: async function (userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions) {
-      const botOnStage = await this.isBotOnStage(userFunctions);
-      const shouldDJ = await this.shouldTheBotDJ(userFunctions);
-      const shouldStopDJ = await this.shouldStopBotDJing(userFunctions);
+    getOnOrOffStage: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
+      const botOnStage = await this.isBotOnStage( userFunctions );
+      const shouldDJ = await this.shouldTheBotDJ( userFunctions );
+      const shouldStopDJ = await this.shouldStopBotDJing( userFunctions );
 
-      logger.debug(`getOnOrOffStage, botOnStage=${botOnStage}`);
-      logger.debug(`getOnOrOffStage, shouldTheBotDJ: ${shouldDJ}`);
-      logger.debug(`getOnOrOffStage, shouldStopBotDJing: ${shouldStopDJ}`);
+      logger.debug( `getOnOrOffStage, botOnStage=${ botOnStage }` );
+      logger.debug( `getOnOrOffStage, shouldTheBotDJ: ${ shouldDJ }` );
+      logger.debug( `getOnOrOffStage, shouldStopBotDJing: ${ shouldStopDJ }` );
 
-      if (!botOnStage && shouldDJ) {
-        await this.addBotToDJList(socket);
-      } else if (botOnStage && shouldStopDJ) {
-        await this.removeBotFromDJList(socket);
+      if ( !botOnStage && shouldDJ ) {
+        await this.addBotToDJList( socket );
+      } else if ( botOnStage && shouldStopDJ ) {
+        await this.removeBotFromDJList( socket );
         return;
       }
 
-      await this.prepareToSpin(userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions);
+      await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions );
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
-      logger.debug(`prepareToSpin`)
+      logger.debug( `prepareToSpin` )
       const DJs = await userFunctions.djList();
-      const botPosition = DJs.indexOf(authModule.USERID);
+      const botPosition = DJs.indexOf( authModule.USERID );
 
-      if (botPosition === 1 || DJs.length === 1) {
-        await this.previousPlaysManager.initialize(databaseFunctions);
+      if ( botPosition === 1 || DJs.length === 1 ) {
+        await this.previousPlaysManager.initialize( databaseFunctions );
 
         const theArtist = songFunctions.artist;
-        logger.debug(`prepareToSpin, theArtist:${theArtist}`)
+        logger.debug( `prepareToSpin, theArtist:${ theArtist }` )
         const theTrack = songFunctions.song;
-        logger.debug(`prepareToSpin, theTrack:${theTrack}`)
+        logger.debug( `prepareToSpin, theTrack:${ theTrack }` )
         let nextTrack;
         let matchingSong = null;
 
-        while (!matchingSong) {
-          nextTrack = await this.getTrackToAdd(theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions);
+        while ( !matchingSong ) {
+          nextTrack = await this.getTrackToAdd( theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions );
           // logger.debug(`prepareToSpin, nextTrack: ${JSON.stringify(nextTrack, null, 2)}`)
-          if (!nextTrack) {
-            console.error("getTrackToAdd returned no track.");
-            await new Promise(resolve => setTimeout(resolve, 5 * 1000)); // Wait 5 seconds
+          if ( !nextTrack ) {
+            logger.debug( "getTrackToAdd returned no track." );
+            await new Promise( resolve => setTimeout( resolve, 5 * 1000 ) ); // Wait 5 seconds
             break;
           }
 
           const nextArtist = nextTrack.artist;
           const nextSong = nextTrack.song;
-          const nextTrackData = await playlistFunctions.findTracks(nextArtist, nextSong);
+          const nextTrackData = await playlistFunctions.findTracks( nextArtist, nextSong );
           // logger.debug(`prepareToSpin, nextTrackData: ${JSON.stringify(nextTrackData, null, 2)}`)
 
-          matchingSong = nextTrackData.songs.find(song => song.artistName.toLowerCase() === nextArtist.toLowerCase());
+          matchingSong = nextTrackData.songs.find( song => song.artistName.toLowerCase() === nextArtist.toLowerCase() );
           // logger.debug(`prepareToSpin, matchingSong: ${JSON.stringify(matchingSong, null, 2)}`)
 
-          if (!matchingSong) {
-            logger.debug(`No matching song found for "${nextSong}" by "${nextArtist}". Retrying...`);
-            await this.previousPlaysManager.addTrack(nextTrack);  // Prevent re-picking this track
-            await new Promise(resolve => setTimeout(resolve, 1 * 1000)); // Wait 1 second
+          if ( !matchingSong ) {
+            logger.debug( `No matching song found for "${ nextSong }" by "${ nextArtist }". Retrying...` );
+            await this.previousPlaysManager.addTrack( nextTrack );  // Prevent re-picking this track
+            await new Promise( resolve => setTimeout( resolve, 1 * 1000 ) ); // Wait 1 second
             continue; // Retry the loop
           }
 
@@ -660,61 +660,61 @@ const botFunctions = () => {
             artist: matchingSong.artistName,
             song: matchingSong.trackName
           };
-          const isDuplicate = await this.isDuplicateTrack(trackToCheck, databaseFunctions);
+          const isDuplicate = await this.isDuplicateTrack( trackToCheck, databaseFunctions );
 
-          if (isDuplicate) {
-            logger.debug(`Skipping "${trackToCheck.song}" by "${trackToCheck.artist}" as it was recently played.`);
-            await this.previousPlaysManager.addTrack(trackToCheck); // Prevent choosing again
-            await new Promise(resolve => setTimeout(resolve, 1 * 1000)); // Wait 1 second
+          if ( isDuplicate ) {
+            logger.debug( `Skipping "${ trackToCheck.song }" by "${ trackToCheck.artist }" as it was recently played.` );
+            await this.previousPlaysManager.addTrack( trackToCheck ); // Prevent choosing again
+            await new Promise( resolve => setTimeout( resolve, 1 * 1000 ) ); // Wait 1 second
             matchingSong = null; // Reset to trigger another loop iteration
           }
         }
 
-        if (matchingSong) {
-          await playlistFunctions.addSongToQueue(matchingSong);
-          logger.debug(`Song added to queue: ${matchingSong.trackName} by ${matchingSong.artistName}`);
+        if ( matchingSong ) {
+          await playlistFunctions.addSongToQueue( matchingSong );
+          logger.debug( `Song added to queue: ${ matchingSong.trackName } by ${ matchingSong.artistName }` );
 
           const firstSong = await this.getFirstSongInQueue();
-          await socket.action(ActionName.updateNextSong, {
+          await socket.action( ActionName.updateNextSong, {
             roomUuid: botDefaults.roomUuid,
             song: firstSong,
             userUuid: botDefaults.botUuid
-          });
+          } );
         }
       }
     },
 
 
-    getTrackToAdd: async function (theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions) {
+    getTrackToAdd: async function ( theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions ) {
       let attempts = 0;
       let nextTrack = null;
 
-      while (attempts < 3) {
-        if (attempts > 0) {
-          logger.debug(`getTrackToAdd: Retrying in 5 seconds... (Attempt ${attempts + 1}/3)`);
-          await new Promise(resolve => setTimeout(resolve, 5000));
+      while ( attempts < 3 ) {
+        if ( attempts > 0 ) {
+          logger.debug( `getTrackToAdd: Retrying in 5 seconds... (Attempt ${ attempts + 1 }/3)` );
+          await new Promise( resolve => setTimeout( resolve, 5000 ) );
         }
 
         try {
           nextTrack = await this.getNextTrack( mlFunctions, theArtist, theTrack, roomFunctions );
-          logger.debug(`getTrackToAdd: nextTrack returned is: ${JSON.stringify(nextTrack, null, 2)}`);
+          logger.debug( `getTrackToAdd: nextTrack returned is: ${ JSON.stringify( nextTrack, null, 2 ) }` );
 
-          if (!nextTrack || !nextTrack.artist || !nextTrack.song) {
-            logger.error("Invalid track received, retrying...");
+          if ( !nextTrack || !nextTrack.artist || !nextTrack.song ) {
+            logger.error( "Invalid track received, retrying..." );
             nextTrack = null;
             continue;
           }
 
-          if (await this.isDuplicateTrack(nextTrack, databaseFunctions)) {
-            logger.debug(`getTrackToAdd: Track "${nextTrack.song}" by "${nextTrack.artist}" was recently played. Picking another...`);
-            await new Promise(resolve => setTimeout(resolve, 1 * 1000)); // Wait 1 second
-            await this.previousPlaysManager.addTrack(nextTrack);
+          if ( await this.isDuplicateTrack( nextTrack, databaseFunctions ) ) {
+            logger.debug( `getTrackToAdd: Track "${ nextTrack.song }" by "${ nextTrack.artist }" was recently played. Picking another...` );
+            await new Promise( resolve => setTimeout( resolve, 1 * 1000 ) ); // Wait 1 second
+            await this.previousPlaysManager.addTrack( nextTrack );
             nextTrack = null; // Trigger another retry
             continue;
           }
           return nextTrack;
-        } catch (error) {
-          logger.error("getTrackToAdd: Error in suggestFollow:", error.message);
+        } catch ( error ) {
+          logger.error( "getTrackToAdd: Error in suggestFollow:", error.message || error.toString() || JSON.stringify( error ) );
           nextTrack = null;
         }
 
@@ -723,73 +723,73 @@ const botFunctions = () => {
 
       return nextTrack;
     },
-    
-    getNextTrack: async function (mlFunctions, artist, track, roomFunctions) {
-      const previousPlays = await this.previousPlaysManager.getPreviousPlays()
-      let nextTrack = await mlFunctions.suggestFollow(artist, track, roomFunctions, previousPlays);
 
-      if (typeof nextTrack === "string") {
+    getNextTrack: async function ( mlFunctions, artist, track, roomFunctions ) {
+      const previousPlays = await this.previousPlaysManager.getPreviousPlays()
+      let nextTrack = await mlFunctions.suggestFollow( artist, track, roomFunctions, previousPlays );
+
+      if ( typeof nextTrack === "string" ) {
         try {
           nextTrack = nextTrack.trim(); // Trim any leading/trailing spaces
 
           // Ensure it only replaces JSON markers if they exist
-          if (nextTrack.startsWith("```json") || nextTrack.startsWith("```")) {
-            nextTrack = nextTrack.replace(/```json|```/g, "").trim();
+          if ( nextTrack.startsWith( "```json" ) || nextTrack.startsWith( "```" ) ) {
+            nextTrack = nextTrack.replace( /```json|```/g, "" ).trim();
           }
 
-          nextTrack = JSON.parse(nextTrack);
-        } catch (error) {
-          console.error("Failed to parse replyJSON:", error, "Raw response:", nextTrack);
-          throw new Error("Invalid track data received");
+          nextTrack = JSON.parse( nextTrack );
+        } catch ( error ) {
+          console.error( "Failed to parse replyJSON:", error, "Raw response:", nextTrack );
+          throw new Error( "Invalid track data received" );
         }
-      } else if (typeof nextTrack === "object" && nextTrack !== null) {
-        logger.debug("nextTrack is already an object, skipping parsing.");
+      } else if ( typeof nextTrack === "object" && nextTrack !== null ) {
+        logger.debug( "nextTrack is already an object, skipping parsing." );
       } else {
-        console.error("Unexpected nextTrack type:", typeof nextTrack, nextTrack);
-        throw new Error("Unexpected track data type");
+        console.error( "Unexpected nextTrack type:", typeof nextTrack, nextTrack );
+        throw new Error( "Unexpected track data type" );
       }
 
-      if (!nextTrack || typeof nextTrack !== "object" || !nextTrack.artist || !nextTrack.song) {
-        throw new Error("Invalid track received");
+      if ( !nextTrack || typeof nextTrack !== "object" || !nextTrack.artist || !nextTrack.song ) {
+        throw new Error( "Invalid track received" );
       }
-      
+
       return nextTrack;
     },
 
-    isDuplicateTrack: async function (track, databaseFunctions) {
-      logger.debug(`isDuplicateTrack: Checking if track "${track.song}" by "${track.artist}" is a duplicate.`);
-      if (!track || !track.artist || !track.song) {
+    isDuplicateTrack: async function ( track, databaseFunctions ) {
+      logger.debug( `isDuplicateTrack: Checking if track "${ track.song }" by "${ track.artist }" is a duplicate.` );
+      if ( !track || !track.artist || !track.song ) {
         return false;
       }
 
-      const isDuplicate = await databaseFunctions.findInPlayHistory(track.artist, track.song, 8); // Get last 8
-      logger.debug(`isDuplicateTrack: isDuplicate: ${ Boolean(isDuplicate) }`);
+      const isDuplicate = await databaseFunctions.findInPlayHistory( track.artist, track.song, 8 ); // Get last 8
+      logger.debug( `isDuplicateTrack: isDuplicate: ${ Boolean( isDuplicate ) }` );
 
-      return Boolean(isDuplicate);
+      return Boolean( isDuplicate );
     },
 
     previousPlaysManager: {
       previousPlays: [],
 
-      async initialize(databaseFunctions) {
+      async initialize ( databaseFunctions ) {
         this.previousPlays = await databaseFunctions.getPreviousPlays();
-        logger.debug(`previousPlaysManager, initialize: Loaded previousPlays: ${JSON.stringify(this.previousPlays)}`);
-        logger.debug(`previousPlaysManager, initialize:previousPlays count now: ${this.previousPlays.length}`)
+        logger.debug( `previousPlaysManager, initialize: Loaded previousPlays: ${ JSON.stringify( this.previousPlays ) }` );
+        logger.debug( `previousPlaysManager, initialize:previousPlays count now: ${ this.previousPlays.length }` )
       },
 
-      async addTrack(track) {
-        if (track && track.artist && track.song) {
-          this.previousPlays.push(track);
-          logger.debug(`previousPlaysManager, addTrack:Added to previousPlays: ${JSON.stringify(track, null, 2)}`);
-          logger.debug(`previousPlaysManager, addTrack:previousPlays count now: ${this.previousPlays.length}`)
+      async addTrack ( track ) {
+        if ( track && track.artist && track.song ) {
+          this.previousPlays.push( track );
+          logger.debug( `previousPlaysManager, addTrack:Added to previousPlays: ${ JSON.stringify( track, null, 2 ) }` );
+          logger.debug( `previousPlaysManager, addTrack:previousPlays count now: ${ this.previousPlays.length }` )
         }
       },
 
-      async getPreviousPlays() {
+      async getPreviousPlays () {
         return this.previousPlays;
       }
     },
-    
+
     isSongInBotPlaylist: function ( thisSong ) {
       let foundSong = false;
       for ( let listLoop = 0; listLoop < botDefaults.botPlaylist.length; listLoop++ ) {
@@ -850,24 +850,24 @@ const botFunctions = () => {
     },
 
     clearAllTimers: async function ( userFunctions, roomFunctions, songFunctions, chatFunctions ) {
-      if (userFunctions.clearInformTimer) {
+      if ( userFunctions.clearInformTimer ) {
         await userFunctions.clearInformTimer( roomFunctions, chatFunctions );
       }
 
-      if (roomFunctions?.clearSongLimitTimer) {
-        await roomFunctions.clearSongLimitTimer(userFunctions, roomFunctions, chatFunctions);
+      if ( roomFunctions?.clearSongLimitTimer ) {
+        await roomFunctions.clearSongLimitTimer( userFunctions, roomFunctions, chatFunctions );
       }
-      
+
       try {
         songFunctions.clearWatchDogTimer();
-      } catch (error) {
-        console.warn("clearWatchDogTimer failed:", error.message);
+      } catch ( error ) {
+        console.warn( "clearWatchDogTimer failed:", error.message );
       }
-      
+
       try {
-        await songFunctions.clearTakedownTimer(userFunctions, roomFunctions, chatFunctions);
-      } catch (error) {
-        console.warn("clearTakedownTimer failed:", error.message);
+        await songFunctions.clearTakedownTimer( userFunctions, roomFunctions, chatFunctions );
+      } catch ( error ) {
+        console.warn( "clearTakedownTimer failed:", error.message );
       }
     },
 
@@ -906,12 +906,12 @@ const botFunctions = () => {
     // ML Chat Functions
     // ========================================================
 
-    async askBardCommand( data, theQuestion, chatFunctions, mlFunctions ) {
+    async askBardCommand ( data, theQuestion, chatFunctions, mlFunctions ) {
       const answer = await mlFunctions.askBard( theQuestion );
       chatFunctions.botSpeak( answer );
     },
 
-    async askChatGPTCommand( data, theQuestion, chatFunctions, mlFunctions ) {
+    async askChatGPTCommand ( data, theQuestion, chatFunctions, mlFunctions ) {
       const answer = await mlFunctions.askChatGPT( theQuestion );
       chatFunctions.botSpeak( answer );
     },

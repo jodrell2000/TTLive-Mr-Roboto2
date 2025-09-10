@@ -757,6 +757,7 @@ const botFunctions = () => {
     },
 
     isDuplicateTrack: async function (track, databaseFunctions) {
+      logger.debug(`isDuplicateTrack: Checking if track "${track.song}" by "${track.artist}" is a duplicate.`);
       if (!track || !track.artist || !track.song) {
         return false;
       }

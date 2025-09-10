@@ -644,6 +644,7 @@ const databaseFunctions = () => {
     },
 
     findInPlayHistory: async function ( artist, song, hours ) {
+      logger.debug( "findInPlayHistory: " + artist + " - " + song + " - " + hours );
       const selectQuery = "SELECT " +
         "COALESCE(v.artistDisplayName, v.artistName) AS artist, " +
         "COALESCE(v.trackDisplayName, v.trackName)   AS song " +
@@ -653,6 +654,8 @@ const databaseFunctions = () => {
         "( v.artistDisplayName = ? OR v.artistName = ? ) AND " +
         "( v.trackDisplayName = ? OR v.trackName = ? );";
       const values = [ hours, artist, artist, song, song ];
+      const debugQuery = mysql.format(selectQuery, values);
+      logger.debug( "DEBUG SQL: " + debugQuery );
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {
           if ( result.length !== 0 ) {

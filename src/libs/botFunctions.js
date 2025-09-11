@@ -597,7 +597,7 @@ const botFunctions = () => {
       }
     },
 
-    getOnOrOffStage: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
+    getOnOrOffStage: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions, chatFunctions ) {
       const botOnStage = await this.isBotOnStage( userFunctions );
       const shouldDJ = await this.shouldTheBotDJ( userFunctions );
       const shouldStopDJ = await this.shouldStopBotDJing( userFunctions );

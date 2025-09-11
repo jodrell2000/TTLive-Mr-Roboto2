@@ -654,8 +654,14 @@ const databaseFunctions = () => {
         "( v.artistDisplayName = ? OR v.artistName = ? ) AND " +
         "( v.trackDisplayName = ? OR v.trackName = ? );";
       const values = [ hours, artist, artist, song, song ];
-      const debugQuery = mysql.format( selectQuery, values );
-      logger.debug( "findInPlayHistory DEBUG SQL: " + debugQuery );
+
+      // Create a complete query with values substituted for debugging
+      let debugQuery = selectQuery;
+      values.forEach( ( value, index ) => {
+        debugQuery = debugQuery.replace( '?', `'${ value }'` );
+      } );
+      logger.debug( "findInPlayHistory COMPLETE SQL: " + debugQuery );
+
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {
           if ( result.length !== 0 ) {

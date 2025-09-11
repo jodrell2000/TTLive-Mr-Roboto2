@@ -152,27 +152,27 @@ const databaseFunctions = () => {
       }
     },
 
-    retrieveMemory: async function (key) {
+    retrieveMemory: async function ( key ) {
       const theQuery = "SELECT theValue FROM persistentMemory WHERE theKey = ?";
-      const theValues = [key];
+      const theValues = [ key ];
 
       try {
-        const result = await this.runQuery(theQuery, theValues);
+        const result = await this.runQuery( theQuery, theValues );
 
-        if (result.length > 0) {
-          const storedValue = result[0].theValue;
+        if ( result.length > 0 ) {
+          const storedValue = result[ 0 ].theValue;
 
           // Check if the stored value is a JSON string
           try {
-            return JSON.parse(storedValue); // If it’s valid JSON, return as object/array
-          } catch (error) {
+            return JSON.parse( storedValue ); // If it’s valid JSON, return as object/array
+          } catch ( error ) {
             return storedValue; // Otherwise, return as a string
           }
         } else {
           return null;
         }
-      } catch (error) {
-        console.error("Unable to retrieve memory:", error.message);
+      } catch ( error ) {
+        console.error( "Unable to retrieve memory:", error.message );
         throw error;
       }
     },
@@ -199,7 +199,7 @@ const databaseFunctions = () => {
       const theValues = [ uuid ];
       const result = await this.runQuery( theQuery, theValues );
 
-      return result[0].theCount > 0;
+      return result[ 0 ].theCount > 0;
     },
 
     removeUnsavableDataFromUser: function ( userObject ) {
@@ -257,15 +257,15 @@ const databaseFunctions = () => {
         throw error; // Rethrow the error if necessary
       }
     },
-    
+
     resetAllCurrentDJs: async function () {
       const theQuery = "UPDATE users SET currentDJ = false";
-      const theValues = [ ];
+      const theValues = [];
       try {
         return await this.runQuery( theQuery, theValues );
       } catch ( error ) {
         console.error( 'Error in resetAllCurrentDJs:', error.message );
-        throw error; 
+        throw error;
       }
     },
 
@@ -283,7 +283,7 @@ const databaseFunctions = () => {
         return await this.runQuery( theQuery, values );
       } catch ( error ) {
         console.error( 'Error in saveRoboCoinAudit:', error.message );
-        throw error; 
+        throw error;
       }
     },
 
@@ -318,9 +318,9 @@ const databaseFunctions = () => {
         "⭐": "Stars"
       };
 
-      const reelOne = symbolMap[result[0].symbol] || "Unknown";
-      const reelTwo = symbolMap[result[1].symbol] || "Unknown";
-      const reelThree = symbolMap[result[2].symbol] || "Unknown";
+      const reelOne = symbolMap[ result[ 0 ].symbol ] || "Unknown";
+      const reelTwo = symbolMap[ result[ 1 ].symbol ] || "Unknown";
+      const reelThree = symbolMap[ result[ 2 ].symbol ] || "Unknown";
 
       const theQuery = `INSERT INTO fruitMachineAudit ( users_id, betAmount, reelOne, reelTwo, ReelThree, multiplier, winnings) VALUES (?, ?, ?, ?, ?, ?, ?);`;
       const values = [ userID, betAmount, reelOne, reelTwo, reelThree, multiplier, betAmount * multiplier ];
@@ -343,10 +343,10 @@ const databaseFunctions = () => {
         throw error;
       }
     },
-    
+
     fruitMachineReelResults: async function () {
       const theQuery = `SELECT symbol, ROUND(COUNT(CASE WHEN reelOne = symbol THEN 1 END) * 100.0 / COUNT(*), 2) AS reelOne_Percentage, ROUND(COUNT(CASE WHEN reelTwo = symbol THEN 1 END) * 100.0 / COUNT(*), 2) AS reelTwo_Percentage, ROUND(COUNT(CASE WHEN reelThree = symbol THEN 1 END) * 100.0 / COUNT(*), 2) AS reelThree_Percentage FROM ( SELECT reelOne AS symbol FROM fruitMachineAudit UNION SELECT reelTwo FROM fruitMachineAudit UNION SELECT reelThree FROM fruitMachineAudit ) AS uniqueSymbols CROSS JOIN fruitMachineAudit GROUP BY symbol ORDER BY NULL;`;
-      const values = [  ];
+      const values = [];
       try {
         return await this.runQuery( theQuery, values );
       } catch ( error ) {
@@ -364,10 +364,10 @@ const databaseFunctions = () => {
 
     getAllBBBootTargets: async function () {
       const theQuery = "select DISTINCT(id) from users where BBBootTimestamp !=0;";
-      const values = [  ];
+      const values = [];
       try {
         const result = await this.runQuery( theQuery, values );
-        return result.map(item => item.id);
+        return result.map( item => item.id );
       } catch ( error ) {
         console.error( 'Error in running getAllBBBootTarget in the DB:', error.message );
         // Handle the error as needed
@@ -385,7 +385,7 @@ const databaseFunctions = () => {
       let songShortId
       if ( await this.doesTrackMatchingShortCodeExists( songData.songShortId ) ) {
         songShortId = songData.songShortId
-        await this.saveTrackPlayed(djID, songShortId, songData.duration)
+        await this.saveTrackPlayed( djID, songShortId, songData.duration )
       } else {
         const songShortId = songData.songShortId
         const youTubeID = songData.musicProviders.youtube || null
@@ -394,7 +394,7 @@ const databaseFunctions = () => {
         const artist = songData.artistName;
         const song = songData.trackName;
 
-        let videoID 
+        let videoID
         videoID = await this.getVideoDataID( songShortId, youTubeID, appleID, spotifyID );
 
         if ( !videoID && songShortId ) {
@@ -407,11 +407,11 @@ const databaseFunctions = () => {
           // maybe send a warning here that the track may not play?!?
           // console.log(`No songShortID available\n${JSON.stringify(songData, null, 2)}`)
         }
-        await this.saveTrackPlayed(djID, videoID, songData.duration)
+        await this.saveTrackPlayed( djID, videoID, songData.duration )
       }
     },
-    
-    saveTrackPlayed: async function( djID, videoDataID, length ) {
+
+    saveTrackPlayed: async function ( djID, videoDataID, length ) {
       let theQuery = "INSERT INTO tracksPlayed (djID, videoData_id, length) VALUES (?, ?, ?);"
       let values = [ djID, videoDataID, length ];
       await this.runQuery( theQuery, values )
@@ -422,7 +422,7 @@ const databaseFunctions = () => {
           }
         } )
     },
-    
+
     doesTrackMatchingShortCodeExists: async function ( videoID ) {
       const theQuery = "SELECT COUNT(id) as count FROM videoData WHERE id = ?";
       const values = [ videoID ];
@@ -447,8 +447,8 @@ const databaseFunctions = () => {
       try {
         const result = await this.runQuery( theQuery, values );
         // console.log(`getVideoDataID result:${JSON.stringify(result, null, 2)}`)
-        if (result.length > 0) {
-          return result[0]['id'];
+        if ( result.length > 0 ) {
+          return result[ 0 ][ 'id' ];
         } else {
           return false;
         }
@@ -466,17 +466,17 @@ const databaseFunctions = () => {
           return this.runQuery( theQuery, values );
         } )
     },
-    
+
     isPlayedLengthSet: async function ( trackID ) {
       const theQuery = "SELECT playedLength FROM tracksPlayed where id = ?"
       const values = [ trackID ];
       const result = await this.runQuery( theQuery, values );
-      return result[0]['playedLength'] !== 0;
+      return result[ 0 ][ 'playedLength' ] !== 0;
     },
-    
+
     setPlayedLengthForLastTrack: async function () {
       let theQuery = "SELECT id, whenPlayed FROM tracksPlayed ORDER BY id DESC LIMIT 1"
-      let values = [ ];
+      let values = [];
       const result = await this.runQuery( theQuery, values );
       const trackID = result[ 0 ][ 'id' ];
       const whenPlayed = result[ 0 ][ 'whenPlayed' ]
@@ -584,11 +584,11 @@ const databaseFunctions = () => {
         .catch( ( ex ) => { console.error( "Something went wrong getting the track played time: " + ex ); } );
     },
 
-    getSongInfoData: async function (songID) {
+    getSongInfoData: async function ( songID ) {
       let songInfo = {};
 
       const nameQuery = "SELECT COALESCE(artistDisplayName, artistName) AS artistName, COALESCE(trackDisplayName, trackName) AS trackName FROM videoData WHERE id=?";
-      const nameValues = [songID];
+      const nameValues = [ songID ];
 
       const whenQuery = "SELECT DATE_FORMAT(MIN(tp.whenPlayed), '%W %D %M %Y') as firstPlay, COUNT(tp.id) AS playCount, COUNT(DISTINCT(djID)) AS djCount " +
         "FROM videoData vd JOIN tracksPlayed tp ON tp.videoData_id=vd.id " +
@@ -600,28 +600,28 @@ const databaseFunctions = () => {
         "WHERE COALESCE(artistDisplayName, artistName) = ? AND COALESCE(trackDisplayName, trackName) = ? " +
         "ORDER BY tp.whenPlayed ASC LIMIT 1";
 
-      return this.runQuery(nameQuery, nameValues)
-        .then((results) => {
-          songInfo.artistName = results[0].artistName;
-          songInfo.trackName = results[0].trackName;
-          const whenValues = [songInfo.artistName, songInfo.trackName];
-          return this.runQuery(whenQuery, whenValues);
-        })
-        .then((results) => {
-          songInfo.firstPlay = results[0].firstPlay;
-          songInfo.playCount = results[0].playCount;
-          songInfo.djCount = results[0].djCount;
-          const whenValues = [songInfo.artistName, songInfo.trackName];
-          return this.runQuery(firstDJQuery, whenValues);
-        })
-        .then((results) => {
-          songInfo.username = results[0]?.username || null; // Handle case where no result is returned
+      return this.runQuery( nameQuery, nameValues )
+        .then( ( results ) => {
+          songInfo.artistName = results[ 0 ].artistName;
+          songInfo.trackName = results[ 0 ].trackName;
+          const whenValues = [ songInfo.artistName, songInfo.trackName ];
+          return this.runQuery( whenQuery, whenValues );
+        } )
+        .then( ( results ) => {
+          songInfo.firstPlay = results[ 0 ].firstPlay;
+          songInfo.playCount = results[ 0 ].playCount;
+          songInfo.djCount = results[ 0 ].djCount;
+          const whenValues = [ songInfo.artistName, songInfo.trackName ];
+          return this.runQuery( firstDJQuery, whenValues );
+        } )
+        .then( ( results ) => {
+          songInfo.username = results[ 0 ]?.username || null; // Handle case where no result is returned
           return songInfo;
-        })
-        .catch((error) => {
-          console.error('Error:', error);
+        } )
+        .catch( ( error ) => {
+          console.error( 'Error:', error );
           throw error;
-        });
+        } );
     },
 
     getPreviousPlays: async function () {
@@ -644,7 +644,7 @@ const databaseFunctions = () => {
     },
 
     findInPlayHistory: async function ( artist, song, hours ) {
-      logger.debug( "findInPlayHistory: " + artist + " - " + song + " - " + hours );
+      logger.debug( "findInPlayHistory: " + artist + " - " + song + " - " + hours + " hours" );
       const selectQuery = "SELECT " +
         "COALESCE(v.artistDisplayName, v.artistName) AS artist, " +
         "COALESCE(v.trackDisplayName, v.trackName)   AS song " +
@@ -654,8 +654,8 @@ const databaseFunctions = () => {
         "( v.artistDisplayName = ? OR v.artistName = ? ) AND " +
         "( v.trackDisplayName = ? OR v.trackName = ? );";
       const values = [ hours, artist, artist, song, song ];
-      const debugQuery = mysql.format(selectQuery, values);
-      logger.debug( "DEBUG SQL: " + debugQuery );
+      const debugQuery = mysql.format( selectQuery, values );
+      logger.debug( "findInPlayHistory DEBUG SQL: " + debugQuery );
       return this.runQuery( selectQuery, values )
         .then( ( result ) => {
           if ( result.length !== 0 ) {
@@ -707,7 +707,7 @@ const databaseFunctions = () => {
         } );
     },
 
-    getRandomVerifiedArtist() {
+    getRandomVerifiedArtist () {
       return new Promise( ( resolve, _ ) => {
         const selectQuery = "SELECT DISTINCT(displayName) FROM artists WHERE displayName IS NOT NULL ORDER BY RAND() LIMIT 1;";
         const values = [];
@@ -721,7 +721,7 @@ const databaseFunctions = () => {
       } )
     },
 
-    getVerifiedArtistsFromName( theArtist ) {
+    getVerifiedArtistsFromName ( theArtist ) {
       const selectQuery = "SELECT artistDisplayName FROM videoData WHERE artistName = ?;";
       const values = [ theArtist ];
 
@@ -731,7 +731,7 @@ const databaseFunctions = () => {
         } );
     },
 
-    getVerifiedArtistFromID( youtube_id ) {
+    getVerifiedArtistFromID ( youtube_id ) {
       const selectQuery = "SELECT artistDisplayName FROM videoData WHERE id = ?;";
       const values = [ youtube_id ];
 
@@ -741,7 +741,7 @@ const databaseFunctions = () => {
         } );
     },
 
-    getVerifiedTracksFromName( theSong ) {
+    getVerifiedTracksFromName ( theSong ) {
       const selectQuery = "SELECT trackDisplayName FROM videoData WHERE trackName = ?;";
       const values = [ theSong ];
 
@@ -751,7 +751,7 @@ const databaseFunctions = () => {
         } );
     },
 
-    getVerifiedTrackFromID( youtube_id ) {
+    getVerifiedTrackFromID ( youtube_id ) {
       const selectQuery = "SELECT trackDisplayName FROM videoData WHERE id = ?;";
       const values = [ youtube_id ];
 
@@ -761,7 +761,7 @@ const databaseFunctions = () => {
         } );
     },
 
-    getUnverifiedSongList( args ) {
+    getUnverifiedSongList ( args ) {
       let orderByClause = '';
       let whereClause = '';
       const values = [];
@@ -797,7 +797,7 @@ const databaseFunctions = () => {
         default:
           whereClause = 'v.artistDisplayName IS NULL OR v.trackDisplayName IS NULL';
       }
-      
+
       switch ( args.unverifiedonly ) {
         case 'true':
           whereClause = whereClause + ' AND (v.artistDisplayName IS NULL OR v.trackDisplayName IS NULL)';
@@ -825,7 +825,7 @@ const databaseFunctions = () => {
         } );
     },
 
-    updateArtistDisplayName( id, artistDisplayName ) {
+    updateArtistDisplayName ( id, artistDisplayName ) {
       const trimmedDisplayName = artistDisplayName !== undefined ? artistDisplayName.trim() : artistDisplayName;
       const selectQuery = "UPDATE videoData SET artistDisplayName=? WHERE id=?;";
       const values = [ trimmedDisplayName, id ];
@@ -836,7 +836,7 @@ const databaseFunctions = () => {
         } );
     },
 
-    updateTrackDisplayName( id, trackDisplayName ) {
+    updateTrackDisplayName ( id, trackDisplayName ) {
       const trimmedDisplayName = trackDisplayName !== undefined ? trackDisplayName.trim() : trackDisplayName;
       const selectQuery = "UPDATE videoData SET trackDisplayName=? WHERE id=?;";
       const values = [ trimmedDisplayName, id ];
@@ -933,7 +933,7 @@ const databaseFunctions = () => {
     // Top 10 Functions
     // ========================================================
 
-    async fullTop10Results( startDate, endDate, includeDays = [ 0, 1, 2, 3, 4, 5, 6 ] ) {
+    async fullTop10Results ( startDate, endDate, includeDays = [ 0, 1, 2, 3, 4, 5, 6 ] ) {
       const selectQuery = `SELECT COALESCE(v.artistDisplayName, v.artistName) AS "artist",
                                   COALESCE(v.trackDisplayName, v.trackName)   AS "track",
                                   (
@@ -974,7 +974,7 @@ const databaseFunctions = () => {
       }
     },
 
-    async top10ByLikesResults( startDate, endDate, includeDays = [ 0, 1, 2, 3, 4, 5, 6 ] ) {
+    async top10ByLikesResults ( startDate, endDate, includeDays = [ 0, 1, 2, 3, 4, 5, 6 ] ) {
       const selectQuery = `SELECT COALESCE(v.artistDisplayName, v.artistName) AS "artist",
                                   COALESCE(v.trackDisplayName, v.trackName)   AS "track",
                                   SUM(tp.upvotes)                             as upvotes,
@@ -1005,7 +1005,7 @@ const databaseFunctions = () => {
       }
     },
 
-    async mostPlayedTracksResults( startDate, endDate, includeDays = [ 0, 1, 2, 3, 4, 5, 6 ] ) {
+    async mostPlayedTracksResults ( startDate, endDate, includeDays = [ 0, 1, 2, 3, 4, 5, 6 ] ) {
       const selectQuery = `SELECT COALESCE(v.artistDisplayName, v.artistName) AS "artist",
                                   COALESCE(v.trackDisplayName, v.trackName)   AS "track",
                                   SUM(tp.upvotes - tp.downvotes)              as 'points',
@@ -1036,7 +1036,7 @@ const databaseFunctions = () => {
     },
 
 
-    async mostPlayedArtistsResults( startDate, endDate, includeDays = [ 0, 1, 2, 3, 4, 5, 6 ] ) {
+    async mostPlayedArtistsResults ( startDate, endDate, includeDays = [ 0, 1, 2, 3, 4, 5, 6 ] ) {
       const selectQuery = `SELECT artist, COUNT(*) as "plays", SUM(points) as "points"
                            FROM (SELECT COALESCE(v.artistDisplayName, v.artistName) as "artist",
                                         ( 1 +
@@ -1075,7 +1075,7 @@ const databaseFunctions = () => {
       }
     },
 
-    async roomSummaryResults( startDate, endDate ) {
+    async roomSummaryResults ( startDate, endDate ) {
       const selectQuery = `SELECT COUNT(tp.id)           AS "plays",
                                   COUNT(DISTINCT (u.id)) AS "djs",
                                   SUM(tp.upvotes)        AS "upvotes",
@@ -1094,7 +1094,7 @@ const databaseFunctions = () => {
       }
     },
 
-    async top10DJResults( startDate, endDate ) {
+    async top10DJResults ( startDate, endDate ) {
       const selectQuery = `SELECT dj, SUM(points) as "points"
                            FROM (SELECT u.username                                    as "dj",
                                     ( 1 +
@@ -1142,7 +1142,7 @@ const databaseFunctions = () => {
       const values = [ value ];
       try {
         const result = await this.runQuery( selectQuery, values );
-        const count = result[0]?.count || 0;
+        const count = result[ 0 ]?.count || 0;
         return count > 0;
       } catch ( error ) {
         console.error( error );
@@ -1150,15 +1150,15 @@ const databaseFunctions = () => {
       }
     },
 
-    isAlias: async function (value) {
+    isAlias: async function ( value ) {
       const selectQuery = 'SELECT COUNT(*) AS count FROM aliases WHERE alias = ?;';
-      const values = [value];
+      const values = [ value ];
       try {
-        const result = await this.runQuery(selectQuery, values);
-        const count = result[0]?.count || 0;
+        const result = await this.runQuery( selectQuery, values );
+        const count = result[ 0 ]?.count || 0;
         return count > 0;
-      } catch (error) {
-        console.error(error);
+      } catch ( error ) {
+        console.error( error );
         throw error;
       }
     },

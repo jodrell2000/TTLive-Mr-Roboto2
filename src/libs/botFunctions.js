@@ -582,7 +582,7 @@ const botFunctions = () => {
         ( await userFunctions.getCurrentDJID() ) !== authModule.USERID; // check the Bot isn't currently DJing
     },
 
-    checkAutoDJing: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
+    checkAutoDJing: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions, chatFunctions ) {
       logger.debug( `checkAutoDJing` )
       if ( autoDjingTimer != null ) {
         clearTimeout( autoDjingTimer );
@@ -592,7 +592,7 @@ const botFunctions = () => {
       if ( this.autoDJEnabled() === true ) {
         logger.debug( `checkAutoDJing, autoDJEnabled===true` )
         autoDjingTimer = setTimeout( async () => {
-          await this.getOnOrOffStage( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions );
+          await this.getOnOrOffStage( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions, chatFunctions );
         }, 1000 * 10 );
       }
     },
@@ -613,10 +613,10 @@ const botFunctions = () => {
         return;
       }
 
-      await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions );
+      await this.prepareToSpin( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions, chatFunctions );
     },
 
-    prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions ) {
+    prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions, chatFunctions ) {
       logger.debug( `prepareToSpin` )
       const DJs = await userFunctions.djList();
       const botPosition = DJs.indexOf( authModule.USERID );
@@ -681,7 +681,7 @@ const botFunctions = () => {
             userUuid: botDefaults.botUuid
           } );
         } else {
-          this.botSpeak( "Google Gemini is having issues...I couldn't find a suitable track to play." );
+          chatFunctions.botSpeak( "Google Gemini is having issues...I couldn't find a suitable track to play." );
         }
       }
     },

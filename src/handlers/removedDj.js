@@ -1,10 +1,10 @@
 export default async ( currentState, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) => {
-  
+
   const beforeDJList = await userFunctions.djList();
   await userFunctions.resetDJs( currentState.djs )
   const afterDJList = await userFunctions.djList();
 
-  const removedDJuuid = beforeDJList.find(uuid => !afterDJList.includes(uuid));
+  const removedDJuuid = beforeDJList.find( uuid => !afterDJList.includes( uuid ) );
 
   if ( removedDJuuid !== undefined ) {
     // do we need a new SwitchDJ for the randomizer?
@@ -18,7 +18,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
   // check if Bot should start to DJ
   // and if it's their turn, pick a track to play
-  await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions )
+  await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions, chatFunctions );
 
 }
 

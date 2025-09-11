@@ -3,9 +3,9 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
   let theMessage;
 
   for ( const patch of payload.statePatch ) {
-    if (patch.path.startsWith('/djs/')) {
+    if ( patch.path.startsWith( '/djs/' ) ) {
       const theUserID = patch.value.uuid;
-      
+
       // [ OKToDJ, theMessage ] = await userFunctions.checkOKToDJ( theUserID, roomFunctions );
       //
       // if ( !OKToDJ ) {
@@ -37,7 +37,7 @@ export default async ( currentState, payload, socket, userFunctions, roomFunctio
 
       // check if Bot should start to DJ
       // and if it's their turn, pick a track to play
-      await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions )
+      await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions, chatFunctions );
 
       // }
 

@@ -24,10 +24,10 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     await databaseFunctions.saveLastSongStats( songFunctions );
     await userFunctions.incrementDJPlayCount( djID, databaseFunctions );
 
-  // await userFunctions.removeDJsOverPlaylimit( data, chatFunctions, djID );
+    // await userFunctions.removeDJsOverPlaylimit( data, chatFunctions, djID );
     await roomFunctions.escortDJsDown( await userFunctions.getPreviousDJID(), botFunctions, userFunctions, chatFunctions, databaseFunctions, socket );
 
-  // new song
+    // new song
 
     await songFunctions.resetVoteCountSkip();
     await songFunctions.resetVotesLeft( roomDefaults.HowManyVotesToSkip );
@@ -37,9 +37,9 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     await songFunctions.resetJumpCount();
     await songFunctions.resetVoteSnagging();
     await botFunctions.clearAllTimers( userFunctions, roomFunctions, songFunctions, chatFunctions, socket );
-    await songFunctions.getSongTagsFromState(state);
-    await databaseFunctions.saveTrackData(djID, state.nowPlaying.song);
-    
+    await songFunctions.getSongTagsFromState( state );
+    await databaseFunctions.saveTrackData( djID, state.nowPlaying.song );
+
     await userFunctions.setPreviousDJID( djID );
     await songFunctions.setSongTags( state.nowPlaying.song )
     songFunctions.setPreviousTrack( state.nowPlaying.song.trackName )
@@ -47,7 +47,7 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     const theMessage = 'Now playing ' + state.nowPlaying.song.trackName + ' by ' + state.nowPlaying.song.artistName
     await chatFunctions.botSpeak( theMessage )
   } else {
-    console.warn("No song is currently playing, skipping song tag and save.");
+    console.warn( "No song is currently playing, skipping song tag and save." );
   }
   roomFunctions.setDJCount( state.djs.length ); //the number of djs on stage
 
@@ -61,14 +61,14 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
       }, 10 * 1000 );
     } );
   }
-  
+
   // check if Bot should start to DJ
   // and if it's their turn, pick a track to play
-  await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions )
+  await botFunctions.checkAutoDJing( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions, chatFunctions );
 
   // bot votes, after 30 seconds in case a skip is needed
   const DJs = await userFunctions.djList()
-  const botPosition = DJs.indexOf(authModule.USERID)
+  const botPosition = DJs.indexOf( authModule.USERID )
   if ( botPosition !== 0 ) {
     await new Promise( resolve => {
       setTimeout( async () => {

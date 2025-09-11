@@ -658,7 +658,11 @@ const databaseFunctions = () => {
       // Create a complete query with values substituted for debugging
       let debugQuery = selectQuery;
       values.forEach( ( value, index ) => {
-        debugQuery = debugQuery.replace( '?', `'${ value }'` );
+        // Safely escape the value for debug display
+        const escapedValue = typeof value === 'string' ?
+          `'${ value.replace( /'/g, "''" ) }'` : // Escape single quotes by doubling them
+          value;
+        debugQuery = debugQuery.replace( '?', escapedValue );
       } );
       logger.debug( "findInPlayHistory COMPLETE SQL: " + debugQuery );
 

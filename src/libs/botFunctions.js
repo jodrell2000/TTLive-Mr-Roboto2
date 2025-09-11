@@ -664,7 +664,7 @@ const botFunctions = () => {
           try {
             logger.debug( `prepareToSpin: Calling findTracks...` )
             const nextTrackData = await playlistFunctions.findTracks( nextArtist, nextSong );
-            logger.debug( `prepareToSpin: findTracks returned: ${ JSON.stringify( nextTrackData, null, 2 ) }` )
+            // logger.debug( `prepareToSpin: findTracks returned: ${ JSON.stringify( nextTrackData, null, 2 ) }` )
 
             if ( !nextTrackData || !nextTrackData.songs || !Array.isArray( nextTrackData.songs ) ) {
               logger.error( `prepareToSpin: Invalid nextTrackData structure:`, nextTrackData );

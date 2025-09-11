@@ -617,12 +617,16 @@ const botFunctions = () => {
     },
 
     prepareToSpin: async function ( userFunctions, songFunctions, mlFunctions, playlistFunctions, socket, roomFunctions, databaseFunctions, chatFunctions ) {
-      logger.debug( `prepareToSpin` )
+      logger.debug( `prepareToSpin: Starting function` )
       const DJs = await userFunctions.djList();
+      logger.debug( `prepareToSpin: DJs list: ${ JSON.stringify( DJs ) }` )
       const botPosition = DJs.indexOf( authModule.USERID );
+      logger.debug( `prepareToSpin: Bot position: ${ botPosition }, DJs length: ${ DJs.length }` )
 
       if ( botPosition === 1 || DJs.length === 1 ) {
+        logger.debug( `prepareToSpin: Bot is in position to spin, initializing...` )
         await this.previousPlaysManager.initialize( databaseFunctions );
+        logger.debug( `prepareToSpin: Previous plays manager initialized` )
 
         const theArtist = songFunctions.artist;
         logger.debug( `prepareToSpin, theArtist:${ theArtist }` )
@@ -630,59 +634,120 @@ const botFunctions = () => {
         logger.debug( `prepareToSpin, theTrack:${ theTrack }` )
         let nextTrack;
         let matchingSong = null;
+        let loopAttempts = 0;
+        const maxLoopAttempts = 10; // Prevent infinite loops
 
-        while ( !matchingSong ) {
-          nextTrack = await this.getTrackToAdd( theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions );
-          // logger.debug(`prepareToSpin, nextTrack: ${JSON.stringify(nextTrack, null, 2)}`)
+        logger.debug( `prepareToSpin: Starting while loop to find matching song` )
+        while ( !matchingSong && loopAttempts < maxLoopAttempts ) {
+          loopAttempts++;
+          logger.debug( `prepareToSpin: Loop attempt ${ loopAttempts }/${ maxLoopAttempts }` )
+
+          try {
+            logger.debug( `prepareToSpin: Calling getTrackToAdd...` )
+            nextTrack = await this.getTrackToAdd( theArtist, theTrack, mlFunctions, roomFunctions, databaseFunctions );
+            logger.debug( `prepareToSpin: getTrackToAdd returned: ${ JSON.stringify( nextTrack, null, 2 ) }` )
+          } catch ( error ) {
+            logger.error( `prepareToSpin: Error calling getTrackToAdd:`, error.message || error.toString() );
+            break;
+          }
+
           if ( !nextTrack ) {
-            logger.debug( "getTrackToAdd returned no track." );
+            logger.debug( `prepareToSpin: getTrackToAdd returned no track, breaking loop` );
             await new Promise( resolve => setTimeout( resolve, 5 * 1000 ) ); // Wait 5 seconds
             break;
           }
 
           const nextArtist = nextTrack.artist;
           const nextSong = nextTrack.song;
-          const nextTrackData = await playlistFunctions.findTracks( nextArtist, nextSong );
-          // logger.debug(`prepareToSpin, nextTrackData: ${JSON.stringify(nextTrackData, null, 2)}`)
+          logger.debug( `prepareToSpin: Next track details - Artist: "${ nextArtist }", Song: "${ nextSong }"` )
 
-          matchingSong = nextTrackData.songs.find( song => song.artistName.toLowerCase() === nextArtist.toLowerCase() );
-          // logger.debug(`prepareToSpin, matchingSong: ${JSON.stringify(matchingSong, null, 2)}`)
+          try {
+            logger.debug( `prepareToSpin: Calling findTracks...` )
+            const nextTrackData = await playlistFunctions.findTracks( nextArtist, nextSong );
+            logger.debug( `prepareToSpin: findTracks returned: ${ JSON.stringify( nextTrackData, null, 2 ) }` )
+
+            if ( !nextTrackData || !nextTrackData.songs || !Array.isArray( nextTrackData.songs ) ) {
+              logger.error( `prepareToSpin: Invalid nextTrackData structure:`, nextTrackData );
+              await this.previousPlaysManager.addTrack( nextTrack );
+              await new Promise( resolve => setTimeout( resolve, 1 * 1000 ) );
+              continue;
+            }
+
+            logger.debug( `prepareToSpin: Searching for matching song in ${ nextTrackData.songs.length } results` )
+            matchingSong = nextTrackData.songs.find( song => song.artistName.toLowerCase() === nextArtist.toLowerCase() );
+            logger.debug( `prepareToSpin: matchingSong found: ${ JSON.stringify( matchingSong, null, 2 ) }` )
+          } catch ( error ) {
+            logger.error( `prepareToSpin: Error calling findTracks:`, error.message || error.toString() );
+            await this.previousPlaysManager.addTrack( nextTrack );
+            await new Promise( resolve => setTimeout( resolve, 1 * 1000 ) );
+            continue;
+          }
 
           if ( !matchingSong ) {
-            logger.debug( `No matching song found for "${ nextSong }" by "${ nextArtist }". Retrying...` );
+            logger.debug( `prepareToSpin: No matching song found for "${ nextSong }" by "${ nextArtist }". Retrying...` );
             await this.previousPlaysManager.addTrack( nextTrack );  // Prevent re-picking this track
             await new Promise( resolve => setTimeout( resolve, 1 * 1000 ) ); // Wait 1 second
             continue; // Retry the loop
           }
 
           // Check if track is a duplicate
+          logger.debug( `prepareToSpin: Checking if track is duplicate...` )
           const trackToCheck = {
             artist: matchingSong.artistName,
             song: matchingSong.trackName
           };
-          const isDuplicate = await this.isDuplicateTrack( trackToCheck, databaseFunctions );
 
-          if ( isDuplicate ) {
-            logger.debug( `Skipping "${ trackToCheck.song }" by "${ trackToCheck.artist }" as it was recently played.` );
-            await this.previousPlaysManager.addTrack( trackToCheck ); // Prevent choosing again
-            await new Promise( resolve => setTimeout( resolve, 1 * 1000 ) ); // Wait 1 second
-            matchingSong = null; // Reset to trigger another loop iteration
+          try {
+            const isDuplicate = await this.isDuplicateTrack( trackToCheck, databaseFunctions );
+            logger.debug( `prepareToSpin: isDuplicate check result: ${ isDuplicate }` )
+
+            if ( isDuplicate ) {
+              logger.debug( `prepareToSpin: Skipping "${ trackToCheck.song }" by "${ trackToCheck.artist }" as it was recently played.` );
+              await this.previousPlaysManager.addTrack( trackToCheck ); // Prevent choosing again
+              await new Promise( resolve => setTimeout( resolve, 1 * 1000 ) ); // Wait 1 second
+              matchingSong = null; // Reset to trigger another loop iteration
+            }
+          } catch ( error ) {
+            logger.error( `prepareToSpin: Error checking duplicate:`, error.message || error.toString() );
+            matchingSong = null;
+            await new Promise( resolve => setTimeout( resolve, 1 * 1000 ) );
           }
         }
 
-        if ( matchingSong ) {
-          await playlistFunctions.addSongToQueue( matchingSong );
-          logger.debug( `Song added to queue: ${ matchingSong.trackName } by ${ matchingSong.artistName }` );
+        logger.debug( `prepareToSpin: Finished while loop. matchingSong: ${ matchingSong ? 'found' : 'not found' }, loopAttempts: ${ loopAttempts }` )
 
-          const firstSong = await this.getFirstSongInQueue();
-          await socket.action( ActionName.updateNextSong, {
-            roomUuid: botDefaults.roomUuid,
-            song: firstSong,
-            userUuid: botDefaults.botUuid
-          } );
+        if ( matchingSong ) {
+          logger.debug( `prepareToSpin: Adding song to queue...` )
+          try {
+            await playlistFunctions.addSongToQueue( matchingSong );
+            logger.debug( `prepareToSpin: Song added to queue: ${ matchingSong.trackName } by ${ matchingSong.artistName }` );
+
+            logger.debug( `prepareToSpin: Getting first song in queue...` )
+            const firstSong = await this.getFirstSongInQueue();
+            logger.debug( `prepareToSpin: First song in queue: ${ JSON.stringify( firstSong, null, 2 ) }` )
+
+            logger.debug( `prepareToSpin: Updating next song...` )
+            await socket.action( ActionName.updateNextSong, {
+              roomUuid: botDefaults.roomUuid,
+              song: firstSong,
+              userUuid: botDefaults.botUuid
+            } );
+            logger.debug( `prepareToSpin: Successfully updated next song` )
+          } catch ( error ) {
+            logger.error( `prepareToSpin: Error in final steps:`, error.message || error.toString() );
+            chatFunctions.botSpeak( "I encountered an error while adding the track to my queue." );
+          }
         } else {
-          chatFunctions.botSpeak( "Google Gemini is having issues...I couldn't find a suitable track to play." );
+          logger.debug( `prepareToSpin: No suitable track found after ${ loopAttempts } attempts` )
+          if ( loopAttempts >= maxLoopAttempts ) {
+            logger.error( `prepareToSpin: Reached maximum loop attempts (${ maxLoopAttempts })` )
+            chatFunctions.botSpeak( "I tried too many times but couldn't find a suitable track to play." );
+          } else {
+            chatFunctions.botSpeak( "Google Gemini is having issues...I couldn't find a suitable track to play." );
+          }
         }
+      } else {
+        logger.debug( `prepareToSpin: Bot not in position to spin (position: ${ botPosition }, DJs: ${ DJs.length })` )
       }
     },
 
@@ -754,6 +819,7 @@ const botFunctions = () => {
       }
 
       if ( !nextTrack || typeof nextTrack !== "object" || !nextTrack.artist || !nextTrack.song ) {
+        logger.error( "Invalid track received" );
         throw new Error( "Invalid track received" );
       }
 

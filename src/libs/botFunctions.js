@@ -742,6 +742,7 @@ const botFunctions = () => {
         try {
           nextTrack = JSON.parse( nextTrack );
         } catch ( error ) {
+          logger.debug( "Full error object:", JSON.stringify( error, Object.getOwnPropertyNames( error ), 2 ) );
           logger.error( "Failed to parse response as JSON:", error.message, "Raw response:", nextTrack );
           throw new Error( `Invalid JSON response received: ${ nextTrack }` );
         }

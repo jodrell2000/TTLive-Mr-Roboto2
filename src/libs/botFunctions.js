@@ -680,6 +680,8 @@ const botFunctions = () => {
             song: firstSong,
             userUuid: botDefaults.botUuid
           } );
+        } else {
+          this.botSpeak( "Google Gemini is having issues...I couldn't find a suitable track to play." );
         }
       }
     },
@@ -729,23 +731,24 @@ const botFunctions = () => {
       let nextTrack = await mlFunctions.suggestFollow( artist, track, roomFunctions, previousPlays );
 
       if ( typeof nextTrack === "string" ) {
+        nextTrack = nextTrack.trim(); // Trim any leading/trailing spaces
+
+        // Ensure it only replaces JSON markers if they exist
+        if ( nextTrack.startsWith( "```json" ) || nextTrack.startsWith( "```" ) ) {
+          nextTrack = nextTrack.replace( /```json|```/g, "" ).trim();
+        }
+
+        // Try to parse as JSON
         try {
-          nextTrack = nextTrack.trim(); // Trim any leading/trailing spaces
-
-          // Ensure it only replaces JSON markers if they exist
-          if ( nextTrack.startsWith( "```json" ) || nextTrack.startsWith( "```" ) ) {
-            nextTrack = nextTrack.replace( /```json|```/g, "" ).trim();
-          }
-
           nextTrack = JSON.parse( nextTrack );
         } catch ( error ) {
-          console.error( "Failed to parse replyJSON:", error, "Raw response:", nextTrack );
-          throw new Error( "Invalid track data received" );
+          logger.error( "Failed to parse response as JSON:", error.message, "Raw response:", nextTrack );
+          throw new Error( `Invalid JSON response received: ${ nextTrack }` );
         }
       } else if ( typeof nextTrack === "object" && nextTrack !== null ) {
         logger.debug( "nextTrack is already an object, skipping parsing." );
       } else {
-        console.error( "Unexpected nextTrack type:", typeof nextTrack, nextTrack );
+        logger.error( "Unexpected nextTrack type:", typeof nextTrack, nextTrack );
         throw new Error( "Unexpected track data type" );
       }
 

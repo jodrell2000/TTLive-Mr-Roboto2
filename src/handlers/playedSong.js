@@ -45,7 +45,9 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     songFunctions.setPreviousTrack( state.nowPlaying.song.trackName )
     songFunctions.setPreviousArtist( state.nowPlaying.song.artistName )
     const theMessage = 'Now playing ' + state.nowPlaying.song.trackName + ' by ' + state.nowPlaying.song.artistName
-    await chatFunctions.botSpeak( theMessage )
+    if ( botFunctions.readSongStats() ) {
+      await chatFunctions.botSpeak( theMessage )
+    }
   } else {
     console.warn( "No song is currently playing, skipping song tag and save." );
   }

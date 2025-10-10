@@ -7,7 +7,7 @@ export default {  // selection of lines to pick for functions
       (only works when MESSAGE = true) (this feature is on by default)
   */
 
-  SONGSTATS: true, //song stats after each song(on by default)
+  SONGSTATS: false, //song stats after each song(on by default)
 
   repeatMessageThroughPm: false,
   /*choose whether the repeating room message(the one corresponding to MESSAGE up above) will be through the chatbox or the pm,

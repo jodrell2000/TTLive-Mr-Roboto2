@@ -6,7 +6,7 @@ import { dirname } from 'path';
 
 import { postMessage } from './cometchat.js'
 
-const chatDataFileName = process.env.CHATDATA; 
+const chatDataFileName = process.env.CHATDATA;
 const room = process.env.ROOM_UUID;
 
 const chatFunctions = () => {
@@ -23,7 +23,7 @@ const chatFunctions = () => {
         images: theImage
       } )
     },
-    
+
     botChat: async function ( message ) {
       return await postMessage( {
         room,
@@ -38,12 +38,14 @@ const chatFunctions = () => {
     buildUserToUserRandomMessage: async function ( userFunctions, senderID, theMessage, receiverID ) {
       const senderUsername = await userFunctions.getUsername( senderID );
       if ( senderUsername ) {
-        theMessage = theMessage.replace( "@senderUsername", "@" + senderUsername );
+        // theMessage = theMessage.replace( "@senderUsername", "@" + senderUsername );
+        theMessage = theMessage.replace( "@senderUsername", `<@uid:${ senderID }>` );
       }
 
       const receiverUsername = await userFunctions.getUsername( receiverID );
       if ( receiverUsername ) {
-        theMessage = theMessage.replace( "@receiverUsername", "@" + receiverUsername );
+        // theMessage = theMessage.replace( "@receiverUsername", "@" + receiverUsername );
+        theMessage = theMessage.replace( "@receiverUsername", `<@uid:${ receiverID }>` );
       }
 
       return theMessage
@@ -55,24 +57,24 @@ const chatFunctions = () => {
     // Misc chat functions
     // ========================================================
 
-    suggestFollow: async function( mlFunctions, songFunctions, roomFunctions, databaseFunctions ) {
+    suggestFollow: async function ( mlFunctions, songFunctions, roomFunctions, databaseFunctions ) {
       const previousPlays = await databaseFunctions.getPreviousPlays()
       let replyJSON = await mlFunctions.suggestFollow( songFunctions.artist, songFunctions.song, roomFunctions, previousPlays );
-      
-      if (typeof replyJSON === "string") {
+
+      if ( typeof replyJSON === "string" ) {
         try {
           // Remove Markdown-style backticks if present
-          replyJSON = replyJSON.replace(/```json|```/g, "").trim();
+          replyJSON = replyJSON.replace( /```json|```/g, "" ).trim();
 
           // Parse cleaned JSON
-          replyJSON = JSON.parse(replyJSON);
-        } catch (error) {
-          console.error("Failed to parse replyJSON:", error);
+          replyJSON = JSON.parse( replyJSON );
+        } catch ( error ) {
+          console.error( "Failed to parse replyJSON:", error );
           return;
         }
       }
 
-      await this.botSpeak( `How about playing ${ replyJSON.song } by ${ replyJSON.artist }.`);
+      await this.botSpeak( `How about playing ${ replyJSON.song } by ${ replyJSON.artist }.` );
     },
 
     isThereADJ: async function ( userFunctions, data ) {
@@ -100,7 +102,7 @@ const chatFunctions = () => {
     pictureMessageTheDJ: async function ( senderID, receiverID, messageArray, pictureArray, data, userFunctions ) {
       if ( await this.isThereADJ( userFunctions, data ) ) {
         const randomMessage = messageArray[ Math.floor( Math.random() * messageArray.length ) ];
-        const randomPic = [pictureArray[ Math.floor( Math.random() * pictureArray.length ) ] ];
+        const randomPic = [ pictureArray[ Math.floor( Math.random() * pictureArray.length ) ] ];
         const thisMessage = await this.buildUserToUserRandomMessage( userFunctions, senderID, randomMessage, receiverID );
 
         await this.botSpeakPicture( thisMessage, randomPic );
@@ -176,9 +178,9 @@ const chatFunctions = () => {
       const readInOrder = async () => {
         // Get the last message (note: array indices are 0-based, so last element is at length-1)
         let lastMessage;
-        if (messageVariable[randomMessageNumber] && messageVariable[randomMessageNumber].length > 0) {
-          const lastIndex = messageVariable[randomMessageNumber].length - 1;
-          lastMessage = messageVariable[randomMessageNumber][lastIndex][0];
+        if ( messageVariable[ randomMessageNumber ] && messageVariable[ randomMessageNumber ].length > 0 ) {
+          const lastIndex = messageVariable[ randomMessageNumber ].length - 1;
+          lastMessage = messageVariable[ randomMessageNumber ][ lastIndex ][ 0 ];
         } else {
           lastMessage = ".";
         }
@@ -192,11 +194,11 @@ const chatFunctions = () => {
         const randomPic = [ pictureVariable[ Math.floor( Math.random() * pictureVariable.length ) ] ];
         try {
           await self.botSpeakPicture( lastMessage, randomPic );
-        } catch (error) {
-          console.error(`Error calling botSpeakPicture: ${error.message}`);
+        } catch ( error ) {
+          console.error( `Error calling botSpeakPicture: ${ error.message }` );
         }
       }
-      readInOrder().then( );
+      readInOrder().then();
     },
 
     coinflip: async function ( data ) {
@@ -223,7 +225,7 @@ const chatFunctions = () => {
         return;
       }
 
-      console.log(`data: ${JSON.stringify( data, null, 2 )};`)
+      console.log( `data: ${ JSON.stringify( data, null, 2 ) };` )
       const theUsername = data.senderName;
       const diceCount = args[ 0 ];
       const diceType = args[ 1 ].split( "d" )[ 1 ];
@@ -301,60 +303,60 @@ const chatFunctions = () => {
     getRandomSymbol: async function () {
       const rand = Math.random();
       let cumulative = 0;
-      for (const item of this.symbols()) {
+      for ( const item of this.symbols() ) {
         cumulative += item.probability;
-        if (rand < cumulative) {
+        if ( rand < cumulative ) {
           return item;
         }
       }
-      return this.symbols[this.symbols.length - 1];
+      return this.symbols[ this.symbols.length - 1 ];
     },
-    
+
     fruitMachine: async function ( data, args, userFunctions, databaseFunctions, chatFunctions ) {
       let [ bet ] = args;
-      bet = Number(bet); // Convert bet to a number
+      bet = Number( bet ); // Convert bet to a number
 
       const userPlaying = await userFunctions.whoSentTheCommand( data );
       try {
-        await this.validateBet(bet, userPlaying, userFunctions, data, chatFunctions);
+        await this.validateBet( bet, userPlaying, userFunctions, data, chatFunctions );
         if ( await userFunctions.canUserAffordToSpendThisMuch( userPlaying, bet, chatFunctions, data ) ) {
           await userFunctions.updateRoboCoins( userPlaying, await userFunctions.getRoboCoins( userPlaying ) - bet, databaseFunctions )
           await this.playGame( userPlaying, bet, databaseFunctions, userFunctions );
         }
-      } catch (error) {
-        console.error(error.message);
+      } catch ( error ) {
+        console.error( error.message );
       }
     },
 
     validateBet: async function ( numCoins, sendingUserID, userFunctions, data, chatFunctions ) {
-      if (numCoins === undefined || isNaN(numCoins)) {
-        await this.botSpeak(`@${await userFunctions.getUsername(sendingUserID)} you must provide a number of coins to bet, eg. /fruitmachine 2`);
-        throw new Error("Invalid number of coins");
+      if ( numCoins === undefined || isNaN( numCoins ) ) {
+        await this.botSpeak( `@${ await userFunctions.getUsername( sendingUserID ) } you must provide a number of coins to bet, eg. /fruitmachine 2` );
+        throw new Error( "Invalid number of coins" );
       }
-      if (numCoins < 1 || numCoins > 10 || !Number.isInteger(numCoins)) {
-        await this.botSpeak(`@${await userFunctions.getUsername(sendingUserID)} you can only bet a whole number of RC between 1 and 10.`);
-        throw new Error("Bet out of range");
+      if ( numCoins < 1 || numCoins > 10 || !Number.isInteger( numCoins ) ) {
+        await this.botSpeak( `@${ await userFunctions.getUsername( sendingUserID ) } you can only bet a whole number of RC between 1 and 10.` );
+        throw new Error( "Bet out of range" );
       }
-      
-      if ( ! await userFunctions.canUserAffordToSpendThisMuch( sendingUserID, numCoins, chatFunctions, data )) {
-        await this.botSpeak(`Sorry @${await userFunctions.getUsername(sendingUserID)}, you can't afford to bet that much.`);
-        throw new Error("User can't afford the bet");
+
+      if ( ! await userFunctions.canUserAffordToSpendThisMuch( sendingUserID, numCoins, chatFunctions, data ) ) {
+        await this.botSpeak( `Sorry @${ await userFunctions.getUsername( sendingUserID ) }, you can't afford to bet that much.` );
+        throw new Error( "User can't afford the bet" );
       }
       return true;
     },
 
-    spin: async function (userID, betAmount, databaseFunctions, userFunctions ) {
+    spin: async function ( userID, betAmount, databaseFunctions, userFunctions ) {
       const result = [ await this.getRandomSymbol(), await this.getRandomSymbol(), await this.getRandomSymbol() ];
       await this.botSpeak( `Spun: ${ result.map( s => s.symbol ).join( " | " ) }` )
       if ( result[ 0 ].symbol === result[ 1 ].symbol && result[ 1 ].symbol === result[ 2 ].symbol ) {
         const payout = result[ 0 ].payout;
         await this.botSpeak( `JACKPOT! You win ${ payout }:1!` )
         await userFunctions.updateRoboCoins( userID, await userFunctions.getRoboCoins( userID ) + ( payout * betAmount ), databaseFunctions )
-        await databaseFunctions.fruitMachineAuditEntry( userID, betAmount, result, payout, databaseFunctions)
+        await databaseFunctions.fruitMachineAuditEntry( userID, betAmount, result, payout, databaseFunctions )
         return payout;
       } else {
         await this.botSpeak( "No win, try again!" )
-        await databaseFunctions.fruitMachineAuditEntry( userID, betAmount, result, 0, databaseFunctions)
+        await databaseFunctions.fruitMachineAuditEntry( userID, betAmount, result, 0, databaseFunctions )
         return 0;
       }
     },
@@ -367,30 +369,30 @@ const chatFunctions = () => {
     },
 
     odds: async function () {
-      await this.botSpeak("Here are the odds for each symbol:");
-      for (const item of this.symbols()) {
-        const lineProbability = Math.pow(item.probability, 3) * 100;
-        await this.botSpeak(`${item.symbol}: ${(item.probability * 100).toFixed(2)}% chance per reel, ${lineProbability.toFixed(2)}% chance for a full line, Payout: ${item.payout}:1`);
+      await this.botSpeak( "Here are the odds for each symbol:" );
+      for ( const item of this.symbols() ) {
+        const lineProbability = Math.pow( item.probability, 3 ) * 100;
+        await this.botSpeak( `${ item.symbol }: ${ ( item.probability * 100 ).toFixed( 2 ) }% chance per reel, ${ lineProbability.toFixed( 2 ) }% chance for a full line, Payout: ${ item.payout }:1` );
       }
     },
 
     fruitMachineUserResults: async function ( data, userFunctions, databaseFunctions ) {
       const userID = await userFunctions.whoSentTheCommand( data );
-      const results = await databaseFunctions.fruitMachineUserResults( userID ) 
+      const results = await databaseFunctions.fruitMachineUserResults( userID )
       const username = await userFunctions.getUsername( userID );
-      
-      await this.botSpeak(`@${ username } you have spent ${ results[0].Bets }RC on the Fruit Machine. You've won ${ results[0].Winnings }RC giving you a win percentage of ${ results[0].payout }%`)
+
+      await this.botSpeak( `@${ username } you have spent ${ results[ 0 ].Bets }RC on the Fruit Machine. You've won ${ results[ 0 ].Winnings }RC giving you a win percentage of ${ results[ 0 ].payout }%` )
     },
 
     fruitMachineReelResults: async function ( databaseFunctions ) {
-      const results = await databaseFunctions.fruitMachineReelResults( )
-      const symbolOrder = ["Cherries", "Lemons", "Grapes", "Melons", "Stars"];
-      const sortedResults = results.sort((a, b) => symbolOrder.indexOf(a.symbol) - symbolOrder.indexOf(b.symbol));
-      const reelSummaries = sortedResults.map(result =>
-        `${result.symbol}: Reel 1 - ${result.reelOne_Percentage}%, Reel 2 - ${result.reelTwo_Percentage}%, Reel 3 - ${result.reelThree_Percentage}%`
-      ).join("\n");
+      const results = await databaseFunctions.fruitMachineReelResults()
+      const symbolOrder = [ "Cherries", "Lemons", "Grapes", "Melons", "Stars" ];
+      const sortedResults = results.sort( ( a, b ) => symbolOrder.indexOf( a.symbol ) - symbolOrder.indexOf( b.symbol ) );
+      const reelSummaries = sortedResults.map( result =>
+        `${ result.symbol }: Reel 1 - ${ result.reelOne_Percentage }%, Reel 2 - ${ result.reelTwo_Percentage }%, Reel 3 - ${ result.reelThree_Percentage }%`
+      ).join( "\n" );
 
-      await this.botSpeak(`Symbol Distribution:\n${reelSummaries}` );
+      await this.botSpeak( `Symbol Distribution:\n${ reelSummaries }` );
     },
 
     // ========================================================
@@ -405,7 +407,8 @@ const chatFunctions = () => {
           theMessage = customGreeting.message;
         } else if ( userProfile.avatarId !== "ghost" && theUsername && !( await databaseFunctions.hasUserHadInitialRoboCoinGift( userID ) ) ) {
           await userFunctions.giveInitialRoboCoinGift( userID, databaseFunctions );
-          theMessage = `Welcome to the ${await roomFunctions.roomName()} room @${await userFunctions.getUsername( userID )}. Have a gift of 100 RoboCoins!`
+          // theMessage = `Welcome to the ${ await roomFunctions.roomName() } room @${ await userFunctions.getUsername( userID ) }. Have a gift of 100 RoboCoins!`
+          theMessage = `Welcome to the ${ await roomFunctions.roomName() } room <@uid:${ userID }>. Have a gift of 100 RoboCoins!`
         } else {
           theMessage = roomFunctions.roomJoinMessage();
         }
@@ -425,7 +428,7 @@ const chatFunctions = () => {
             roomFunctions.startRulesTimer();
           }
 
-          theMessage = theMessage.replace( "@username", "@" + theUsername );
+          theMessage = theMessage.replace( "@username", `<@uid:${ userID }>` );
           theMessage = theMessage.replace( "@roomName", await roomFunctions.roomName() );
 
           // theMessage += "\n\nPlease note: Mr. Roboto is in the middle of a MAJOR rewrite for the new site. Things" +
@@ -453,12 +456,13 @@ const chatFunctions = () => {
         if ( !trackName ) {
           trackName = songFunctions.previousTrack();
         }
-        
-        if ( trackName !== null && artistName !== null) {
+
+        if ( trackName !== null && artistName !== null ) {
           if ( botFunctions.readSongStats() ) {
             let previousDJName
             if ( await userFunctions.getPreviousDJID() ) {
-              previousDJName = await userFunctions.getUsername( await userFunctions.getPreviousDJID() )
+              // previousDJName = await userFunctions.getUsername( await userFunctions.getPreviousDJID() )
+              previousDJName = `<@uid:${ await userFunctions.getPreviousDJID() }>`
             } else {
               previousDJName = "Just"
             }

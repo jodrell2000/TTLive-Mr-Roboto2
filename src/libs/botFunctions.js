@@ -734,7 +734,8 @@ const botFunctions = () => {
             } );
             logger.debug( `prepareToSpin: Successfully updated next song` )
           } catch ( error ) {
-            logger.error( `prepareToSpin: Error in final steps:`, error.message || error.toString() );
+            // logger.error( `prepareToSpin: Error in final steps:`, error.message || error.toString() );
+            logger.error( `prepareToSpin: Error in final steps: ${ JSON.stringify( error ) }` );
             chatFunctions.botSpeak( "I encountered an error while adding the track to my queue." );
           }
         } else {

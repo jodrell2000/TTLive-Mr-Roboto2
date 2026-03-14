@@ -20,7 +20,7 @@ export default async ( state, userFunctions, roomFunctions, songFunctions, chatF
     await songFunctions.grabSongStats();
     await userFunctions.setCurrentDJID( djID, databaseFunctions );
     const videoID = state.nowPlaying.song.songShortId
-    await chatFunctions.readSongStats( videoID, songFunctions, botFunctions, databaseFunctions, userFunctions );
+    // await chatFunctions.readSongStats( videoID, songFunctions, botFunctions, databaseFunctions, userFunctions );
     await databaseFunctions.saveLastSongStats( songFunctions );
     await userFunctions.incrementDJPlayCount( djID, databaseFunctions );
 

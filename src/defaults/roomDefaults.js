@@ -7,14 +7,14 @@ export default {  // selection of lines to pick for functions
       (only works when MESSAGE = true) (this feature is on by default)
   */
 
-  SONGSTATS: true, //song stats after each song(on by default)
+  SONGSTATS: false, //song stats after each song(on by default)
 
   repeatMessageThroughPm: false,
   /*choose whether the repeating room message(the one corresponding to MESSAGE up above) will be through the chatbox or the pm,
                                         (false = through the chatbox, true = through the pm) (MESSAGE must equal true for this to work) (this feature is off by default)
                                       */
 
-  greetUsers: true, //room greeting when someone joins the room(on by default)
+  greetUsers: false, //room greeting when someone joins the room(on by default)
   greetInPublic: true, //choose whether greeting message is through the pm or the chatbox(false = chatbox, true = pm), (only works when greeting message is turned on) (off by default)
 
   //this is for the event messages

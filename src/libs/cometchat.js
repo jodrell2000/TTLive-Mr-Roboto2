@@ -52,13 +52,13 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp, lastI
     [ 'id', lastID ]
   ]
   const url = buildUrl( `${ OPENCHAT_BASE_URL }`, paths, searchParams )
-  logger.debug( `url: ${ JSON.stringify( url, null, 2 ) }` )
+  // logger.debug( `url: ${ JSON.stringify( url, null, 2 ) }` )
 
   try {
     // console.log(`Sending message request`)
     return await makeRequest( url, { headers } );
 
-    logger.debug( "✅ messageResponse:", JSON.stringify( messageResponse, null, 2 ) );
+    // logger.debug( "✅ messageResponse:", JSON.stringify( messageResponse, null, 2 ) );
 
   } catch ( error ) {
     console.error( "❌ Error in makeRequest:", JSON.stringify( error, null, 2 ) );

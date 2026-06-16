@@ -7,7 +7,7 @@ import handlers from '../handlers/index.js'
 import startup from '../libs/startup.js'
 
 export class Bot {
-  constructor() {
+  constructor () {
     this.lastMessageIDs = {}
   }
 
@@ -15,10 +15,10 @@ export class Bot {
   // Connection functions
   // ========================================================
 
-  async connect( roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions, commandFunctions,  videoFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
+  async connect ( roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions, commandFunctions, videoFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     // Validate required environment variables
-    if (!process.env.ROOM_UUID || !process.env.TTL_USER_TOKEN) {
-      logger.error('connect: Missing required environment variables: ROOM_UUID and/or TTL_USER_TOKEN')
+    if ( !process.env.ROOM_UUID || !process.env.TTL_USER_TOKEN ) {
+      logger.error( 'connect: Missing required environment variables: ROOM_UUID and/or TTL_USER_TOKEN' )
       return false
     }
 
@@ -34,25 +34,25 @@ export class Bot {
       } )
       this.state = connection.state
       this.isConnected = true
-      logger.debug( `connect: Connected to room with state: ${ JSON.stringify( this.state, null, 2 ) }` )
+      // logger.debug( `connect: Connected to room with state: ${ JSON.stringify( this.state, null, 2 ) }` )
 
-      this.socket.on("disconnect", () => {
+      this.socket.on( "disconnect", () => {
         this.isConnected = false
-        logger.debug('connect: Disconnected from socket')
-      })
+        logger.debug( 'connect: Disconnected from socket' )
+      } )
 
-      this.socket.on("reconnect", async () => {
+      this.socket.on( "reconnect", async () => {
         try {
           const { state } = await this.socket.joinRoom( process.env.TTL_USER_TOKEN, {
             roomUuid: process.env.ROOM_UUID
-          });
+          } );
           this.state = state // Use the new state, not the old connection.state
           this.isConnected = true
-          logger.debug('connect: Reconnected to socket')
-        } catch (error) {
-          logger.error(`connect: Reconnection failed: ${error.message}`)
+          logger.debug( 'connect: Reconnected to socket' )
+        } catch ( error ) {
+          logger.error( `connect: Reconnection failed: ${ error.message }` )
         }
-      });
+      } );
 
       await startup( process.env.ROOM_UUID, this.state, roomFunctions, userFunctions, chatFunctions, songFunctions, botFunctions, databaseFunctions )
 
@@ -60,14 +60,14 @@ export class Bot {
       this.configureListeners( this.socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions )
 
       return true
-    } catch (error) {
+    } catch ( error ) {
       this.isConnected = false
-      logger.error(`connect: Connection failed: ${error.message}`)
+      logger.error( `connect: Connection failed: ${ error.message }` )
       throw error
     }
   }
-  
-  async processNewMessages( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
+
+  async processNewMessages ( commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     const response = await getMessages( process.env.ROOM_UUID, this.lastMessageIDs?.fromTimestamp, this.lastMessageIDs?.id );
     if ( response?.data ) {
       const messages = response.data;
@@ -91,7 +91,7 @@ export class Bot {
     }
   }
 
-  ensurePathExists( obj, path ) {
+  ensurePathExists ( obj, path ) {
     let keys = path.split( '/' );
     keys.shift(); // Remove the leading empty string from splitting at '/'
     let current = obj;
@@ -104,10 +104,10 @@ export class Bot {
     }
   }
 
-  configureListeners( socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
+  configureListeners ( socket, commandFunctions, userFunctions, videoFunctions, botFunctions, chatFunctions, roomFunctions, songFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions ) {
     const self = this
     logger.debug( 'configureListeners: Setting up listeners' )
-    
+
     this.socket.on( 'statefulMessage', async payload => {
       logger.debug( `configureListeners: statefulMessage - ${ payload.name } -------------------------------------------` )
 
@@ -120,15 +120,15 @@ export class Bot {
         } );
         self.state = fastJson.applyPatch( self.state, payload.statePatch ).newDocument;
       } catch ( error ) {
-        logger.error( `configureListeners: Error applying patch: ${error.message}` );
+        logger.error( `configureListeners: Error applying patch: ${ error.message }` );
         // logger.error( `Payload state patch: ${JSON.stringify( payload.statePatch, null, 2 )}` );
         // logger.error( `Current state: ${JSON.stringify( self.state, null, 2 )}` );
       }
 
 
-      if  ( ["userJoined", "userLeft", "addedDj", "removedDj"].includes(payload.name) ) {
+      if ( [ "userJoined", "userLeft", "addedDj", "removedDj" ].includes( payload.name ) ) {
         await handlers[ payload.name ]( self.state, payload, socket, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions, mlFunctions, playlistFunctions )
-      } else  if ( payload.name === "votedOnSong" ) {
+      } else if ( payload.name === "votedOnSong" ) {
         // console.log("Do nothing, handled by serverMessage")
       } else {
         if ( handlers[ payload.name ] ) {
@@ -154,7 +154,7 @@ export class Bot {
     this.socket.on( "serverMessage", ( payload ) => {
       logger.debug( `serverMessage - ${ payload.message.name } -------------------------------------------` )
 
-      if ( ["votedOnSong"].includes(payload.message.name) ) {
+      if ( [ "votedOnSong" ].includes( payload.message.name ) ) {
         // logger.debug(payload)
         handlers[ payload.message.name ]( payload, userFunctions, roomFunctions, songFunctions, chatFunctions, botFunctions, videoFunctions, databaseFunctions, documentationFunctions, dateFunctions )
       } else {
@@ -168,7 +168,7 @@ export class Bot {
             } );
             self.state = fastJson.applyPatch( self.state, payload.message.statePatch ).newDocument;
           } catch ( error ) {
-            logger.error( `configureListeners: Error applying patch: ${error.message}` );
+            logger.error( `configureListeners: Error applying patch: ${ error.message }` );
             // logger.error( `Payload state patch: ${JSON.stringify( payload.statePatch, null, 2 )}` );
             // logger.error( `Current state: ${JSON.stringify( self.state, null, 2 )}` );
           }

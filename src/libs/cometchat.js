@@ -4,7 +4,7 @@ import { logger } from "../utils/logging.js";
 // import { CometChat } from "@cometchat/chat-sdk-javascript";
 
 const startTimeStamp = Math.floor( Date.now() / 1000 )
-const OPENCHAT_BASE_URL = process.env.OPENCHAT_BASE_URL || 'https://openchat.prod.tt.fm'
+const OPENCHAT_BASE_URL = process.env.OPENCHAT_BASE_URL || 'openchat.prod.tt.fm'
 
 const headers = {
   appid: process.env.CHAT_API_KEY,

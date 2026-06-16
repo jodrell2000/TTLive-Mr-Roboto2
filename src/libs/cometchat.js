@@ -157,6 +157,7 @@ export const postMessage = async ( options ) => {
   }
   logger.debug( JSON.stringify( payload, null, 2 ) )
   const url = buildUrl( `${ OPENCHAT_BASE_URL }`, paths )
+  logger.debug( `OPENCHAT_BASE_URL: ${ OPENCHAT_BASE_URL }` )
   logger.debug( `url: ${ url }` )
   logger.debug( `headers: ${ JSON.stringify( headers, null, 2 ) }` )
   logger.debug( `payload: ${ JSON.stringify( payload, null, 2 ) }` )

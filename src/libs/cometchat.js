@@ -154,11 +154,11 @@ export const postMessage = async ( options ) => {
     },
     receiver: options.room
   }
-  console.log( JSON.stringify( payload, null, 2 ) )
+  logger.debug( JSON.stringify( payload, null, 2 ) )
   const url = buildUrl( `${ OPENCHAT_BASE_URL }`, paths )
-  console.log( `url: ${ url }` )
-  console.log( `headers: ${ JSON.stringify( headers, null, 2 ) }` )
-  console.log( `payload: ${ JSON.stringify( payload, null, 2 ) }` )
+  logger.debug( `url: ${ url }` )
+  logger.debug( `headers: ${ JSON.stringify( headers, null, 2 ) }` )
+  logger.debug( `payload: ${ JSON.stringify( payload, null, 2 ) }` )
 
   try {
     const messageResponse = await makeRequest(
@@ -167,7 +167,7 @@ export const postMessage = async ( options ) => {
       headers
     );
 
-    console.log( "✅ messageResponse:", JSON.stringify( messageResponse, null, 2 ) );
+    logger.debug( "✅ messageResponse:", JSON.stringify( messageResponse, null, 2 ) );
 
     return {
       message: options.message,

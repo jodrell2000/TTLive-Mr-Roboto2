@@ -154,11 +154,11 @@ export const postMessage = async ( options ) => {
     },
     receiver: options.room
   }
-  // console.log( JSON.stringify(payload,  null, 2) )
+  console.log( JSON.stringify( payload, null, 2 ) )
   const url = buildUrl( `${ OPENCHAT_BASE_URL }`, paths )
-  // console.log(`url: ${url}`)
-  // console.log(`headers: ${JSON.stringify(headers, null, 2)}`)
-  // console.log(`payload: ${JSON.stringify(payload, null, 2)}`)
+  console.log( `url: ${ url }` )
+  console.log( `headers: ${ JSON.stringify( headers, null, 2 ) }` )
+  console.log( `payload: ${ JSON.stringify( payload, null, 2 ) }` )
 
   try {
     const messageResponse = await makeRequest(
@@ -167,7 +167,7 @@ export const postMessage = async ( options ) => {
       headers
     );
 
-    // console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
+    console.log( "✅ messageResponse:", JSON.stringify( messageResponse, null, 2 ) );
 
     return {
       message: options.message,
@@ -175,7 +175,7 @@ export const postMessage = async ( options ) => {
     };
 
   } catch ( error ) {
-    // console.error("❌ Error in makeRequest:", JSON.stringify(error, null, 2));
+    console.error( "❌ Error in makeRequest:", JSON.stringify( error, null, 2 ) );
     return {
       message: options.message,
       error: error.message || "Unknown error",

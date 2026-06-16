@@ -3,6 +3,7 @@ import { buildUrl, makeRequest } from '../utils/networking.js'
 // import { CometChat } from "@cometchat/chat-sdk-javascript";
 
 const startTimeStamp = Math.floor( Date.now() / 1000 )
+const OPENCHAT_BASE_URL = process.env.OPENCHAT_BASE_URL || 'https://openchat.prod.tt.fm'
 
 const headers = {
   appid: process.env.CHAT_API_KEY,
@@ -22,7 +23,7 @@ export const joinChat = async ( roomId ) => {
     'members'
   ]
 
-  const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths )
+  const url = buildUrl( `${ OPENCHAT_BASE_URL }`, paths )
   return await makeRequest( url, { headers, method: 'POST' } )
 }
 
@@ -49,7 +50,7 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp, lastI
     [ 'affix', 'append' ],
     [ 'id', lastID ]
   ]
-  const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
+  const url = buildUrl( `${ OPENCHAT_BASE_URL }`, paths, searchParams )
   // console.log(`url: ${JSON.stringify(url, null, 2)}`)
 
   try {
@@ -58,8 +59,8 @@ export const getMessages = async ( roomId, fromTimestamp = startTimeStamp, lastI
 
     // console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
 
-  } catch (error) {
-    console.error("❌ Error in makeRequest:", JSON.stringify(error, null, 2));
+  } catch ( error ) {
+    console.error( "❌ Error in makeRequest:", JSON.stringify( error, null, 2 ) );
     return {
       error: error.message || "Unknown error",
     };
@@ -71,11 +72,11 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
   // Get the user ID from the user functions
   const userId = process.env.USERID;
 
-  userFunctions.theUsersList().forEach(user => {
-    if (user.id) {
-      console.log( "User ID: " + user.id)
+  userFunctions.theUsersList().forEach( user => {
+    if ( user.id ) {
+      console.log( "User ID: " + user.id )
     }
-  })
+  } )
   headers.appid = process.env.CHAT_API_KEY
   headers.onBehalfOf = process.env.USERID
 
@@ -95,15 +96,15 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
     [ 'sentAt', fromTimestamp ],
     [ 'affix', 'append' ]
   ]
-  const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths, searchParams )
+  const url = buildUrl( `${ OPENCHAT_BASE_URL }`, paths, searchParams )
 
   try {
     return await makeRequest( url, { headers } );
 
     // console.log("✅ messageResponse:", JSON.stringify(messageResponse, null, 2));
 
-  } catch (error) {
-    console.error("❌ Error in makeRequest:", JSON.stringify(error, null, 2));
+  } catch ( error ) {
+    console.error( "❌ Error in makeRequest:", JSON.stringify( error, null, 2 ) );
     return {
       error: error.message || "Unknown error",
     };
@@ -113,7 +114,7 @@ export const getUserMessages = async ( userFunctions, fromTimestamp = startTimeS
 export const postMessage = async ( options ) => {
   headers.appid = process.env.CHAT_API_KEY
   headers.onBehalfOf = process.env.USERID
-  
+
   const paths = [
     'v3.0',
     'messages'
@@ -154,7 +155,7 @@ export const postMessage = async ( options ) => {
     receiver: options.room
   }
   // console.log( JSON.stringify(payload,  null, 2) )
-  const url = buildUrl( `${ process.env.CHAT_API_KEY }.apiclient-us.cometchat.io`, paths )
+  const url = buildUrl( `${ OPENCHAT_BASE_URL }`, paths )
   // console.log(`url: ${url}`)
   // console.log(`headers: ${JSON.stringify(headers, null, 2)}`)
   // console.log(`payload: ${JSON.stringify(payload, null, 2)}`)
@@ -162,7 +163,7 @@ export const postMessage = async ( options ) => {
   try {
     const messageResponse = await makeRequest(
       url,
-      { method: 'POST', body: JSON.stringify(payload) },
+      { method: 'POST', body: JSON.stringify( payload ) },
       headers
     );
 
@@ -173,7 +174,7 @@ export const postMessage = async ( options ) => {
       messageResponse
     };
 
-  } catch (error) {
+  } catch ( error ) {
     // console.error("❌ Error in makeRequest:", JSON.stringify(error, null, 2));
     return {
       message: options.message,
